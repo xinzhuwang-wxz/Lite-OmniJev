@@ -531,6 +531,34 @@ def extract_batch(
     return rows
 
 
+def validate_existing_entry(
+    task: EntryTask, validation_lock_path: str | None = None
+) -> dict[str, Any] | None:
+    if task.out_path.is_symlink():
+        raise RuntimeError(f"refusing to reuse symlink output path: {task.out_path}")
+    if not task.out_path.exists():
+        return None
+    if not task.out_path.is_file():
+        raise RuntimeError(f"refusing to reuse non-file output path: {task.out_path}")
+    payload = task.out_path.read_bytes()
+    with optional_flock(validation_lock_path):
+        crc = binascii.crc32(payload) & 0xFFFFFFFF
+        digest = hashlib.sha256(payload).hexdigest()
+    if len(payload) != task.entry.uncompressed_size or crc != task.entry.crc32:
+        task.out_path.unlink()
+        return None
+    return {
+        "name": task.entry.name,
+        "path": str(task.out_path),
+        "compressed_bytes": task.entry.compressed_size,
+        "bytes": len(payload),
+        "crc32": f"{task.entry.crc32:08x}",
+        "sha256": digest,
+        "reused": True,
+        "reused_validated": True,
+    }
+
+
 def command_probe(args: argparse.Namespace) -> None:
     cd, meta = fetch_central_directory(args.repo_id, args.revision)
     entries = parse_central_directory(cd)
@@ -615,25 +643,19 @@ def command_fetch(args: argparse.Namespace) -> None:
             out = out_root / "screenshots" / f"{episode_id}_{step}.png"
             tasks.append(EntryTask(entry, out))
 
-    def reused_row(task: EntryTask) -> dict[str, Any]:
-        payload = task.out_path.read_bytes()
-        return {
-            "name": task.entry.name,
-            "path": str(task.out_path),
-            "compressed_bytes": task.entry.compressed_size,
-            "bytes": len(payload),
-            "crc32": f"{task.entry.crc32:08x}",
-            "sha256": hashlib.sha256(payload).hexdigest(),
-            "reused": True,
-        }
-
     results: list[dict[str, Any]] = []
     missing: list[EntryTask] = []
+    invalid_existing_count = 0
     for task in tasks:
-        if task.out_path.exists() and not args.force:
-            results.append(reused_row(task))
-        else:
-            missing.append(task)
+        existed_before = task.out_path.exists() or task.out_path.is_symlink()
+        if not args.force:
+            reused = validate_existing_entry(task, args.decompress_lock_path)
+            if reused is not None:
+                results.append(reused)
+                continue
+            if existed_before:
+                invalid_existing_count += 1
+        missing.append(task)
 
     def note_progress() -> None:
         if len(results) % args.progress_every == 0:
@@ -654,6 +676,7 @@ def command_fetch(args: argparse.Namespace) -> None:
                     "batch_count": len(batches),
                     "batch_bytes": args.batch_bytes,
                     "reused_count": len(results),
+                    "invalid_existing_count": invalid_existing_count,
                 }
             ),
             flush=True,
@@ -690,6 +713,7 @@ def command_fetch(args: argparse.Namespace) -> None:
         "compressed_bytes": sum(item["compressed_bytes"] for item in results),
         "bytes": sum(item["bytes"] for item in results),
         "reused_count": sum(1 for item in results if item.get("reused")),
+        "invalid_existing_count": invalid_existing_count,
         "batch_bytes": args.batch_bytes,
         "max_workers": args.max_workers,
         "elapsed_sec": round(time.time() - started, 3),
