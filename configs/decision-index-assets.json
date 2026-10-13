@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-14",
+  "purpose": "Decision Index public 0.3 offline source preparation for research/evaluation staging only.",
+  "source_code": {
+    "repo": "apolinario/decision-index",
+    "revision": "f8552a13b643d39f61185f5951bb5fed16bedf51",
+    "license": "MIT",
+    "source_archive_sha256": "2719836807976e25e9ff5b5dee742679577b48508cbd601f7c57be9672f4082",
+    "source_archive_bytes": 1065000,
+    "local_source_copy": "artifacts/source-audit/public-index/src/decision-index-f8552a13b643d39f61185f5951bb5fed16bedf51"
+  },
+  "public_suite": {
+    "edition": "0.3",
+    "public_index_benchmarks": 37,
+    "added_benchmarks": 7,
+    "public_rows_expected": {
+      "selected_rows": 124971,
+      "added_rows": 30419,
+      "gsm8k_rows": 2638,
+      "scoreable_base_requests_after_exclusions": 109759
+    },
+    "not_reproducible_here": [
+      "Full/private board score",
+      "private same-skill tests",
+      "private new-domain decision tasks"
+    ]
+  },
+  "remote_preparation": {
+    "host": "root@region-42.seetacloud.com:48926",
+    "remote_project_root": "/root/autodl-tmp/lite-omnijev",
+    "raw_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3",
+    "report": "reports/source-manifests/decision-index-public0.3-001.json",
+    "raw_file_count": 5861,
+    "raw_bytes": 2388936304,
+    "new_raw_budget_bytes": 10000000000,
+    "budget_within_limit": true,
+    "full_rebuild_run": false,
+    "archive_extract_run": false,
+    "pickle_loaded": false,
+    "gpu_or_model_inference_run": false
+  },
+  "staging_policy": {
+    "training_admitted": false,
+    "commercial_release_admitted": false,
+    "evaluation_staging_only": true,
+    "raw_pickles": "quarantine_only_never_load_without_isolated_converter",
+    "archives": "download_and_hash_only; inspect paths before any extraction",
+    "hf_lfs_hash_policy": "record raw LFS byte sha256 separately from pointer metadata; do not compare pointer hash to downloaded bytes unless the pointer records the raw oid",
+    "gated_sources": "record account/terms gap; do not use mirrors or bypasses"
+  },
+  "verified_download_summary": {
+    "git_sources_verified": 21,
+    "git_sources_failed": [
+      "added:cand-RAGTruth",
+      "added:cand-hover",
+      "added:jev-phishing-bench"
+    ],
+    "http_sources_verified": [
+      "raw/downloads/BPoMP_p1.json",
+      "raw/downloads/BPoMP_p2.json",
+      "raw/downloads/BPoMP_p3.json",
+      "raw/downloads/cfcolor.zip",
+      "raw/downloads/chessbench-test-action-value.bag",
+      "raw/downloads/humicroedit-full.zip",
+      "raw/banking77/test.csv",
+      "raw/banking77/categories.json",
+      "raw/clinc150/data_full.json",
+      "repos/esci/shopping_queries_dataset/shopping_queries_dataset_examples.parquet",
+      "repos/esci/shopping_queries_dataset/shopping_queries_dataset_products.parquet"
+    ],
+    "http_sources_failed": [
+      "raw/repos/habermas_machine/hm_all_candidate_comparisons.parquet",
+      "data/sources/gpqa/dataset.zip",
+      "hover/wiki_wo_links.db"
+    ],
+    "hf_sources": {
+      "status": "metadata_resolved_but_remote_content_fetch_stalled_or_skipped",
+      "resolved_revisions_recorded": true,
+      "expected_bytes_recorded": true,
+      "content_downloaded": false,
+      "gated_hle": {
+        "repo_id": "cais/hle",
+        "revision": "5a81a4c7271a2a2a312b9a690f0c2fde837e4c29",
+        "status": "account_or_terms_gap",
+        "file": "data/test-00000-of-00001.parquet",
+        "bytes": 274276147
+      }
+    }
+  },
+  "known_blockers": [
+    {
+      "source": "HLE",
+      "reason": "Hugging Face gated dataset; no account terms accepted and no token used."
+    },
+    {
+      "source": "RouterBench",
+      "reason": "Raw upstream files are pickles; current run did not download or load them after HF transfer stalled. Future staging must quarantine and convert in an isolated process."
+    },
+    {
+      "source": "HF-hosted parquets/jsonl",
+      "reason": "Remote HF direct transfers stalled before useful byte progress; metadata, resolved revisions, sizes, and LFS oids are captured in the report."
+    },
+    {
+      "source": "RAGTruth and HoVer added sources",
+      "reason": "GitHub fetches failed or were stopped on the constrained remote. RAGTruth also carries non-redistributable / non-commercial upstream context obligations."
+    }
+  ]
+}
