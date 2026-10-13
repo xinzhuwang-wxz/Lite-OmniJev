@@ -8,7 +8,7 @@
 - s0:01 claimed：teacher-admission，worktree /tmp/lite-omnijev-s0-teacher；正在执行教师准入。
 - s0-data:01 done：CLINC公开train准入完成，reports/clinc-admission.json；15,250条训练样本入 ignored artifacts，未读validation/test/holdout。
 - s0:03 claimed：multimodal-probe，/tmp/lite-omnijev-s0-multimodal，先实现真实processor媒体探针，严格gate仍未过。
-- s0:05 claimed：sealed-gate，/tmp/lite-omnijev-s0-sealed，canary导入/双标κ工具；真实隔离身份仍缺。
+- s0:05 blocked：canary导入/双标κ/脱敏工具已合入，6个sealed-gate测试通过；真实隔离身份仍缺。
 - 其余S0按依赖推进；实时前沿以scripts.loop list为准。
 - s0:03保留数值失败；s0:06需真实双人标注，agent不能伪造κ；s0:08待基线展开再triage。
 - delivery:01未完成，教师、多模态、端侧和终局不能由P0替代。

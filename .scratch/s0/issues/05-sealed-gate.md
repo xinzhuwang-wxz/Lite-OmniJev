@@ -4,7 +4,7 @@ ID: s0:05
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
+Execution: blocked
 Owner: sealed-gate
 Worktree: /tmp/lite-omnijev-s0-sealed
 Blocked by: p0:04
@@ -34,3 +34,5 @@ agent读取/生成封存内容、提前模型封存评测、招聘/付费标注�
 
 已有Sample family/Pool和gate概念，尚无真实隔离身份与人工标注证据。本票验收工程路径，06负责真实人工交付。
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
+
+Evidence: 工程canary与脱敏、双标κ、缺失拒绝行为测试通过，见 `reports/s0-sealed-canary-001.json`、`eval/sealed_gate.py`、`scripts/sealed_gate.py` 和 `tests/test_sealed_gate.py`。真实隔离身份和真实人工κ仍缺，保持blocked；root开发账号不得以chmod冒称隔离完成。
