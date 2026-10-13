@@ -1,5 +1,6 @@
 """CPU plumbing evidence only; these tests do not validate real E4B/GPU quality."""
 
+import hashlib
 import json
 import math
 import sys
@@ -384,17 +385,61 @@ def test_run_refuses_existing_output_without_overwriting(tmp_path):
     assert not (tmp_path / "run.json").exists()
 
 
-def test_run_resume_requires_checkpoint_under_output_dir(tmp_path):
+def test_run_resume_requires_checkpoint_under_output_dir(monkeypatch, tmp_path):
+    report, _ = run_bad_resume(monkeypatch, tmp_path, tmp_path / "elsewhere" / "step-0001")
+    assert report["status"] == "blocked"
+    assert "resume checkpoint must be inside output-dir/checkpoints" in report["error"]
+
+
+def prepare_resume_run(monkeypatch, tmp_path, *, data_bytes_override=None):
+    output_dir = tmp_path / "run"
+    output_dir.mkdir()
+    original_report = b'{"previous":"evidence"}\n'
+    (output_dir / "run.json").write_bytes(original_report)
+    samples = smoke_samples(SmokeConfig())
+    payload = data_bytes_override if data_bytes_override is not None else data_bytes(samples)
+    (output_dir / "data.jsonl").write_bytes(payload)
+    monkeypatch.setattr("train.trainer.verified_assets", lambda model_dir, manifest_path: {})
+    monkeypatch.setattr("train.trainer.runtime_requirements", lambda: {})
+    monkeypatch.setattr("train.trainer.OfficialTokenizerAdapter", lambda model_dir: object())
+    monkeypatch.setattr(
+        "train.trainer.prepare_examples",
+        lambda samples, tokenizer, max_length: [{"input_ids": [index + 1]} for index in range(100)],
+    )
+    return output_dir, original_report
+
+
+def run_bad_resume(monkeypatch, tmp_path, resume_from, *, data_bytes_override=None):
+    output_dir, original_report = prepare_resume_run(
+        monkeypatch, tmp_path, data_bytes_override=data_bytes_override
+    )
     report = run(
         SmokeConfig(),
         tmp_path / ("a" * 40),
         tmp_path / "manifest.json",
-        tmp_path / "out",
+        output_dir,
         execute=True,
-        resume_from=tmp_path / "elsewhere" / "step-0001",
+        resume_from=resume_from,
     )
+    assert (output_dir / "run.json").read_bytes() == original_report
+    return report, output_dir
+
+
+def test_rejected_resume_outside_path_preserves_existing_report(monkeypatch, tmp_path):
+    report, _ = run_bad_resume(monkeypatch, tmp_path, tmp_path / "elsewhere" / "step-0001")
     assert report["status"] == "blocked"
     assert "resume checkpoint must be inside output-dir/checkpoints" in report["error"]
+
+
+def test_rejected_resume_data_mismatch_preserves_existing_report(monkeypatch, tmp_path):
+    report, _ = run_bad_resume(
+        monkeypatch,
+        tmp_path,
+        tmp_path / "run" / "checkpoints" / "step-0001",
+        data_bytes_override=b"bad\n",
+    )
+    assert report["status"] == "blocked"
+    assert "resume data.jsonl is missing or does not match current data" in report["error"]
 
 
 def test_checkpoint_resume_matches_uninterrupted_cpu_run(tmp_path):
@@ -506,6 +551,89 @@ def test_checkpoint_refuses_provenance_mismatch(tmp_path):
             model=model,
             optimizer=optimizer,
         )
+
+
+def make_cpu_checkpoint(tmp_path, *, step=1, config=None, order=None, losses=None):
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("safetensors")
+    torch.manual_seed(1)
+    model = torch.nn.Linear(2, 2)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.01)
+    loss = model(torch.ones(2)).sum()
+    loss.backward()
+    optimizer.step()
+    return save_checkpoint(
+        tmp_path,
+        step=step,
+        config=config or SmokeConfig().model_dump(),
+        model_revision="a" * 40,
+        data_sha256=hashlib.sha256(data_bytes(smoke_samples(SmokeConfig()))).hexdigest(),
+        asset_hashes={},
+        order=order
+        if order is not None
+        else __import__("random").Random(SmokeConfig().seed).sample(range(100), 100),
+        losses=losses if losses is not None else [float(loss.detach())] * step,
+        model=model,
+        optimizer=optimizer,
+    )
+
+
+def test_rejected_resume_config_mismatch_preserves_existing_report(monkeypatch, tmp_path):
+    output_dir, original_report = prepare_resume_run(monkeypatch, tmp_path)
+    order = list(range(100))
+    __import__("random").Random(SmokeConfig().seed).shuffle(order)
+    checkpoint = make_cpu_checkpoint(
+        output_dir,
+        config={**SmokeConfig().model_dump(), "learning_rate": 0.0002},
+        order=order,
+    )
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "manifest.json",
+        output_dir,
+        execute=True,
+        resume_from=checkpoint,
+    )
+    assert (output_dir / "run.json").read_bytes() == original_report
+    assert "checkpoint config does not match current run" in report["error"]
+
+
+def test_rejected_resume_corrupt_checkpoint_preserves_existing_report(monkeypatch, tmp_path):
+    output_dir, original_report = prepare_resume_run(monkeypatch, tmp_path)
+    order = list(range(100))
+    __import__("random").Random(SmokeConfig().seed).shuffle(order)
+    checkpoint = make_cpu_checkpoint(output_dir, order=order)
+    with (checkpoint / "rng.safetensors").open("ab") as handle:
+        handle.write(b"corrupt")
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "manifest.json",
+        output_dir,
+        execute=True,
+        resume_from=checkpoint,
+    )
+    assert (output_dir / "run.json").read_bytes() == original_report
+    assert "checkpoint tensor file hash mismatch" in report["error"]
+
+
+def test_rejected_old_checkpoint_preserves_existing_report(monkeypatch, tmp_path):
+    output_dir, original_report = prepare_resume_run(monkeypatch, tmp_path)
+    order = list(range(100))
+    __import__("random").Random(SmokeConfig().seed).shuffle(order)
+    old_checkpoint = make_cpu_checkpoint(output_dir, step=1, order=order)
+    make_cpu_checkpoint(output_dir, step=2, order=order, losses=[0.1, 0.2])
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "manifest.json",
+        output_dir,
+        execute=True,
+        resume_from=old_checkpoint,
+    )
+    assert (output_dir / "run.json").read_bytes() == original_report
+    assert "resume checkpoint is older than the latest checkpoint" in report["error"]
 
 
 def test_cli_invalid_config_is_structured(tmp_path, capsys):

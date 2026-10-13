@@ -14,6 +14,7 @@ from typing import Any, cast
 from scripts.assets import write_json
 
 SCHEMA_VERSION = 1
+TENSOR_FILES = ("model.safetensors", "optimizer.safetensors", "rng.safetensors")
 
 
 def stable_hash(value: Any) -> str:
@@ -23,6 +24,39 @@ def stable_hash(value: Any) -> str:
 
 def checkpoint_dir(output_dir: Path, step: int) -> Path:
     return output_dir / "checkpoints" / f"step-{step:04d}"
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def checkpoint_file_hashes(path: Path) -> dict[str, str]:
+    return {name: file_sha256(path / name) for name in TENSOR_FILES}
+
+
+def checkpoint_step_from_name(path: Path) -> int | None:
+    if not path.name.startswith("step-"):
+        return None
+    try:
+        return int(path.name.removeprefix("step-"))
+    except ValueError:
+        return None
+
+
+def latest_checkpoint_step(output_dir: Path) -> int | None:
+    root = output_dir / "checkpoints"
+    if not root.is_dir():
+        return None
+    steps = [
+        step
+        for child in root.iterdir()
+        if child.is_dir() and (step := checkpoint_step_from_name(child)) is not None
+    ]
+    return max(steps) if steps else None
 
 
 def _tensor_io() -> tuple[Any, Any]:
@@ -124,6 +158,7 @@ def save_checkpoint(
                 {f"torch_cuda_rng_{index}": tensor for index, tensor in enumerate(cuda_rng)}
             )
         save_file(rng_tensors, str(tmp / "rng.safetensors"))
+        tensor_file_hashes = checkpoint_file_hashes(tmp)
         write_json(
             tmp / "checkpoint.json",
             {
@@ -141,6 +176,7 @@ def save_checkpoint(
                 "optimizer": optimizer_meta,
                 "python_random_state": _json_safe(random.getstate(), {}, "python_random"),
                 "cuda_rng_count": len(cuda_rng),
+                "file_sha256": tensor_file_hashes,
             },
         )
         os.replace(tmp, destination)
@@ -150,11 +186,19 @@ def save_checkpoint(
     return destination
 
 
-def load_checkpoint(path: Path) -> dict[str, Any]:
-    torch, (load_file, _) = _tensor_io()
+def load_checkpoint_metadata(path: Path) -> dict[str, Any]:
     metadata = json.loads((path / "checkpoint.json").read_text())
     if metadata.get("schema_version") != SCHEMA_VERSION:
         raise ValueError("unsupported checkpoint schema")
+    recorded = metadata.get("file_sha256")
+    if recorded != checkpoint_file_hashes(path):
+        raise ValueError("checkpoint tensor file hash mismatch")
+    return cast(dict[str, Any], metadata)
+
+
+def load_checkpoint(path: Path) -> dict[str, Any]:
+    torch, (load_file, _) = _tensor_io()
+    metadata = load_checkpoint_metadata(path)
     model_tensors = load_file(str(path / "model.safetensors"))
     optimizer_tensors = load_file(str(path / "optimizer.safetensors"))
     rng_tensors = load_file(str(path / "rng.safetensors"))
@@ -166,7 +210,7 @@ def load_checkpoint(path: Path) -> dict[str, Any]:
         rng_tensors[f"torch_cuda_rng_{index}"] for index in range(cuda_rng_count)
     ]
     metadata["_torch"] = torch
-    return cast(dict[str, Any], metadata)
+    return metadata
 
 
 def verify_checkpoint(
@@ -191,7 +235,42 @@ def verify_checkpoint(
     step = int(checkpoint["step"])
     if step < 0:
         raise ValueError("checkpoint step is invalid")
+    if len(checkpoint["losses"]) != step:
+        raise ValueError("checkpoint losses do not match completed steps")
+    configured_steps = int(config["steps"])
+    if step > configured_steps:
+        raise ValueError("checkpoint step exceeds configured smoke length")
     return step
+
+
+def verify_resume_request(
+    output_dir: Path,
+    resume_from: Path,
+    *,
+    config: dict[str, Any],
+    model_revision: str,
+    data_sha256: str,
+    asset_hashes: dict[str, str],
+    order: list[int],
+) -> dict[str, Any]:
+    checkpoint_root = (output_dir / "checkpoints").resolve()
+    if not resume_from.resolve().is_relative_to(checkpoint_root):
+        raise ValueError("resume checkpoint must be inside output-dir/checkpoints")
+    if not output_dir.is_dir():
+        raise ValueError("resume requires an existing output directory")
+    checkpoint = load_checkpoint_metadata(resume_from)
+    step = verify_checkpoint(
+        checkpoint,
+        config=config,
+        model_revision=model_revision,
+        data_sha256=data_sha256,
+        asset_hashes=asset_hashes,
+        order=order,
+    )
+    latest = latest_checkpoint_step(output_dir)
+    if latest is not None and step < latest:
+        raise ValueError("resume checkpoint is older than the latest checkpoint")
+    return checkpoint
 
 
 def restore_checkpoint(model: Any, optimizer: Any, checkpoint: dict[str, Any]) -> None:
