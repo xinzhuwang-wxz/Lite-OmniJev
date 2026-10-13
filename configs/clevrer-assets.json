@@ -1,0 +1,149 @@
+{
+  "admission_state": "downloaded_verified_not_integrated",
+  "asset_id": "clevrer",
+  "created_at": "2026-10-13T21:20:00Z",
+  "files": [
+    {
+      "actual_bytes": 12354893389,
+      "content_type": "application/zip",
+      "etag": "\"2e068b64d-59db378b1c46e\"",
+      "expected_bytes": 12354893389,
+      "last_modified": "Mon, 03 Feb 2020 22:30:33 GMT",
+      "local_sha256": "c7401bc86f7ff230bda3b193619f41a79828bed1f0890948b16dd57c89dfdd3f",
+      "relative_path": "videos/train/video_train.zip",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/videos/train/video_train.zip",
+      "source_url": "https://data.csail.mit.edu/clevrer/videos/train/video_train.zip",
+      "zip_crc_check": "pass"
+    },
+    {
+      "actual_bytes": 156761889,
+      "content_type": "application/zip",
+      "etag": "\"957ff21-59db3309a63ea\"",
+      "expected_bytes": 156761889,
+      "last_modified": "Mon, 03 Feb 2020 22:10:23 GMT",
+      "local_sha256": "e7f9185ad3dde8139b839b00f0f75483374dd0325a3cbec2dac882078497784c",
+      "relative_path": "annotations/train/annotation_train.zip",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/annotations/train/annotation_train.zip",
+      "source_url": "https://data.csail.mit.edu/clevrer/annotations/train/annotation_train.zip",
+      "zip_crc_check": "pass"
+    },
+    {
+      "actual_bytes": 86651938,
+      "content_type": "application/json",
+      "etag": "\"52a3422-5a84144633347\"",
+      "expected_bytes": 86651938,
+      "last_modified": "Wed, 17 Jun 2020 05:52:37 GMT",
+      "local_sha256": "11181da673d223f41fb596aacfbbd3ff83d39af7f09a3210549e98cb283714b4",
+      "relative_path": "questions/train.json",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/questions/train.json",
+      "source_url": "https://data.csail.mit.edu/clevrer/questions/train.json",
+      "zip_crc_check": "not_zip"
+    },
+    {
+      "actual_bytes": 6206059321,
+      "content_type": "application/zip",
+      "etag": "\"171e8f339-59db35a74239f\"",
+      "expected_bytes": 6206059321,
+      "last_modified": "Mon, 03 Feb 2020 22:22:05 GMT",
+      "local_sha256": "07f6d48bd708c80428684fcf17a7874f6c01fbb82a59b2f79ede199a63db7aae",
+      "relative_path": "videos/validation/video_validation.zip",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/videos/validation/video_validation.zip",
+      "source_url": "https://data.csail.mit.edu/clevrer/videos/validation/video_validation.zip",
+      "zip_crc_check": "pass"
+    },
+    {
+      "actual_bytes": 78386966,
+      "content_type": "application/zip",
+      "etag": "\"4ac1716-59db32f8d9b92\"",
+      "expected_bytes": 78386966,
+      "last_modified": "Mon, 03 Feb 2020 22:10:06 GMT",
+      "local_sha256": "d89e74714dff7a1117fd113b54af99fbbc51583ebd742c788c484d708eb426d2",
+      "relative_path": "annotations/validation/annotation_validation.zip",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/annotations/validation/annotation_validation.zip",
+      "source_url": "https://data.csail.mit.edu/clevrer/annotations/validation/annotation_validation.zip",
+      "zip_crc_check": "pass"
+    },
+    {
+      "actual_bytes": 43327533,
+      "content_type": "application/json",
+      "etag": "\"295202d-5a84144719eff\"",
+      "expected_bytes": 43327533,
+      "last_modified": "Wed, 17 Jun 2020 05:52:38 GMT",
+      "local_sha256": "fdf841678a476655b906165e6ee4b0ed1516785c5ab927c8d0a4614e4e27e10d",
+      "relative_path": "questions/validation.json",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/questions/validation.json",
+      "source_url": "https://data.csail.mit.edu/clevrer/questions/validation.json",
+      "zip_crc_check": "not_zip"
+    },
+    {
+      "actual_bytes": 6149404859,
+      "content_type": "application/zip",
+      "etag": "\"16e8878bb-59db35c8bc5aa\"",
+      "expected_bytes": 6149404859,
+      "last_modified": "Mon, 03 Feb 2020 22:22:40 GMT",
+      "local_sha256": "37b8900f5d01e5dc477747af31b1985b2c849b3e5bf9dacb11e2908811a94aab",
+      "relative_path": "videos/test/video_test.zip",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/videos/test/video_test.zip",
+      "source_url": "https://data.csail.mit.edu/clevrer/videos/test/video_test.zip",
+      "zip_crc_check": "pass"
+    },
+    {
+      "actual_bytes": 17649911,
+      "content_type": "application/json",
+      "etag": "\"10d50f7-5a841444c00b9\"",
+      "expected_bytes": 17649911,
+      "last_modified": "Wed, 17 Jun 2020 05:52:35 GMT",
+      "local_sha256": "551716ab736a956dbde17dd0df5e2defdccc580f8f1b78df972fe30e0e074a24",
+      "relative_path": "questions/test.json",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/questions/test.json",
+      "source_url": "https://data.csail.mit.edu/clevrer/questions/test.json",
+      "zip_crc_check": "not_zip"
+    },
+    {
+      "actual_bytes": 396807825,
+      "content_type": "application/zip",
+      "etag": "\"17a6ce91-5a050aa8694e8\"",
+      "expected_bytes": 396807825,
+      "last_modified": "Sun, 08 Mar 2020 04:53:22 GMT",
+      "local_sha256": "68ea4785f73ed23e5b84a8b17da2c1da47429ddaed9407c5ad949af08683b7f3",
+      "relative_path": "derender_proposals.zip",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/derender_proposals.zip",
+      "source_url": "https://data.csail.mit.edu/clevrer/derender_proposals.zip",
+      "zip_crc_check": "pass"
+    },
+    {
+      "actual_bytes": 4425,
+      "content_type": "text/plain",
+      "etag": "\"1149-59fbc583554bf\"",
+      "expected_bytes": 4425,
+      "last_modified": "Sat, 29 Feb 2020 19:56:06 GMT",
+      "local_sha256": "a4838cc68b79ba049b54f95def1714cdbbd1380193d7d2a5d1a85440ac862e7b",
+      "relative_path": "README.txt",
+      "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/files/README.txt",
+      "source_url": "https://data.csail.mit.edu/clevrer/README.txt",
+      "zip_crc_check": "not_zip"
+    }
+  ],
+  "license": "CC0 per official README.txt",
+  "logs": {
+    "derender_range_log": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/logs/derender-range-recovery.log",
+    "derender_range_log_sha256": "3519d4948e9edb91f9781c63da8653d756e1841bd6c5c067dc5a42a8aedf8e22",
+    "download_status_log": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/status.log",
+    "download_status_log_sha256": "2d89ea9c7b3bead2bcc2437df8d0dc8259d69cc829ec904aa357679f639efbe2",
+    "sha256_checks": "local SHA256 computed for every downloaded file; no upstream SHA256 exists to compare",
+    "size_checks": "all files match official HTTPS Content-Length",
+    "zip_crc_log": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official/logs/full-zipcrc-20261013T2108Z.log",
+    "zip_crc_log_sha256": "60f6c05bbcd8d3acae0d181f347ae74ecd929015c6abe3747819d5ab91573825",
+    "zip_crc_result": "FULL_ZIPCRC_OK for train/validation/test videos, train/validation annotations, and derender_proposals.zip"
+  },
+  "policy": {
+    "archives_extracted": false,
+    "can_use_as_training_source_without_root_integration": false,
+    "hidden_or_private_answers_included": false,
+    "transport": "https",
+    "upstream_sha256_available": false
+  },
+  "purpose": "Official CLEVRER offline source material prepared for pre-GPU dependency readiness.",
+  "remote_root": "/root/autodl-tmp/lite-omnijev/source-audit/clevrer-official",
+  "schema_version": "1.0"
+}
