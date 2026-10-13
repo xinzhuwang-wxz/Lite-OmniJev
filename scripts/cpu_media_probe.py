@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import math
 import subprocess
@@ -72,7 +73,9 @@ def hash_model_files(model_dir: Path) -> dict[str, dict[str, int | str]]:
 
 def make_canaries(work_dir: Path) -> dict[str, Any]:
     import numpy as np
-    from PIL import Image, ImageDraw
+
+    Image = importlib.import_module("PIL.Image")
+    ImageDraw = importlib.import_module("PIL.ImageDraw")
 
     work_dir.mkdir(parents=True, exist_ok=True)
     image_path = work_dir / "canary-image.png"
@@ -224,8 +227,8 @@ def answer_boundary_bindings(adapter: OfficialTokenizerAdapter, prompt: str) -> 
 
 
 def probe(model_dir: Path, work_dir: Path) -> dict[str, Any]:
-    import transformers
-    from transformers import AutoProcessor
+    transformers = importlib.import_module("transformers")
+    AutoProcessor = transformers.AutoProcessor
 
     script_path = Path(__file__) if "__file__" in globals() else Path("scripts/cpu_media_probe.py")
     model_hashes = hash_model_files(model_dir)

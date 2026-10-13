@@ -590,6 +590,33 @@
       "destination": "artifacts/models/Qwen__Qwen3.5-2B/15852e8c16360a2fea060d615a32b45270f8a8fc/model.safetensors-00001-of-00001.safetensors",
       "status": "hash_verified",
       "sha256": "aa33250c4fc64891ddfaba3a314fd9542ea371843c387178b425fbcc5ed680b1"
+    },
+    {
+      "repo_id": "OmniJev/OneJev-27B",
+      "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+      "path": "model-00002-of-00002.safetensors",
+      "bytes": 4888445168,
+      "destination": "artifacts/models/OmniJev__OneJev-27B/aec969d68e7e8e8b0df051e065c04304c0cd7163/model-00002-of-00002.safetensors",
+      "status": "hash_verified",
+      "sha256": "0b7965a42ac559929caa525a4538b9e0f469ff6e582b5839c54cd669c73800ef"
+    },
+    {
+      "repo_id": "OmniJev/OneJev-4B",
+      "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+      "path": "model.safetensors",
+      "bytes": 10350019328,
+      "destination": "artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588/model.safetensors",
+      "status": "hash_verified",
+      "sha256": "c725978346bb87ff598b04b6ffe7ea89461368e9b20a0081a3c6a85d377c8f91"
+    },
+    {
+      "repo_id": "google/gemma-4-E4B-it",
+      "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+      "path": "model.safetensors",
+      "bytes": 15992595884,
+      "destination": "artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2/model.safetensors",
+      "status": "hash_verified",
+      "sha256": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503"
     }
   ],
   "failures": []

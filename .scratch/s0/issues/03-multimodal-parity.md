@@ -4,9 +4,9 @@ ID: s0:03
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: offline-runtime
+Worktree: /tmp/lite-omnijev-offline-runtime
 Blocked by: p0:04
 
 ## What to build
