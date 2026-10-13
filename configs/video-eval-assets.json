@@ -25,7 +25,7 @@
     "public_questions": 1000,
     "github_metadata_revision": "110127f54c0dfba3faa5ec9feee4a7e4148679c5",
     "public_id_list_sha256": "7871611423023cdb8c908a76ce433a72a830eb5f11d286bbd7b5b2b1b549c142",
-    "staging_status": "remote_download_running",
+    "staging_status": "download_hash_verified_research_eval_only",
     "training_admitted": false,
     "commercial_release_admitted": false,
     "teacher_dataset_version_status": "Teacher card does not pin dataset revision; compare 1000 row IDs/questions before claiming matched reproduction"
@@ -267,21 +267,25 @@
         "bytes": 1350969357,
         "sha256": "d6ef954652c2a1b48fb772d52c97da35dc7f8b54e5bdf4b43ba4f773ed726723",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/FunQA_test.zip",
-        "staging": "approved_research_eval_only"
+        "staging": "approved_research_eval_only",
+        "download_status": "serial_queue_running_pid_9338"
       },
       {
         "path": "video/Moments_in_Time_Raw.zip",
         "bytes": 67108520,
         "sha256": "16add0d03cbb7c6b76974551879f7dc8a7ce985b89699a2231136b81d3ba9967",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/Moments_in_Time_Raw.zip",
-        "staging": "pending_original_source_rights"
+        "staging": "blocked_official_download_form_terms_not_accepted",
+        "source_url": "http://moments.csail.mit.edu/"
       },
       {
         "path": "video/clevrer.zip",
         "bytes": 1123944836,
         "sha256": "9040ad663440611bd8580fc0fc3da31bd1a4bfef877631db7b570a7d7d41de1c",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/clevrer.zip",
-        "staging": "pending_original_source_rights"
+        "staging": "blocked_no_explicit_original_media_license_found",
+        "source_repo": "chuangg/CLEVRER",
+        "source_revision": "98b842082ba4f7c18b6b9e3f39145871782a65ef"
       },
       {
         "path": "video/data0613.zip",
@@ -295,49 +299,63 @@
         "bytes": 11199611859,
         "sha256": "98fc197a90c875fb24f34fe89cb91e2788e1e7ac2459bf860ed62d9f07104b34",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/perception.zip",
-        "staging": "approved_research_eval_only"
+        "staging": "approved_research_eval_only",
+        "download_status": "serial_queue_running_pid_9338"
       },
       {
         "path": "video/scene_qa.zip",
         "bytes": 525972733,
         "sha256": "26b3dc385e5a8f7b8fd9aab32a3522488fdfe7bbe06f0d98206d43647c77cce9",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/scene_qa.zip",
-        "staging": "pending_original_source_rights"
+        "staging": "blocked_source_version_and_media_terms_unresolved",
+        "source_note": "arxiv2311.17005v2 says MovieNet; published PDF excerpt says MoVQA; resolve against pinned archive IDs"
       },
       {
         "path": "video/ssv2_video.zip",
         "bytes": 16819261,
         "sha256": "8493fe3762bdc205b587c4d02e016f9ccbb314b523ed0bf2c5bdbe367456d1e9",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/ssv2_video.zip",
-        "staging": "pending_original_source_rights"
+        "staging": "blocked_qualcomm_research_agreement_not_accepted",
+        "source_url": "https://www.qualcomm.com/developer/software/something-something-v-2-dataset"
       },
       {
         "path": "video/sta.zip",
         "bytes": 1085038855,
         "sha256": "4c27cbf62bbc1b0217b5183871f298e7a76b2a498dd4482365c617f25338de9a",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/sta.zip",
-        "staging": "pending_original_source_rights"
+        "staging": "approved_internal_evaluation_only_no_redistribution",
+        "source_repo": "jiyanggao/TALL",
+        "source_revision": "3df6794af1482f5b3d48022bc05e5a4ecfae0e5d",
+        "media_license_url": "https://prior.allenai.org/projects/data/charades/license.txt",
+        "download_status": "running_pid_10304_curl_10305"
       },
       {
         "path": "video/star.zip",
         "bytes": 727887646,
         "sha256": "bdb5f192a98f78e79e51da6ae801f8ba79d1d09c0d8c19b6e63105251cb17585",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/star.zip",
-        "staging": "approved_internal_evaluation_only_no_redistribution"
+        "staging": "approved_internal_evaluation_only_no_redistribution",
+        "download_status": "hash_verified_internal_eval_only"
       },
       {
         "path": "video/tvqa.zip",
         "bytes": 1147595693,
         "sha256": "6c5bccf237164286123a7afcc1bd7e8323487d7f2fd0dc5f43609a34064f5d73",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/tvqa.zip",
-        "staging": "pending_original_source_rights"
+        "staging": "blocked_original_frame_signed_form_no_sharing",
+        "source_repo": "jayleicn/TVQA",
+        "source_revision": "dfb0e5fe4582efca574dfddfeafd1008db3b33ef",
+        "original_access_url": "https://nlp.cs.unc.edu/data/jielei/tvqa/tvqa_public_html/download_tvqa.html"
       },
       {
         "path": "video/vlnqa.zip",
         "bytes": 40331555,
         "sha256": "578f9edf2973560ac0d79990d9a2961ccae8edcdb1cb0be2c3bf15045f04428a",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/vlnqa.zip",
-        "staging": "pending_original_source_rights"
+        "staging": "blocked_matterport_academic_eligibility_and_agreement",
+        "source_repo": "jacobkrantz/VLN-CE",
+        "source_revision": "729d141b2ee10628061ada74dd3a5b9f70faeba5",
+        "media_license": "CC-BY-NC-SA-3.0-US plus Matterport3D Terms"
       }
     ],
     "archives_total_bytes": 17328579712,
@@ -388,5 +406,32 @@
     "No JEV proprietary weights/API/labels used",
     "MMAU test-mini official public answers only",
     "No GPU, paid services, form acceptance, external publication"
-  ]
+  ],
+  "nextqa_source_supplement": {
+    "repo": "doc-doc/NExT-QA",
+    "revision": "2432e9724f88ed9f40010e2989f104570a91de4e",
+    "repo_license": "MIT",
+    "media_source": "VidOR from YFCC100M; original per-video Flickr Creative Commons terms still need original license metadata mapping",
+    "public_metadata": {
+      "train.csv": {
+        "bytes": 5578444,
+        "sha256": "51ae6e611fa58835f63a0beb325fe647bb197c7e320a31f0bb7a9cf969e082b2",
+        "rows": 34132,
+        "video_families": 3870
+      },
+      "val.csv": {
+        "bytes": 814107,
+        "sha256": "43198bdef8436b8d64a9b75d846b0987c10cbf94ebf4be325c4a4e54634d66b8",
+        "rows": 4996,
+        "video_families": 570
+      },
+      "map_vid_vidorID.json": {
+        "bytes": 331540,
+        "sha256": "1955d89e7a175346faf8d4a582297ff349619231394f59fd7872f459ac8a8685"
+      }
+    },
+    "raw_media_staging": "pending_original_per_video_license_mapping_and_bulk_budget",
+    "training_admitted": false,
+    "commercial_release_admitted": false
+  }
 }
