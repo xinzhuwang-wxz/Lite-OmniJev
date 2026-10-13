@@ -502,29 +502,44 @@
       "asset_id": "gui-odyssey",
       "name": "GUI-Odyssey",
       "category": "stage_2_training_source",
-      "modalities": ["screenshot", "gui", "android"],
-      "required_stages": [2],
+      "modalities": [
+        "screenshot",
+        "gui",
+        "android"
+      ],
+      "required_stages": [
+        2
+      ],
       "official_source": {
         "type": "github_and_hf_dataset",
         "repo": "OpenGVLab/GUI-Odyssey",
         "revision": "5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251",
         "hf_repo_id": "hflqf88888/GUIOdyssey",
-        "url": "https://github.com/OpenGVLab/GUI-Odyssey"
+        "url": "https://github.com/OpenGVLab/GUI-Odyssey",
+        "hf_revision": "61632d0f3f4d51d7e9561ce4f84347dd06b2019d"
       },
-      "license": {"declared": "not declared in GitHub API; HF derivative lists other and defers to original"},
+      "license": {
+        "declared": "CC-BY-4.0 on original HF dataset README/card",
+        "evidence": "configs/stage3-source-audit.json; no GitHub LICENSE does not negate explicit dataset license"
+      },
       "file_metadata": {
-        "status": "original_hf_unauthorized_in_current_context; derivative metadata only",
+        "status": "original_hf_public_ungated_cc_by_4_verified_no_bulk_media_yet",
         "derivative_repo_id": "cua-lite/GUIOdyssey",
         "derivative_rows": 267054,
         "derivative_total_file_size": "187 GB",
         "derivative_image_store_size": "92.16 GB",
-        "official_stats": {"episodes": 8834, "apps": 212}
+        "official_stats": {
+          "episodes": 8834,
+          "apps": 212
+        }
       },
       "label_origin": "Human cross-app GUI demonstrations and descriptions.",
-      "media_availability": "Original HF dataset requires access; derivative exists but does not solve original license/terms.",
+      "media_availability": "Original fixed HF source currently public and ungated; prepare all_annot/episode manifest then selected media within root-approved 20GB raw budget.",
       "public_sampling_plan": "Part of stage 2 GUI tranche after access/license; split by official app/device/random/task splits, never by individual row only.",
-      "admission_status": "account_or_form_blocked",
-      "next_commands": ["Request/confirm HF access and license terms for hflqf88888/GUIOdyssey; do not use derivative as license bypass."]
+      "admission_status": "downloadable_with_root_coordination",
+      "next_commands": [
+        "Do not preserve obsolete account-blocked claim from earlier unauthorized response; verify exact fixed revision and public availability, preserve CC-BY attribution, split by episode/source family; training admission remains separate."
+      ]
     },
     {
       "asset_id": "playwright-synthetic-pages",
@@ -599,19 +614,38 @@
       "asset_id": "clevrer",
       "name": "CLEVRER",
       "category": "stage_3_training_source",
-      "modalities": ["video", "text"],
-      "required_stages": [3],
-      "official_source": {"type": "project_page", "url": "https://clevrer.csail.mit.edu/"},
-      "license": {"declared": "not stated on inspected project page"},
+      "modalities": [
+        "video",
+        "text"
+      ],
+      "required_stages": [
+        3
+      ],
+      "official_source": {
+        "type": "project_page",
+        "url": "https://clevrer.csail.mit.edu/"
+      },
+      "license": {
+        "declared": "CC0-1.0",
+        "evidence": "Official README.txt; configs/stage3-source-audit.json; reports/stage3-source-metadata-verification.json"
+      },
       "file_metadata": {
-        "status": "official_page_lists_downloads_no_bytes_captured",
-        "splits": ["training videos/annotations/questions/answers", "validation videos/annotations/questions/answers", "testing videos/questions", "object masks/attributes"]
+        "status": "official_head_bytes_and_cc0_verified_payload_staging_approved_not_complete",
+        "splits": [
+          "training videos/annotations/questions/answers",
+          "validation videos/annotations/questions/answers",
+          "testing videos/questions",
+          "object masks/attributes"
+        ],
+        "official_payload_bytes": 25489948056
       },
       "label_origin": "Original synthetic physical reasoning labels.",
       "media_availability": "Official project page exposes download categories; license/bytes/hash must be recorded before use.",
       "public_sampling_plan": "Part of stage 3 video tranche; split by official video id and preserve synthetic family boundaries.",
-      "admission_status": "license_blocked",
-      "next_commands": ["Fetch headers or manifest for official download links without downloading payload; capture bytes and terms."]
+      "admission_status": "downloadable_with_root_coordination",
+      "next_commands": [
+        "Stage fixed official download-heads manifest within root-approved 27GB budget; record local SHA256 and upstream hash availability separately; check ZIP safely before publication."
+      ]
     },
     {
       "asset_id": "perception-test",

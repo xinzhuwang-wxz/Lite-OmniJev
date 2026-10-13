@@ -45,11 +45,11 @@
 
 ## 并行所有权
 - offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；官方llama.cpp预编译、Ollama1.427GB、quant独立完整依赖≤20GB、LiteRT/JDK准备；13直接轮子不算完整闭包。
-- whole_project_datasets：/tmp/lite-omnijev-project-datasets；阶段2剩余明确许可原料，≤10GB，复用已有图。
+- whole_project_datasets：/tmp/lite-omnijev-project-datasets；阶段2剩余明确许可原料，≤10GB，复用已有图；GUIOdyssey实证官方公开ungated CC-BY4，旧账号blocked已纠正，另批准<=20GB选定episode原料准备，先精确清单，不下全187GB。
 - video_eval_sources：/tmp/lite-omnijev-video-eval；Perception004外部有界续传；Charades缺12视频选择性恢复已验收，bae5338合入58588c6，原3条窗口越界保留；CPU恢复切片20定向测试/Ruff/mypy/build通过。
 - decision_index_assets：/tmp/lite-omnijev-decision-index；e99910a已合入8d8f164、47914bd合入d2e7512；retry队列17457补非门禁网络失败来源，≤10GB，不读pickle、不绕过HLE。
 - mdc_transport_fix：MDC闭环已整合并独立复核，过期worktree已清理；同一executor的独立非阻断offline-prep:05已交付合入746c534，主树273测试全部通过，不升级远端GPU环境。
-- teacher_head_conversion：Valen闭环已交付；新 /tmp/lite-omnijev-stage3-source-audit 负责NExTQA/CLEVRER/LLaVA/VGGSound/AudioCaps/GUI-Odyssey官方小原料/许可查明，≤50MB，不下载原视频或接受条款。
+- teacher_head_conversion：阶段3审计7267a5e已合入e549ca1，35官方小原料36.2MB远端校验；CLEVRER官方CC0确认，继续同worktree挂官方25.49GB来源队列（root<=27GB），不接受条款/读取隐藏答案。
 - speech_assets已交付；所有切片主会话统一整合/关票。root独占主树、票据、STATUS；子代理不得写这些文件。
 
 ## 待我决策
@@ -60,7 +60,8 @@
 ## 下一步与验证
 1. 完成在途模型/数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。
 2. MDC原4项及DNS pin发现全部关闭，reports/mdc-download-security-closure.json；授权后安全接入，不对外声称凭据下载已实跑。
-3. 完成全项目offline-prep:04审计，未来LoRA/量化/校准产物仅列待生成；全齐备前不开GPU。
-- 最近完整批次pytest9.1.1下273测试无skip、Ruff/format167文件、mypy44源文件、wheel/sdist通过（显式专用媒体runtime）；MDC独立安全32测试通过/1 torch测试按范围排除。
+3. CLEVRER/GUI原未知状态已由官方证据解除，执行新批准的限定镜像；LLaVA全量1.28TB仍禁止，5k所选原媒体权利需逐项确认；AudioCaps原音频需官方表单。
+4. 完成全项目offline-prep:04审计，未来LoRA/量化/校准产物仅列待生成；全齐备前不开GPU。
+- 最近完整批次pytest9.1.1下273测试无skip、Ruff/format167文件、mypy44源文件、wheel/sdist通过（显式专用媒体runtime）；MDC独立安全32测试通过/1 torch测试按范围排除；新增STAR恢复20定向测试、169文件格式、mypy45/build通过。
 - 不push、不建远端issue/PR、不轮询gh；只本地提交/SSH同步，保留缓存与约561MiB P0备份。
 - 循环见plan/LOOP.md；native goal当前工具返回blocked（旧状态），用户已重新要求继续无卡准备，仍按原终局推进；工具不提供agent恢复接口，不能虚称active/complete。
