@@ -2712,5 +2712,56 @@
     "metadata_resume": "huggingface-cli download hflqf88888/GUIOdyssey --revision 61632d0f3f4d51d7e9561ce4f84347dd06b2019d --include all_annot.json splits/*.json --local-dir artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core",
     "selected_annotation_files": "Use reports/gui-odyssey-metadata-verification.json selected_episode_manifest.exact_episode_files to download annotations/<episode>.json only if full per-step annotations are needed.",
     "full_screenshot_archive_if_capacity_approved": "huggingface-cli download hflqf88888/GUIOdyssey --revision 61632d0f3f4d51d7e9561ce4f84347dd06b2019d --include screenshots/* --local-dir <approved-persistent-gui-media-root>"
+  },
+  "zip64_range_probe": {
+    "status": "selective_member_recovery_feasible",
+    "archive_format": "ZIP64 split archive / multipart zip, not tar/7z/gzip",
+    "part_files": [
+      "screenshots/screenshots.z01",
+      "screenshots/screenshots.z02",
+      "screenshots/screenshots.z03",
+      "screenshots/screenshots.z04",
+      "screenshots/screenshots.z05",
+      "screenshots/screenshots.z06",
+      "screenshots/screenshots.z07",
+      "screenshots/screenshots.z08",
+      "screenshots/screenshots.zip"
+    ],
+    "zip64_eocd_disk": 8,
+    "central_directory_disk": 8,
+    "central_directory_offset_in_final_part": 6725921680,
+    "central_directory_bytes": 14242739,
+    "central_directory_sha256": "866804191c030a8f2de9844ae36bf5edc1c05021f4700282156c44f6a60e14d9",
+    "range_probe_downloaded_bytes_bound": "<=50MB total probing; materialized central manifest with a 14,242,739-byte final-part range after EOCD layout proof",
+    "member_naming": "screenshots/<episode_id>_<step>.png",
+    "entry_count": 127894,
+    "screenshot_entry_count": 127893
+  },
+  "official_eval_manifest": {
+    "source_split": "splits/app_split.json:test",
+    "role": "eval_only_candidate_not_training",
+    "episode_count": 1169,
+    "compressed_bytes": 11993498013,
+    "uncompressed_bytes": 12290101987,
+    "plan_path": "artifacts/data/quarantine/gui-odyssey-source-audit/app-split-test-eval-plan.json"
+  },
+  "training_media_candidate": {
+    "tranche_id": "gui_odyssey_app_split_train_media_under19_5gb_v1",
+    "source_split": "splits/app_split.json:train",
+    "budget_field": "uncompressed_bytes",
+    "budget_bytes": 19500000000,
+    "candidate_episode_count": 7165,
+    "candidate_uncompressed_bytes": 82489807684,
+    "candidate_compressed_bytes": 80619955896,
+    "selected_episode_count": 1679,
+    "selected_uncompressed_bytes": 19499790993,
+    "selected_compressed_bytes": 19066700692,
+    "plan_path": "artifacts/data/quarantine/gui-odyssey-source-audit/app-split-train-media-plan-under-19_5gb.json",
+    "official_family_boundary": "app_split train partition; whole episode_id units only; no official test episodes used for training media",
+    "remote_output_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
+    "remote_report": "/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json",
+    "remote_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch.log",
+    "queued_pid": 23798,
+    "status": "queued_behind_cpu_lock_at_update_time"
   }
 }

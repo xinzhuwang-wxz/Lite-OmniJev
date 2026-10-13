@@ -5,8 +5,8 @@
   "quarantine_root": "artifacts/data/quarantine/gui-odyssey-source-audit",
   "report": {
     "path": "reports/gui-odyssey-metadata-verification.json",
-    "bytes": 77594,
-    "sha256": "75ca4b8b1e9a7c7b6b251eed66a751f2d8892bd606ad78bd8656c36cfee0713b"
+    "bytes": 80193,
+    "sha256": "f41ead22b746a05f0a7e2a5ee01d3e79a1fa779bcec3bbd423110f76d23638a8"
   },
   "policy": {
     "gpu_used": false,
@@ -14,7 +14,7 @@
     "training_admission": "not_granted_by_this_file",
     "release_admission": "not_granted_by_this_file",
     "account_terms_policy": "No account login, gated terms, or form acceptance was used. The pinned HF API metadata reports gated=false and private=false.",
-    "media_download_status": "pixel_media_not_downloaded; full multipart screenshot archive exceeds the approved 20GB GUI slice cap and the HF file tree has no per-episode screenshot files."
+    "media_download_status": "selective ZIP64 range recovery is feasible; app_split train media extraction is queued under the CPU lock for 1,679 whole train episodes within the 20GB actual PNG-byte cap"
   },
   "source": {
     "id": "gui-odyssey",
@@ -93,6 +93,26 @@
         "path": "artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core/splits/task_split.json",
         "bytes": 275065,
         "sha256": "fb16a764ace673316073bd92c87c6bb97d0062d9d09f3171147f066c2cfe51f5"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/central-directory-manifest-report.json",
+        "bytes": 572,
+        "sha256": "c9c9d68eddcd25921a35a9dcbc7962b848308afae3ee224dffbec3a0bedec0a3"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/central-directory-manifest.jsonl",
+        "bytes": 24213251,
+        "sha256": "94516edabd36183777bcb98e750753258ecaeb01fa1a4dd16294e3b8cc48315b"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/app-split-test-eval-plan.json",
+        "bytes": 340045,
+        "sha256": "1ac75f5d60e4015cb90d288bd34ae0bc5e973d0907e3dbd454e27c139ce9533f"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/app-split-train-media-plan-under-19_5gb.json",
+        "bytes": 490161,
+        "sha256": "661a56214ee442ae0c694b21c41b374fc02dad0ea1a962bb8d9638b3d393c0c4"
       }
     ],
     "hf_file_manifest": {
@@ -146,7 +166,9 @@
       "head_checked_all_annot_and_split_bytes": 3962363,
       "full_screenshot_archive_bytes": 92639510437,
       "full_core_plus_screenshot_bytes": 92643472800,
-      "full_screenshot_archive_exceeds_gui_budget": true
+      "full_screenshot_archive_exceeds_gui_budget": true,
+      "app_split_test_eval_uncompressed_bytes": 12290101987,
+      "app_split_train_selected_uncompressed_bytes": 19499790993
     },
     "selected_episode_manifest": {
       "tranche_id": "gui_odyssey_app_split_test_v1",
@@ -154,8 +176,52 @@
       "episode_count": 1169,
       "estimated_pixel_bytes_by_full_archive_average": 12994430970,
       "exact_episode_list_location": "reports/gui-odyssey-metadata-verification.json#/selected_episode_manifest/exact_episode_files",
-      "media_fetchability": "not_directly_fetchable_by_episode_from_current_hf_tree; screenshots are only exposed as a multipart archive"
+      "media_fetchability": "not_directly_fetchable_by_episode_from_current_hf_tree; screenshots are only exposed as a multipart archive",
+      "role": "eval_only_candidate_not_training"
     },
-    "source_family_boundary": "Use official episode_id and official app/device/random/task split files. Do not split by individual step or screenshot row."
+    "source_family_boundary": "Use official episode_id and official app/device/random/task split files. Do not split by individual step or screenshot row.",
+    "zip64_range_probe": {
+      "status": "selective_member_recovery_feasible",
+      "archive_format": "ZIP64 split archive / multipart zip, not tar/7z/gzip",
+      "part_files": [
+        "screenshots/screenshots.z01",
+        "screenshots/screenshots.z02",
+        "screenshots/screenshots.z03",
+        "screenshots/screenshots.z04",
+        "screenshots/screenshots.z05",
+        "screenshots/screenshots.z06",
+        "screenshots/screenshots.z07",
+        "screenshots/screenshots.z08",
+        "screenshots/screenshots.zip"
+      ],
+      "zip64_eocd_disk": 8,
+      "central_directory_disk": 8,
+      "central_directory_offset_in_final_part": 6725921680,
+      "central_directory_bytes": 14242739,
+      "central_directory_sha256": "866804191c030a8f2de9844ae36bf5edc1c05021f4700282156c44f6a60e14d9",
+      "range_probe_downloaded_bytes_bound": "<=50MB total probing; materialized central manifest with a 14,242,739-byte final-part range after EOCD layout proof",
+      "member_naming": "screenshots/<episode_id>_<step>.png",
+      "entry_count": 127894,
+      "screenshot_entry_count": 127893
+    },
+    "training_media_candidate": {
+      "tranche_id": "gui_odyssey_app_split_train_media_under19_5gb_v1",
+      "source_split": "splits/app_split.json:train",
+      "budget_field": "uncompressed_bytes",
+      "budget_bytes": 19500000000,
+      "candidate_episode_count": 7165,
+      "candidate_uncompressed_bytes": 82489807684,
+      "candidate_compressed_bytes": 80619955896,
+      "selected_episode_count": 1679,
+      "selected_uncompressed_bytes": 19499790993,
+      "selected_compressed_bytes": 19066700692,
+      "plan_path": "artifacts/data/quarantine/gui-odyssey-source-audit/app-split-train-media-plan-under-19_5gb.json",
+      "official_family_boundary": "app_split train partition; whole episode_id units only; no official test episodes used for training media",
+      "remote_output_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
+      "remote_report": "/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json",
+      "remote_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch.log",
+      "queued_pid": 23798,
+      "status": "queued_behind_cpu_lock_at_update_time"
+    }
   }
 }

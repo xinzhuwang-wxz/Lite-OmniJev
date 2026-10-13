@@ -71,3 +71,29 @@ If only per-episode annotation JSONs are needed, use the exact `selected_episode
 ## Stop condition
 
 GUI-Odyssey is no longer account-blocked on current public HF metadata. The source audit has a pinned official revision, license evidence, core metadata hashes, official split hashes, exact selected episode list, and a concrete media capacity blocker. No GUI-Odyssey screenshot media is downloaded or admitted for training/release by this report.
+
+## ZIP64 range feasibility checkpoint
+
+A bounded HTTP Range probe confirmed the screenshot payload is a ZIP64 split archive, not tar/gzip/7z. The final `screenshots.zip` part contains the ZIP64 EOCD and the central directory. The central directory is range-readable at byte offset `6725921680` inside `screenshots/screenshots.zip`, is 14,242,739 bytes, and has SHA-256 `866804191c030a8f2de9844ae36bf5edc1c05021f4700282156c44f6a60e14d9`.
+
+The parsed central directory has 127,894 entries, including 127,893 screenshot PNG members. Member names use `screenshots/<episode_id>_<step>.png`, so selective recovery by episode is feasible with HTTP Range reads of each member's local header and compressed data. The materialized manifest is `artifacts/data/quarantine/gui-odyssey-source-audit/central-directory-manifest.jsonl`, 24,213,251 bytes, SHA-256 `94516edabd36183777bcb98e750753258ecaeb01fa1a4dd16294e3b8cc48315b`.
+
+The helper [`scripts/gui_odyssey_media.py`](../../scripts/gui_odyssey_media.py) implements the bounded range reader, ZIP central-directory parser, whole-episode planner, and selective extractor. Focused tests are in [`tests/test_gui_odyssey_media.py`](../../tests/test_gui_odyssey_media.py).
+
+## Train/eval media plans
+
+The official `app_split:test` manifest remains evaluation-only. It contains 1,169 whole episodes, 11,993,498,013 compressed ZIP-member bytes, and 12,290,101,987 extracted PNG bytes. It is not used as a training-preparation manifest.
+
+The frozen training-media candidate uses only `app_split:train`, keeps whole `episode_id` units, and does not cross into official test episodes. It selects 1,679 train episodes by lexical `episode_id` order while keeping extracted PNG bytes under the media cap:
+
+| Plan | Episodes | Compressed bytes | Extracted PNG bytes | Role |
+| --- | ---: | ---: | ---: | --- |
+| `app_split:test` | 1,169 | 11,993,498,013 | 12,290,101,987 | Evaluation-only candidate. |
+| `app_split:train` selected media | 1,679 | 19,066,700,692 | 19,499,790,993 | Training-media candidate under 20 GB actual PNG-byte cap. |
+
+Plan artifacts:
+
+- `artifacts/data/quarantine/gui-odyssey-source-audit/app-split-test-eval-plan.json`, 340,045 bytes, SHA-256 `1ac75f5d60e4015cb90d288bd34ae0bc5e973d0907e3dbd454e27c139ce9533f`
+- `artifacts/data/quarantine/gui-odyssey-source-audit/app-split-train-media-plan-under-19_5gb.json`, 490,161 bytes, SHA-256 `661a56214ee442ae0c694b21c41b374fc02dad0ea1a962bb8d9638b3d393c0c4`
+
+The selective media extraction is queued on the remote persistent disk behind `/tmp/omnijev-cpu-heavy.lock` to avoid competing with other CPU-heavy jobs. Queued command output is `artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch.log`, and the expected completion report is `/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json`. Until that report exists, the train media candidate is planned and queued, not yet physically complete.
