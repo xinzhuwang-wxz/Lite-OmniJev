@@ -33,4 +33,6 @@ python -m scripts.valen_checkpoint convert --isolate \
   --report reports/valen-checkpoint-conversion.json
 ```
 
+Cleanup note: keep conversion minimal by using the official `safetensors.torch.save_file` writer. The auditable contract is the recorded per-run output SHA256 plus full safetensors reload and tensor bit-equality checks; whole-file hashes may differ across equivalent runs because safetensors headers are library-generated. Do not add a custom binary writer for stable file hashes.
+
 The isolated conversion path preimports the loader dependencies, caps BLAS/OpenMP/PyTorch thread pools at one worker, enters an empty chroot containing only the copied input checkpoint and preapproved spec, drops to `nobody`, denies network syscalls with seccomp, checks a host canary is inaccessible, and copies the child output into a private staging file through a no-follow, nonblocking, regular-file-only bounded read. The parent verifies the staging hash and safetensors header before atomically promoting it over the destination, preserving any existing destination on failure. The report must show `status: converted`, `isolation.network_denied: true`, `isolation.host_canary_denied: true`, `tensor_manifest_redacted: true`, and the `expected_spec_sha256`, `config_sha256`, and `training_metadata_sha256` values used for admission.

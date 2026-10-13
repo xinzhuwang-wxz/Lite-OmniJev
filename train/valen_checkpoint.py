@@ -449,15 +449,14 @@ def convert_checkpoint(
     diagnostics.start("audit_tensors")
     weights = payload["weights"]
     tensor_report = _audit_weights(weights, expected_spec)
-    ordered_weights = {key: weights[key] for key in sorted(weights)}
     diagnostics.finish("audit_tensors", tensor_count=len(tensor_report))
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
     safetensors = importlib.import_module("safetensors.torch")
     diagnostics.start("save_safetensors")
-    _save_safetensors_deterministic(
-        ordered_weights,
-        temporary,
+    safetensors.save_file(
+        weights,
+        str(temporary),
         metadata={
             "source_repo": SOURCE_REPO,
             "source_revision": SOURCE_REVISION,
@@ -474,7 +473,7 @@ def convert_checkpoint(
         temporary.unlink(missing_ok=True)
         raise ValueError("Valen safetensors round-trip keys mismatch")
     diagnostics.start("roundtrip_equal")
-    for key, tensor in ordered_weights.items():
+    for key, tensor in weights.items():
         converted_tensor = converted[key]
         if list(converted_tensor.shape) != tensor_report[key]["shape"]:
             temporary.unlink(missing_ok=True)
@@ -510,59 +509,6 @@ def convert_checkpoint(
         "groups": _summarize(tensor_report),
         "tensors": tensor_report,
     }
-
-
-def _safetensors_dtype(torch_dtype: str) -> str:
-    mapping = {
-        "torch.bfloat16": "BF16",
-        "torch.float32": "F32",
-        "torch.float16": "F16",
-        "torch.float64": "F64",
-        "torch.int64": "I64",
-        "torch.int32": "I32",
-        "torch.int16": "I16",
-        "torch.int8": "I8",
-        "torch.uint8": "U8",
-        "torch.bool": "BOOL",
-    }
-    if torch_dtype not in mapping:
-        raise ValueError(f"unsupported safetensors dtype: {torch_dtype}")
-    return mapping[torch_dtype]
-
-
-def _tensor_bytes(tensor: Any) -> bytes:
-    torch = importlib.import_module("torch")
-    value = tensor.detach().cpu().contiguous()
-    if value.numel() == 0:
-        return b""
-    return bytes(value.view(torch.uint8).numpy().tobytes())
-
-
-def _save_safetensors_deterministic(
-    tensors: Mapping[str, Any], path: Path, *, metadata: Mapping[str, str]
-) -> None:
-    entries: list[tuple[str, Any, int, int]] = []
-    offset = 0
-    for key in sorted(tensors):
-        tensor = tensors[key]
-        byte_count = int(tensor.numel()) * _dtype_size(str(tensor.dtype))
-        entries.append((key, tensor, offset, offset + byte_count))
-        offset += byte_count
-    header: dict[str, Any] = {"__metadata__": dict(sorted(metadata.items()))}
-    for key, tensor, start, end in entries:
-        header[key] = {
-            "dtype": _safetensors_dtype(str(tensor.dtype)),
-            "shape": list(tensor.shape),
-            "data_offsets": [start, end],
-        }
-    header_bytes = json.dumps(header, sort_keys=True, separators=(",", ":")).encode()
-    padding = (8 - ((8 + len(header_bytes)) % 8)) % 8
-    header_bytes += b" " * padding
-    with path.open("wb") as handle:
-        handle.write(len(header_bytes).to_bytes(8, "little"))
-        handle.write(header_bytes)
-        for _, tensor, _, _ in entries:
-            handle.write(_tensor_bytes(tensor))
 
 
 def _validate_safetensors_header(path: Path, expected: Mapping[str, Mapping[str, Any]]) -> None:
