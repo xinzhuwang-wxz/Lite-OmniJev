@@ -1,0 +1,67 @@
+{
+  "observed_utc": "2026-10-13T19:54:09.605859+00:00",
+  "scope": "partial actual progress, not readiness",
+  "gpu_used": false,
+  "ready_to_open_gpu": false,
+  "reports": [
+    {
+      "report": "project-model-download-001.json",
+      "present": true,
+      "status": "running",
+      "verified_file_count": 69,
+      "verified_bytes": 71269561421,
+      "failure_count": 0,
+      "summary": null
+    },
+    {
+      "report": "android-control-source-download-002.json",
+      "present": true,
+      "status": "running",
+      "verified_file_count": 14,
+      "verified_bytes": 29394050955,
+      "failure_count": 0,
+      "summary": null
+    },
+    {
+      "report": "mind2web-source-download-002.json",
+      "present": true,
+      "status": "running",
+      "verified_file_count": 15,
+      "verified_bytes": 3149383545,
+      "failure_count": 0,
+      "summary": null
+    },
+    {
+      "report": "clotho-aqa-audio-preparation-001.json",
+      "present": false
+    },
+    {
+      "report": "source-manifests/decision-index-public0.3-retry-002.json",
+      "present": true,
+      "status": "running",
+      "verified_file_count": 0,
+      "verified_bytes": 0,
+      "failure_count": 1,
+      "summary": {
+        "budget_new_raw_limit_bytes": 10000000000,
+        "budget_within_limit": true,
+        "raw_bytes": 3013644091,
+        "raw_file_count": 5910,
+        "tasks_done": 12,
+        "tasks_failed": 1,
+        "tasks_running": 1,
+        "tasks_total": 83
+      },
+      "verified_byte_scope": "Top-level file verification absent; raw byte total is in task queue summary, not a claim that all tasks are verified."
+    }
+  ],
+  "observed_pid_presence": {
+    "1828": true,
+    "17892": true,
+    "10669": true,
+    "17404": true,
+    "17710": true,
+    "17457": true
+  },
+  "pid_observation_limit": "PID presence alone is not process identity or completion proof; inspect cmdline/exit report before controlling a process."
+}

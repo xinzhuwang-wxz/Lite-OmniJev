@@ -11,7 +11,7 @@
 
 ## 票据与门槛
 - bootstrap:01–08、p0:01–07 done，reports/p0-engineering-acceptance.md；工程冒烟不代表质量达标。
-- offline-prep:01 claimed：7模型70必需文件121,094,724,397B；68文件47,350,012,013B已校验，剩余两个大权重在传；不得关票。
+- offline-prep:01 claimed：7模型70必需文件121,094,724,397B；69文件71,269,561,421B已校验，剩余一个49.825GB分片在传；不得关票。
 - offline-prep:02 claimed：全阶段来源原料与许可准备；下载和媒体验证继续，账号/许可/精确协议缺口不能标齐备。
 - offline-prep:03 claimed：运行时/依赖闭包；已有环境与源码归档不能替代可执行文件、完整依赖和CPU验证。
 - offline-prep:05 done：仅pytest现有开发依赖修复，锁9.1.1，主树273测试无skip通过；没有升级远端GPU环境。
@@ -23,16 +23,16 @@
 - S0全通过前禁止S1；delivery:01未完成，D004 FP32 LoRA补丁搁置。
 
 ## 下载实际状态（以PID/文件/最终退出报告为准）
-- 模型 flock1827/1828仍活；project-model-download-001.json running且零失败。另有约22.5GB和18.6GB partial，不计入已校验数。
-- AndroidControl官方GCS22对象49.93GB固定generation/MD5/CRC32C；001的3文件2,345,618,122B校验；实测同generation 1MiB段直连358KB/s、代理20–27KB/s，确认自有子进程13449后停旧任务，partial保留；002 flock17892已启动3并发直连+外部有界续传，最新7文件11,966,096,336B已校验，旧失败报告保留。仅研究，商业训练/发布不准入。
-- Multimodal Mind2Web49文件13.58GB；10668/10669仍活，14文件2,887,052,762B校验。001曾误校验LFS指针，失败报告保留；002已区分原文件SHA与指针GitSHA。
+- 模型 flock1827/1828仍活；project-model-download-001.json running且零失败。教师23.919GB完整权重已校验；OneJev27B剩余49.825GB分片的partial不计入已校验数。
+- AndroidControl官方GCS22对象49.93GB固定generation/MD5/CRC32C；001的3文件2,345,618,122B校验；实测同generation 1MiB段直连358KB/s、代理20–27KB/s，确认自有子进程13449后停旧任务，partial保留；002 flock17892已启动3并发直连+外部有界续传，最新14文件29,394,050,955B已校验，旧失败报告保留。仅研究，商业训练/发布不准入。
+- Multimodal Mind2Web49文件13.58GB；10668/10669仍活，15文件3,149,383,545B校验。001曾误校验LFS指针，失败报告保留；002已区分原文件SHA与指针GitSHA。
 - Clotho3,140,677,494B归档尚未完成；同源1MiB实测代理121,700B/s、直连超时仅9,870B/s，继续代理路线；5小文件全校验。002因curl内部重试丢掉本次新增内容而失败，保留123,907,028B partial；003改外部6次有界续传、每次独立curl且MD5通过才提升，PID17404/17408已确认活。完成后锁内提取1659 CC0/CCBY音频，排除332 NC/未知/其他许可。
 - MMAU mini1,213,407,227B和STAR727,887,646B哈希通过；STA1,085,038,855B和FunQA1,350,969,357B最新实际sha OK/exit0。
 - FunQA→Perception旧队列已退出；Perception5866MiB后curl18/sha失败，video代理已保留6,537,976,772B partial并启动PID17710/17714外部有界续传；不能使用旧running快照。
 - Valen来源20文件约6.36GB全部哈希通过，隔离原料不准入训练；reports/valen-source-download-001.json。
 - 文本来源17文件30,666,690B本地上游/远端SHA通过；JevEmbed600k/Open-Jev113k仍是候选原料，不是样本族隔离/训练准入证据。
 - ScienceQA3parquet626MB、ChartQA875MB、AOKVQA已知可商用COCO3832图约660MB完成；reports/stage2-remote-completion-001.json。剩余已知许可研究专用图继续准备，未知许可不进池。
-- Decision Index公开0.3原镜像5,861文件2,388,936,304B，21固定Git+11HTTP；retry-002已启动PID17457，最新5,901文件2,501,210,679B。HoVer/jev-phishing Git已恢复，RouterBench 0shot99,567,659B已哈希隔离、5shot在传；RAGTruth仍失败，其余HF/HTTP继续队列。HLE受控，pickle未加载，不冒称完整可重建。
+- Decision Index公开0.3原镜像5,861文件2,388,936,304B，21固定Git+11HTTP；retry-002已启动PID17457，最新5,910文件3,013,644,091B。HoVer/jev-phishing Git已恢复，RouterBench0shot/5shot均已哈希隔离，后续HF在传；RAGTruth仍失败，其余HF/HTTP继续队列。HLE受控，pickle未加载，不冒称完整可重建。
 - JevBench正确项目fstandhartinger/jevbench固定7625ec...，231公开决策/8文件清单及远端SHA通过；literal group148不等于教师195，精确聚合协议仍缺，不下载隐藏题/预测。
 
 ## 已完成的CPU证据
@@ -58,7 +58,7 @@
 - 门槛改动、付费/开关卡、生产、删数据、方向/预算改变仍用户决定；真实隔离身份/人工资源后续需安排。其余下载继续。
 
 ## 下一步与验证
-1. 完成在途模型/数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。
+1. 完成在途模型/数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。最近汇总 reports/offline-prep-progress-20261014.json（03:54本地），ready_to_open_gpu=false，不能替代各最终报告。
 2. MDC原4项及DNS pin发现全部关闭，reports/mdc-download-security-closure.json；授权后安全接入，不对外声称凭据下载已实跑。
 3. CLEVRER/GUI原未知状态已由官方证据解除，执行新批准的限定镜像；LLaVA全量1.28TB仍禁止，5k所选原媒体权利需逐项确认；AudioCaps原音频需官方表单。
 4. 完成全项目offline-prep:04审计，未来LoRA/量化/校准产物仅列待生成；全齐备前不开GPU。
