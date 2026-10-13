@@ -1,9 +1,9 @@
 """Redacted sealed-set annotation summaries.
 
-The gate receives annotation metadata and labels inside an isolated boundary, then
-emits only aggregate evidence. It rejects records that carry sample payload fields
-so the development lane can test the contract with canaries without seeing
-sealed content.
+The isolated gate reads raw double annotations and emits only aggregate counts.
+Development code can exercise this with canaries, but real holdout acceptance
+still requires an externally controlled identity or host because this workspace
+has root access to the GPU instance.
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 Nonempty = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 Modality = Literal["text", "image", "audio", "video"]
+Pool = Literal["dev", "holdout"]
 
 PAYLOAD_KEYS = frozenset(
     {
@@ -48,6 +49,7 @@ class StrictModel(BaseModel):
 class AnnotationRecord(StrictModel):
     item_id: Nonempty
     modality: Modality
+    pool: Pool
     annotator_id: Nonempty
     label: Nonempty
     family_hash: Sha256
@@ -59,17 +61,19 @@ class SealedManifest(StrictModel):
     dataset_version: Nonempty
     source_digest: Sha256
     canary: bool
-    expected_modalities: list[Modality] = Field(min_length=1)
-    expected_items_per_modality: dict[Modality, int]
+    min_kappa: float = Field(default=0.7, ge=-1.0, le=1.0)
+    expected_counts: dict[Modality, dict[Pool, int]]
 
 
-class ModalitySummary(StrictModel):
+class CohortSummary(StrictModel):
     items: int
     annotations: int
     annotators: int
     kappa: float
+    kappa_degenerate: bool
     missing_items: int
     invalid_items: int
+    failure_counts: dict[str, int]
 
 
 class SealedSummary(StrictModel):
@@ -78,11 +82,12 @@ class SealedSummary(StrictModel):
     source_digest: str
     canary: bool
     passed: bool
-    modalities: dict[Modality, ModalitySummary]
+    cohorts: dict[str, CohortSummary]
     total_items: int
     total_annotations: int
-    redaction: Literal["metadata_only_no_payload_or_labels"]
-    failures: list[str]
+    redaction: Literal["aggregate_counts_no_payload_labels_or_item_ids"]
+    failures: dict[str, int]
+    blocked_reason: str | None
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -116,7 +121,7 @@ def load_annotations(path: Path) -> list[AnnotationRecord]:
     return records
 
 
-def cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
+def cohen_kappa(labels_a: list[str], labels_b: list[str]) -> tuple[float, bool]:
     if len(labels_a) != len(labels_b) or not labels_a:
         raise ValueError("kappa requires paired non-empty labels")
     total = len(labels_a)
@@ -124,67 +129,104 @@ def cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
     counts_a = Counter(labels_a)
     counts_b = Counter(labels_b)
     labels = set(counts_a) | set(counts_b)
-    expected = math.fsum(
-        (counts_a[label] / total) * (counts_b[label] / total) for label in labels
-    )
+    expected = math.fsum((counts_a[label] / total) * (counts_b[label] / total) for label in labels)
+    degenerate = len(labels) < 2 or math.isclose(expected, 1.0)
     if math.isclose(expected, 1.0):
-        return 1.0 if math.isclose(observed, 1.0) else 0.0
-    return (observed - expected) / (1.0 - expected)
+        return (1.0 if math.isclose(observed, 1.0) else 0.0), True
+    return (observed - expected) / (1.0 - expected), degenerate
+
+
+def _failure_totals(cohorts: dict[str, CohortSummary]) -> dict[str, int]:
+    totals: Counter[str] = Counter()
+    for summary in cohorts.values():
+        totals.update(summary.failure_counts)
+    return dict(sorted(totals.items()))
 
 
 def summarize(manifest: SealedManifest, annotations: list[AnnotationRecord]) -> SealedSummary:
-    failures: list[str] = []
-    grouped: dict[Modality, dict[str, list[AnnotationRecord]]] = defaultdict(
+    grouped: dict[tuple[Modality, Pool], dict[str, list[AnnotationRecord]]] = defaultdict(
         lambda: defaultdict(list)
     )
+    family_pools: dict[str, set[Pool]] = defaultdict(set)
     for record in annotations:
-        if record.modality not in manifest.expected_modalities:
-            failures.append(f"unexpected modality: {record.modality}")
-            continue
-        grouped[record.modality][record.item_id].append(record)
+        grouped[(record.modality, record.pool)][record.item_id].append(record)
+        family_pools[record.family_hash].add(record.pool)
 
-    summaries: dict[Modality, ModalitySummary] = {}
-    for modality in manifest.expected_modalities:
-        expected_items = manifest.expected_items_per_modality.get(modality)
-        if expected_items is None:
-            failures.append(f"missing expected count for modality: {modality}")
-            expected_items = 0
-        labels_a: list[str] = []
-        labels_b: list[str] = []
-        invalid = 0
-        annotators: set[str] = set()
-        for item_id, item_records in sorted(grouped[modality].items()):
-            annotators.update(record.annotator_id for record in item_records)
-            if len(item_records) != 2:
-                invalid += 1
-                failures.append(f"{modality}:{item_id}: expected exactly two raw annotations")
-                continue
-            first, second = item_records
-            if first.annotator_id == second.annotator_id:
-                invalid += 1
-                failures.append(f"{modality}:{item_id}: duplicate annotator")
-                continue
-            if first.family_hash != second.family_hash or first.source_hash != second.source_hash:
-                invalid += 1
-                failures.append(f"{modality}:{item_id}: hash mismatch between annotators")
-                continue
-            labels_a.append(first.label)
-            labels_b.append(second.label)
+    cross_pool_family_count = sum(1 for pools in family_pools.values() if len(pools) > 1)
+    cohorts: dict[str, CohortSummary] = {}
+    for modality, pool_counts in manifest.expected_counts.items():
+        for pool, expected_items in pool_counts.items():
+            item_groups = grouped[(modality, pool)]
+            labels_a: list[str] = []
+            labels_b: list[str] = []
+            annotators: set[str] = set()
+            failures: Counter[str] = Counter()
 
-        observed_items = len(grouped[modality])
-        missing = max(expected_items - observed_items, 0)
-        if missing:
-            failures.append(f"{modality}: missing {missing} expected items")
-        kappa = cohen_kappa(labels_a, labels_b) if labels_a else 0.0
-        if not manifest.canary and kappa < 0.7:
-            failures.append(f"{modality}: kappa below 0.7")
-        summaries[modality] = ModalitySummary(
-            items=observed_items,
-            annotations=sum(len(records) for records in grouped[modality].values()),
-            annotators=len(annotators),
-            kappa=kappa,
-            missing_items=missing,
-            invalid_items=invalid,
+            for item_records in item_groups.values():
+                annotators.update(record.annotator_id for record in item_records)
+                if len(item_records) != 2:
+                    failures["wrong_annotation_count"] += 1
+                    continue
+                first, second = item_records
+                if first.annotator_id == second.annotator_id:
+                    failures["duplicate_annotator"] += 1
+                    continue
+                if (
+                    first.family_hash != second.family_hash
+                    or first.source_hash != second.source_hash
+                ):
+                    failures["annotation_hash_mismatch"] += 1
+                    continue
+                labels_a.append(first.label)
+                labels_b.append(second.label)
+
+            observed_items = len(item_groups)
+            missing = max(expected_items - observed_items, 0)
+            if missing:
+                failures["missing_items"] += missing
+            extra = max(observed_items - expected_items, 0)
+            if extra:
+                failures["extra_items"] += extra
+
+            if labels_a:
+                kappa, degenerate = cohen_kappa(labels_a, labels_b)
+            else:
+                kappa, degenerate = 0.0, True
+                failures["no_valid_pairs"] += 1
+            if not manifest.canary and kappa < manifest.min_kappa:
+                failures["kappa_below_threshold"] += 1
+            if not manifest.canary and degenerate:
+                failures["kappa_degenerate"] += 1
+
+            cohort_key = f"{modality}:{pool}"
+            cohorts[cohort_key] = CohortSummary(
+                items=observed_items,
+                annotations=sum(len(records) for records in item_groups.values()),
+                annotators=len(annotators),
+                kappa=kappa,
+                kappa_degenerate=degenerate,
+                missing_items=missing,
+                invalid_items=sum(
+                    count
+                    for key, count in failures.items()
+                    if key
+                    in {
+                        "wrong_annotation_count",
+                        "duplicate_annotator",
+                        "annotation_hash_mismatch",
+                    }
+                ),
+                failure_counts=dict(sorted(failures.items())),
+            )
+
+    failure_totals = _failure_totals(cohorts)
+    if cross_pool_family_count:
+        failure_totals["cross_pool_family_overlap"] = cross_pool_family_count
+    blocked_reason = None
+    if not manifest.canary:
+        blocked_reason = (
+            "real acceptance requires an externally controlled gate identity/host; "
+            "root-access development workspaces cannot prove sealed-content isolation"
         )
 
     return SealedSummary(
@@ -192,10 +234,11 @@ def summarize(manifest: SealedManifest, annotations: list[AnnotationRecord]) -> 
         dataset_version=manifest.dataset_version,
         source_digest=manifest.source_digest,
         canary=manifest.canary,
-        passed=not failures,
-        modalities=summaries,
-        total_items=sum(summary.items for summary in summaries.values()),
-        total_annotations=sum(summary.annotations for summary in summaries.values()),
-        redaction="metadata_only_no_payload_or_labels",
-        failures=failures,
+        passed=not failure_totals and manifest.canary,
+        cohorts=cohorts,
+        total_items=sum(summary.items for summary in cohorts.values()),
+        total_annotations=sum(summary.annotations for summary in cohorts.values()),
+        redaction="aggregate_counts_no_payload_labels_or_item_ids",
+        failures=dict(sorted(failure_totals.items())),
+        blocked_reason=blocked_reason,
     )

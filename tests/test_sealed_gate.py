@@ -2,6 +2,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Literal
 
 import pytest
 from pydantic import ValidationError
@@ -16,48 +17,58 @@ from eval.sealed_gate import (
 
 HEX_A = "a" * 64
 HEX_B = "b" * 64
+HEX_C = "c" * 64
 
 
-def manifest() -> SealedManifest:
+def manifest(*, canary: bool = True) -> SealedManifest:
     return SealedManifest(
         audit_id="canary-audit",
         dataset_version="sealed-canary-v1",
         source_digest=HEX_A,
-        canary=True,
-        expected_modalities=["text"],
-        expected_items_per_modality={"text": 2},
+        canary=canary,
+        expected_counts={"text": {"dev": 2, "holdout": 1}},
     )
 
 
-def record(item_id: str, annotator_id: str, label: str) -> AnnotationRecord:
+def record(
+    item_id: str,
+    annotator_id: str,
+    label: str,
+    *,
+    pool: Literal["dev", "holdout"] = "dev",
+) -> AnnotationRecord:
     return AnnotationRecord(
         item_id=item_id,
         modality="text",
+        pool=pool,
         annotator_id=annotator_id,
         label=label,
-        family_hash=HEX_A,
+        family_hash=HEX_A if pool == "dev" else HEX_C,
         source_hash=HEX_B,
     )
 
 
-def test_redacted_canary_summary_excludes_labels_and_payload() -> None:
-    summary = summarize(
-        manifest(),
-        [
-            record("item-1", "ann-a", "allow"),
-            record("item-1", "ann-b", "allow"),
-            record("item-2", "ann-a", "deny"),
-            record("item-2", "ann-b", "allow"),
-        ],
-    )
+def complete_canary_records() -> list[AnnotationRecord]:
+    return [
+        record("item-1", "ann-a", "allow"),
+        record("item-1", "ann-b", "allow"),
+        record("item-2", "ann-a", "deny"),
+        record("item-2", "ann-b", "allow"),
+        record("item-3", "ann-a", "review", pool="holdout"),
+        record("item-3", "ann-b", "review", pool="holdout"),
+    ]
+
+
+def test_redacted_canary_summary_excludes_labels_payload_and_item_ids() -> None:
+    summary = summarize(manifest(), complete_canary_records())
     dumped = summary.model_dump(mode="json")
     encoded = json.dumps(dumped)
     assert dumped["passed"] is True
-    assert dumped["modalities"]["text"]["items"] == 2
-    assert dumped["modalities"]["text"]["annotations"] == 4
-    assert dumped["redaction"] == "metadata_only_no_payload_or_labels"
-    assert "allow" not in encoded
-    assert "deny" not in encoded
+    assert dumped["cohorts"]["text:dev"]["items"] == 2
+    assert dumped["cohorts"]["text:dev"]["annotations"] == 4
+    assert dumped["redaction"] == "aggregate_counts_no_payload_labels_or_item_ids"
+    for forbidden in ["allow", "deny", "review", "item-1", "item-2", "ann-a", "ann-b"]:
+        assert forbidden not in encoded
 
 
 def test_loader_rejects_payload_fields(tmp_path: Path) -> None:
@@ -67,6 +78,7 @@ def test_loader_rejects_payload_fields(tmp_path: Path) -> None:
             {
                 "item_id": "item-1",
                 "modality": "text",
+                "pool": "dev",
                 "annotator_id": "ann-a",
                 "label": "allow",
                 "family_hash": HEX_A,
@@ -84,13 +96,14 @@ def test_loader_rejects_payload_fields(tmp_path: Path) -> None:
 def test_missing_or_duplicate_annotations_fail_closed() -> None:
     summary = summarize(manifest(), [record("item-1", "ann-a", "allow")])
     assert summary.passed is False
-    assert "expected exactly two raw annotations" in "\n".join(summary.failures)
-    assert "missing 1 expected items" in "\n".join(summary.failures)
+    assert summary.failures["wrong_annotation_count"] == 1
+    assert summary.failures["missing_items"] == 2
     with pytest.raises(ValidationError):
         AnnotationRecord.model_validate(
             {
                 "item_id": "item-1",
                 "modality": "text",
+                "pool": "dev",
                 "annotator_id": "ann-a",
                 "label": "allow",
                 "family_hash": HEX_A,
@@ -100,24 +113,40 @@ def test_missing_or_duplicate_annotations_fail_closed() -> None:
         )
 
 
-def test_non_canary_requires_kappa_threshold() -> None:
-    real_manifest = manifest().model_copy(update={"canary": False})
+def test_non_canary_requires_kappa_threshold_and_never_passes_dev_summary() -> None:
     summary = summarize(
-        real_manifest,
+        manifest(canary=False),
         [
             record("item-1", "ann-a", "allow"),
             record("item-1", "ann-b", "deny"),
             record("item-2", "ann-a", "deny"),
             record("item-2", "ann-b", "allow"),
+            record("item-3", "ann-a", "review", pool="holdout"),
+            record("item-3", "ann-b", "review", pool="holdout"),
         ],
     )
     assert summary.passed is False
-    assert summary.modalities["text"].kappa < 0.7
-    assert "kappa below 0.7" in "\n".join(summary.failures)
+    assert summary.cohorts["text:dev"].kappa < 0.7
+    assert summary.failures["kappa_below_threshold"] >= 1
+    assert summary.blocked_reason is not None
 
 
-def test_kappa_handles_perfect_degenerate_agreement() -> None:
-    assert cohen_kappa(["same", "same"], ["same", "same"]) == 1.0
+def test_non_canary_rejects_degenerate_kappa() -> None:
+    summary = summarize(manifest(canary=False), complete_canary_records())
+    assert summary.passed is False
+    assert summary.failures["kappa_degenerate"] >= 1
+
+
+def test_cross_pool_family_overlap_fails() -> None:
+    rows = complete_canary_records()
+    rows[-1] = rows[-1].model_copy(update={"family_hash": HEX_A})
+    summary = summarize(manifest(), rows)
+    assert summary.passed is False
+    assert summary.failures["cross_pool_family_overlap"] == 1
+
+
+def test_kappa_reports_perfect_degenerate_agreement() -> None:
+    assert cohen_kappa(["same", "same"], ["same", "same"]) == (1.0, True)
 
 
 def test_cli_writes_redacted_summary_and_returns_fail_closed(tmp_path: Path) -> None:
@@ -126,15 +155,7 @@ def test_cli_writes_redacted_summary_and_returns_fail_closed(tmp_path: Path) -> 
     out_path = tmp_path / "summary.json"
     manifest_path.write_text(manifest().model_dump_json(), encoding="utf-8")
     annotations_path.write_text(
-        "\n".join(
-            [
-                record("item-1", "ann-a", "allow").model_dump_json(),
-                record("item-1", "ann-b", "allow").model_dump_json(),
-                record("item-2", "ann-a", "deny").model_dump_json(),
-                record("item-2", "ann-b", "allow").model_dump_json(),
-            ]
-        )
-        + "\n",
+        "\n".join(record.model_dump_json() for record in complete_canary_records()) + "\n",
         encoding="utf-8",
     )
     result = subprocess.run(
@@ -153,6 +174,7 @@ def test_cli_writes_redacted_summary_and_returns_fail_closed(tmp_path: Path) -> 
         text=True,
     )
     assert result.returncode == 0
-    summary = json.loads(out_path.read_text(encoding="utf-8"))
+    encoded = out_path.read_text(encoding="utf-8")
+    summary = json.loads(encoded)
     assert summary["passed"] is True
-    assert "allow" not in out_path.read_text(encoding="utf-8")
+    assert "allow" not in encoded
