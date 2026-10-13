@@ -9,7 +9,9 @@ import json
 import os
 import shutil
 import stat
+import subprocess
 import zipfile
+from collections import Counter
 from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import urlsplit
@@ -18,8 +20,19 @@ from scripts.assets import write_json
 
 METADATA_SHA256 = "7505ba93c291d344b31e5c33e872b95d84255852cff93278bbdf549402acc1f5"
 ARCHIVE_MD5 = "48c2c46ccd71dc06121228e2ed68d6b9"
+ARCHIVE_SHA256 = "4793d97781689f8bdb1a6669056386825bb0ec8022f2217acc8083abc4774d66"
 ARCHIVE_BYTES = 3140677494
 MAX_AUDIO_BYTES = 64 * 1024**2
+MAX_ARCHIVE_MEMBERS = 10_000
+MAX_ARCHIVE_EXPANDED_BYTES = 8 * 1024**3
+DECODE_SAMPLE_COUNT = 32
+
+ARCHIVE_NAME_ALIASES = {
+    "souffle_me_tallique.wav": "souffle_me.tallique.wav",
+    "Geese1 - (Apollonia&#39;s sPA) 18_44 05.10.wav": (
+        "Geese1 - (Apollonia&#39;s sPA) 18.44 05.10.wav"
+    ),
+}
 
 
 def hashes(path: Path) -> tuple[str, str]:
@@ -30,6 +43,10 @@ def hashes(path: Path) -> tuple[str, str]:
             md5.update(block)
             sha.update(block)
     return md5.hexdigest(), sha.hexdigest()
+
+
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
 
 
 def plan(metadata: Path) -> dict[str, Any]:
@@ -89,27 +106,49 @@ def extract(archive: Path, metadata: Path, output: Path) -> dict[str, Any]:
     if archive.stat().st_size != ARCHIVE_BYTES:
         raise ValueError("archive_size_mismatch")
     md5, sha = hashes(archive)
-    if md5 != ARCHIVE_MD5:
+    if md5 != ARCHIVE_MD5 or sha != ARCHIVE_SHA256:
         raise ValueError("archive_checksum_mismatch")
     wanted = {entry["file_name"]: entry for entry in manifest["approved_audio"]}
+    alias_targets = {
+        canonical: alias for canonical, alias in ARCHIVE_NAME_ALIASES.items() if canonical in wanted
+    }
+    if len(set(alias_targets.values())) != len(alias_targets):
+        raise ValueError("archive_alias_conflict")
+    wanted_by_archive = {alias_targets.get(name, name): name for name in wanted}
+    if len(wanted_by_archive) != len(wanted):
+        raise ValueError("archive_alias_conflict")
     selected = {}
+    archive_member_count = 0
+    archive_expanded_bytes = 0
     with zipfile.ZipFile(archive) as zipped:
         for entry in zipped.infolist():
+            archive_member_count += 1
+            if archive_member_count > MAX_ARCHIVE_MEMBERS:
+                raise ValueError("zip_member_count_limit")
             path = PurePosixPath(entry.filename)
-            if path.is_absolute() or ".." in path.parts or "\\" in entry.filename:
+            if (
+                path.is_absolute()
+                or ".." in path.parts
+                or "\\" in entry.filename
+                or "\x00" in entry.filename
+            ):
                 raise ValueError("unsafe_zip_path")
             mode = stat.S_IFMT(entry.external_attr >> 16)
-            if mode == stat.S_IFLNK:
-                raise ValueError("zip_symlink_denied")
-            if entry.is_dir() or path.name not in wanted:
+            if entry.is_dir():
                 continue
-            if (
-                path.name in selected
-                or mode not in {0, stat.S_IFREG}
-                or entry.file_size > MAX_AUDIO_BYTES
-            ):
+            if mode not in {0, stat.S_IFREG}:
+                raise ValueError("zip_special_file_denied")
+            if entry.file_size > MAX_AUDIO_BYTES:
+                raise ValueError("zip_member_size_limit")
+            archive_expanded_bytes += entry.file_size
+            if archive_expanded_bytes > MAX_ARCHIVE_EXPANDED_BYTES:
+                raise ValueError("zip_total_expansion_limit")
+            if path.name not in wanted_by_archive:
+                continue
+            canonical_name = wanted_by_archive[path.name]
+            if canonical_name in selected:
                 raise ValueError("invalid_or_duplicate_zip_audio")
-            selected[path.name] = entry
+            selected[canonical_name] = entry
         if set(selected) != set(wanted):
             raise ValueError("approved_audio_missing")
         required = sum(entry.file_size for entry in selected.values())
@@ -131,6 +170,7 @@ def extract(archive: Path, metadata: Path, output: Path) -> dict[str, Any]:
                 if target.stat().st_size != entry.file_size or actual != expected.hexdigest():
                     raise ValueError("existing_audio_preserved")
                 wanted[name]["sha256"] = actual
+                wanted[name]["archive_member"] = entry.filename
                 continue
             temporary = target.with_suffix(".wav.part")
             with zipped.open(entry) as source, temporary.open("xb") as dest:
@@ -140,13 +180,121 @@ def extract(archive: Path, metadata: Path, output: Path) -> dict[str, Any]:
             os.link(temporary, target)
             temporary.unlink()
             wanted[name]["sha256"] = hashes(target)[1]
+            wanted[name]["archive_member"] = entry.filename
+    decoded = decode_representative_audio(output, sorted(selected))
+    manifest_rows = [
+        {
+            "file_name": entry["file_name"],
+            "archive_member": entry.get("archive_member"),
+            "license": entry["license"],
+            "sha256": entry["sha256"],
+        }
+        for entry in manifest["approved_audio"]
+    ]
     return {
-        **manifest,
         "status": "approved_audio_extracted_source_audit_only",
         "exit_code": 0,
+        "source": manifest["source"],
+        "metadata_sha256": manifest["metadata_sha256"],
         "archive_md5": md5,
         "archive_sha256": sha,
+        "archive_member_count": archive_member_count,
+        "archive_expanded_bytes": archive_expanded_bytes,
+        "approved_audio_count": len(manifest["approved_audio"]),
+        "excluded_audio_count": manifest["excluded_audio_count"],
         "extracted_audio_count": len(selected),
+        "alias_count": len(alias_targets),
+        "archive_name_aliases": [
+            {
+                "metadata_file_name": canonical,
+                "archive_member_name": alias,
+                "mode": "fixed_revision_alias",
+            }
+            for canonical, alias in sorted(alias_targets.items())
+        ],
+        "approved_audio_manifest_sha256": sha256_bytes(
+            json.dumps(manifest_rows, sort_keys=True, separators=(",", ":")).encode()
+        ),
+        "decode": decoded,
+        "training_admitted": False,
+        "private_holdout_assigned": False,
+    }
+
+
+def probe_audio(path: Path) -> dict[str, Any]:
+    probe = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(path)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+    metadata = json.loads(probe.stdout)
+    stream = next(
+        (item for item in metadata["streams"] if item.get("codec_type") == "audio"),
+        None,
+    )
+    if stream is None:
+        raise ValueError("audio_stream_missing")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-nostdin",
+            "-v",
+            "error",
+            "-xerror",
+            "-threads",
+            "1",
+            "-i",
+            str(path),
+            "-map",
+            "0:a:0",
+            "-threads",
+            "1",
+            "-f",
+            "null",
+            "-",
+        ],
+        capture_output=True,
+        timeout=180,
+        check=True,
+    )
+    return {
+        "codec": stream.get("codec_name"),
+        "sample_rate": int(stream.get("sample_rate") or 0),
+        "channels": int(stream.get("channels") or 0),
+        "duration_seconds": float(metadata["format"].get("duration", 0)),
+        "bytes": path.stat().st_size,
+    }
+
+
+def decode_representative_audio(output: Path, names: list[str]) -> dict[str, Any]:
+    selected = (
+        names
+        if len(names) <= DECODE_SAMPLE_COUNT
+        else names[:: max(1, len(names) // DECODE_SAMPLE_COUNT)][:DECODE_SAMPLE_COUNT]
+    )
+    decoded = [probe_audio(output / name) for name in selected]
+    durations = [row["duration_seconds"] for row in decoded]
+    return {
+        "sample_limit": DECODE_SAMPLE_COUNT,
+        "selected": len(selected),
+        "selection": "sorted approved canonical filenames, fixed stride",
+        "selected_name_sha256": [sha256_bytes(name.encode()) for name in selected],
+        "codecs": dict(Counter(str(row["codec"]) for row in decoded)),
+        "sample_rates": dict(Counter(str(row["sample_rate"]) for row in decoded)),
+        "channels": dict(Counter(str(row["channels"]) for row in decoded)),
+        "duration_seconds": {
+            "min": min(durations) if durations else None,
+            "max": max(durations) if durations else None,
+            "total": sum(durations),
+        },
+        "bytes": {
+            "min": min(row["bytes"] for row in decoded) if decoded else None,
+            "max": max(row["bytes"] for row in decoded) if decoded else None,
+            "total": sum(row["bytes"] for row in decoded),
+        },
+        "decode_scope": "complete selected audio streams through EOF using ffmpeg -f null",
     }
 
 
