@@ -5,7 +5,9 @@
 ## 当前票与结论
 - bootstrap:01–08、p0:01–07：done。P0验收见reports/p0-engineering-acceptance.md。
 - 原始P0/S0阶段归属已审计纠正；严格概率门槛始终失败，S1不放行。
-- s0:01–08按依赖推进；s0-data:01已解锁。实时前沿以scripts.loop list为准。
+- s0:01 claimed：teacher-admission，worktree /tmp/lite-omnijev-s0-teacher；正在执行教师准入。
+- s0-data:01 claimed：clinc-admission，worktree /tmp/lite-omnijev-s0-clinc；正在执行CLINC准入。
+- 其余S0按依赖推进；实时前沿以scripts.loop list为准。
 - s0:03保留数值失败；s0:06需真实双人标注，agent不能伪造κ；s0:08待基线展开再triage。
 - delivery:01未完成，教师、多模态、端侧和终局不能由P0替代。
 

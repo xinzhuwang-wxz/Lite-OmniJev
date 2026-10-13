@@ -4,9 +4,9 @@ ID: s0-data:01
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: clinc-admission
+Worktree: /tmp/lite-omnijev-s0-clinc
 Blocked by: p0:04
 
 ## What to build
