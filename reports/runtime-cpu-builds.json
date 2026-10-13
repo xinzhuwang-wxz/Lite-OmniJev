@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-14T04:45:55+08:00",
-  "status": "runtime_cpu_builds_and_quant_wheelhouse_prepared_gpu_pending",
+  "generated_at": "2026-10-14T04:59:29+08:00",
+  "status": "runtime_cpu_builds_litert_host_prebuilt_and_quant_wheelhouse_prepared_gpu_pending",
   "remote_evidence": [
     {
       "id": "llama.cpp-cpu",
@@ -119,7 +119,10 @@
         "javac": "javac 17.0.20.1"
       },
       "notes": [
-        "Bazelisk binary is cached and hashed, but its help/version path was not used as the primary proof because direct bazel-7.6.1 runs without mediated download. Android SDK terms remain unaccepted. Remote GCC/G++ is still 11.4, so LiteRT CMake host build is not marked ready."
+        "Bazelisk binary is cached and hashed, but direct bazel-7.6.1 is the usable no-download proof path.",
+        "Temurin JDK 17.0.20.1 is extracted under toolchains/extract and version-checked.",
+        "Ubuntu Noble runtime libraries are extracted into toolchains/noble-runtime-prefix for the official LiteRT-LM Linux binary; no host package was installed or replaced.",
+        "Android SDK terms remain unaccepted and are outside this LiteRT host executable slice."
       ]
     },
     {
@@ -140,11 +143,52 @@
       ]
     },
     {
-      "id": "litert-lm-host-build",
-      "status": "blocked_toolchain",
-      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/litert-lm-v0.9.0.tar.gz",
+      "id": "litert-lm-host-linux-prebuilt",
+      "status": "official_prebuilt_cached_private_runtime_checked",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/bin/litert-lm-v0.9.0-linux-x86_64",
+      "official_asset": "https://github.com/google-ai-edge/LiteRT-LM/releases/download/v0.9.0/litert_lm_main.linux_x86_64",
+      "official_release_asset_size": 28710976,
+      "sha256": {
+        "litert_lm_main": "15909a9429ead17210432451a02c364fb16e04f9429348bf9a749f1d5f50a10f",
+        "libGemmaModelConstraintProvider.so": "7b212d67079cdf624574b25440f6bec87e466d82201a3fc896d46c834b51b807",
+        "libLiteRt.so": "94ca3f9d6617985367c547356d944245c9ad5f9600de8c4ae6f3e747598edf1e",
+        "libLiteRtTopKWebGpuSampler.so": "53203e4580d3a449b2d86709d312a0a38eb0ba927a52da169499242fecaa086c",
+        "libLiteRtWebGpuAccelerator.so": "9368c1b0f31413e9df199536f832c9a5950fab3d2044f8f83db4367a63f59151",
+        "private_libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "private_libstdc++.so.6": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+      },
+      "private_runtime_prefix": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/toolchains/noble-runtime-prefix",
+      "private_runtime_source": "Ubuntu Noble cached .deb packages extracted into an artifact prefix, not installed into the host",
+      "helper_script": "infra/runtime/litert_lm_v0_9_0_linux_host.sh",
+      "version_or_help_output": [
+        "--help reached runtime/engine/litert_lm_main.cc flag help through the private loader; command exits 1 as Abseil help behavior, not as a loader failure",
+        "loader version: ld.so (Ubuntu GLIBC 2.39-0ubuntu8.9) stable release version 2.39"
+      ],
+      "dependency_trace": [
+        "libGemmaModelConstraintProvider.so loaded from litert-lm-v0.9.0-linux-x86_64 artifact dir",
+        "libm.so.6, libstdc++.so.6, libgcc_s.so.1, libc.so.6, libpthread.so.0, librt.so.1, libdl.so.2 loaded from noble-runtime-prefix/usr/lib/x86_64-linux-gnu",
+        "ld-linux-x86-64.so.2 loaded from noble-runtime-prefix/usr/lib64"
+      ],
+      "cpu_probe": {
+        "command": "litert_lm_main --backend=cpu --model_path=/tmp/nonexistent.litertlm --input_prompt=probe via private loader",
+        "exit_code": 134,
+        "expected_failure": "NOT_FOUND: open() failed: /tmp/nonexistent.litertlm: No such file or directory",
+        "interpretation": "Dependency loading and CPU backend argument parsing succeeded; failure is at missing model open. No model forward pass was run."
+      },
+      "evidence_files": [
+        "artifacts/runtime-builds/metadata/litert-lm-v0.9.0-release.json",
+        "artifacts/runtime-builds/metadata/litert_lm_main.linux_x86_64.sha256",
+        "artifacts/runtime-builds/metadata/litert_lm_v0.9.0_linux_runtime.sha256",
+        "artifacts/runtime-builds/metadata/noble-runtime-loader.version.txt",
+        "artifacts/runtime-builds/metadata/litert_lm_main.linux_x86_64.private.ldtrace.txt",
+        "artifacts/runtime-builds/metadata/litert_lm_main.linux_x86_64.private.help.txt",
+        "artifacts/runtime-builds/metadata/litert_lm_main.linux_x86_64.private.cpu-missing-model.txt",
+        "artifacts/runtime-builds/metadata/litert_lm_main.wrapper.help.txt"
+      ],
       "notes": [
-        "Source cached and support paths verified. Host/mobile build not attempted in this no-GPU/no-license slice. Non-Android prerequisites are cached; GCC13 packages are cache-only .deb files; Android NDK download remains blocked on Android SDK License acceptance."
+        "Official v0.9.0 release assets include linux_x86_64, macOS, Windows, Android, and iOS simulator litert_lm_main binaries; the Linux asset was used instead of compiling on the 2 GiB / 0.5-core host.",
+        "Normal host execution fails on Ubuntu 22.04 because the official binary requires GLIBC_2.38 and GLIBCXX_3.4.31; the private Noble prefix resolves those requirements without modifying system libraries.",
+        "The source-build fallback remains available from the cached v0.9.0 source archive with Bazel 7.6.1 and JDK 17.0.20.1; Linux source build would still need clang if a rebuild is required."
       ]
     },
     {
@@ -238,7 +282,7 @@
       "examples/quantization_w4a16_fp4/nvfp4/gemma4_example.py"
     ]
   },
-  "next_safe_action": "No more no-GPU runtime preparation is blocked locally for this slice. Next validation requires GPU quant/runtime smoke or Android SDK License acceptance for NDK/mobile build preparation.",
+  "next_safe_action": "Proceed to GPU-phase validation with prepared runtime assets; LiteRT-LM host binary dependency loading has been validated through the private runtime prefix without a model forward pass.",
   "pending": [
     "GPU quantization/runtime validation",
     "LiteRT Android/mobile build after Android SDK License acceptance and selected NDK cache",
