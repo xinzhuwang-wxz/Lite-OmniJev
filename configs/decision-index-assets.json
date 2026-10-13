@@ -30,15 +30,16 @@
     "host": "root@region-42.seetacloud.com:48926",
     "remote_project_root": "/root/autodl-tmp/lite-omnijev",
     "raw_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3",
-    "report": "reports/source-manifests/decision-index-public0.3-001.json",
-    "raw_file_count": 5861,
-    "raw_bytes": 2501210679,
+    "report": "reports/source-manifests/decision-index-public0.3-retry-002.json",
+    "raw_file_count": 5978,
+    "raw_bytes": 5384593281,
     "new_raw_budget_bytes": 10000000000,
     "budget_within_limit": true,
     "full_rebuild_run": false,
     "archive_extract_run": false,
     "pickle_loaded": false,
-    "gpu_or_model_inference_run": false
+    "gpu_or_model_inference_run": false,
+    "count_scope": "Retry queue snapshot excludes any later additions; separate RAGTruth recovery receipt records its 9 files/36,621,334B. Historical failed-source lists above are initial-attempt evidence, not current network blockers."
   },
   "staging_policy": {
     "training_admitted": false,
@@ -60,11 +61,15 @@
     "retry_queue": {
       "remote_pid_file": "/root/autodl-tmp/lite-omnijev/artifacts/source-audit/public-index/decision-index-retry-002.pid",
       "remote_nohup_log": "/root/autodl-tmp/lite-omnijev/artifacts/source-audit/public-index/decision-index-retry-002.nohup.log",
-      "status_at_local_snapshot": "running",
+      "status_at_local_snapshot": "terminal_with_ragtruth_recovered_in_separate_receipt",
       "tasks_total": 83,
-      "tasks_done": 3,
+      "tasks_done": 82,
       "tasks_failed": 1,
-      "tasks_running": 1
+      "tasks_running": 0,
+      "budget_new_raw_limit_bytes": 10000000000,
+      "budget_within_limit": true,
+      "raw_bytes": 5384593281,
+      "raw_file_count": 5978
     },
     "http_sources_verified": [
       "raw/downloads/BPoMP_p1.json",
@@ -85,12 +90,13 @@
       "hover/wiki_wo_links.db"
     ],
     "hf_sources": {
-      "status": "retry_queue_running_after_bootstrap_proxy_fix",
+      "status": "all_retry_queue_hf_sources_complete_hash_verified",
       "resolved_revisions_recorded": true,
       "expected_bytes_recorded": true,
       "content_downloaded": true,
       "verified_content_snapshot": [
-        "raw/routerbench/routerbench_0shot.pkl"
+        "raw/routerbench/routerbench_0shot.pkl",
+        "raw/routerbench/routerbench_5shot.pkl"
       ],
       "gated_hle": {
         "repo_id": "cais/hle",
@@ -102,24 +108,17 @@
         "training_admitted": false,
         "redistribution_allowed": false
       }
-    }
+    },
+    "ragtruth_recovery_receipt": "reports/ragtruth-source-recovery-001.json"
   },
   "known_blockers": [
     {
-      "source": "HLE",
-      "reason": "Hugging Face gated dataset; no account terms accepted and no token used."
-    },
-    {
       "source": "RouterBench",
-      "reason": "Raw upstream files are pickles; 0-shot is downloaded and hash-verified in quarantine, 5-shot is still in the retry queue. Future conversion must be isolated; never load these pickles in the normal agent/runtime environment."
+      "reason": "Both pinned 0-shot and 5-shot raw pickles are downloaded and hashed in quarantine. Safe isolated conversion remains required before evaluator use; never load in the agent/runtime environment."
     },
     {
-      "source": "HF-hosted parquets/jsonl",
-      "reason": "Initial remote HF transfers stalled because the full AutoDL bootstrap/proxy env was not sourced. Retry queue 002 uses infra/bootstrap/autodl-env.sh plus /etc/network_turbo and has started downloading HF content."
-    },
-    {
-      "source": "RAGTruth and HoVer added sources",
-      "reason": "GitHub fetches failed or were stopped on the constrained remote. RAGTruth also carries non-redistributable / non-commercial upstream context obligations."
+      "source": "Benchmark protocol and source admission",
+      "reason": "Source downloads do not prove a safe executable rebuild, original source licensing admission, or reproduction of the private board. Preserve original-source obligations and validate the public suite separately."
     }
   ]
 }

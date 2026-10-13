@@ -11,7 +11,7 @@
 
 ## 接续机制与作业
 
-本会话heartbeat自动接续已创建，ID `lite-omnijev`，每15分钟；仅在有可行动失败、需用户具体决定或全部就绪时通知。全部无卡准备通过后通知可开卡并暂停heartbeat，不能代用户开卡。
+用户已纠正不要定时任务；heartbeat `lite-omnijev`已删除，禁止重建。当前会话直接推进无卡准备，全部通过后通知用户开卡，不能代用户开卡。
 
 Clotho004仍在4并发8MiB Range恢复，最终必须MD5，已排好源锁→重CPU锁的提取链；GUI19.5GB所选train媒体网络改锁外、每成员解压锁内，保留已完成文件；CLEVRER下载/CRC收尾。具体PID/路径以STATUS与真实cmdline为准，不重复启动队列。
 

@@ -80,3 +80,7 @@
 
 - 自动接续已创建：heartbeat ID lite-omnijev，ACTIVE，每15分钟，限本会话无卡准备；无实质变化保持安静，仅可行动失败/需用户/全就绪通知；全就绪后通知开卡并暂停，不自行开卡。交接 plan/handoff-2026-10-14-whole-project-offline.md。
 - GUI锁拆分/全仓lint/type修复已整合b0a2a6d，最新Ruff/format184文件、mypy47源文件通过；289测试通过。新增offline-prep:06教师音频适配票已认领video代理，/tmp/lite-omnijev-teacher-audio-cpu，待交付/定向验证。
+
+- 用户最新纠正：不要定时任务，当前会话直接准备/测完再通知开卡。heartbeat lite-omnijev已通过App工具删除（deleteStatus=deleted），禁止重建。CLEVRER全10官方对象25,489,948,056B、HTTPS/尺寸/SHA快照+全ZIP CRC完成，b434c9e；upstream未发布SHA不能称官方哈希匹配。教师音频CPU适配43ede32已合入，8测试通过，Linux新适配真实验收代理继续；离线工具锁99e4957已整合，root/offline-tools wheelhouse仍在下载，runtime代理继续到no-index验收。
+
+- 最新集成297测试全部通过（43.31s），Ruff/format190文件、mypy48源文件、wheel/sdist通过。offline-prep:06 Linux真实新adapter通过已关闭；不代表teacherforward。Clotho004终态MD5通过，首次提取001在2个上游名称点/下划线差异处拒绝，mdc代理正在显式2项alias修复及002重验，旧失败保留。CLEVRER代表视频完整解码代理继续。DecisionIndex配置已清掉HLE/HF/已恢复Git旧账号网络阻塞，RouterBench安全转换和公共suite执行仍待办。
