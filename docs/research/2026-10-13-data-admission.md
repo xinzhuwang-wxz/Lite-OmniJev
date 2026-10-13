@@ -40,3 +40,6 @@
 ## 验证与限制
 
 机器表由固定 licenses.csv 生成并核对源数/行数总计、唯一 source、revision 与 SHA-256 格式；JSON 解析和 git diff 检查通过。不为静态研究文档添加镜像测试。未运行训练，未审核全部 127 个原始来源，未证明合成标签正确，未将任何新外部文件标为训练已准入。
+
+## 主会话后续实际准备
+调研完成后主会话已在无卡实例下载上述CLINC唯一train文件，实测SHA256一致、15,250行、text/intent两列；保存原始README、CC-BY3 LICENSE与归属说明。报告见reports/clinc-raw-validation.json。未做题型转换，training_admitted仍为false；不读取其他split。

@@ -8,8 +8,14 @@
 - pytest（MIT）、ruff（MIT）、mypy（MIT）：原方案的测试/静态验证。
 - Playwright（Apache-2.0）：本环境无 Playwright MCP，实际 Chromium 验收 API 文档，后续复用在 Playground。
 
-Transformers/PEFT/torch/vLLM/MLflow/Data-Juicer 等在对应票中于 Linux 环境精确锁定和 smoke 验证；macOS 的 uv.lock 不证明 CUDA 组合有效。
+Transformers/PEFT/torch/vLLM/SwanLab/Data-Juicer 等在对应票中于 Linux 环境精确锁定和 smoke 验证；macOS 的 uv.lock 不证明 CUDA 组合有效。
 不复制无许可代码；新库/源码复用在对应票记来源、license、用途。
 
 ## 可选训练环境
 `uv sync --frozen --extra training --group dev` 安装torch、Transformers、PEFT、Accelerate、safetensors；具体版本在uv.lock。它是本地CPU损失/入口验证环境，不代表Linux CUDA兼容性已通过。safetensors用于权重与adapter，PEFT复用LoRA实现，不自建训练框架。
+
+## 可选实验监控
+用户指定 SwanLab（Apache-2.0），复用官方 SDK 记录真实指标；monitoring extra 不影响禁用监控的运行。实现与凭据边界见 ADR-0003 和 runbooks/monitoring.md。
+
+## 无卡数据来源检查
+`infra/data` 独立锁定PyArrow（Apache-2.0），用于读取下载的Parquet schema/行数，复用[官方Parquet接口](https://arrow.apache.org/docs/python/parquet.html)，不手写二进制解析器，不改变训练/服务环境。实际CLINC检查仅公开train文件。

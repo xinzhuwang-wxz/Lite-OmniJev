@@ -1,0 +1,26 @@
+{
+  "environment": "training",
+  "python": "3.11.17",
+  "executable": "/root/autodl-tmp/lite-omnijev/.venv/bin/python",
+  "versions": {
+    "torch": "2.14.1",
+    "transformers": "5.19.0",
+    "peft": "0.21.2",
+    "swanlab": "0.10.2",
+    "accelerate": "1.15.0"
+  },
+  "imports": {
+    "torch": "passed",
+    "transformers": "passed",
+    "peft": "passed",
+    "swanlab": "passed",
+    "accelerate": "passed"
+  },
+  "gpu_verified": false,
+  "compiled_cuda": "13.0",
+  "gpu_visible": false,
+  "gemma_class": true,
+  "lora_api": true,
+  "lock_sha256": "65eeed6e0b0db033dcc6f25bebbbd7c392fac629fc904cc16bcd9fd6b0781c60",
+  "status": "passed"
+}

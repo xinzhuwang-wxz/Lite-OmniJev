@@ -1588,18 +1588,15 @@
       "license": "cc-by-3.0",
       "expected_bytes": 312096,
       "expected_sha256": "30188119cf9f86fc9db27e1c22442d091cb5cb0913c9496f945fe11e7a02a28f",
-      "status": "candidate_download_for_validation",
+      "status": "raw_verified_not_training_admitted",
       "label_source": "original intent labels; dataset card declares expert-generated annotations and crowdsourced language",
       "remaining": [
-        "download_and_verify_hash",
-        "preserve_attribution",
-        "public_train_only",
         "map_151_labels_to_valid_2_to_20_option_tasks_without_changing_truth",
         "sample_family_split_and_dedup",
         "no_assumption_oos_equals_insufficient_U"
       ],
       "evidence_url": "https://huggingface.co/datasets/clinc/clinc_oos/blob/155b9c710419136e17307b80d0a13e68cd46b4ec/README.md",
-      "downloaded": false,
+      "downloaded": true,
       "training_admitted": false,
       "original_evidence": {
         "repo_id": "clinc/oos-eval",
@@ -1608,7 +1605,8 @@
           "README.md",
           "LICENSE"
         ]
-      }
+      },
+      "validation_report": "reports/clinc-raw-validation.json"
     },
     {
       "repo_id": "n4ze3m/typed-decisions-synth",

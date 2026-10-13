@@ -9,7 +9,7 @@
 2026-10-13 初始本地只有 HTML，远端只有 Apache-2.0 LICENSE；不存在可复用应用或真实 build/test 脚本。
 因此新建最小 Python 3.11/uv 项目：Pydantic 2、FastAPI、httpx、Transformers/PEFT（到 GPU 票才安装）、vLLM（Linux CUDA 独立环境）。
 轻量依赖及选择理由见 `dependencies.md`。本机 macOS arm64，不能把本机测试当 CUDA 兼容证明。
-实验管理选择 MLflow，自托管/本地起步，无需开通付费账号；大数据版本与对象存储在实际租机后接入，初期使用内容哈希 manifest。
+实验管理按用户要求使用 SwanLab（Lite-OmniJev / maxen），仅上传真实训练指标；凭据置于项目外，见 ADR-0003。数据版本初期使用内容哈希 manifest。
 独立原生前端到 Playground 票才引入 React/shadcn/ui/Animate UI；当前 API 文档页面不构成最终 Playground。
 
 ## 本地常用命令

@@ -1,0 +1,106 @@
+{
+  "time": "2026-10-13T20:54:24.649076+08:00",
+  "scope": "P0 no-GPU preparation only",
+  "status": "ready_for_user_gpu_start",
+  "checks": {
+    "host_no_gpu": true,
+    "complete_weights": true,
+    "weight_structure": true,
+    "answer_tokens": true,
+    "100_examples": true,
+    "only_cuda_pending": true,
+    "linux_training_env": true,
+    "linux_service_env": true,
+    "linux_tests": true,
+    "swanlab_auth": true,
+    "swanlab_online_preparation": true,
+    "credential_hygiene": true,
+    "checkpoint_review": true,
+    "parity_cli_prepared": true,
+    "gpu_command_prepared": true
+  },
+  "source_commit": "e7b7e8f6ef4a0dbb3d78c3bfa38c61b94d9da3f8",
+  "source_file_sha256": {
+    "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
+    "train/checkpoint.py": "666ec9a09314d281c057c09158981eb539761ff0d49294874fc618e6b5d76508",
+    "train/monitoring.py": "954d92a91d75bf5528488665dd1adfbc671f5c663f6e086b2e1ecd0555c1fab8",
+    "scripts/train_smoke.py": "43743397ce20a4805f4ce854cc64b11871ea66b0a7aeb542ab3b2ed464bd65d2",
+    "scripts/p0_parity.py": "9c2412a9867a3b0ec9e546d6ffbbaaf2576aa12a269f772953de8b98a0aa0244",
+    "uv.lock": "65eeed6e0b0db033dcc6f25bebbbd7c392fac629fc904cc16bcd9fd6b0781c60",
+    "infra/serve/uv.lock": "61539519ed54e1da1027810b5d155e18f7863f8db0e50cae9f2ddbc5a4338423",
+    "infra/data/uv.lock": "81ce12213cfc69b30d210faed6267275d860f371ea349543e8c9ff404929aa4b",
+    "infra/bootstrap/run-p0.sh": "116e846af06e9b3831e2a5a5927656930bd750d76c5aa0c8f7c2fe03c89ad17d"
+  },
+  "host": {
+    "observed_at_unix": 1791894171.6640434,
+    "platform": "Linux-5.15.0-122-generic-x86_64-with-glibc2.35",
+    "architecture": "x86_64",
+    "cpu_max": "50000 100000",
+    "memory_max_bytes": 2147483648,
+    "persistent_root": "/root/autodl-tmp",
+    "data_disk_bytes": 1127428915200,
+    "data_disk_free_bytes": 1120301027328,
+    "system_disk_bytes": 32212254720,
+    "data_disk_separate_device": true,
+    "no_gpu_device_nodes": true,
+    "remote_repo": "/root/autodl-tmp/lite-omnijev",
+    "source_revision": "26cedabba3d89c9ac74b55c11ac482a6ca10c311",
+    "credential_recorded": false
+  },
+  "assets": {
+    "status": "all_files_verified",
+    "exit_code": 0,
+    "files_verified": 8,
+    "bytes_verified": 16024822159,
+    "weights_ready": true
+  },
+  "dataset": {
+    "scope": "P0工程冒烟程序真值，不是外部benchmark/模型质量验收数据",
+    "count": 100,
+    "questions": 100,
+    "seed": 42,
+    "source": "data.synth.generate_samples + train.trainer.smoke_samples",
+    "code_revision": "26cedabba3d89c9ac74b55c11ac482a6ca10c311",
+    "source_code_sha256": "25ada192e57f5f890e54f0afd5c19cbf029df0e9b97a8224776b708e0af5ee5c",
+    "sha256": "5b54c93e5a76fd09e1e5c64df2c74f2f9c640ba69d573e71333da7dff426889f",
+    "bytes": 65409,
+    "license": "project-authored program truth; internal usage metadata",
+    "pool": "train",
+    "sample_families": 99,
+    "targets": {
+      "hard": 75,
+      "insufficient": 25
+    },
+    "external_download_required": false,
+    "teacher_labels_used": false,
+    "holdout_accessed": false
+  },
+  "tests": {
+    "linux": 136,
+    "local": 136,
+    "additional_locked_wheel_cli": 7,
+    "skipped": 0,
+    "ruff": "passed",
+    "mypy": "passed, 23 source files",
+    "build": "wheel and sdist passed"
+  },
+  "actual_model_training_steps": 0,
+  "gpu_verified": false,
+  "expected_no_gpu_preflight_exit": 1,
+  "preflight_report": "reports/linux-train-preflight.json",
+  "swanlab_url": "https://swanlab.cn/@maxen/Lite-OmniJev/runs/6hi6om41",
+  "remaining_gpu_checks": [
+    "device/driver and BF16 kernels",
+    "E4B 10 optimizer steps and safe adapter reload",
+    "actual GPU checkpoint resume",
+    "sequential HF/vLLM base and adapter 100-question parity",
+    "gateway HTTP and real browser acceptance"
+  ],
+  "next_action": "User enables GPU; agent verifies hardware then runs bounded P0. Do not auto-rent or toggle power.",
+  "initial_gpu_run_budget": {
+    "training_hard_timeout_seconds": 3600,
+    "estimated_first_validation_hours": 1,
+    "estimate_not_measured": true
+  },
+  "deferred_assets": "E2B and teacher/full external datasets follow phase needs and source admission; not claimed downloaded. CLINC public train raw file verified, mapping not admitted."
+}

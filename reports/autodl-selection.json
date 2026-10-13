@@ -1,5 +1,5 @@
 {
-  "time": "2026-10-13T19:45:25.877548+08:00",
+  "time": "2026-10-13T19:54:21.119253+08:00",
   "source": "https://www.autodl.com/create",
   "status": "selected_in_browser_not_submitted_or_paid",
   "region": "北京A区",
@@ -19,8 +19,8 @@
   "driver": "580.82.07",
   "host_cuda_display": "13.0",
   "image": "PyTorch 2.12.1 / Python 3.12 (Ubuntu22.04) / CUDA13.0",
-  "gpu_hour_cny_at_observation": 10.5,
-  "paid_disk_day_cny_at_observation": 3.15,
+  "gpu_hour_cny_at_observation": 9.98,
+  "paid_disk_day_cny_at_observation": 2.97,
   "no_gpu_hour_cny_official_docs": 0.1,
   "notes": [
     "Project Python3.11 environment installed separately; image packages not reused blindly.",
@@ -28,5 +28,8 @@
     "Observed create control is 创建并开机; submitting starts regular GPU billing.",
     "User owns payment, instance creation, GPU on/off. No rental/payment submitted.",
     "Inventory not reserved and may change before user submits."
-  ]
+  ],
+  "paid_disk_gb_day_cny_at_observation": 0.0066,
+  "disk_quote_note": "2.97/day calculated from visible 450GB × 0.0066; footer showed 0.00/day, confirm final charge before submission.",
+  "reselection_reason": "Checked 西北B区/北京B区/重庆A区/A800专区/北京A区; cheaper available large-VRAM hosts lacked 450GB disk expansion; A800专区 had no free GPU. Retained 北京A区700机 with adequate disk."
 }

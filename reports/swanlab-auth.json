@@ -1,0 +1,9 @@
+{
+  "provider": "swanlab",
+  "project": "Lite-OmniJev",
+  "workspace": "maxen",
+  "training_steps": 0,
+  "experiment_created": false,
+  "authenticated": true,
+  "status": "passed"
+}
