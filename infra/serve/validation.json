@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-10-13T12:11:52.292191+00:00",
+  "platform": "local macOS; cross-platform resolution only",
+  "uv_version": "0.9.27",
+  "python_target": "3.11.14",
+  "target": "Linux x86_64 manylinux_2_35",
+  "lock_sha256": "61539519ed54e1da1027810b5d155e18f7863f8db0e50cae9f2ddbc5a4338423",
+  "checks": [
+    {
+      "command": "uv lock --project infra/serve",
+      "exit_code": 0,
+      "packages": 197
+    },
+    {
+      "command": "uv lock --project infra/serve --check --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "uv export --project infra/serve --frozen --no-dev --no-emit-project then uv pip compile export --python-version 3.11 --python-platform x86_64-manylinux_2_35 --only-binary :all:",
+      "exit_code": 0,
+      "third_party_packages": 196
+    },
+    {
+      "command": "bash -n for each bash fence; compile Python heredocs",
+      "exit_code": 0
+    }
+  ],
+  "pending": [
+    "Linux installation and import",
+    "GPU BF16 and ABI",
+    "E4B base and adapter loading",
+    "100-sample HF/vLLM probability parity",
+    "API integration"
+  ]
+}
