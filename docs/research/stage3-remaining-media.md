@@ -51,7 +51,7 @@ Executable future plan, if diversity is needed:
 
 Status: research/eval only under current evidence; not main commercial training.
 
-STAR has large public split counts in the pinned source record (`Train=45,731`, `Val=7,098`, `Test=7,377`), and a MVBench STAR archive is hash-verified locally for eval. That still does not make it a main training source. STAR raw media is Charades, and the recorded Charades terms are non-commercial, allow evaluation elsewhere, restrict redistribution/modified public data release, and require contacting AI2 for commercial use. The local public-eval validation reports only 588 present rows for the STAR source tasks in the downloaded MVBench archive, so it also does not satisfy the 12k main training count on its own.
+STAR has large public split counts in the pinned source record (`Train=45,731`, `Val=7,098`, `Test=7,377`), and a MVBench STAR archive is hash-verified locally for eval. That still does not make it a main training source. STAR raw media is Charades, and the recorded Charades terms are non-commercial, allow evaluation elsewhere, restrict redistribution/modified public data release, and require contacting AI2 for commercial use. The initial MVBench STAR archive covered 588/600 public references; the later official Charades recovery restored all 600/600 (reports/star-missing-source-recovery-001.json). This is evaluation media, not evidence of the 12k main training count.
 
 Executable future plan:
 

@@ -84,3 +84,5 @@
 - 用户最新纠正：不要定时任务，当前会话直接准备/测完再通知开卡。heartbeat lite-omnijev已通过App工具删除（deleteStatus=deleted），禁止重建。CLEVRER全10官方对象25,489,948,056B、HTTPS/尺寸/SHA快照+全ZIP CRC完成，b434c9e；upstream未发布SHA不能称官方哈希匹配。教师音频CPU适配43ede32已合入，8测试通过，Linux新适配真实验收代理继续；离线工具锁99e4957已整合，root/offline-tools wheelhouse仍在下载，runtime代理继续到no-index验收。
 
 - 最新集成297测试全部通过（43.31s），Ruff/format190文件、mypy48源文件、wheel/sdist通过。offline-prep:06 Linux真实新adapter通过已关闭；不代表teacherforward。Clotho004终态MD5通过，首次提取001在2个上游名称点/下划线差异处拒绝，mdc代理正在显式2项alias修复及002重验，旧失败保留。CLEVRER代表视频完整解码代理继续。DecisionIndex配置已清掉HLE/HF/已恢复Git旧账号网络阻塞，RouterBench安全转换和公共suite执行仍待办。
+
+- 用户已具体确认全部协议/来源调整（2026-10-14）：ADR-0005生效，DocVQA-SP仅研究、NDKr28b SDK2019及适用2026修订已获本人同意；不再重复问同协议。auth代理继续真实DocVQA download≤30GB，runtime代理继续NDKr28b工具链≤5GB；无额外付费。视频12k用CLEVRER、原LLaVA5k用允许教师/许可明确媒体生成，DocVQA原图不进商用训练，保留所有题量/质量/样本族隔离；NExT/VGG等非首发前置。
