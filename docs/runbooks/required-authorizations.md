@@ -6,13 +6,19 @@
 
 ## 现在必须本人处理
 
-下表前3项直接覆盖阶段2/3/6；后5项属于现有MVBench全项目外部清单，先统一暴露。教师14任务/2786题的精确协议仍未公开，不能先假定这些受限任务都可删，也不能把全20任务都说成已证实必需。负责人不具备机构/学术资格时应如实申请替代授权，不能虚填身份。
+下表3项直接覆盖阶段2/3/6。负责人不具备机构/学术资格时应如实申请替代授权，不能虚填身份。
 
 | 项目与官方入口 | 本人动作、限制与交回证据 | 影响范围；是否阻碍下载 |
 |---|---|---|
 | DocVQA：[官方说明](https://www.docvqa.org/datasets/docvqa) → [RRC挑战17](https://rrc.cvc.uab.es/?ch=17) → [Download](https://rrc.cvc.uab.es/?ch=17&com=downloads) 的 **Single Document Visual Question Answering** | 注册/登录RRC，阅读实际下载页原数据条款，保存版本/文本与获准下载方式。官方说明确认图片来自UCSF Industry Documents Library；HF镜像Apache标签不能代替原文档权利。此次RRC读取超时/证书校验失败，未取得登录后条款全文，不能声称原数据已商用许可。 | 阶段2文档题；**是，原数据访问/条款仍缺**。已下载Valen中的docvqa派生文件不解除此缺口。 |
 | AudioCaps：[固定revision原音频说明](https://github.com/cdjkim/audiocaps/blob/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/README.md) → [现行申请表](https://forms.gle/2wF54Y1Ft2LtPdhW8) | 由本人填写真实身份、用途并申请原音频/视频，保存审批回复与许可范围。[主README](https://github.com/cdjkim/audiocaps)明确学术用途；商业用途另取明确授权及原媒体依据。表单短链本次返回401，正文未读取；需要实际账号访问，不推断问题字段。旧清单 `8sFHc3XJ32ERWxqF8` 实测404，不能再作为办理入口。 | 阶段3音频；**是，原音频需申请**。公开caption CSV无需另申请，已准备。 |
 | Android SDK/NDK：[NDK下载及完整SDK协议](https://developer.android.com/ndk/downloads)、[SDK协议独立页](https://developer.android.com/studio/terms) | 负责人以有权代表项目的身份审阅并明确接受Android SDK License Agreement，记录主体/日期/版本；随后agent可缓存和哈希指定工具链。协议2.1–2.4约束接受与代表权限；3.5另行保留组件OSS许可。无需购买开发者账号或Google Play上架账号来做本地构建。 | 阶段6 Android工具链；**是，官方二进制下载/使用协议未接受**。不是OpenJDK的独立签约阻塞。精确版本见下节。 |
+### 条件性MVBench源授权：选中对应任务才办理
+
+以下5类先统一列出准确入口，**当前不要求本人立即办理**。原方案只要求MVBench决策子集；教师14任务/2786题的精确manifest仍缺。agent先冻结任务/ID并证明原媒体依赖，只有选中相应任务才触发申请；不得把全部20任务来源都升级为当前必需账号，也不得自行删题降门槛。
+
+| 项目与官方入口 | 条件触发后的本人动作 | 影响范围；是否阻碍下载 |
+|---|---|---|
 | Moments in Time：[官方项目页](https://moments.csail.mit.edu/) | 本人从官方Download入口办理原媒体申请/研究条款；本次官方站连续超时，无法核实当前表单URL或条款文本，故不能给出猜测短链。现有 `video-eval-assets.json` 将其列为未接受官方表单。收到正文后先核对项目用途是否符合，再提交。 | MVBench `Moments_in_Time_Raw.zip`；**当前是**，不能以HF镜像绕过；最终是否必需取决于冻结评测协议。 |
 | Something-Something v2：[官方页及Downloads](https://www.qualcomm.com/developer/software/something-something-v-2-dataset)、[Research Use协议PDF](https://www.qualcomm.com/content/dam/qcomm-martech/dm-assets/documents/jester_something_something_exercise_research_license_final_qti_28jul2022.pdf) | 本人阅读研究协议并通过官方下载流程办理账号/接受条款；不把研究许可解释成商业训练许可。官方联系 `research.datasets@qti.qualcomm.com`，需要扩大用途时由负责人申请。 | MVBench `ssv2_video.zip`；**是，研究协议未接受**；最终必要性待协议冻结。 |
 | TVQA原视频帧：[官方Download第4节及其form](https://nlp.cs.unc.edu/data/jielei/tvqa/tvqa_public_html/download_tvqa.html) | 本人按页面表单提供本人及advisor信息、签协议，获批后保存下载链接/条款。官方明确不与他人分享帧；项目团队/隔离评测身份的访问范围也应确认，不能将镜像公开视为允许共享。 | MVBench `tvqa.zip`；**是，签署申请未完成**；标注/特征公开不等于帧可用。 |
