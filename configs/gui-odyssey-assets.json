@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-14",
+  "scope": "gui_odyssey_official_public_hf_source_audit",
+  "quarantine_root": "artifacts/data/quarantine/gui-odyssey-source-audit",
+  "report": {
+    "path": "reports/gui-odyssey-metadata-verification.json",
+    "bytes": 77594,
+    "sha256": "75ca4b8b1e9a7c7b6b251eed66a751f2d8892bd606ad78bd8656c36cfee0713b"
+  },
+  "policy": {
+    "gpu_used": false,
+    "extra_gui_budget_bytes": 20000000000,
+    "training_admission": "not_granted_by_this_file",
+    "release_admission": "not_granted_by_this_file",
+    "account_terms_policy": "No account login, gated terms, or form acceptance was used. The pinned HF API metadata reports gated=false and private=false.",
+    "media_download_status": "pixel_media_not_downloaded; full multipart screenshot archive exceeds the approved 20GB GUI slice cap and the HF file tree has no per-episode screenshot files."
+  },
+  "source": {
+    "id": "gui-odyssey",
+    "name": "GUIOdyssey",
+    "official_hf_repo_id": "hflqf88888/GUIOdyssey",
+    "official_hf_revision": "61632d0f3f4d51d7e9561ce4f84347dd06b2019d",
+    "official_github_repo": "OpenGVLab/GUI-Odyssey",
+    "official_github_revision_seen_in_stage3_audit": "5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251",
+    "access": {
+      "private": false,
+      "gated": false,
+      "disabled": false,
+      "hf_tags": [
+        "language:en",
+        "license:cc-by-4.0",
+        "size_categories:1K<n<10K",
+        "format:json",
+        "modality:tabular",
+        "modality:text",
+        "library:datasets",
+        "library:pandas",
+        "library:mlcroissant",
+        "library:polars",
+        "arxiv:2406.08451",
+        "region:us",
+        "GUI"
+      ]
+    },
+    "license_evidence": {
+      "hf_card_license": "cc-by-4.0",
+      "readme_statement": "Creative Commons Attribution 4.0 International License",
+      "license_status": "public CC-BY-4.0 source-audit staging; formal project training/release admission remains separate"
+    },
+    "downloaded_metadata_artifacts": [
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/hf-api.json",
+        "bytes": 418757,
+        "sha256": "bab7c8796bdecc623f9073f3de79f0d4ea99e606f837fc50b20be78d03a5d894"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/hf-README.md",
+        "bytes": 7470,
+        "sha256": "fd627ee0a6ee0596e0ee8147996b9a7a3436f754fc95ed63cf5f408d778b2831"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/hf-head-core-files.json",
+        "bytes": 15405,
+        "sha256": "1ac3597c9a95f811d6b308904e527d2936c3c16ac1095529c90bc9d0c51ecd32"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core-report.json",
+        "bytes": 2139,
+        "sha256": "ceb27aa072e0ce343712725b86d00abe5f25fcd78eabdaf2e72ea14da36e3ddf"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core/all_annot.json",
+        "bytes": 2862103,
+        "sha256": "46720388d7cbf8e0d4bb0d9d4bf286f6c2292c9bf64a4d0a88134475e10348b2"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core/splits/app_split.json",
+        "bytes": 275065,
+        "sha256": "2f45f6b809162141d7ec5414b820c32ddfd0acc2354b0f85eb3aac8c702e4704"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core/splits/device_split.json",
+        "bytes": 275065,
+        "sha256": "cc3ba7df9a1002ad63a7b1c195c1cd2440c54f9508b6c5a2859ae3fe03088a52"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core/splits/random_split.json",
+        "bytes": 275065,
+        "sha256": "4feb280e7688ade825d3f504cfb2ef4540d44b12d9f72f5d5f09be3ffed5be5d"
+      },
+      {
+        "path": "artifacts/data/quarantine/gui-odyssey-source-audit/pinned-core/splits/task_split.json",
+        "bytes": 275065,
+        "sha256": "fb16a764ace673316073bd92c87c6bb97d0062d9d09f3171147f066c2cfe51f5"
+      }
+    ],
+    "hf_file_manifest": {
+      "total_files": 8350,
+      "annotation_file_count": 8334,
+      "split_file_count": 4,
+      "screenshot_archive_file_count": 9,
+      "path_list_sha256": "97d81749303fcb1d11662ae1e1e2e508aa0546461b4e968cc8d123810b35219c"
+    },
+    "dataset_card_stats": {
+      "episodes": 8334,
+      "devices": 6,
+      "task_categories": 6,
+      "apps": 212,
+      "app_combos_approx": 1300,
+      "screenshots_after_extraction": 127893
+    },
+    "observed_all_annot_summary": {
+      "episodes": 8334,
+      "total_step_length": 127893,
+      "min_step_length": 3,
+      "max_step_length": 26,
+      "mean_step_length": 15.346,
+      "unique_apps_observed": 212
+    },
+    "official_splits": {
+      "app_split": {
+        "train": 7165,
+        "test": 1169,
+        "sha256": "2f45f6b809162141d7ec5414b820c32ddfd0acc2354b0f85eb3aac8c702e4704"
+      },
+      "device_split": {
+        "train": 6953,
+        "test": 1381,
+        "sha256": "cc3ba7df9a1002ad63a7b1c195c1cd2440c54f9508b6c5a2859ae3fe03088a52"
+      },
+      "random_split": {
+        "train": 6668,
+        "test": 1666,
+        "sha256": "4feb280e7688ade825d3f504cfb2ef4540d44b12d9f72f5d5f09be3ffed5be5d"
+      },
+      "task_split": {
+        "train": 7199,
+        "test": 1135,
+        "sha256": "fb16a764ace673316073bd92c87c6bb97d0062d9d09f3171147f066c2cfe51f5"
+      }
+    },
+    "size_estimates": {
+      "hf_used_storage_bytes": 92640312796,
+      "downloaded_core_metadata_bytes": 3962363,
+      "head_checked_all_annot_and_split_bytes": 3962363,
+      "full_screenshot_archive_bytes": 92639510437,
+      "full_core_plus_screenshot_bytes": 92643472800,
+      "full_screenshot_archive_exceeds_gui_budget": true
+    },
+    "selected_episode_manifest": {
+      "tranche_id": "gui_odyssey_app_split_test_v1",
+      "source_split": "splits/app_split.json:test",
+      "episode_count": 1169,
+      "estimated_pixel_bytes_by_full_archive_average": 12994430970,
+      "exact_episode_list_location": "reports/gui-odyssey-metadata-verification.json#/selected_episode_manifest/exact_episode_files",
+      "media_fetchability": "not_directly_fetchable_by_episode_from_current_hf_tree; screenshots are only exposed as a multipart archive"
+    },
+    "source_family_boundary": "Use official episode_id and official app/device/random/task split files. Do not split by individual step or screenshot row."
+  }
+}
