@@ -1,0 +1,624 @@
+{
+  "assets": [
+    {
+      "asset_id": "next-qa",
+      "blockers": [
+        "Raw video redistribution/use rights are not established by the NExT-QA repository license.",
+        "User/root must verify NExTVideo/VidOR/Google Drive terms before downloading raw media."
+      ],
+      "license_status": "annotations/code mirrored from pinned MIT repository; raw videos remain separate because README points to Google Drive/NExTVideo and maps videos to VidOR IDs.",
+      "mirrored_files": [
+        {
+          "asset_id": "next-qa",
+          "bytes": 1063,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"16335c902e9250b1acee139c9b38288a33356cee5724a181f902e5f7ec90d4ed\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/LICENSE",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/LICENSE",
+          "sha256": "7ba077d25ffc3137200430d2a6b82b81d68671dfda732b5e8582f8e632ef8714",
+          "source_url": "https://raw.githubusercontent.com/doc-doc/NExT-QA/2432e9724f88ed9f40010e2989f104570a91de4e/LICENSE"
+        },
+        {
+          "asset_id": "next-qa",
+          "bytes": 7616,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"934d4b59384229d71004aa2875908d510861f73aeca5cc0c086f91cb519742c6\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/README.md",
+          "sha256": "8f9853e632ba2aa39de02e5e8fd3718134192552c19ce2bb5af0a167f8ecb37b",
+          "source_url": "https://raw.githubusercontent.com/doc-doc/NExT-QA/2432e9724f88ed9f40010e2989f104570a91de4e/README.md"
+        },
+        {
+          "asset_id": "next-qa",
+          "bytes": 331540,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"08a3a2bb1bfd71e8c2aa792e8b057838efaf3564efe6644f6c4c425a74983b41\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/map_vid_vidorID.json",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/map_vid_vidorID.json",
+          "sha256": "1955d89e7a175346faf8d4a582297ff349619231394f59fd7872f459ac8a8685",
+          "source_url": "https://raw.githubusercontent.com/doc-doc/NExT-QA/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/map_vid_vidorID.json"
+        },
+        {
+          "asset_id": "next-qa",
+          "bytes": 1385657,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"8f8665ac1550b4fc0429049104529a39720d10b8b1da56159790a1dcf93894c7\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/test.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/test.csv",
+          "sha256": "cdf46de237b3b3b846ff0209ae1394ad559791b5a0de0bb8c78648f74da83542",
+          "source_url": "https://raw.githubusercontent.com/doc-doc/NExT-QA/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/test.csv"
+        },
+        {
+          "asset_id": "next-qa",
+          "bytes": 5578444,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"aa826acedd478fb1724c14535f000302bb14a582944807447b5c434aee857611\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/train.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/train.csv",
+          "sha256": "51ae6e611fa58835f63a0beb325fe647bb197c7e320a31f0bb7a9cf969e082b2",
+          "source_url": "https://raw.githubusercontent.com/doc-doc/NExT-QA/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/train.csv"
+        },
+        {
+          "asset_id": "next-qa",
+          "bytes": 814107,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"5c162f87ab573a165d4546f56ffe9795b8702d23a0e675e377050dcdf0fba870\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/val.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/next-qa/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/val.csv",
+          "sha256": "43198bdef8436b8d64a9b75d846b0987c10cbf94ebf4be325c4a4e54634d66b8",
+          "source_url": "https://raw.githubusercontent.com/doc-doc/NExT-QA/2432e9724f88ed9f40010e2989f104570a91de4e/dataset/nextqa/val.csv"
+        }
+      ],
+      "next_media_plan": "Use mirrored dataset/nextqa CSV rows plus map_vid_vidorID.json to produce the exact NExT-QA video ID list; after rights approval, download only IDs needed for the selected stage3 sample, not the full Google Drive archive.",
+      "prepared_material": "Pinned repository README, MIT LICENSE, train/val/test CSV annotations, and VidOR mapping JSON mirrored.",
+      "status": "metadata_prepared_raw_video_blocked",
+      "user_action_links": [
+        "https://github.com/doc-doc/NExT-QA",
+        "https://drive.google.com/file/d/1jTcRCrVHS66ckOUfWRb-rXdzJ52XAWQH/view",
+        "https://xdshang.github.io/docs/vidor.html"
+      ]
+    },
+    {
+      "asset_id": "clevrer",
+      "blockers": [],
+      "license_status": "Official CLEVRER README.txt states the dataset is under CC0.",
+      "mirrored_files": [
+        {
+          "asset_id": "clevrer",
+          "bytes": 4425,
+          "content_type": "text/plain",
+          "etag": "\"1149-59fbc583554bf\"",
+          "http_status": 200,
+          "last_modified": "Sat, 29 Feb 2020 19:56:06 GMT",
+          "relative_path": "clevrer/README.txt",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/clevrer/README.txt",
+          "sha256": "a4838cc68b79ba049b54f95def1714cdbbd1380193d7d2a5d1a85440ac862e7b",
+          "source_url": "http://data.csail.mit.edu/clevrer/README.txt"
+        },
+        {
+          "asset_id": "clevrer",
+          "bytes": 2754,
+          "content_type": "application/json",
+          "etag": null,
+          "http_status": null,
+          "last_modified": null,
+          "relative_path": "clevrer/download-heads.json",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/clevrer/download-heads.json",
+          "sha256": "458165c6534e98d4e5be68640c81b6acfbb8b4d9bc2a5fe7fc0093e9174967dc",
+          "source_url": "HEAD http://data.csail.mit.edu/clevrer/videos/train/video_train.zip, http://data.csail.mit.edu/clevrer/annotations/train/annotation_train.zip, http://data.csail.mit.edu/clevrer/questions/train.json, http://data.csail.mit.edu/clevrer/videos/validation/video_validation.zip, http://data.csail.mit.edu/clevrer/annotations/validation/annotation_validation.zip, http://data.csail.mit.edu/clevrer/questions/validation.json, http://data.csail.mit.edu/clevrer/videos/test/video_test.zip, http://data.csail.mit.edu/clevrer/questions/test.json, http://data.csail.mit.edu/clevrer/derender_proposals.zip, http://data.csail.mit.edu/clevrer/README.txt"
+        },
+        {
+          "asset_id": "clevrer",
+          "bytes": 6312,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"4e745b3ca66b7cc56c33b664f7b15b2daf609ca05cf0840e73b7025fdd6a5a76\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "clevrer/github-code/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/clevrer/github-code/README.md",
+          "sha256": "99bd3b91cf257e0b11f1473822e5bd84090e1e7feb4eb0bf18a296179996b6d4",
+          "source_url": "https://raw.githubusercontent.com/chuangg/CLEVRER/master/README.md"
+        },
+        {
+          "asset_id": "clevrer",
+          "bytes": 13748,
+          "content_type": "text/html",
+          "etag": "\"35b4-65b58996d48ff\"",
+          "http_status": 200,
+          "last_modified": "Sun, 13 Sep 2026 07:52:29 GMT",
+          "relative_path": "clevrer/official-page.html",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/clevrer/official-page.html",
+          "sha256": "2a9d6fd76b6e468e59c49bc61f002279fe7825186fb091abaa31bd7d11ce5844",
+          "source_url": "https://clevrer.csail.mit.edu/"
+        }
+      ],
+      "next_media_plan": "Use the mirrored download-heads.json to reserve about 25.49 GB for all official CLEVRER payloads, or subset by split URLs before downloading. Exact official URLs and Content-Length values are already captured.",
+      "official_payload_bytes": 25489948056,
+      "prepared_material": "Official project page HTML, official README.txt, code README, and HEAD metadata for every official payload URL mirrored. Large payloads were not downloaded.",
+      "status": "official_license_confirmed_metadata_prepared_payload_not_downloaded",
+      "user_action_links": [
+        "https://clevrer.csail.mit.edu/",
+        "http://data.csail.mit.edu/clevrer/README.txt"
+      ]
+    },
+    {
+      "asset_id": "llava-video-178k",
+      "blockers": [
+        "Commercial training rights are not cleared by the dataset card restrictions.",
+        "Original media/source-dataset terms must be checked per selected sample."
+      ],
+      "license_status": "Dataset card says Apache License 2.0, but its Uses section restricts use to academic research and education and warns users to check OpenAI policy for GPT-4 generated data; source media/borrowed datasets have their own terms.",
+      "mirrored_files": [
+        {
+          "asset_id": "llava-video-178k",
+          "bytes": 7165,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"e037df6512ba9c415a05bc3dfc4b50aac25667db\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "llava-video-178k/6d8c562dc26d70042a0d9704d1cae58c94b89098/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/llava-video-178k/6d8c562dc26d70042a0d9704d1cae58c94b89098/README.md",
+          "sha256": "5d6e341f6b27eba8ff06429c1a6b1a0f19beebbbdcaf86d4bab88ae6a4e36ce0",
+          "source_url": "https://huggingface.co/datasets/lmms-lab/LLaVA-Video-178K/raw/6d8c562dc26d70042a0d9704d1cae58c94b89098/README.md"
+        },
+        {
+          "asset_id": "llava-video-178k",
+          "bytes": 26185,
+          "content_type": "application/json; charset=utf-8",
+          "etag": "W/\"6649-S84DgdLJCp2V132qWfGeC1W6dis\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "llava-video-178k/6d8c562dc26d70042a0d9704d1cae58c94b89098/hf-api.json",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/llava-video-178k/6d8c562dc26d70042a0d9704d1cae58c94b89098/hf-api.json",
+          "sha256": "6d036b2e18689b5a5b74d97ea9a3201f0254a894b3df3f853e0ad819f8087bd6",
+          "source_url": "https://huggingface.co/api/datasets/lmms-lab/LLaVA-Video-178K/revision/6d8c562dc26d70042a0d9704d1cae58c94b89098"
+        }
+      ],
+      "next_media_plan": "Build a deterministic 5k candidate manifest from the pinned HF JSON/README source groups, stratify by duration/source, then for each selected row record source dataset/media URL and license before any media download. Keep full 1.28 TB download disallowed.",
+      "prepared_material": "Pinned HF README and API metadata mirrored. Full 1.28 TB dataset was not downloaded.",
+      "status": "metadata_prepared_license_restricted_no_full_download",
+      "user_action_links": [
+        "https://huggingface.co/datasets/lmms-lab/LLaVA-Video-178K",
+        "https://huggingface.co/datasets/lmms-lab/LLaVA-Video-178K/tree/6d8c562dc26d70042a0d9704d1cae58c94b89098"
+      ]
+    },
+    {
+      "asset_id": "vggsound",
+      "blockers": [
+        "YouTube source videos require separate availability and platform/source-owner rights checks before media download/use."
+      ],
+      "license_status": "Pinned official repository license states VGGSound metadata is under CC-BY-4.0; README says original video copyright remains with owners.",
+      "mirrored_files": [
+        {
+          "asset_id": "vggsound",
+          "bytes": 1324,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"31cd441913c5a17b8edb857ecbbec9ffe9a3ae196cf6ed6ddb65d5f02c1dd868\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/LICENCE.txt",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/LICENCE.txt",
+          "sha256": "fd7e642425d19df8687b6b30eb3198ea77b69d893f32fec3782601a35a88266e",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/LICENCE.txt"
+        },
+        {
+          "asset_id": "vggsound",
+          "bytes": 4027,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"a6460f359c2388b5963a3d8ff04eb7f8f5899ca0cba8f739c05079c9af7031e3\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/README.md",
+          "sha256": "6ef91621df8a492c09cd9b3e75df34cdc4c04cf62c5a6f2db2a469d1e977b62d",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/README.md"
+        },
+        {
+          "asset_id": "vggsound",
+          "bytes": 288512,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"6746f4e0d129ded900039943bac15a4c3d2e3fcd7e8b85672aeef8adc5aad777\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/AStest.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/AStest.csv",
+          "sha256": "9b2ae1360b641d59eae9a811f214cc6d2556f22fcfc2d3eb65a41c5cbb51f081",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/data/AStest.csv"
+        },
+        {
+          "asset_id": "vggsound",
+          "bytes": 2849,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"8962a91b0ecef5f0e06360122dff16e0fe3b913909594a0820fe81481f1fea00\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/Common.txt",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/Common.txt",
+          "sha256": "3eb877f4787b1bfa3cb6230e8f48268900fcecb2e86068ef346824a2fb04f4f4",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/data/Common.txt"
+        },
+        {
+          "asset_id": "vggsound",
+          "bytes": 9204,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"172e53cd3365fb70334a4596e2e5f7c9001b4a0673b06a0c80a80f626e3ae878\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/stat.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/stat.csv",
+          "sha256": "981445307f3b9ebc2b0e65641daaac1359496b7a8f17208348e7fc8e2696b6d5",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/data/stat.csv"
+        },
+        {
+          "asset_id": "vggsound",
+          "bytes": 642248,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"79dce68c55b823d8c70aeed5b9879c73fe2637c22a32c6fc64af698b575cefd5\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/test.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/test.csv",
+          "sha256": "0b2215dc3786fbb223aa06a2162491099d89cf080ac31b16bb3a72368fbaa24d",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/data/test.csv"
+        },
+        {
+          "asset_id": "vggsound",
+          "bytes": 7667101,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"af53d189f6bbb31b9439158aff1b8afba9b833514f0d6b94cbca64839a6ed470\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/train.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/train.csv",
+          "sha256": "4edf3f0239d9adf41f58f2473e43c727ef0e5a3db8d3a5ef5f436327885a8a8a",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/data/train.csv"
+        },
+        {
+          "asset_id": "vggsound",
+          "bytes": 7949116,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"959af5df007d531d23201927487d2b9b15e6e3a72827ee811b4878632a74d240\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/vggsound.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/vggsound/9bbc7491c054a203e53584c0065df336e1322bb7/data/vggsound.csv",
+          "sha256": "c1816c00a237afa4994e873e88f56bac206cbb285fddb05c564184b9c3d6e6ce",
+          "source_url": "https://raw.githubusercontent.com/hche11/VGGSound/9bbc7491c054a203e53584c0065df336e1322bb7/data/vggsound.csv"
+        }
+      ],
+      "next_media_plan": "Use mirrored data/vggsound.csv as the precise media request list: YouTube ID, start second, label, split. Download only chosen rows after rights/availability checks.",
+      "prepared_material": "Pinned README, LICENCE.txt, official CSVs and split/stat helper CSVs mirrored.",
+      "status": "metadata_prepared_raw_youtube_rights_separate",
+      "user_action_links": [
+        "https://github.com/hche11/VGGSound",
+        "https://creativecommons.org/licenses/by/4.0/"
+      ]
+    },
+    {
+      "asset_id": "audiocaps",
+      "blockers": [
+        "Official raw audio/video access requires submitting the project form; this audit did not submit or accept terms.",
+        "Commercial training rights are not cleared by the mirrored repository files."
+      ],
+      "license_status": "Pinned repository LICENSE is MIT, while README says code and dataset are free for academic purposes only; raw video/audio access requires the official form and downstream YouTube/AudioSet terms.",
+      "mirrored_files": [
+        {
+          "asset_id": "audiocaps",
+          "bytes": 1074,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"e8ec6828928851a589059506f88e9c4120b8dba52b6b2ce608ae4da586435db1\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/LICENSE",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/LICENSE",
+          "sha256": "af813f755b7265f118f93b78e54fd9ebb2e5b7cf184a9eea2bff718c9de7ebc0",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/LICENSE"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 1125,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"201644c5a2e151620d73d7ad20517be71fcfa5293ee3b35790d41af4aa210623\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/README.md",
+          "sha256": "8b8690756a5ca55ad9871aff16d3092bfe0d5a74944fe573ce85180f28c22f8b",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/README.md"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 750,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"e716057f7a952687e0943596fc55b2489f0695b06c3b773f0dcd9bd3f800c319\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/README.md",
+          "sha256": "8ace2a5ab7b238de5a34b2ef806831564852f63694c51dbad32e670623f8e882",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/README.md"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 402246,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"4b6d7234f7d67a47b3d6580110b93c77e3718fd17459dd0cfe7ea43514ef3e03\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/test.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/test.csv",
+          "sha256": "b91c4b7ded2f4f6e7db5b9c4983dc1e1dca3d556f505b61e3fd65cac7e1c638a",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/test.csv"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 3576723,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"168489e5d6082fe8194562d8153cbc13bbdea9b1a4357046cdefadbf36b39441\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/train.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/train.csv",
+          "sha256": "c0c5223db682b3bf724ce7e7ce58d5b36929f74572e8526a7211f92d2eef7c8e",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/train.csv"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 171918,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"9c0dacb91ee666c40fd4cd3d464c7be4265354adc4fafcf6c1ff4ac8b1e58025\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/val.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/val.csv",
+          "sha256": "dab1c96641d5f3053ddb99dca3949450da9a75737bda53e11cc0aa8b102be0c3",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/val.csv"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 753,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"547137e3bd671c3701d2d8d022d57263bc176074053c93281ab6a8b8d41c4960\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/README.md",
+          "sha256": "ae2fcbcf7e4f93964dfaf02c094998b2cfc199a16f4eb0350f65f170ad01a906",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/README.md"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 397498,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"3ab6efeeb27728639b2860dce7cb53036b95755b1ebacfdc401c3de80deeeca6\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/test.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/test.csv",
+          "sha256": "365c8a8a71c9070a8d5dba5dd44f3a781f906632a49cb82b38bebaaa8f3c5ccb",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/test.csv"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 6311901,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"95acdb3066bc7a7facba62f787ac6e8c83acb2d965f40ae16ce94daf2844c016\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/train.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/train.csv",
+          "sha256": "25659eee0ff887972b6a8a74008dfffe582343930e89db71519d66e9dd014f6e",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/train.csv"
+        },
+        {
+          "asset_id": "audiocaps",
+          "bytes": 169508,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"86bad1decbf607e20acf439ef9c65742b12575ec4a1754ab0986e69577bcbdd1\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/val.csv",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/val.csv",
+          "sha256": "dfdd0f83c70fb818fbb86dcba42754abfb97f7774d811fff91a1c89d84d868c5",
+          "source_url": "https://raw.githubusercontent.com/cdjkim/audiocaps/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset2.0/val.csv"
+        }
+      ],
+      "next_media_plan": "Use mirrored train/val/test caption CSVs to produce exact YouTube IDs and start times; after form approval, download only the selected IDs and record granted terms.",
+      "prepared_material": "Pinned README, LICENSE, dataset and dataset2.0 README/CSV caption splits mirrored.",
+      "status": "captions_prepared_raw_audio_form_blocked",
+      "user_action_links": [
+        "https://github.com/cdjkim/audiocaps",
+        "https://audiocaps.github.io/",
+        "https://forms.gle/8sFHc3XJ32ERWxqF8"
+      ]
+    },
+    {
+      "asset_id": "gui-odyssey",
+      "blockers": [
+        "Root/user should decide whether current public HF CC-BY-4.0 terms satisfy project policy before using the dataset for training.",
+        "If HF access state changes, a logged-in account/terms review may be needed; this audit did not use credentials."
+      ],
+      "license_status": "Current official HF metadata and README report CC-BY-4.0 and ungated public access; pinned GitHub source has no LICENSE file in the inspected tree, so HF dataset card is the governing mirrored evidence for dataset terms.",
+      "mirrored_files": [
+        {
+          "asset_id": "gui-odyssey",
+          "bytes": 3331,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"8f86c3c6d840088673165eb6f76b08d8c0edba7de7965d9b903fc7971001d3b6\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "gui-odyssey/github/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/github/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/README.md",
+          "sha256": "4585b765d7c8b3e9bb6187d36d576edde454d4c0158a6aa8b3fdbedf34c89a15",
+          "source_url": "https://raw.githubusercontent.com/OpenGVLab/GUI-Odyssey/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/README.md"
+        },
+        {
+          "asset_id": "gui-odyssey",
+          "bytes": 11401,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"86477218551082414d64b7a7dcb9058ab95df22ad518ed9ba7de2c1e0f7da7cc\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "gui-odyssey/github/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/data/format_converter.py",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/github/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/data/format_converter.py",
+          "sha256": "0ccbd7fce9a64a6044c22bf49ac726065b7c31827b730b9ce4e1ebb677f5dc4d",
+          "source_url": "https://raw.githubusercontent.com/OpenGVLab/GUI-Odyssey/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/data/format_converter.py"
+        },
+        {
+          "asset_id": "gui-odyssey",
+          "bytes": 525,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"adb0e8aa4e52b6c7f16a9e688721878ea269feaf2eff8c1f658ec2c7fafae690\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "gui-odyssey/github/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/data/preprocessing.py",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/github/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/data/preprocessing.py",
+          "sha256": "7e9dacd8ed3283d86b1205b24758acf54a72d2e582290a181fbb86ffdf2fe422",
+          "source_url": "https://raw.githubusercontent.com/OpenGVLab/GUI-Odyssey/5cdf76d9bd72034f3cb36bcf2cad77b8dcc81251/data/preprocessing.py"
+        },
+        {
+          "asset_id": "gui-odyssey",
+          "bytes": 7470,
+          "content_type": "text/plain; charset=utf-8",
+          "etag": "\"8bf3410f50467f9332945f5ff94729211868c758\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "gui-odyssey/hf-README.md",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/hf-README.md",
+          "sha256": "fd627ee0a6ee0596e0ee8147996b9a7a3436f754fc95ed63cf5f408d778b2831",
+          "source_url": "https://huggingface.co/datasets/hflqf88888/GUIOdyssey/raw/61632d0f3f4d51d7e9561ce4f84347dd06b2019d/README.md"
+        },
+        {
+          "asset_id": "gui-odyssey",
+          "bytes": 418757,
+          "content_type": "application/json; charset=utf-8",
+          "etag": "W/\"663c5-nHtW9p+BXMH3Iq3Pxk2DSZLbnH8\"",
+          "http_status": 200,
+          "last_modified": null,
+          "relative_path": "gui-odyssey/hf-api.json",
+          "remote_path": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/hf-api.json",
+          "sha256": "bab7c8796bdecc623f9073f3de79f0d4ea99e606f837fc50b20be78d03a5d894",
+          "source_url": "https://huggingface.co/api/datasets/hflqf88888/GUIOdyssey/revision/61632d0f3f4d51d7e9561ce4f84347dd06b2019d"
+        }
+      ],
+      "next_media_plan": "Use HF API siblings/all_annot.json to derive an exact episode list, then select required episodes and download only those JSON/screenshots/actions after terms are approved.",
+      "prepared_material": "Pinned GitHub README/converter scripts plus current official HF API metadata and HF README mirrored. Episode JSON/media were not bulk downloaded.",
+      "status": "metadata_prepared_public_hf_entry_found_no_bulk_download",
+      "user_action_links": [
+        "https://github.com/OpenGVLab/GUI-Odyssey",
+        "https://huggingface.co/datasets/hflqf88888/GUIOdyssey"
+      ]
+    }
+  ],
+  "base_commit": "d2e751263fa7952d7720cb6228eb77a80b9472f1",
+  "branch": "codex/stage3-source-audit",
+  "clevrer_official_payload_heads": [
+    {
+      "content_length": 12354893389,
+      "content_type": "application/zip",
+      "etag": "\"2e068b64d-59db378b1c46e\"",
+      "http_status": 200,
+      "last_modified": "Mon, 03 Feb 2020 22:30:33 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/videos/train/video_train.zip"
+    },
+    {
+      "content_length": 156761889,
+      "content_type": "application/zip",
+      "etag": "\"957ff21-59db3309a63ea\"",
+      "http_status": 200,
+      "last_modified": "Mon, 03 Feb 2020 22:10:23 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/annotations/train/annotation_train.zip"
+    },
+    {
+      "content_length": 86651938,
+      "content_type": "application/json",
+      "etag": "\"52a3422-5a84144633347\"",
+      "http_status": 200,
+      "last_modified": "Wed, 17 Jun 2020 05:52:37 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/questions/train.json"
+    },
+    {
+      "content_length": 6206059321,
+      "content_type": "application/zip",
+      "etag": "\"171e8f339-59db35a74239f\"",
+      "http_status": 200,
+      "last_modified": "Mon, 03 Feb 2020 22:22:05 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/videos/validation/video_validation.zip"
+    },
+    {
+      "content_length": 78386966,
+      "content_type": "application/zip",
+      "etag": "\"4ac1716-59db32f8d9b92\"",
+      "http_status": 200,
+      "last_modified": "Mon, 03 Feb 2020 22:10:06 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/annotations/validation/annotation_validation.zip"
+    },
+    {
+      "content_length": 43327533,
+      "content_type": "application/json",
+      "etag": "\"295202d-5a84144719eff\"",
+      "http_status": 200,
+      "last_modified": "Wed, 17 Jun 2020 05:52:38 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/questions/validation.json"
+    },
+    {
+      "content_length": 6149404859,
+      "content_type": "application/zip",
+      "etag": "\"16e8878bb-59db35c8bc5aa\"",
+      "http_status": 200,
+      "last_modified": "Mon, 03 Feb 2020 22:22:40 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/videos/test/video_test.zip"
+    },
+    {
+      "content_length": 17649911,
+      "content_type": "application/json",
+      "etag": "\"10d50f7-5a841444c00b9\"",
+      "http_status": 200,
+      "last_modified": "Wed, 17 Jun 2020 05:52:35 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/questions/test.json"
+    },
+    {
+      "content_length": 396807825,
+      "content_type": "application/zip",
+      "etag": "\"17a6ce91-5a050aa8694e8\"",
+      "http_status": 200,
+      "last_modified": "Sun, 08 Mar 2020 04:53:22 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/derender_proposals.zip"
+    },
+    {
+      "content_length": 4425,
+      "content_type": "text/plain",
+      "etag": "\"1149-59fbc583554bf\"",
+      "http_status": 200,
+      "last_modified": "Sat, 29 Feb 2020 19:56:06 GMT",
+      "url": "http://data.csail.mit.edu/clevrer/README.txt"
+    }
+  ],
+  "generated_at": "2026-10-13T19:40:44Z",
+  "local_mirror_total_bytes_excluding_manifest": 36218377,
+  "remote_du_bytes_including_dirs": 36239763,
+  "remote_file_count_including_manifest": 36,
+  "remote_manifest_sha256": "bb7fe00a70dd8208de6a0f5470870083c780de389790205d9320a5944e0bcacc",
+  "remote_root": "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit",
+  "schema_version": "1.0",
+  "scope": {
+    "gpu_used": false,
+    "hidden_or_holdout_data_read": false,
+    "raw_media_downloaded": false,
+    "shared_ledgers_modified": false,
+    "terms_accepted": false
+  },
+  "worktree": "/tmp/lite-omnijev-stage3-source-audit"
+}
