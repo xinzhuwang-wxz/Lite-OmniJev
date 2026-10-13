@@ -68,3 +68,12 @@
 - 补漏核查：原方案ScreenSpot尚无显式资产证据，授权代理已认领审计/合法公开限定下载；运行时代理继续全阶段依赖闭包补漏，GUI代理检验multipart选择性读取，CommonVoice CPU代理与CLEVRER队列继续。Clotho004已排队完成后自动锁内提取，无需开GPU等待网络。
 
 - 用户新决定（2026-10-14）：AudioCaps申请耗时，首发省略；已落ADR-0004和资产required_stages空列表，不再等待该表单。DocVQA用户确认已办理，root核验实际下载入口再下载。Android具体SDK/NDK协议仍待实际接受记录，不能视为所有协议均已授权。
+
+## 本轮新增实际证据与在途任务
+- 最新主树289测试全部通过（20.49s），含CommonVoice4行为测试、GUI3测试；GUI新脚本全仓Ruff/format/mypy发现10个类型问题，已退回原执行者在锁拆分批次修复，不能宣称最新全绿。
+- CommonVoice reports/commonvoice-cpu-prep.json：全8709成员安全流式检查/2TSV/32代表MP3完整解码通过，物理8703音频不等于MDC5898独立clip；不读出转写或说话者字段，训练仍需audio_id/族去重。
+- ScreenSpot原版官方6文件597,662,567B、610图完整解码通过；reports/screenspot-source-audit.json。只隔离评测，未证明第三方截图商业再分发许可。
+- GUI ZIP64中央目录14.24MB已固定SHA，127893 PNG可按episode Range恢复，无需92.64GB全量。官方train1679 episodes/19,499,790,993B媒体计划在传；test1169只评测。执行者已将长网络传输改为锁外、仅解压锁内，保留已完成文件，最终receipt待完成。
+- LiteRT host官方可执行证明已整合。reports/offline-dependency-gaps.json揭示root/serve/media离线wheelhouse尚缺；runtime代理继续固定全阶段必需工具版本/许可及增量下载，非仅现有imports。future LoRA/量化模型是待生成产物，不混为外部下载。
+- 教师原loader音频输出预创建空临时文件但FFmpeg未加-y，Mac最小CPU复现可exit0却0B输出；video代理Linux复核并冻结官方16帧/30秒mono16kHz与MVBench协议证据，未修改官方loader/门槛，精确14任务2786ID仍未证实。
+- 浏览器授权：已亲眼确认RRC账号激活成功及已登录User页面；用户已完成DocVQA手续。进入ch17下载页后Chrome正文/控制异常（扩展连接失败、native间歇noWindowsAvailable），不能把账号成功冒称数据已下载。未接受Android SDK/NDK协议、未提交AudioCaps申请（已省略）。继续无需浏览器的下载/CPU验收。
