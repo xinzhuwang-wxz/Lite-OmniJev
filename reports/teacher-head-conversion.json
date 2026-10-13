@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "converted",
+  "converted_at": "2026-10-13T17:09:34.191507+00:00",
+  "source_repo": "akhilaaa3/Jev-Omni",
+  "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+  "source_path": "artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917/head.pt",
+  "source_size": 3966079,
+  "source_sha256": "8c81edecd733f7db327604803c14cf9ecbee53d2af055eeb09f78b64bcbf2638",
+  "output_path": "artifacts/teacher/jev-omni/5addda86ddee081a68fb067477ea100c221b8917/head.safetensors",
+  "output_size": 3964424,
+  "output_sha256": "526af7409c23e250828a6dc5b18940a337eacfa5f7ccd7043cf033cff11615b1",
+  "tensor_count": 4,
+  "tensors": {
+    "linear.bias": {
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32",
+      "numel": 256,
+      "sha256": "64fc4d7415e749ede5eb9d15d4a6be3f23791275e371bdeb6ca4017fee2ff8a7"
+    },
+    "linear.weight": {
+      "shape": [
+        256,
+        3840
+      ],
+      "dtype": "torch.float32",
+      "numel": 983040,
+      "sha256": "77d888094e18126a43ececd4160a08031c636d20c27eb4607afe42e3818e0ea1"
+    },
+    "mu": {
+      "shape": [
+        1,
+        3840
+      ],
+      "dtype": "torch.float32",
+      "numel": 3840,
+      "sha256": "100aa1863b2aa4b4822a7d6972e0640adf484fbe54ab716ca2ce16a26c963b53"
+    },
+    "sd": {
+      "shape": [
+        1,
+        3840
+      ],
+      "dtype": "torch.float32",
+      "numel": 3840,
+      "sha256": "347e5b5b79d3a91fa8cad72702a3185812e4f45f2aad31dba49f5e1fbc3130a9"
+    }
+  },
+  "versions": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "torch": "2.14.1+cu130",
+    "safetensors": "0.8.0"
+  },
+  "isolation": {
+    "mode": "seccomp",
+    "network_denied": true
+  },
+  "exit_code": 0
+}
