@@ -1,0 +1,20 @@
+[project]
+name = "lite-omnijev-offline-tools"
+version = "0.1.0"
+description = "Pinned auxiliary OSS tools for Lite-OmniJev offline S0-S6 preparation. Not imported by production code."
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "py-data-juicer==1.6.0",
+  "datasketch==2.0.0",
+  "imagededup==0.3.3.post2",
+  "scenedetect==0.7.2",
+  "lmms-eval==0.7.3",
+  "torchmetrics==1.9.0",
+]
+
+[dependency-groups]
+frontend = []
+optional-heavy = []
+
+[tool.uv]
+package = false

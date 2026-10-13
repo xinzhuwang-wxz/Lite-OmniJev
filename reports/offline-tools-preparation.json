@@ -1,0 +1,161 @@
+{
+  "frontend_seed": {
+    "lockfile": "infra/offline-tools/frontend/pnpm-lock.yaml",
+    "node": {
+      "codename": "Krypton",
+      "primary_source": "https://nodejs.org/dist/index.json",
+      "remote_archive": "artifacts/runtime-builds/offline-tools/node/node-v24.21.0-linux-x64.tar.xz",
+      "remote_sha_source": "artifacts/runtime-builds/offline-tools/node/SHASUMS256.txt",
+      "version": "v24.21.0"
+    },
+    "packages": {
+      "@vitejs/plugin-react": "6.1.2",
+      "class-variance-authority": "0.7.1",
+      "clsx": "2.1.1",
+      "framer-motion": "14.2.0",
+      "lucide-react": "1.56.0",
+      "react": "19.3.0",
+      "react-dom": "19.3.0",
+      "shadcn": "4.21.4",
+      "tailwind-merge": "3.7.0",
+      "tailwindcss": "4.3.3",
+      "typescript": "7.0.2",
+      "vite": "8.3.4"
+    },
+    "pnpm": {
+      "license": "MIT",
+      "primary_source": "https://registry.npmjs.org/pnpm",
+      "remote_archive": "artifacts/runtime-builds/offline-tools/frontend/pnpm-12.11.2.tgz",
+      "sha256": "eb57341b8b54fddaeededb15dbb77cc30a11750cecca301bfda02478fdff3a00",
+      "version": "12.11.2"
+    }
+  },
+  "generated_at_utc": "2026-10-13T21:23:37Z",
+  "local_artifacts": {
+    "infra/offline-tools/frontend/package.json": {
+      "bytes": 695,
+      "sha256": "a66d1c5a42739164a0d3dd6723cc601ea69af882609c4eed4c5ca2ff9d8c53b5"
+    },
+    "infra/offline-tools/frontend/pnpm-lock.yaml": {
+      "bytes": 102534,
+      "sha256": "35653f373ed16b1c8037c82b17cd25ca7a201690f9f5001d48016eb6d9c222e4"
+    },
+    "infra/offline-tools/pyproject.toml": {
+      "bytes": 468,
+      "sha256": "c46a014a4ce0c56c09f1fd436e03326ef7e86806dea354006857e2c82d0745e3"
+    },
+    "infra/offline-tools/uv.lock": {
+      "bytes": 369920,
+      "sha256": "f980d8b88874c69abfd6aa4421785aa5a844afebbc2f87cfe51d323e403b88bf"
+    },
+    "reports/offline-tools-light-requirements-summary.json": {
+      "bytes": 833,
+      "sha256": "8bbb8290e653b284e4e588594ec572079228a901e6fa9b2398fcd9ca9dc1c479"
+    },
+    "reports/offline-tools.light-requirements.txt": {
+      "bytes": 96508,
+      "sha256": "559e25e205414ecb8cff169c9469f2af5556add6aeb700ff38b99c3d22e22b9a"
+    },
+    "reports/offline-tools.requirements.txt": {
+      "bytes": 102786,
+      "sha256": "c388948ade7c299f7f087e21125889af886322353f64c0734dad19fb8b2a6836"
+    }
+  },
+  "python_not_selected": [
+    {
+      "license": "Apache",
+      "package": "decord",
+      "primary_source": "https://pypi.org/pypi/decord/json",
+      "reason": "Current media slice already uses ffmpeg/ffprobe plus official Transformers processor path; adding decord would duplicate video decode surface before a concrete benchmark need.",
+      "version": "0.6.0"
+    },
+    {
+      "license": "Apache-2.0",
+      "package": "deepspeed",
+      "primary_source": "https://pypi.org/pypi/deepspeed/json",
+      "reason": "Optional distributed training accelerator only; S0-S6 first-card prep does not require preinstalling it.",
+      "version": "0.19.7"
+    },
+    {
+      "license": "Apache-2.0",
+      "package": "unsloth",
+      "primary_source": "https://pypi.org/pypi/unsloth/json",
+      "reason": "Optional optimization stack; not part of frozen Gemma/PEFT/vLLM baseline.",
+      "version": "2026.10.5"
+    }
+  ],
+  "python_offline_tools": [
+    {
+      "import": "data_juicer",
+      "license": "Apache-2.0",
+      "package": "py-data-juicer",
+      "primary_source": "https://pypi.org/pypi/py-data-juicer/json",
+      "purpose": "S0-S6 data cleaning/filtering when Data-Juicer recipes are used.",
+      "version": "1.6.0"
+    },
+    {
+      "import": "datasketch",
+      "license": "MIT",
+      "package": "datasketch",
+      "primary_source": "https://pypi.org/pypi/datasketch/json",
+      "purpose": "MinHash/LSH near-duplicate detection for dataset family separation and contamination checks.",
+      "version": "2.0.0"
+    },
+    {
+      "import": "imagededup",
+      "license": "Apache-2.0",
+      "package": "imagededup",
+      "primary_source": "https://pypi.org/pypi/imagededup/json",
+      "purpose": "Image duplicate candidate generation for multimodal corpus hygiene.",
+      "version": "0.3.3.post2"
+    },
+    {
+      "import": "scenedetect",
+      "license": "BSD-3-Clause",
+      "package": "scenedetect",
+      "primary_source": "https://pypi.org/pypi/scenedetect/json",
+      "purpose": "Video scene segmentation when media QA needs deterministic frame ranges.",
+      "version": "0.7.2"
+    },
+    {
+      "import": "lmms_eval",
+      "license": "MIT",
+      "package": "lmms-eval",
+      "primary_source": "https://pypi.org/pypi/lmms-eval/json",
+      "purpose": "Optional multimodal evaluation harness for later S5/S6 gates.",
+      "version": "0.7.3"
+    },
+    {
+      "import": "torchmetrics",
+      "license": "Apache-2.0",
+      "package": "torchmetrics",
+      "primary_source": "https://pypi.org/pypi/torchmetrics/json",
+      "purpose": "Metric implementations for eval/calibration reports when plain project metrics need cross-checking.",
+      "version": "1.9.0"
+    }
+  ],
+  "remote_caches": {
+    "offline_tools_light": {
+      "path": "artifacts/runtime-builds/python-wheels/offline-tools-light",
+      "pid": "26202",
+      "status": "running at last poll; excludes torch/torchvision/triton/nvidia-/cuda-* reused from existing caches"
+    },
+    "root_training_dev_monitoring": {
+      "path": "artifacts/runtime-builds/python-wheels/root-training-dev-monitoring",
+      "pid": "25391",
+      "status": "running at last poll; no-index canary pending until process exits"
+    }
+  },
+  "serve_next_audio_probe": {
+    "correction_status": "No existing env was changed. PyPI official metadata currently exposes torchaudio 2.11.0 as latest, so no torchaudio 2.13.0 replacement was installed; this lock combination is documented as CPU-import-valid but semver-skewed.",
+    "cpu_import_result": "all imports ok; torch.ones(2).sum() == 2.0; torch.cuda.is_available() == false",
+    "observed_versions": {
+      "torch": "2.13.0+cu130",
+      "torchaudio": "2.11.0+cu130",
+      "torchvision": "0.28.0+cu130",
+      "transformers": "5.17.0",
+      "vllm": "0.31.0"
+    },
+    "remote_env": "/root/autodl-tmp/envs/serve-next/bin/python"
+  }
+}

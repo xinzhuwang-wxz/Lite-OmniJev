@@ -1,0 +1,31 @@
+{
+  "excluded_blocks": [
+    "cuda-bindings",
+    "cuda-pathfinder",
+    "cuda-toolkit",
+    "nvidia-cublas",
+    "nvidia-cuda-cupti",
+    "nvidia-cuda-nvrtc",
+    "nvidia-cuda-runtime",
+    "nvidia-cudnn-cu13",
+    "nvidia-cufft",
+    "nvidia-cufile",
+    "nvidia-curand",
+    "nvidia-cusolver",
+    "nvidia-cusparse",
+    "nvidia-cusparselt-cu13",
+    "nvidia-nccl-cu13",
+    "nvidia-nvjitlink",
+    "nvidia-nvshmem-cu13",
+    "nvidia-nvtx",
+    "torch",
+    "torchvision",
+    "triton"
+  ],
+  "included_blocks": 179,
+  "output": "reports/offline-tools.light-requirements.txt",
+  "output_sha256": "559e25e205414ecb8cff169c9469f2af5556add6aeb700ff38b99c3d22e22b9a",
+  "source": "reports/offline-tools.requirements.txt",
+  "source_blocks": 200,
+  "source_sha256": "c388948ade7c299f7f087e21125889af886322353f64c0734dad19fb8b2a6836"
+}
