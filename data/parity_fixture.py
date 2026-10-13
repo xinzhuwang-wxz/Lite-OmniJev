@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 from collections import Counter
 from pathlib import Path
@@ -33,6 +34,10 @@ def _letter(index: int) -> str:
     return chr(65 + index)
 
 
+def _family_question(question: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in question.items() if key != "target"}
+
+
 def _sample(
     *,
     sample_id: str,
@@ -45,7 +50,7 @@ def _sample(
 ) -> Sample:
     family_payload = {
         "state": state,
-        "question": question,
+        "question": _family_question(question),
         "generator_family": generator_family,
         "case_status": case_status,
         "quota_key": quota_key,
@@ -450,12 +455,34 @@ def write_jsonl(path: Path, samples: list[Sample]) -> str:
 def file_manifest(
     path: Path, samples: list[Sample], pool: FixturePool, generator_family: str
 ) -> dict[str, Any]:
+    generators = {
+        CALIBRATION_GENERATOR: (
+            _calibration_choice,
+            _calibration_noul,
+            _calibration_score,
+            generate_calibration_samples,
+        ),
+        CONFIRMATION_GENERATOR: (
+            _confirmation_choice,
+            _confirmation_noul,
+            _confirmation_score,
+            generate_confirmation_samples,
+        ),
+    }
+    source = "\n".join(inspect.getsource(function) for function in generators[generator_family])
     return {
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "rows": len(samples),
         "pool": pool,
         "generator_families": [generator_family],
+        "generator_source_sha256": hashlib.sha256(source.encode()).hexdigest(),
+        "generator_rule_count": 3,
         "effective_sample_families": len({sample.meta.family_id for sample in samples}),
+        "independence_limit": (
+            "100 case families are content-isolated rows, not 100 independent algorithms "
+            "or statistically independent production samples; each file uses one combined "
+            "generator family with three task rules."
+        ),
         "quota_counts": quota_counts(samples),
         "case_status_counts": case_status_counts(samples),
     }
@@ -466,6 +493,13 @@ def build_fixture(output_dir: Path) -> dict[str, Any]:
     confirmation = generate_confirmation_samples()
     calibration_path = output_dir / "calibration.jsonl"
     confirmation_path = output_dir / "confirmation.jsonl"
+    manifest_path = output_dir / "manifest.json"
+    existing = [
+        path for path in (calibration_path, confirmation_path, manifest_path) if path.exists()
+    ]
+    if existing:
+        names = ", ".join(path.name for path in existing)
+        raise FileExistsError(f"refusing to overwrite existing parity fixture files: {names}")
     write_jsonl(calibration_path, calibration)
     write_jsonl(confirmation_path, confirmation)
     manifest = {
@@ -487,7 +521,6 @@ def build_fixture(output_dir: Path) -> dict[str, Any]:
             ),
         },
     }
-    manifest_path = output_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     return manifest
 

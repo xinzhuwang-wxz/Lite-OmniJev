@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import subprocess
 import sys
 
@@ -13,6 +14,7 @@ from data.parity_fixture import (
     generate_confirmation_samples,
     load_calibration,
     quota_counts,
+    stable_hash,
 )
 from data.schema import (
     HardTarget,
@@ -33,6 +35,59 @@ EXPECTED_QUOTAS = {
     "score-5": 5,
     "score-10": 5,
 }
+
+
+def independent_target(sample):
+    state = sample.prefix.state
+    question = sample.questions[0]
+    facts = state.rsplit(". ", maxsplit=1)[-1]
+    if "unavailable" in facts or "missing" in facts or "unknown" in facts:
+        return None
+    if "second register value" in facts or "second log time" in facts:
+        return None
+    if "=on and" in facts or "=done and" in facts:
+        return None
+    if question.qid == "interval-choice":
+        low, high = map(int, re.search(r"\[(\d+), (\d+)\]", state).groups())
+        values = dict(re.findall(r"(asset-\d+-\d+): value (-?\d+)", state))
+        matches = [
+            option for option in question.options or [] if low <= int(values[option]) <= high
+        ]
+        assert len(matches) == 1
+        return chr(65 + (question.options or []).index(matches[0]))
+    if question.qid == "threshold-noul":
+        threshold = int(re.search(r"at least (\d+)", state).group(1))
+        item = re.search(r"Does (probe-\d+) pass", question.instruction).group(1)
+        value = int(re.search(rf"{item}: value (-?\d+)", state).group(1))
+        return "yes" if value >= threshold else "no"
+    if question.qid == "signal-score":
+        levels = question.score_levels
+        assert levels is not None
+        facts = re.findall(r"s\d+=(on|off)", state)
+        assert len(facts) == levels - 1
+        return min(sum(fact == "on" for fact in facts), levels - 1)
+    if question.qid == "event-choice":
+        anchor = int(re.search(r"Anchor time is (\d+)", state).group(1))
+        times = dict(re.findall(r"(action-\d+-\d+): time (\d+)", state))
+        after_anchor = [
+            (option, int(times[option]))
+            for option in question.options or []
+            if int(times[option]) > anchor
+        ]
+        winner = min(after_anchor, key=lambda item: item[1])[0]
+        return chr(65 + (question.options or []).index(winner))
+    if question.qid == "deadline-noul":
+        deadline = int(re.search(r"at or before (\d+)", state).group(1))
+        event = re.search(r"Is (event-\d+) on time", question.instruction).group(1)
+        value = int(re.search(rf"{event}: time (\d+)", state).group(1))
+        return "yes" if value <= deadline else "no"
+    if question.qid == "sequence-score":
+        levels = question.score_levels
+        assert levels is not None
+        facts = re.findall(r"stage-\d+=(done|open)", state)
+        assert len(facts) == levels - 1
+        return min(sum(fact == "done" for fact in facts), levels - 1)
+    raise AssertionError(f"unhandled qid {question.qid}")
 
 
 def test_calibration_fixture_is_reproducible_independent_and_quota_balanced():
@@ -72,6 +127,44 @@ def test_confirmation_fixture_uses_distinct_semantic_generator_and_dev_pool():
     assert all(CALIBRATION_GENERATOR not in sample.prefix.state for sample in confirmation)
 
 
+def test_rendered_state_oracle_recomputes_all_targets_independently():
+    for sample in [*generate_calibration_samples(), *generate_confirmation_samples()]:
+        expected = independent_target(sample)
+        target = sample.questions[0].target
+        if expected is None:
+            assert isinstance(target, InsufficientTarget)
+        else:
+            assert isinstance(target, HardTarget)
+            assert target.value == expected
+
+
+def test_family_hash_excludes_target_truth():
+    sample = generate_calibration_samples()[0]
+    question = sample.questions[0]
+    payload = sample.model_dump()
+    assert isinstance(question.target, HardTarget)
+    payload["questions"][0]["target"] = {
+        **question.target.model_dump(),
+        "value": "B" if question.target.value != "B" else "A",
+    }
+    relabeled = Sample.model_validate(payload)
+    assert relabeled.meta.family_id == sample.meta.family_id
+    expected_family = stable_hash(
+        {
+            "state": sample.prefix.state,
+            "question": {
+                key: value
+                for key, value in sample.questions[0].model_dump(exclude_none=True).items()
+                if key != "target"
+            },
+            "generator_family": CALIBRATION_GENERATOR,
+            "case_status": "sufficient",
+            "quota_key": "choice-2",
+        }
+    )
+    assert sample.meta.family_id == expected_family
+
+
 def test_fixtures_cover_sufficient_missing_and_conflict_as_explicit_u_cases():
     for samples in (generate_calibration_samples(), generate_confirmation_samples()):
         insufficient = [
@@ -103,18 +196,41 @@ def test_manifest_records_file_hashes_rows_pool_and_generator_families(tmp_path)
         "rows": 100,
         "pool": "calibration",
         "generator_families": [CALIBRATION_GENERATOR],
+        "generator_source_sha256": manifest["files"]["calibration.jsonl"][
+            "generator_source_sha256"
+        ],
+        "generator_rule_count": 3,
         "effective_sample_families": 100,
+        "independence_limit": (
+            "100 case families are content-isolated rows, not 100 independent algorithms "
+            "or statistically independent production samples; each file uses one combined "
+            "generator family with three task rules."
+        ),
         "quota_counts": EXPECTED_QUOTAS,
         "case_status_counts": {"insufficient": 65, "sufficient": 35},
     }
+    assert len(manifest["files"]["calibration.jsonl"]["generator_source_sha256"]) == 64
     assert (
         manifest["files"]["confirmation.jsonl"]["sha256"]
         == hashlib.sha256(confirmation.read_bytes()).hexdigest()
     )
     assert manifest["files"]["confirmation.jsonl"]["pool"] == "dev"
     assert manifest["files"]["confirmation.jsonl"]["generator_families"] == [CONFIRMATION_GENERATOR]
+    assert manifest["files"]["confirmation.jsonl"]["generator_rule_count"] == 3
+    assert len(manifest["files"]["confirmation.jsonl"]["generator_source_sha256"]) == 64
     assert (tmp_path / "manifest.json").is_file()
     assert json.loads((tmp_path / "manifest.json").read_text()) == manifest
+
+
+def test_build_fixture_refuses_to_overwrite_existing_bytes(tmp_path):
+    target = tmp_path / "calibration.jsonl"
+    target.write_text("keep me\n")
+    before = target.read_bytes()
+    with pytest.raises(FileExistsError, match="calibration.jsonl"):
+        build_fixture(tmp_path)
+    assert target.read_bytes() == before
+    assert not (tmp_path / "confirmation.jsonl").exists()
+    assert not (tmp_path / "manifest.json").exists()
 
 
 def test_load_calibration_validates_basename_pool_shape_and_families(tmp_path):
