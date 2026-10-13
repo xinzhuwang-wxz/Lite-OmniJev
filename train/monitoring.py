@@ -21,6 +21,14 @@ VALID_MODES = {"online", "offline", "local", "disabled"}
 VALID_FAILURE_POLICIES = {"warn", "fail"}
 
 
+class MonitoringError(RuntimeError):
+    """Sanitized wrapper for telemetry failures that must reach training reports."""
+
+
+def sanitized_error(exc: Exception, operation: str) -> str:
+    return f"{type(exc).__name__}: SwanLab telemetry {operation} failed"
+
+
 class Telemetry(Protocol):
     def log(self, metrics: dict[str, int | float], step: int | None = None) -> None: ...
 
@@ -90,23 +98,23 @@ class SwanLabTelemetry:
         self.run = run
         self.error: str | None = None
 
-    def _handle_failure(self, exc: Exception) -> None:
-        self.error = f"{type(exc).__name__}: {exc}"
+    def _handle_failure(self, exc: Exception, operation: str) -> None:
+        self.error = sanitized_error(exc, operation)
         if self.config.failure_policy == "fail":
-            raise exc
+            raise MonitoringError(self.error) from exc
 
     def log(self, metrics: dict[str, int | float], step: int | None = None) -> None:
         try:
             self.run.log(metrics, step=step)
         except Exception as exc:
-            self._handle_failure(exc)
+            self._handle_failure(exc, "log")
 
     def finish(self, report: dict[str, Any]) -> None:
         try:
             module = importlib.import_module("swanlab")
             module.finish()
         except Exception as exc:
-            self._handle_failure(exc)
+            self._handle_failure(exc, "finish")
         if self.error is not None:
             report["monitoring_error"] = self.error
 
@@ -135,6 +143,6 @@ def start_swanlab(config: SwanLabConfig, report: dict[str, Any]) -> Telemetry:
         return SwanLabTelemetry(config, run)
     except Exception as exc:
         if config.failure_policy == "fail":
-            raise
-        report["monitoring_error"] = f"{type(exc).__name__}: {exc}"
+            raise MonitoringError(sanitized_error(exc, "init")) from exc
+        report["monitoring_error"] = sanitized_error(exc, "init")
         return DisabledTelemetry()

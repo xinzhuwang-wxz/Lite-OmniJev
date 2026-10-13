@@ -60,6 +60,8 @@ LITE_OMNIJEV_SWANLAB_FAILURE=warn
 
 Warn mode records `monitoring_error` in the report and continues with training. Use it only when the training artifact matters more than live monitoring.
 
+Telemetry errors are sanitized before they enter `run.json` or the top-level training report. Reports include the exception class and a stable operation label such as `ValueError: SwanLab telemetry init failed`; they do not copy SDK exception strings, URLs, API keys, or request bodies.
+
 ## Logged fields
 
 The integration never logs fabricated demonstration metrics. Values come from the current training process:

@@ -12,6 +12,7 @@ from scripts.train_smoke import main
 from train.monitoring import (
     MODE_ENV,
     OFFICIAL_API_KEY_ENV,
+    MonitoringError,
     SwanLabConfig,
     SwanLabTelemetry,
     start_swanlab,
@@ -264,10 +265,12 @@ def test_training_metric_wiring_uses_real_loop_values():
 
 
 def test_swanlab_failure_policy_warn_records_error(monkeypatch, tmp_path):
+    sentinel = "sk-SENTINEL-should-not-appear"
+
     class BrokenRun:
         def log(self, metrics, step=None):
             del metrics, step
-            raise RuntimeError("network down")
+            raise RuntimeError(f"network down with {sentinel}")
 
     config = SwanLabConfig(mode="offline", failure_policy="warn", logdir=tmp_path)
     telemetry = SwanLabTelemetry(config, BrokenRun())
@@ -279,19 +282,71 @@ def test_swanlab_failure_policy_warn_records_error(monkeypatch, tmp_path):
         SimpleNamespace(finish=lambda: None),
     )
     telemetry.finish(report)
-    assert report["monitoring_error"] == "RuntimeError: network down"
+    assert report["monitoring_error"] == "RuntimeError: SwanLab telemetry log failed"
+    assert sentinel not in json.dumps(report)
 
 
 def test_swanlab_failure_policy_fail_raises(tmp_path):
+    sentinel = "sk-SENTINEL-should-not-appear"
+
     class BrokenRun:
         def log(self, metrics, step=None):
             del metrics, step
-            raise RuntimeError("sdk refused metric")
+            raise RuntimeError(f"sdk refused metric {sentinel}")
 
     config = SwanLabConfig(mode="offline", failure_policy="fail", logdir=tmp_path)
     telemetry = SwanLabTelemetry(config, BrokenRun())
-    with pytest.raises(RuntimeError, match="sdk refused metric"):
+    with pytest.raises(MonitoringError) as excinfo:
         telemetry.log({"train/loss": 1.0}, step=1)
+    assert str(excinfo.value) == "RuntimeError: SwanLab telemetry log failed"
+    assert sentinel not in str(excinfo.value)
+
+
+def test_swanlab_init_failure_report_is_sanitized(monkeypatch, tmp_path):
+    sentinel = "sk-SENTINEL-should-not-appear"
+    fake = SimpleNamespace(init=lambda **kwargs: (_ for _ in ()).throw(ValueError(sentinel)))
+    monkeypatch.setitem(sys.modules, "swanlab", fake)
+    report = {
+        "code_revision": "abcdef1234567890",
+        "scope": "real smoke",
+        "model_revision": "f" * 40,
+        "config": SmokeConfig().model_dump(),
+        "resume_supported": False,
+    }
+    config = SwanLabConfig(mode="offline", failure_policy="warn", logdir=tmp_path)
+    telemetry = start_swanlab(config, report)
+    telemetry.finish(report)
+    assert report["monitoring_error"] == "ValueError: SwanLab telemetry init failed"
+    assert sentinel not in json.dumps(report)
+
+
+def test_trainer_error_from_monitoring_is_sanitized(monkeypatch, tmp_path):
+    sentinel = "sk-SENTINEL-should-not-appear"
+    fake = SimpleNamespace(init=lambda **kwargs: (_ for _ in ()).throw(ValueError(sentinel)))
+    monkeypatch.setitem(sys.modules, "swanlab", fake)
+    monkeypatch.setattr(
+        "importlib.util.find_spec", lambda name: object() if name == "swanlab" else None
+    )
+    monkeypatch.setattr("train.trainer.verified_assets", lambda model_dir, manifest_path: {})
+    monkeypatch.setattr("train.trainer.runtime_requirements", lambda: {})
+    monkeypatch.setattr("train.trainer.OfficialTokenizerAdapter", lambda model_dir: object())
+    monkeypatch.setattr(
+        "train.trainer.prepare_examples",
+        lambda samples, tokenizer, max_length: [
+            {"input_ids": [1], "token_ids": [2, 3], "target": [1, 0]}
+        ],
+    )
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "missing.json",
+        tmp_path / "out",
+        execute=True,
+        monitoring=SwanLabConfig(mode="offline", failure_policy="fail", logdir=tmp_path),
+    )
+    encoded = json.dumps(report)
+    assert sentinel not in encoded
+    assert report["error"] == "MonitoringError: ValueError: SwanLab telemetry init failed"
 
 
 def test_start_swanlab_passes_project_workspace_and_mode(monkeypatch, tmp_path):
