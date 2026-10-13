@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "asset_id": "docvqa-sp-original",
+  "audited_at": "2026-10-13T21:34:17.078693+00:00",
+  "official_entry": "https://rrc.cvc.uab.es/?ch=17&com=downloads",
+  "access": {
+    "user_registration_activation_login": "completed_by_user_per_parent_handoff",
+    "authorized_chrome_tab_observed": true,
+    "method": "Native Chrome View > Developer > View Source via cua_repl; authenticated official Download page source was readable after normal page rendering remained purple/blank.",
+    "browser_extension_failed": "nodeRepl.fetch request failed",
+    "credentials_cookies_or_browser_profile_read": false,
+    "security_warnings_bypassed": false
+  },
+  "dataset_terms": {
+    "observed_on_official_page": true,
+    "acceptance_trigger": "Downloading image data and annotations signifies agreement to page terms.",
+    "summary": [
+      "Do not distribute download URLs.",
+      "CVC and IIIT Hyderabad disclaim representations/warranties including noninfringement and fitness.",
+      "User assumes responsibility and must defend/indemnify CVC and IIIT Hyderabad for claims arising from data use.",
+      "Single-page images are UCSF Industry Documents Library pages; copyrights mostly remain with source companies/trusts.",
+      "CVC/IIIT explicitly state no ownership rights over the documents; hosting is for noncommercial research and educational purposes only.",
+      "Annotations accompanying document images are offered without restrictions."
+    ],
+    "accepted_by_agent": false,
+    "action_time_confirmation_required": true,
+    "commercial_image_training_admitted": false
+  },
+  "files_visible": [
+    {
+      "task": "Task 1 Single Page Document Visual Question Answering",
+      "label": "Annotations (questions, answers, question types)",
+      "release": "Original V1.0 2020-04-20; updated questions/types 2023-08-31",
+      "bytes": null,
+      "status": "not_requested_pending_dataset_terms_confirmation",
+      "required_for_project": true
+    },
+    {
+      "task": "Task 1 Single Page Document Visual Question Answering",
+      "label": "Images",
+      "release": "Original V1.0 2020-04-20; updated questions/types 2023-08-31",
+      "bytes": null,
+      "status": "not_requested_pending_dataset_terms_confirmation",
+      "required_for_project": true
+    },
+    {
+      "task": "Task 1 Single Page Document Visual Question Answering",
+      "label": "OCR (Microsoft OCR)",
+      "release": "Original V1.0 2020-04-20; updated questions/types 2023-08-31",
+      "bytes": null,
+      "status": "not_requested_pending_dataset_terms_confirmation",
+      "required_for_project": false
+    },
+    {
+      "task": "Task 1 Single Page Document Visual Question Answering",
+      "label": "IMDBs (processed MP-DocVQA framework dataset)",
+      "release": "Original V1.0 2020-04-20; updated questions/types 2023-08-31",
+      "bytes": null,
+      "status": "not_requested_pending_dataset_terms_confirmation",
+      "required_for_project": false
+    }
+  ],
+  "scope": {
+    "download_train_val_only": true,
+    "hidden_test_answers_read": false,
+    "download_urls_saved_in_git": false,
+    "private_account_information_saved_in_git": false,
+    "gpu_used": false,
+    "terms_submitted": false,
+    "audiocaps_not_processed": "Explicit parent instruction: omitted by user under ADR0004."
+  },
+  "download": {
+    "started": false,
+    "local_bytes": 0,
+    "remote_bytes": 0,
+    "hashes": [],
+    "budget_rule": "Files over 5 GB require an exact file/budget report to root before action. No sizes obtained because downloading currently triggers a new legal agreement."
+  },
+  "status": "blocked_action_time_dataset_agreement_confirmation",
+  "next_action": "Root requests specific action-time confirmation for SP-DocVQA download terms; then inspect original package sizes and select train/val-only media/annotations without accessing hidden test answers."
+}
