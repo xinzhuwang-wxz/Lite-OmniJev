@@ -7,6 +7,8 @@
 - 原始P0/S0阶段归属已审计纠正；严格概率门槛始终失败，S1不放行。
 - s0:01 claimed：teacher-admission，worktree /tmp/lite-omnijev-s0-teacher；正在执行教师准入。
 - s0-data:01 claimed：clinc-admission，worktree /tmp/lite-omnijev-s0-clinc；正在执行CLINC准入。
+- s0:03 claimed：multimodal-probe，/tmp/lite-omnijev-s0-multimodal，先实现真实processor媒体探针，严格gate仍未过。
+- s0:05 claimed：sealed-gate，/tmp/lite-omnijev-s0-sealed，canary导入/双标κ工具；真实隔离身份仍缺。
 - 其余S0按依赖推进；实时前沿以scripts.loop list为准。
 - s0:03保留数值失败；s0:06需真实双人标注，agent不能伪造κ；s0:08待基线展开再triage。
 - delivery:01未完成，教师、多模态、端侧和终局不能由P0替代。
@@ -21,7 +23,7 @@
 
 ## 下一步与加速
 1. 认领s0:01教师来源/环境/head准入，同时独立推进s0-data:01 CLINC准入。
-2. 教师准备通过才做GPU小样本/基线；批量准备后集中GPU运行，复用权重，避免重复加载。
+2. 固定教师14文件约24GB已启动只读来源/权重隔离下载，远端PID10893，reports/s0-teacher-quarantine-download.json；不等同admitted。教师与学生媒体GPU探针由root串行协调。
 3. s0:03只验证新的可检验原因，不重复已失败配置；正式改门槛需证据+ADR+用户决定。
 4. 全S0通过才进入S1，不为利用率跑无验收价值训练。
 
@@ -38,7 +40,7 @@
 ## 待我决策
 - 当前无需租卡/开卡操作，不重复询问；D004搁置，不将质疑门槛视为补丁批准。
 - 正式数值门槛修订尚缺充分方案，先保留失败并推进独立工作。
-- 真实人工标注后续需合规人工资源；继续其它票。
+- 真实人工标注后续需合规人工资源；root开发身份不能凭chmod实现不可读封存，需独立受控身份。先完成canary协议/工具，不冒称隔离通过。
 - 放量预算、付费、生产、删数据、方向/门槛改变仍须用户决定。
 
 ## 卫生与交接
