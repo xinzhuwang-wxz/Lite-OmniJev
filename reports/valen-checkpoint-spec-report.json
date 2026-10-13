@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "spec_derived",
+  "exit_code": 0,
+  "spec": "reports/valen-checkpoint-spec.json",
+  "tensor_count": 428,
+  "tensor_payload_bytes": 289865728,
+  "groups": {
+    "lora": {
+      "count": 372,
+      "numel": 33638400,
+      "dtypes": {
+        "torch.float32": 372
+      }
+    },
+    "vision": {
+      "count": 48,
+      "numel": 50384896,
+      "dtypes": {
+        "torch.bfloat16": 48
+      }
+    },
+    "merger": {
+      "count": 6,
+      "numel": 25174016,
+      "dtypes": {
+        "torch.bfloat16": 6
+      }
+    },
+    "head": {
+      "count": 2,
+      "numel": 1048576,
+      "dtypes": {
+        "torch.float32": 2
+      }
+    }
+  }
+}
