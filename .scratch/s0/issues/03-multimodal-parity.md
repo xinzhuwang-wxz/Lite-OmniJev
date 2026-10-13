@@ -4,9 +4,9 @@ ID: s0:03
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: multimodal-probe
-Worktree: /tmp/lite-omnijev-s0-multimodal
+Execution: open
+Owner: none
+Worktree: none
 Blocked by: p0:04
 
 ## What to build
@@ -30,3 +30,5 @@ Blocked by: p0:04
 
 现有p0_parity和网关主要覆盖文本；跨模态processor、100题覆盖必须新验证。最高测试边界为parity命令及真实HTTP请求。
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
+
+调度纠正：先前子代理未交付指定媒体切片，释放认领；离线依赖票准备媒体工具后继续本票，已有文本parity失败结论不重跑。

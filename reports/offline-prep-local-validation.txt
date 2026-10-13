@@ -1,0 +1,14 @@
+2026-10-14; whole-model staging and corrected CLINC/sealed tooling.
+Commands executed from /Users/bamboo/Githubs/Lite-OmniJev:
+uv run pytest -q
+205 passed in 3.66s
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+131 files already formatted
+uv run mypy data train eval serve scripts
+Success: no issues found in 34 source files
+uv build
+Successfully built dist/lite_omnijev-0.1.0.tar.gz
+Successfully built dist/lite_omnijev-0.1.0-py3-none-any.whl
+All five commands passed. No GPU task executed; whole-project download remains incomplete.

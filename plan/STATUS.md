@@ -5,9 +5,9 @@
 ## 当前票与结论
 - bootstrap:01–08、p0:01–07：done。P0验收见reports/p0-engineering-acceptance.md。
 - 原始P0/S0阶段归属已审计纠正；严格概率门槛始终失败，S1不放行。
-- s0:01 claimed：teacher-admission，worktree /tmp/lite-omnijev-s0-teacher；正在执行教师准入。
+- s0:01 claimed：teacher_head_conversion，/tmp/lite-omnijev-s0-teacher；CPU转换首版完成，root复核要求补真实文件系统/密钥隔离，未准入。
 - s0-data:01 done：修正后远程15250条/33答案token全部通过，逐行语义保真和agent抽检完成；正式证据clinc-admission-corrected-001.json，旧报告不作准入证据。
-- s0:03 claimed：multimodal-probe，/tmp/lite-omnijev-s0-multimodal，先实现真实processor媒体探针，严格gate仍未过。
+- s0:03 open：原媒体子代理未交付指定切片，已结束；等待离线媒体依赖准备，严格gate仍失败。
 - s0:05 blocked：canary导入/双标κ/脱敏工具已合入，12个sealed-gate测试通过；真实隔离身份仍缺。
 - 其余S0按依赖推进；实时前沿以scripts.loop list为准。
 - s0:03保留数值失败；s0:06需真实双人标注，agent不能伪造κ；s0:08待基线展开再triage。
@@ -33,7 +33,7 @@
 - 用户此前明确保持GPU开启；SSH root@region-42.seetacloud.com:48926。当前GPU无进程占用，新增GPU作业暂停，待权重完整和媒体/教师探针准备好再使用。
 - ControlPath=/tmp/omnijev-ssh-%C；项目/root/autodl-tmp/lite-omnijev。
 - H20 97871MiB、16CPU/150GB RAM；盘800GiB（750GiB付费），约741GiB空余。
-- 2026-10-14最新快照：GPU显存0MiB、利用率0%；vLLM/网关已不在进程列表，仅教师下载PID11060和Range探针PID11381在跑。
+- 实例重启后No devices found；旧11060/1408已终止。全模型队列flock PID1827已确认运行，报告reports/project-model-download-001.json；60文件约125MB已校验、0失败，大权重仍在下载。
 - serve-next隔离vLLM0.31/TF5.17/torch2.13，FP16/TRITON独立LoRA；训练.venv独立。
 - E4B revision ee0ef6023621cff504d758262d4e04895a5af4a2；adapter SHA 97db02cd2bb3a4990fb68ceb3c3e863b9a2cb72669406926745a9e4c052b1b42。
 - SwanLab https://swanlab.cn/@maxen/Lite-OmniJev/runs/1mia2y76；密钥仅远程私有配置。
@@ -58,3 +58,11 @@
 - 2026-10-14用户明确要求全项目所需下载齐备再开卡，新增offline-prep:01–04规格/票据；不再只准备S0。
 - 已核实实例重启为无GPU，项目盘完整；root恢复SSH同endpoint/port，无需新凭据。原下载PID11060已不存在，按缓存续传；反向代理需重建。
 - 模型/数据/依赖/集成准备分票；未来训练生成的LoRA/校准/量化产物列待生成，账号/许可/封存身份缺口保留blocked，不假报离线全部就绪。
+
+## 全项目离线准备执行前沿
+- offline-prep:01 claimed project-model-assets；七项模型/依赖共约121GB，configs/project-model-assets.json已合入，教师固定5addda86不变；scripts.stage_models两线程下载/续传/哈希，pt只进quarantine，不加载权重。
+- offline-prep:02 claimed project-data-assets；29来源首版账本待纠正OneJev身份和下载/训练准入边界，原始媒体/账号/许可缺口继续研究。
+- offline-prep:03 claimed offline-runtime；训练/教师/服务/媒体/量化/端侧工具与离线依赖审计执行中。
+- offline-prep:04依赖前三票完成，全部必需资产/CPU准备通过后才通知开卡，缺口不准pending冒充ready。
+- 最新本地205tests/Ruff/format/mypy/build全通过，实际输出reports/offline-prep-local-validation.txt。
+- 当前优先下载链路：source /etc/network_turbo（不输出环境凭据）+HF_ENDPOINT官方；16MiB Range实测206、3.30秒、约5MB/s。备用loopback18081转发32MiB需278秒，优先不用。
