@@ -2,63 +2,63 @@
 
 更新时间：2026-10-14。当前 S0；P0 工程冒烟完成，S0–S6/FINAL 未完成。
 
-## 当前用户指令与资源
-- 全项目必需模型、数据和运行时先下载、校验并完成 CPU 准备，再通知用户开卡；当前无卡，禁止 GPU 作业。
-- SSH root@region-42.seetacloud.com:48926，ControlPath=/tmp/omnijev-ssh-%C。
-- 远端项目 /root/autodl-tmp/lite-omnijev；800GiB 数据盘（750GiB 付费）。不自行开关卡或购买服务。
-- 下载用 source infra/bootstrap/autodl-env.sh、source /etc/network_turbo（静默），HF_ENDPOINT=https://huggingface.co；禁止输出凭据。
+## 用户指令与资源
+- 整个项目必需外部模型、数据、依赖下载并哈希/CPU验收后，才通知开卡；当前无卡，禁止 GPU 作业。
+- SSH root@region-42.seetacloud.com:48926；ControlPath=/tmp/omnijev-ssh-%C；远端 /root/autodl-tmp/lite-omnijev。
+- 数据盘800GiB（750GiB付费），最近实际剩余637GiB。无卡cgroup只有2GiB RAM/0.5核；证据 reports/no-gpu-resource-limits.json，不能按宿主机free/os.cpu_count调度。
+- 网络：静默source /etc/network_turbo，HF_ENDPOINT=https://huggingface.co；凭据不输出、不进Git。
+- 重型CPU作业用 /tmp/omnijev-cpu-heavy.lock 串行；网络继续。llama.cpp编译树8791/8962/8963/8965/8968/12081/14088/14089/14090暂停保留，先找官方预编译。
 
-## 当前票
-- bootstrap:01–08、p0:01–07 done；证据 reports/p0-engineering-acceptance.md。
-- offline-prep:01 claimed：七项模型约121GB；PID1827 flock 队列仍运行，68文件约47.35GB校验，零报告失败。以实际进程和最新报告为准。
-- offline-prep:02 claimed：数据来源、原料与许可准备；Valen20文件约6.36GB全部哈希通过，仅来源隔离，不准入训练。
-- offline-prep:03 claimed：运行时准备；已有环境、FFmpeg及量化/端侧源码归档校验完成，CPU构建/剩余依赖仍需完成。
-- offline-prep:04 pending：依赖前三票；下载、校验、CPU准备与缺口审计全部完成才能通知开卡。
-- s0:01 claimed：教师CPU头安全转换及修复已合入，独立FIFO修复复核关闭；完整教师推理/复现未验收。
-- s0-data:01 done：CLINC train15250条语义保真、官方33token通过；权威证据 clinc-admission-corrected-001.json。
-- s0:03 claimed offline-runtime：实际Gemma4 CPU媒体处理器通过；严格HF/vLLM概率门槛仍failed，不能关票。
-- s0:05 blocked：canary工具已验证，真实独立封存身份缺失。
-- s0:06 blocked：需要真实独立双人标注，不能伪造κ。
-- delivery:01 未完成；S0全部通过前禁止进入S1。
+## 票据与门槛
+- bootstrap:01–08、p0:01–07 done，reports/p0-engineering-acceptance.md；工程冒烟不代表质量达标。
+- offline-prep:01 claimed：7模型70必需文件121,094,724,397B；68文件47,350,012,013B已校验，剩余两个大权重在传；不得关票。
+- offline-prep:02 claimed：全阶段来源原料与许可准备；下载和媒体验证继续，账号/许可/精确协议缺口不能标齐备。
+- offline-prep:03 claimed：运行时/依赖闭包；已有环境与源码归档不能替代可执行文件、完整依赖和CPU验证。
+- offline-prep:04 pending：前三票及全部外部缺口解除前，开卡准备验收不通过。
+- s0:01 claimed：Valen安全转换428张量已通过；完整教师推理/复现未验收。
+- s0-data:01 done：CLINC train15250条语义保真、官方33token通过；clinc-admission-corrected-001.json。
+- s0:03 claimed：真实Gemma4 CPU媒体处理器通过；HF/vLLM概率一致性maxTV .01129/.02292，严格<.001仍failed，原门槛未改。
+- s0:05/06 blocked：真实独立封存身份/双人标注资源缺失；工具/合成真值不代替真实身份或κ。
+- S0全通过前禁止S1；delivery:01未完成，D004 FP32 LoRA补丁搁置。
 
-## 当前无卡产出与下载
-- reports/project-model-download-snapshot-001.json 是 running 快照，不作完成证据；旧11060/1408下载进程已终止，不再使用。
-- reports/valen-source-download-001.json：20文件全哈希通过；源资产在 artifacts/data/quarantine/valen-general-100k/。
-- 文本来源17文件30,666,690B本地核对固定上游哈希，已同步远端并逐个SHA256复核；reports/stage1-text-source-verification.json。
-- JevEmbed 600k候选行/Open-Jev原料仅来源审计，未证明独立样本族或训练准入。
-- Clotho官方原料3.14GB；scripts.prepare_clotho实现许可白名单提取：1659 CC0/CCBY，排除332未知/NC/其他许可。
-- Clotho首次任务因辅助脚本导入路径错误退出；已修正PYTHONPATH；第二次遇HTTP IncompleteRead，改用curl有界重试，shell PID7933（后续以ps核实）。报告 clotho-aqa-source-download-001.json；最终音频报告 clotho-aqa-audio-preparation-001.json 尚待下载完成；官方小文件5项已校验，归档已开始传输。
-- Clotho未知来源/许可不准入；原始压缩包隔离，只有白名单音频提取至source-audit并保留归属。
-- reports/cpu-media-probe-offline-runtime.json：真实TF5.19 Gemma4Processor图像/截图/16kHz WAV/3帧视频输出与答案边界通过；无模型forward，不代表概率或质量验收。
-- 量化/端侧源码归档约389MB已校验：llm-compressor、llama.cpp、Ollama、LiteRT-LM；源码到位不等于构建完成。
-- teacher head四张量FP32隔离转换通过；父进程输出nofollow/nonblock/regular/size/timeout修复已合入并独立复核；完整教师模型仍待下载和GPU验证。
+## 下载实际状态（以PID/文件/最终退出报告为准）
+- 模型 flock1827/1828仍活；project-model-download-001.json running且零失败。另有约22.5GB和18.6GB partial，不计入已校验数。
+- AndroidControl官方GCS22对象49.93GB固定generation/MD5/CRC32C；9047/9048仍活，3文件2,345,618,122B校验。仅研究，商业训练/发布不准入。
+- Multimodal Mind2Web49文件13.58GB；10668/10669仍活，13文件2,634,066,033B校验。001曾误校验LFS指针，失败报告保留；002已区分原文件SHA与指针GitSHA。
+- Clotho3,140,677,494B归档尚未完成；5小文件全校验。002因curl内部重试丢掉本次新增内容而失败，保留123,907,028B partial；003改外部6次有界续传、每次独立curl且MD5通过才提升，PID17404/17408已确认活。完成后锁内提取1659 CC0/CCBY音频，排除332 NC/未知/其他许可。
+- MMAU mini1,213,407,227B和STAR727,887,646B哈希通过；STA1,085,038,855B和FunQA1,350,969,357B最新实际sha OK/exit0。
+- FunQA→Perception旧队列已退出；Perception5866MiB后curl18/sha失败，video代理已保留6,151,711,684B partial并启动PID17494续传；不能使用旧running快照。
+- Valen来源20文件约6.36GB全部哈希通过，隔离原料不准入训练；reports/valen-source-download-001.json。
+- 文本来源17文件30,666,690B本地上游/远端SHA通过；JevEmbed600k/Open-Jev113k仍是候选原料，不是样本族隔离/训练准入证据。
+- ScienceQA3parquet626MB、ChartQA875MB、AOKVQA已知可商用COCO3832图约660MB完成；reports/stage2-remote-completion-001.json。剩余已知许可研究专用图继续准备，未知许可不进池。
+- Decision Index公开0.3已镜像5,861文件2,388,936,304B，21固定Git+11HTTP来源；HF内容和6个失败Git/HTTP来源继续补齐；HLE受控，RouterBench只隔离原pickle未加载；不冒称完整套件可重建。
+- JevBench正确项目fstandhartinger/jevbench固定7625ec...，231公开决策/8文件清单及远端SHA通过；literal group148不等于教师195，精确聚合协议仍缺，不下载隐藏题/预测。
 
-- AndroidControl官方GCS22对象49.93GB已固定generation/MD5/CRC32C；研究专用原料下载PID9047已启动，商业训练/发布受官方NC条款约束，不混入商用池。
-- 新增configs/gui-source-assets.json及GUI原始权利审计；Mind2Web官方research-only声明已显式记录，不能从OpenRAIL标签推断商用许可；49文件13.58GB研究专用下载首次PID9369因LFS指针SHA被误当内容GitSHA校验失败，原报告保留；首个217MB原文件内容SHA256已独立通过，修正指针/内容字段后启动002续传，PID10668已启动，report mind2web-source-download-002.json。
+## 已完成的CPU证据
+- reports/cpu-media-probe-offline-runtime.json：真实TF5.19图像/截图/16kHz WAV/3帧视频及答案边界通过，无模型forward。
+- Valen010源PT仅在chroot/dropuid/seccomp沙箱加载，官方safetensors写出428张量289,932,536B，SHA27b8f6cd4874a356af8a5d6a3676d2a9a03e4b3301d066d13645f673f72f4468；张量逐项相等。父进程诊断FIFO/symlink/大小边界独立复核关闭；并非完整教师验收。
+- Kokoro canonical量化ONNX87.09MB/双voice已下载，专用Python3.11.17+Misaki G2P实际2文本×2voice→4份有限24kHz WAV通过；reports/speech-kokoro-text-g2p-cpu-canary.json。旧q8f16失败保留，不充当通过证据。
+- reports/public-eval-media-validation-001.json：Mac全1000音频完整解码/有限值/帧数通过；Linux32代表样本FFmpeg完整解码通过；STAR全425member安全/CRC+32视频全流解码通过。
+- STAR ActionSequence仅188/200，缺12个引用；video代理从官方Charades范围请求补齐，禁止拿缺失猜教师2786题排除。MMAU69份六声道、66份超30秒，裁剪/单声道协议待冻结，不暗排样本。
+- 远端曾exit137但oom/oom_kill=0，原因未证实；公开媒体获批复制1.94GB到Mac验证，无卡准备不以开GPU解决。
 
 ## 并行所有权
-- offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；CPU媒体切片已交付，root整合。
-- speech_assets：/tmp/lite-omnijev-speech-assets；KokoroONNX87.09MB权重/双voice已下载校验，29fe5f8已合入；CPU ONNX WAV因初次依赖安装停滞继续改用可用网络/轮子准备。CommonVoice当前官方MDC需账号/条款，另查合法旧公开CC0来源，不绕过访问条件。
-- whole_project_datasets：/tmp/lite-omnijev-project-datasets；ScienceQA/ChartQA/DocVQA/A-OKVQA来源与媒体准备；来源账本3e1f794已合入，局部失败不算完成，继续远端可用学术网络下载ScienceQA/ChartQA和许可白名单COCO像素。
-- teacher_head_conversion：/tmp/lite-omnijev-s0-teacher；下一片为Valen嵌套PT的官方规格与隔离转换，仍执行。
-- video_eval_sources：/tmp/lite-omnijev-video-eval；MMAU公开mini与MVBench/STAR来源准备，MMAU1.21GB及STAR727.89MB已下载、SHA/退出0通过；FunQA→Perception队列PID9338/curl9340仍活，STA1.085GB下载PID10304/curl10305已确认活。de46c38已合入，教师14任务2786题ID映射缺失保留blocked。原researcher角色因模型不支持未启动，已换原生默认代理。
-- root独占主目录、票据、STATUS与合入；子代理显式workdir，只写指定worktree，不改全局计划。
-
-## 下一步
-1. 完成模型、Clotho和剩余许可明确数据的下载/哈希；保留失败证据，不因running报告就认定进程存活。
-2. 整合语音与阶段2来源切片，完成CPU运行时构建/依赖缓存、Valen安全转换；未来生成的LoRA/量化产物单列待生成。
-3. 离线集成票逐项验证全项目外部依赖；缺口写blocked，不能以下载清单代替实际到位。
-4. 下载/CPU准备全部满足才通知用户开GPU，安排教师/媒体/概率任务批次减少卡时；不改变原门槛。
-
-- 原始STAR来源已纠正为NeurIPS2021 csbobby/STAR_Benchmark，不能把错误论文链接当来源；MMAU实际数据NC、MVBench原媒体协议均已纠正到主账本。
+- offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；官方llama.cpp预编译、Ollama1.427GB、quant独立完整依赖≤20GB、LiteRT/JDK准备；13直接轮子不算完整闭包。
+- whole_project_datasets：/tmp/lite-omnijev-project-datasets；阶段2剩余明确许可原料，≤10GB，复用已有图。
+- video_eval_sources：/tmp/lite-omnijev-video-eval；Perception续传、Charades缺12视频选择性恢复≤500MB；4801edd已合入f44588c。
+- decision_index_assets：/tmp/lite-omnijev-decision-index；e99910a已合入8d8f164；补非门禁网络失败来源，≤10GB，不读pickle、不绕过HLE。
+- mdc_transport_fix：/tmp/lite-omnijev-mdc-transport；专属下载器DNS pin/TLS原host测试，API凭据隔离；root整合后由独立security reviewer复核。
+- speech_assets、teacher_head_conversion已交付；所有切片主会话统一整合/关票。root独占主树、票据、STATUS；子代理不得写这些文件。
 
 ## 待我决策
-- 当前不需要用户开卡。正式改概率门槛需充分实测证据与ADR，现有门槛保持failed，D004搁置。
-- 真实封存隔离身份/人工标注资源后续仍需用户资源；先推进不依赖这些资源的离线工作。
-- 付费、生产、删除、方向/范围和预算改变仍由用户决定；账号/许可条款不擅自接受。
+- 当前不需要开卡。已向用户一次发出CommonVoice官方MDC与HLE登录/条款授权请求；不替用户接受，不用镜像绕过。
+- CommonVoice所选544,267,165B官方English CC0资产：cmu5nqn1h00vwmi07b4dbk085；凭据待合法授权后仅放远端 /root/.config/lite-omnijev/mdc.key 0600，不发聊天/Git/日志。下载器DNS pin已合入faaf0f8并独立复核通过；资产直连禁代理，实际MDC访问仍待授权验证。
+- 门槛改动、付费/开关卡、生产、删数据、方向/预算改变仍用户决定；真实隔离身份/人工资源后续需安排。其余下载继续。
 
-## 验证与卫生
-- Clotho+教师修复加入后本地226测试、Ruff/format/mypy/build通过；新CPU媒体切片整合后的可选依赖类型导入问题已修复；当前整合后231测试、Ruff/format149文件、mypy38源文件、wheel/sdist和29票规划校验全通过。
-- 不push、不创建远端issue/PR、不轮询gh；只本地提交和SSH同步。
-- 保留模型、数据缓存与P0约561MiB完整备份；只清理自己创建且过期资源。
-- 运行循环 plan/LOOP.md；交接 plan/handoff-2026-10-14-offline-prep.md。
+## 下一步与验证
+1. 完成在途模型/数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。
+2. MDC原4项及DNS pin发现全部关闭，reports/mdc-download-security-closure.json；授权后安全接入，不对外声称凭据下载已实跑。
+3. 完成全项目offline-prep:04审计，未来LoRA/量化/校准产物仅列待生成；全齐备前不开GPU。
+- 最近完整批次271测试无skip、Ruff/format167文件、mypy44源文件、wheel/sdist通过（显式专用媒体runtime）；随后MDC pin变更16定向测试/Ruff/mypy通过，独立安全32测试通过/1 torch测试按范围排除。
+- 不push、不建远端issue/PR、不轮询gh；只本地提交/SSH同步，保留缓存与约561MiB P0备份。
+- 循环见plan/LOOP.md；native goal当前工具返回blocked（旧状态），用户已重新要求继续无卡准备，仍按原终局推进；工具不提供agent恢复接口，不能虚称active/complete。

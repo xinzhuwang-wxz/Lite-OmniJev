@@ -887,16 +887,41 @@
       "asset_id": "jevbench",
       "name": "JevBench",
       "category": "eval_only_public_benchmark",
-      "modalities": ["text", "image", "multimodal"],
-      "required_stages": [0, 4, 5, 6],
-      "official_source": {"type": "upstream_model_card_or_eval_release", "url": "Referenced in Jev-Omni / OneJev model cards; exact release not yet pinned"},
-      "license": {"declared": "not verified"},
-      "file_metadata": {"status": "exact_id_manifest_missing", "known_target": "matched 195 groups / 231 decisions group average"},
+      "modalities": [
+        "text",
+        "image",
+        "multimodal"
+      ],
+      "required_stages": [
+        0,
+        4,
+        5,
+        6
+      ],
+      "official_source": {
+        "type": "github_repository",
+        "repo": "fstandhartinger/jevbench",
+        "revision": "7625ecb1b075cfe4d09d34141d353325825eea1d",
+        "url": "https://github.com/fstandhartinger/jevbench"
+      },
+      "license": {
+        "declared": "MIT repository and explicitly MIT public hard dataset; no private/imported payloads staged"
+      },
+      "file_metadata": {
+        "status": "public_source_manifest_hashes_verified",
+        "known_target": "matched 195 groups / 231 decisions group average",
+        "source_manifest": "configs/jevbench-public-assets.json",
+        "public_decisions": 231,
+        "literal_group_values": 148
+      },
       "label_origin": "Official benchmark labels if release is identified.",
       "media_availability": "unknown",
       "public_sampling_plan": "Cannot sample or score until exact group list and aggregation rule are frozen.",
-      "admission_status": "provenance_blocked",
-      "next_commands": ["Locate official JevBench release/manifest; record group ids, answer semantics, license, and group-average scoring before download."]
+      "admission_status": "public_evaluation_source_staged_protocol_pending",
+      "next_commands": [
+        "Freeze exact question IDs and scenario aggregation independently before GPU comparison; literal group fields alone are not the teacher195 matched group protocol."
+      ],
+      "physical_staging_status": "public_original_easy_hard231_decisions_hashed_and_remote_verified"
     },
     {
       "asset_id": "decision-index",

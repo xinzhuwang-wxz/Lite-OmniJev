@@ -1,0 +1,16 @@
+{
+  "observed_utc": "2026-10-13T18:44:23.408799+00:00",
+  "scope": "actual_no_gpu_container_cgroup_limits",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "host_visible_cpu_count": 128,
+  "files": {
+    "memory.max": "2147483648",
+    "memory.current": "1706618880",
+    "memory.events": "low 0\nhigh 0\nmax 860443\noom 0\noom_kill 0",
+    "cpu.max": "50000 100000",
+    "cpu.stat": "usage_usec 1878269095\nuser_usec 1315700553\nsystem_usec 562568541\nnr_periods 64076\nnr_throttled 31393\nthrottled_usec 51453032657"
+  },
+  "memory_limit_bytes": 2147483648,
+  "effective_cpu_cores": 0.5,
+  "interpretation": "Host free RAM and os.cpu_count are not container allocations. Serialize heavy CPU preparation; preserve background downloads."
+}
