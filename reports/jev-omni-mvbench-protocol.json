@@ -1,0 +1,557 @@
+{
+  "schema_version": 1,
+  "observed_utc": "2026-10-13T21:12:23.763007+00:00",
+  "code_revision": "6e0ac9afe70ba51dafb2136d45e7321215da143c",
+  "scope": "public source protocol audit only; no model loading, prediction, hidden answers, private split or score selection",
+  "teacher": {
+    "repo_id": "akhilaaa3/Jev-Omni",
+    "revision": "5addda86ddee081a68fb067477ea100c221b8917",
+    "published_mvbench": {
+      "task_count": 14,
+      "row_count": 2786,
+      "accuracy_percent": 53.1,
+      "micro_accuracy_percent": 53.09,
+      "status": "published_not_reproduced"
+    },
+    "published_mmau_rows": 1000,
+    "tree_entry_count": 22,
+    "tree_paths": [
+      "assets",
+      ".gitattributes",
+      "README.md",
+      "assets/medium-accuracy.png",
+      "assets/medium-accuracy.svg",
+      "assets/medium-calibration.png",
+      "assets/medium-calibration.svg",
+      "assets/the-wall-23s.mp4",
+      "chat_template.jinja",
+      "config.json",
+      "decision_config.json",
+      "example.py",
+      "generation_config.json",
+      "head.pt",
+      "jev_omni.py",
+      "model.safetensors",
+      "processor_config.json",
+      "requirements.txt",
+      "sha256.json",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "verification.json"
+    ],
+    "eval_script_found": false,
+    "exact_task_names_found": false,
+    "exact_row_manifest_found": false,
+    "dataset_revision_found": false,
+    "absence_claim_scope": "fixed complete public repository tree, README, example, loader and linked official sources; not a claim about unpublished/private author artifacts",
+    "runtime_requirements": "transformers==5.17.0; other requirements include unpinned torch>=2.10, opencv-python-headless, FFmpeg not version pinned",
+    "loader_snapshot_revision_argument": false,
+    "native_processor_video_num_frames": 32,
+    "loader_default_video_frames": 16,
+    "loader_video_representation": "16 requested OpenCV sampled RGB PIL image content items; not native video processor input",
+    "loader_video_bounds_argument": false,
+    "loader_audio_command": [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "MEDIA",
+      "-t",
+      "30",
+      "-ac",
+      "1",
+      "-ar",
+      "16000",
+      "PRECREATED_TEMP_WAV"
+    ],
+    "loader_enable_thinking": false,
+    "tree_pagination_link_present": false
+  },
+  "primary_sources": [
+    {
+      "url": "https://huggingface.co/api/models/akhilaaa3/Jev-Omni/tree/5addda86ddee081a68fb067477ea100c221b8917?recursive=true&expand=false",
+      "bytes": 3464,
+      "sha256": "8b2812c808f82cda7044a237c835ab940d30c6fd268a9f0a3bb5557de932fada"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/README.md",
+      "bytes": 4106,
+      "sha256": "42995cac5590c55bc79bdedd427ccfb0d717ed1d183ddf402a7e8d6ea3dc0aa9"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/jev_omni.py",
+      "bytes": 6822,
+      "sha256": "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/example.py",
+      "bytes": 389,
+      "sha256": "d42cbd9421fc0602cd2e246dd71be24c0aa8ca344fedfd1ac6d00d2369d369b2"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/requirements.txt",
+      "bytes": 138,
+      "sha256": "3d8fc88d0165db338222583d3e0a2efae224d4fa17de1ff9254ddd55532924fd"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/processor_config.json",
+      "bytes": 1382,
+      "sha256": "6b938e76555b3e9946890770e1abcd442a4718f34041a58e8139dc8ad34545c9"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/config.json",
+      "bytes": 4034,
+      "sha256": "346145528d5ee228965be07212dc3ef1bc442629b12ba71b92528ea57540faa5"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/chat_template.jinja",
+      "bytes": 18683,
+      "sha256": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4"
+    },
+    {
+      "url": "https://github.com/huggingface/transformers/blob/856157a2f3e9594954310df18fdccc31ffddebe9/src/transformers/models/gemma4_unified/processing_gemma4_unified.py",
+      "bytes": 14528,
+      "sha256": "8f63d7c0328b81d171ae304e326b92c7c9d415dd9c19574a3ba6cf5977a2b91d"
+    },
+    {
+      "url": "https://github.com/huggingface/transformers/blob/856157a2f3e9594954310df18fdccc31ffddebe9/src/transformers/models/gemma4_unified/feature_extraction_gemma4_unified.py",
+      "bytes": 5910,
+      "sha256": "d8fb4b5d3ffe3fea0effb59dc34be6512c89b24482eec3c93487ae08a17e5dc4"
+    },
+    {
+      "url": "https://github.com/huggingface/transformers/blob/856157a2f3e9594954310df18fdccc31ffddebe9/src/transformers/audio_utils.py",
+      "bytes": 66553,
+      "sha256": "f1e3bba3874a0166049cd1abd3e13eaa8ffed03a9c5d1db9501effbe9983e753"
+    }
+  ],
+  "official_mvbench": {
+    "repo_id": "OpenGVLab/MVBench",
+    "revision": "230a2d4fac8900333c61754641c7a13e069ac9c6",
+    "mapping_repo": "OpenGVLab/Ask-Anything",
+    "mapping_revision": "4dd8210b030374bb0c510a57dfbe916f70d3ef71",
+    "mapping_notebook_sha256": "2dd6b4cbed0a12914a0407031410ec3efd50212deafd29d6bf8fa097e2e44597",
+    "mapping_notebook_code_only_read": true,
+    "public_row_identity": "task JSON SHA256 + zero-based original row index; video name alone is not unique",
+    "manifest_canonicalization": "JSON UTF-8, ensure_ascii=False, sort_keys=True, separators=(comma,colon); list original task and row order",
+    "public_reference_manifest_sha256": "87a8b36484a8f36c39f20a21eaa05f6379f2461b22eb2d97be1c66890c824b5e",
+    "task_count": 20,
+    "row_count": 4000,
+    "tasks": [
+      {
+        "task": "Action Sequence",
+        "json": "json/action_sequence.json",
+        "json_sha256": "d5f8c063a5ae5a433c3fb8ff78a03acbf0513a01928b384ed90a1e044adf230e",
+        "bytes": 51606,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/star/Charades_v1_480/",
+        "media_kind": "video",
+        "clip_bounds": true,
+        "public_reference_manifest_sha256": "c4f73eb8bffe7bb9f68070211a87dea7b692a55045647cdda2f695ec32c3545c"
+      },
+      {
+        "task": "Action Prediction",
+        "json": "json/action_prediction.json",
+        "json_sha256": "15601d39ca8604dbb642149c097f416518f4816b0c0bec57a6202d95f8bdac79",
+        "bytes": 46197,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/star/Charades_v1_480/",
+        "media_kind": "video",
+        "clip_bounds": true,
+        "public_reference_manifest_sha256": "ab874481be472e3cfda4da263007d60b061e5f7122cba839bf8158abe60d59fd"
+      },
+      {
+        "task": "Action Antonym",
+        "json": "json/action_antonym.json",
+        "json_sha256": "0ebbec1f540f598a82bf27f569e7377fdc5c4b6e62d53d3847a88abb785f5513",
+        "bytes": 53338,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/ssv2_video/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "db6dc37d40a713b6fcf5bf11e992361088dc36696db079e54e56e71bb38f1e3a"
+      },
+      {
+        "task": "Fine-grained Action",
+        "json": "json/fine_grained_action.json",
+        "json_sha256": "21fb61328ab02e399170a22a2a4080a05dff18e8423de709e49b9fa2180fde58",
+        "bytes": 48694,
+        "row_count": 200,
+        "source_prefix_literal": "pyour_data_path/Moments_in_Time_Raw/videos/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "530398be6ab1cf72ca7af96aaf2abf75c3f27436fe24f1a7e874538695f5d995"
+      },
+      {
+        "task": "Unexpected Action",
+        "json": "json/unexpected_action.json",
+        "json_sha256": "76b6f440ccb1ed007c67236c0ec7a39ee7cfbfb04197e9cc4a303b9230ca958b",
+        "bytes": 81671,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/FunQA_test/test/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "892f35e8ca733d008975a25b47fbaee34fcff7f2ffde7f673d904d53a9de223b"
+      },
+      {
+        "task": "Object Existence",
+        "json": "json/object_existence.json",
+        "json_sha256": "2bb290258243c7dafe57042768d491e6a239d30d0ff74d0f163a989c60f69620",
+        "bytes": 30079,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/clevrer/video_validation/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "02d3eea641f816939b5ce6a096fd4386353675f2ca30cd37bd409f036ee038d7"
+      },
+      {
+        "task": "Object Interaction",
+        "json": "json/object_interaction.json",
+        "json_sha256": "9624cf2fef5ad4ec882edf955ce1d10c806e71e4e8c6a880fd867b224914302b",
+        "bytes": 52932,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/star/Charades_v1_480/",
+        "media_kind": "video",
+        "clip_bounds": true,
+        "public_reference_manifest_sha256": "f40acbc3a22fa4b856088e77aad58a0a66da43996d79bc0a22d93107e08b2555"
+      },
+      {
+        "task": "Object Shuffle",
+        "json": "json/object_shuffle.json",
+        "json_sha256": "f9e1bd17a9bbab1d9f5be71411ca619cf9743ca47bb808985b202138b7928118",
+        "bytes": 77141,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/perception/videos/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "2329c506d58446a7551cdf90496c1ec2ecc43cef1d822189538813ec7fbcee55"
+      },
+      {
+        "task": "Moving Direction",
+        "json": "json/moving_direction.json",
+        "json_sha256": "81379646d91fb078a8b38de897f40977eeeebd946ca1c6ef0f58e4bde9d21209",
+        "bytes": 52782,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/clevrer/video_validation/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "b5f801fb46875953c8687f1604a24ecb6e9f60ee9d776c8462d1da7f02e78b7f"
+      },
+      {
+        "task": "Action Localization",
+        "json": "json/action_localization.json",
+        "json_sha256": "164290bb5f447b6cdff26eb51a2470bcf4ce31f84d092ec4337f7bd4ce558eec",
+        "bytes": 78029,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/sta/sta_video/",
+        "media_kind": "video",
+        "clip_bounds": true,
+        "public_reference_manifest_sha256": "6f878e63a479a8da313e1ae2ea57125441e0d8f0b0c81a59ac4eb00a7ebd4ec4"
+      },
+      {
+        "task": "Scene Transition",
+        "json": "json/scene_transition.json",
+        "json_sha256": "edab8a7992851061cac170f7e50782961ec21826f99e70ee72ae73a9dafb79f9",
+        "bytes": 67576,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/scene_qa/video/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "2966fbb91f332b0c030b246ca05124909f797d13dd9257bb1ea11c6e610c50f9"
+      },
+      {
+        "task": "Action Count",
+        "json": "json/action_count.json",
+        "json_sha256": "5e3389d3f8a81744096825d735d45d04b1842fb49da7f5b9a70d4c2224505117",
+        "bytes": 32742,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/perception/videos/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "1bd49e08b94b1619e4748bcca759653b94758f783811fae56eb8d667c6e8ceaa"
+      },
+      {
+        "task": "Moving Count",
+        "json": "json/moving_count.json",
+        "json_sha256": "a561538a69b2722c96d2b608af488c04db6a0d803b03b49661b8834e9425d245",
+        "bytes": 27859,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/clevrer/video_validation/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "42ee90e6be8d57b76321fcfe535516dcc341b6e7a79d0c09f605c221808e2ce1"
+      },
+      {
+        "task": "Moving Attribute",
+        "json": "json/moving_attribute.json",
+        "json_sha256": "b760214e4320b2ceed4580cc0febfc8c8b084487c7efcaef712b704adb850548",
+        "bytes": 34139,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/clevrer/video_validation/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "05ca9805ad84891b025c2c4adf96b37cb0c3ea165452778338abd83617751bf1"
+      },
+      {
+        "task": "State Change",
+        "json": "json/state_change.json",
+        "json_sha256": "21fa00a1e4fdbd3a0fda4d04f1b4dfd8ee62a1e3f3663fdb0f6e40799c36027f",
+        "bytes": 60586,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/perception/videos/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "36d50a23e60260b5cf9be3db4da907106083b5ca44d6793059178dd66aa61e91"
+      },
+      {
+        "task": "Fine-grained Pose",
+        "json": "json/fine_grained_pose.json",
+        "json_sha256": "f0cebc0a498474c03618aac20f67810cc41197ac97534a51f930c217dc13f091",
+        "bytes": 42247,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/nturgbd/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "0b82ae957d7a740e5765c0ac1a1687e178f398572854cff7b834681cbf350b44"
+      },
+      {
+        "task": "Character Order",
+        "json": "json/character_order.json",
+        "json_sha256": "72c20ad5749da31759c92f4ed83ed117a52f70963ce1d85d5dfd1582accdead4",
+        "bytes": 30205,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/perception/videos/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "0bcf00188436b194b39e2f130e6c3b7d745767e704634fb0512b2e0cd45454f3"
+      },
+      {
+        "task": "Egocentric Navigation",
+        "json": "json/egocentric_navigation.json",
+        "json_sha256": "4a5f80cca3471a15efe6d7d4ded192218871992cab32fa3a3eede93ea7fb3972",
+        "bytes": 82642,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/vlnqa/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "979c7f056834d22864d4e99e90b9dd964f31b6506fda9567c519371dc5e8e42c"
+      },
+      {
+        "task": "Episodic Reasoning",
+        "json": "json/episodic_reasoning.json",
+        "json_sha256": "39ca717f721c274a20835835e4ca417f58d5fb2d17ffebb7042d373561c871c3",
+        "bytes": 177477,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/tvqa/frames_fps3_hq/",
+        "media_kind": "frame",
+        "clip_bounds": true,
+        "public_reference_manifest_sha256": "03bb2c3a4c3cb6f71309d21c569b7d31551bea7560e647a3d6226ed9ac9f7903"
+      },
+      {
+        "task": "Counterfactual Inference",
+        "json": "json/counterfactual_inference.json",
+        "json_sha256": "6fabbbaba68b10b48bfb714c51b87569266bc65303530e5ab9c39cab2924bdfa",
+        "bytes": 65394,
+        "row_count": 200,
+        "source_prefix_literal": "your_data_path/clevrer/video_validation/",
+        "media_kind": "video",
+        "clip_bounds": false,
+        "public_reference_manifest_sha256": "8eced7838a15002ef94df29401ea482962e720c72fa671e4c79153f590e316ef"
+      }
+    ],
+    "conditional_count_gap": "If the reported fourteen tasks use this exact official version and complete original rows, they would contain 2800 rows. The 14-row difference is not evidence of which rows were omitted, why, or that this was the author dataset version."
+  },
+  "official_processor": {
+    "package": "transformers",
+    "teacher_required_version": "5.17.0",
+    "tag_commit": "856157a2f3e9594954310df18fdccc31ffddebe9",
+    "tag_and_commit_file_bytes_compared": true,
+    "processor": "Gemma4UnifiedProcessor",
+    "audio_sampling_rate": 16000,
+    "audio_samples_per_token": 640,
+    "configured_audio_seq_length": 750,
+    "configured_audio_capacity_seconds": 30,
+    "feature_extractor_max_length_default": null,
+    "feature_extractor_truncation_only_with_explicit_max_length": true,
+    "audio_backend_selection": "load_audio auto selects supported installed torchcodec, otherwise librosa; native backend/channel arithmetic can differ from FFmpeg automatic remix",
+    "candidate_warning": "Use explicit wrapper conversion for the public loader candidate; do not assume config alone applies identical channel/downmix/cap semantics."
+  },
+  "protocol_candidates": {
+    "decision_status": "pending; no project evaluation gate or label changed",
+    "audio_public_loader_candidate": "first <=30 s, FFmpeg automatic mono remix and resample16k; retain all 1000 source rows and full original files; freeze FFmpeg/dependencies/output encoding and output validation before matched execution",
+    "audio_source_facts": {
+      "six_channel_rows": 69,
+      "over_30_second_rows": 66,
+      "maximum_seconds": 34.4785,
+      "status": "valid_source_data_not_corrupt_or_exclusions"
+    },
+    "video_public_loader_candidate": "whole-file midpoint-bin OpenCV sample requested16, round((total-1)*(k+0.5)/16), sorted set dedupe, RGB PIL image content; partial read may produce fewer frames; no bounds parameter",
+    "video_official_bounded_candidate": "official MVBench get_index with16 bins: start_idx=max(first_idx,round(start*fps)); end_idx=min(round(end*fps),max_frame); preserve original bounds and denominator; teacher equivalence unknown",
+    "native_video_processor_candidate": "separate timestamp-bearing native video pathway; configured32 frames is not proof of teacher score protocol and must not silently replace loader image path",
+    "star_original_end_warnings": [
+      {
+        "row_index": 92,
+        "video": "EDXBD.mp4",
+        "start": 0,
+        "end": 14,
+        "duration_seconds": 12.864
+      },
+      {
+        "row_index": 107,
+        "video": "K47J5.mp4",
+        "start": 14.2,
+        "end": 28.8,
+        "duration_seconds": 28.258005
+      },
+      {
+        "row_index": 140,
+        "video": "ALXUC.mp4",
+        "start": 2.8,
+        "end": 17,
+        "duration_seconds": 15.58
+      }
+    ],
+    "warnings_source_report_sha256": "1b067adf48cc3c580732c2c388b6ef275055e30f0b969b059271ae1621cf3442",
+    "source_audio_report_sha256": "3c7dce43eaea5f609917338dc20f2bd27aba9389563a67035235d2dea8d6ef46"
+  },
+  "missing_for_matched_reproduction": [
+    "exact fourteen official task JSON names and dataset revisions",
+    "ordered 2786 public row identifiers; per-row reasons for any omission relative to pinned public data",
+    "full evaluation entrypoint, state/prompt and ordered choice construction",
+    "video bounds/rounding/frame count/decode-failure rules and image-versus-native-video representation",
+    "audio cap/downmix/resample/output encoding and original public1000 IDs/version",
+    "runtime versions, immutable checkpoint loading, aggregation and exclusion denominator rules"
+  ],
+  "upstream_contact": {
+    "status": "draft_only_not_sent",
+    "channel": "https://huggingface.co/akhilaaa3/Jev-Omni/discussions",
+    "requested_material": "Public task and row manifest + preprocessing/eval code; no hidden labels, predictions or private data",
+    "draft": "We are preparing a reproducible evaluation of Jev-Omni revision `5addda86ddee081a68fb067477ea100c221b8917`. Could you share the exact fourteen MVBench task JSON names, dataset revision/file hashes, and the ordered 2,786 public row identifiers (task file plus original row index), including reasons for omissions relative to that public version? We also need the evaluation entrypoint, prompt/state and option order, clip-bound/frame/decode-failure rules, image-list versus native-video route, audio cap/downmix/resampling settings, dependency versions and aggregation denominators. For MMAU, could you pin the public mini version and 1,000 IDs? Please share only public benchmark identifiers and protocol/code, with no hidden labels, private splits or model predictions. The public audio loader creates its output before invoking FFmpeg without `-y`; we observed an empty output after overwrite refusal. Was the reported evaluation run using a separate adapter or entrypoint?"
+  },
+  "gpu_used": false,
+  "paid_actions": false,
+  "gate_thresholds_changed": false,
+  "labels_or_denominators_changed": false,
+  "source_bytes_downloaded_for_listed_primary_files": 126009,
+  "exit_code": 0,
+  "public_supplemental_discovery": {
+    "discussion_index_url": "https://huggingface.co/api/models/akhilaaa3/Jev-Omni/discussions",
+    "discussion_index_sha256": "f1b198fc9c40cf27f109645a2359d3850c75d635f4b7e59681c5c7121ae127f2",
+    "discussion_titles": [
+      "Add decision-model tag",
+      "Jev-Omni is listed on systemonemodels.tech: want to claim the page?"
+    ],
+    "not_fixed_revision_evidence": true,
+    "web_queries": [
+      "\"Jev-Omni\" \"MVBench\" \"2786\"",
+      "\"Jev-Omni\" evaluation github"
+    ],
+    "secondary_search_results_not_used_as_protocol_authority": true
+  },
+  "audio_output_blocker": {
+    "status": "confirmed_local_cpu; Linux probe queued under shared lock",
+    "public_loader_source_sha256": "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0",
+    "probe_driver_source": "import hashlib\nimport json\nimport platform\nimport struct\nimport subprocess\nimport tempfile\nimport time\nimport wave\nfrom pathlib import Path\n\nbase = Path(__file__).resolve().parent\nsource = base / \"owned-synthetic-100ms.wav\"\nwith wave.open(str(source), \"wb\") as stream:\n    stream.setparams((1, 2, 16000, 0, \"NONE\", \"not compressed\"))\n    stream.writeframes(struct.pack(\"<h\", 0) * 1600)\ncases = []\nfor fix in (False, True):\n    with tempfile.NamedTemporaryFile(prefix=\"jev-protocol-owned-\", suffix=\".wav\", delete=False, dir=base) as tmp:\n        target = Path(tmp.name)\n    try:\n        command = [\"ffmpeg\", \"-v\", \"error\", \"-i\", str(source), \"-t\", \"30\", \"-ac\", \"1\", \"-ar\", \"16000\", str(target)]\n        if fix:\n            command.insert(1, \"-y\")\n        started = time.monotonic()\n        result = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=10)\n        output = {\n            \"variant\": \"owned-output-overwrite-adapter\" if fix else \"literal-pinned-reference-command\",\n            \"command\": command,\n            \"output_preexisted\": True,\n            \"output_before_bytes\": 0,\n            \"exit_code\": result.returncode,\n            \"stdout\": result.stdout[:1000],\n            \"stderr\": result.stderr[:1000],\n            \"output_bytes\": target.stat().st_size,\n            \"elapsed_seconds\": round(time.monotonic() - started, 4),\n            \"output_sha256\": hashlib.sha256(target.read_bytes()).hexdigest(),\n        }\n        if target.stat().st_size:\n            with wave.open(str(target), \"rb\") as stream:\n                output[\"wave_metadata\"] = {\"channels\": stream.getnchannels(), \"sample_rate\": stream.getframerate(), \"frames\": stream.getnframes(), \"sample_width\": stream.getsampwidth()}\n        cases.append(output)\n    finally:\n        target.unlink()\nreport = {\n    \"platform\": platform.platform(),\n    \"ffmpeg_version\": subprocess.check_output([\"ffmpeg\", \"-version\"], text=True).splitlines()[0],\n    \"driver_sha256\": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),\n    \"synthetic_source_bytes\": source.stat().st_size,\n    \"synthetic_source_sha256\": hashlib.sha256(source.read_bytes()).hexdigest(),\n    \"source_seconds\": 0.1,\n    \"source_rate\": 16000,\n    \"source_channels\": 1,\n    \"stdin\": \"DEVNULL for noninteractive job\",\n    \"cases\": cases,\n    \"gpu_used\": False,\n    \"model_loaded\": False,\n}\nassert cases[0][\"output_bytes\"] == 0 and \"Not overwriting\" in cases[0][\"stderr\"]\nassert cases[1][\"exit_code\"] == 0 and cases[1][\"wave_metadata\"][\"frames\"] == 1600\nreport[\"probe_exit_code\"] = 0\n(base / \"audio-overwrite-probe.json\").write_text(json.dumps(report, indent=2) + \"\\n\")\nprint(json.dumps(report, indent=2))\n",
+    "macos": {
+      "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+      "ffmpeg_version": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+      "driver_sha256": "42b7d908b80106b52c37cdf8c14ea4f175547952bcc4dce4d6a19e5b8e9603fc",
+      "synthetic_source_bytes": 3244,
+      "synthetic_source_sha256": "2976da01e205a110c9fa41d47659e238a5c6d3c3f3137582f2949853faa201dd",
+      "source_seconds": 0.1,
+      "source_rate": 16000,
+      "source_channels": 1,
+      "stdin": "DEVNULL for noninteractive job",
+      "cases": [
+        {
+          "variant": "literal-pinned-reference-command",
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-i",
+            "/private/tmp/lite-omnijev-video-eval/artifacts/jev-protocol-source/owned-synthetic-100ms.wav",
+            "-t",
+            "30",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "/private/tmp/lite-omnijev-video-eval/artifacts/jev-protocol-source/jev-protocol-owned-t1khhcpc.wav"
+          ],
+          "output_preexisted": true,
+          "output_before_bytes": 0,
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": "File '/private/tmp/lite-omnijev-video-eval/artifacts/jev-protocol-source/jev-protocol-owned-t1khhcpc.wav' already exists. Overwrite? [y/N] Not overwriting - exiting\nError opening output file /private/tmp/lite-omnijev-video-eval/artifacts/jev-protocol-source/jev-protocol-owned-t1khhcpc.wav.\n",
+          "output_bytes": 0,
+          "elapsed_seconds": 0.1855,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "variant": "owned-output-overwrite-adapter",
+          "command": [
+            "ffmpeg",
+            "-y",
+            "-v",
+            "error",
+            "-i",
+            "/private/tmp/lite-omnijev-video-eval/artifacts/jev-protocol-source/owned-synthetic-100ms.wav",
+            "-t",
+            "30",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "/private/tmp/lite-omnijev-video-eval/artifacts/jev-protocol-source/jev-protocol-owned-kaf6z7je.wav"
+          ],
+          "output_preexisted": true,
+          "output_before_bytes": 0,
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": "",
+          "output_bytes": 3278,
+          "elapsed_seconds": 0.2707,
+          "output_sha256": "11b2c99f1a076fd75e7de868d8170e8d8983aafa78b7f9a7e3f07d78bda26676",
+          "wave_metadata": {
+            "channels": 1,
+            "sample_rate": 16000,
+            "frames": 1600,
+            "sample_width": 2
+          }
+        }
+      ],
+      "gpu_used": false,
+      "model_loaded": false,
+      "probe_exit_code": 0
+    },
+    "linux": {
+      "status": "queued_snapshot_not_executed",
+      "flock_pid": 25486,
+      "remote_directory": "/root/autodl-tmp/lite-omnijev/artifacts/jev-protocol-probe",
+      "terminal_session_id": 92303,
+      "snapshot_utc": "2026-10-13T21:19:46.877050+00:00",
+      "verified_ps_elapsed": "08:49",
+      "verified_ps_cpu_time": "00:00:00",
+      "python_child_observed": false,
+      "remote_result_path": "/root/autodl-tmp/lite-omnijev/artifacts/jev-protocol-probe/audio-overwrite-probe.json"
+    },
+    "initial_hypothesis": "Expected nonzero FFmpeg exit on overwrite refusal; macOS observed exit0, so success must also validate output bytes and WAV metadata.",
+    "minimum_adapter_recommendation": "Only project-owned exclusive temporary output may use -y; validate regular nonempty output, readable mono16k WAV and frames/duration; retain cap/channel/resampling semantics and clean up owned output in finally.",
+    "implementation_status": "not_implemented_in_this_slice",
+    "handoff_ticket": "root to include as s0:01 prerequisite or create separate dependency ticket"
+  },
+  "validation": {
+    "status": "public_source_audit_and_macos_minimum_cpu_probe_complete",
+    "checks": [
+      "20 upstream mapping tuples AST-equal",
+      "20 public task files fixed SHA and exactly200 rows",
+      "4000 public reference manifest canonical SHA",
+      "official Transformers tag and immutable commit source bytes equal",
+      "probe embedded source SHA matches executed script",
+      "macOS reference empty output despite exit0 and owned-y candidate readable1600-frame WAV",
+      "STAR3 original row/bounds/duration values match source report"
+    ],
+    "linux_supplemental_probe": "queued; no completed Linux claim",
+    "no_model_or_benchmark_quality_execution": true
+  }
+}
