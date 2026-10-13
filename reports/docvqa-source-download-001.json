@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "asset_id": "docvqa-sp-original",
+  "official_entry": "https://rrc.cvc.uab.es/?ch=17&com=downloads",
+  "version": "SP-DocVQA V1.0 updated 2023-08-31; original server files modified 2023-09-01",
+  "budget_bytes": 30000000000,
+  "expected_bytes": 8581945667,
+  "source_url_handling": "Observed in authorized native Chrome; private manifest mode0600; curl URL supplied through stdin config, never argv/report/log",
+  "authorization": "User explicitly agreed to stated SP noncommercial research/education, nondistribution of URLs and liability terms in current conversation before download",
+  "research_only": true,
+  "training_admitted": false,
+  "commercial_release_admitted": false,
+  "hidden_test_answers_read": false,
+  "annotations_parsed": false,
+  "gpu_used": false,
+  "tls": {
+    "initial_failure": "missing intermediate, verify20",
+    "repair": "Official certificate AIA issuer GEANT TLS RSA1 fetched; issuer verifies against existing Mac and remote system roots; site leaf chain and hostname verify0; supplemental verified intermediate supplied without disabling TLS verification",
+    "leaf_verify_exit_code": 0,
+    "issuer_remote_verify_exit_code": 0
+  },
+  "started_utc": "2026-10-13T21:51:08.753929+00:00",
+  "files": [
+    {
+      "name": "spdocvqa_qas.zip",
+      "label": "SP Annotations",
+      "expected_bytes": 1713866,
+      "last_modified": "Fri, 01 Sep 2023 07:24:45 GMT",
+      "etag": "\"1a26ca-604470e0a2940\"",
+      "attempts": [
+        {
+          "number": 1,
+          "exit_code": 0,
+          "elapsed_seconds": 5.662,
+          "bytes_after_attempt": 1713866
+        }
+      ],
+      "status": "download_size_sha256_recorded",
+      "bytes": 1713866,
+      "sha256": "546be9fd4ed6aff9d5a76a5120a71738a010833fa71dc919d5b8ead8e65ad85d",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/docvqa-sp-original/2023-09-01/spdocvqa_qas.zip",
+      "download_exit_code": 0
+    },
+    {
+      "name": "spdocvqa_images.tar.gz",
+      "label": "SP Images",
+      "expected_bytes": 8580231801,
+      "last_modified": "Fri, 01 Sep 2023 06:49:07 GMT",
+      "etag": "\"1ff6bf279-604468e9adec0\"",
+      "attempts": [],
+      "status": "downloading"
+    }
+  ],
+  "status": "running_range_recovery",
+  "direct_attempt_preserved": {
+    "status_before_stop": "running",
+    "files": [
+      {
+        "name": "spdocvqa_qas.zip",
+        "label": "SP Annotations",
+        "expected_bytes": 1713866,
+        "last_modified": "Fri, 01 Sep 2023 07:24:45 GMT",
+        "etag": "\"1a26ca-604470e0a2940\"",
+        "attempts": [
+          {
+            "number": 1,
+            "exit_code": 0,
+            "elapsed_seconds": 5.662,
+            "bytes_after_attempt": 1713866
+          }
+        ],
+        "status": "download_size_sha256_recorded",
+        "bytes": 1713866,
+        "sha256": "546be9fd4ed6aff9d5a76a5120a71738a010833fa71dc919d5b8ead8e65ad85d",
+        "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/docvqa-sp-original/2023-09-01/spdocvqa_qas.zip",
+        "download_exit_code": 0
+      },
+      {
+        "name": "spdocvqa_images.tar.gz",
+        "label": "SP Images",
+        "expected_bytes": 8580231801,
+        "last_modified": "Fri, 01 Sep 2023 06:49:07 GMT",
+        "etag": "\"1ff6bf279-604468e9adec0\"",
+        "attempts": [],
+        "status": "downloading"
+      }
+    ],
+    "terminated_owned_supervisor_pid": 30084,
+    "reason": "Bounded large-range parallel recovery after slow single stream; validated If-Match/206/Content-Range on every response"
+  },
+  "range_chunk_bytes": 536870912,
+  "range_workers": 4,
+  "range_parts": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 536870911,
+      "status": "range_size_sha256_recorded",
+      "attempts": [],
+      "bytes": 536870912,
+      "sha256": "d798fae0dfd7d0ecd4a7dcbf4deeb7049ef88315f3f9305a66ea0d879b74e055",
+      "exit_code": 0
+    },
+    {
+      "index": 1,
+      "start": 536870912,
+      "end": 1073741823,
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 1063796736,
+          "requested_end": 1073741823,
+          "exit_code": 0,
+          "elapsed_seconds": 11.46,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "bf9f0687336947b4bd7ba51b6c33af68af384ea3bc8e744e0168244b74fde928",
+      "exit_code": 0
+    },
+    {
+      "index": 2,
+      "start": 1073741824,
+      "end": 1610612735,
+      "status": "downloading",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 1073741824,
+          "requested_end": 1610612735
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "start": 1610612736,
+      "end": 2147483647,
+      "status": "downloading",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 1610612736,
+          "requested_end": 2147483647
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "start": 2147483648,
+      "end": 2684354559,
+      "status": "downloading",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 2147483648,
+          "requested_end": 2684354559
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "start": 2684354560,
+      "end": 3221225471,
+      "status": "downloading",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 2684354560,
+          "requested_end": 3221225471
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "start": 3221225472,
+      "end": 3758096383,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 7,
+      "start": 3758096384,
+      "end": 4294967295,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 8,
+      "start": 4294967296,
+      "end": 4831838207,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 9,
+      "start": 4831838208,
+      "end": 5368709119,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 10,
+      "start": 5368709120,
+      "end": 5905580031,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 11,
+      "start": 5905580032,
+      "end": 6442450943,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 12,
+      "start": 6442450944,
+      "end": 6979321855,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 13,
+      "start": 6979321856,
+      "end": 7516192767,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 14,
+      "start": 7516192768,
+      "end": 8053063679,
+      "status": "pending",
+      "attempts": []
+    },
+    {
+      "index": 15,
+      "start": 8053063680,
+      "end": 8580231800,
+      "status": "pending",
+      "attempts": []
+    }
+  ],
+  "recovery_started_utc": "2026-10-13T21:55:39.446923+00:00",
+  "original_partial_bytes_reused": 1063796736,
+  "annotation_metadata": {
+    "archive": "spdocvqa_qas.zip",
+    "members": [
+      {
+        "name": "test_v1.0.json",
+        "bytes": 1149909,
+        "compressed_bytes": 136364,
+        "role": "not_parsed"
+      },
+      {
+        "name": "train_v1.0_withQT.json",
+        "bytes": 11565103,
+        "compressed_bytes": 1355064,
+        "role": "train"
+      },
+      {
+        "name": "val_v1.0_withQT.json",
+        "bytes": 1593659,
+        "compressed_bytes": 221836,
+        "role": "val"
+      }
+    ],
+    "train_val_question_counts": {
+      "train": 39463,
+      "val": 5349
+    },
+    "test_payload_parsed": false,
+    "exit_code": 0
+  },
+  "upstream_sha256_available": false,
+  "hash_claim": "Actual file SHA256 recorded against exact server byte sizes/ETags; not a claim of matching an unpublished official SHA256."
+}

@@ -46,3 +46,15 @@ Task 1为 **Single Page Document Visual Question Answering**，原V1.0标记2020
 正常DocVQA条款页面截图已在工具结果inline展示，未展示原文件download URL。截图API没有本地输出路径；OS区域截图/Chrome内置capture尝试未生成可找到的文件，因此不编造截图路径。截图保存问题不影响已核实的条款文字证据。
 
 对annotations另核：页面虽然明确其无额外限制，但入口仍位于“下载即同意”总条款下；没有核实独立免协议公开入口，不能据此绕过当前action-time确认或猜测未列出的下载URL。
+
+## 明确批准后的执行更新
+
+用户通过主会话当前结构化询问明确回复“同意上述协议和来源调整”，覆盖SP非商用研究/教育、不分享下载URL、免责/赔偿，以及NDKr28b 2019 SDK协议及适用的2026修订。此前“等待action-time确认”是历史审查状态，现已解除，不再重复询问同一协议。Android执行归运行时代理，本代理不下载r30。
+
+原SP官方Annotations为1,713,866B，Images为8,580,231,801B，合计8,581,945,667B，主会话批准总预算30GB；Mac空闲仅11GiB，因此通过已在本人Chrome官方页实际观察的合法URL直接远端缓存。URL只放0600私密临时记录，通过curl stdin配置输入，不入argv/Git/报告/日志，不读取cookie/profile或密码。两个官方原文件HEAD匿名200，并以ETag/If-Match固定本次服务器快照。
+
+原站缺失GEANT TLS RSA1 intermediate导致远端初次verify20。按leaf证书公开AIA取官方CA intermediate后，分别在Mac和远端使用既有系统根执行issuer验证通过，leaf链+hostname验证通过；补齐已验证链后维持TLS验证，未使用insecure模式、未绕浏览器警告或加入未验证根。
+
+Annotations已下载、exit0，SHA256 `546be9fd4ed6aff9d5a76a5120a71738a010833fa71dc919d5b8ead8e65ad85d`。zip元信息3成员，只有train/val被解析用于计数：train39463、val5349；test成员只记录文件元信息，未读取/解析其payload。Images在独立有界恢复任务中下载；partial不计通过，最终实际大小、SHA256及退出码以 `reports/docvqa-source-download-001.json` 为准。OCR/IMDB和扩展DocVQA任务未下载，图片不准入商业训练/发布。
+
+原先截图API未给路径的限制后来通过Chrome内置Capture截图落盘得到解决。正常条款裁剪与SDK modal图现存忽略目录 `artifacts/docvqa-agreement-evidence/`，无私密下载URL或账号信息；不入Git。下载已从原单流切换为4×512MiB有界Range恢复，复用1,063,796,736B原partial；最终每段206/Content-Range/ETag、按序合并、原partial前缀一致性及全文件SHA256全部通过前仍不标Images完成。

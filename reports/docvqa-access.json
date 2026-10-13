@@ -23,9 +23,12 @@
       "CVC/IIIT explicitly state no ownership rights over the documents; hosting is for noncommercial research and educational purposes only.",
       "Annotations accompanying document images are offered without restrictions."
     ],
-    "accepted_by_agent": false,
-    "action_time_confirmation_required": true,
-    "commercial_image_training_admitted": false
+    "accepted_by_agent": true,
+    "action_time_confirmation_required": false,
+    "commercial_image_training_admitted": false,
+    "user_explicit_action_time_approval_received": true,
+    "approval_text": "同意上述协议和来源调整",
+    "approval_scope": "SP noncommercial research/education isolation; do not distribute download URLs; responsibility/indemnity; not commercial image training"
   },
   "files_visible": [
     {
@@ -71,14 +74,20 @@
     "audiocaps_not_processed": "Explicit parent instruction: omitted by user under ADR0004."
   },
   "download": {
-    "started": false,
+    "started": true,
     "local_bytes": 0,
     "remote_bytes": 0,
     "hashes": [],
-    "budget_rule": "Files over 5 GB require an exact file/budget report to root before action. No sizes obtained because downloading currently triggers a new legal agreement."
+    "budget_rule": "Files over 5 GB require an exact file/budget report to root before action. No sizes obtained because downloading currently triggers a new legal agreement.",
+    "remote_report": "reports/docvqa-source-download-001.json",
+    "job_pid": 30716,
+    "expected_bytes": 8581945667,
+    "remote_budget_bytes": 30000000000,
+    "local_safety": "Local free11GiB, remote497GiB; binary files go straight to remote without cookies/profile access.",
+    "transport": "4 workers, 512MiB exact HTTP ranges, verified TLS/ETag/Content-Range; final full-file hash pending"
   },
-  "status": "blocked_action_time_dataset_agreement_confirmation",
-  "next_action": "Root requests specific action-time confirmation for SP-DocVQA download terms; then inspect original package sizes and select train/val-only media/annotations without accessing hidden test answers.",
+  "status": "authorized_original_download_running",
+  "next_action": "Complete and hash original SP packages, retain test members opaque, inspect train/val only; no repeated agreement confirmation.",
   "sdk_agreement_review": {
     "browser_page": "https://developer.android.com/ndk/downloads",
     "browser_observed_agreement": "Android Software Development Kit License Agreement",
@@ -95,12 +104,20 @@
     "referenced_repository_license_text_sha256": "1f8729233617b193fd619213792ae16a41b95d2bbbf525dfe66998252ba68b16",
     "referenced_repository_license_text_characters": 16962,
     "version_conclusion": "Both are named Android SDK License Agreement, but date/content versions differ; do not claim that accepting the r30 2026 webpage proves acceptance of the exact r28b index-referenced 2019 text. Review/confirmation should identify the actual target license version.",
-    "confirmation_scope": "Accept the applicable SDK license for r28b only; no payment/account/new privileges; no r30 acceptance or download performed by agent."
+    "confirmation_scope": "Accept the applicable SDK license for r28b only; no payment/account/new privileges; no r30 acceptance or download performed by agent.",
+    "user_explicit_approval_received": true,
+    "approved_versions": [
+      "2019-01-16 r28b referenced SDK license",
+      "2026-04-28 revision where applicable"
+    ],
+    "execution_owner": "runtime dependency agent; this browser agent does not download r30"
   },
   "screenshots": {
-    "docvqa_normal_terms": "Observed and emitted inline via cua_repl getScreenshot; excludes raw source/download URLs in visible terms panel.",
-    "local_saved_path": null,
-    "persistence_limit": "Native screenshot tool returns in-memory pixels. Attempts with native area capture and Chrome built-in screenshot did not produce a file in observed Downloads/Desktop; no artifact claimed."
+    "docvqa_normal_terms_path": "/tmp/lite-omnijev-authorizations/artifacts/docvqa-agreement-evidence/docvqa-sp-download-terms.png",
+    "android_sdk_web_terms_path": "/tmp/lite-omnijev-authorizations/artifacts/docvqa-agreement-evidence/android-sdk-web-terms.png",
+    "privacy": "Normal rendered page/SDK modal only; DocVQA crop contains no download URLs or account identifiers",
+    "git_tracked": false
   },
-  "annotations_access_check": "Official page says annotations have no restrictions, but its download action explicitly joins the general agreement. No separate public no-agreement endpoint verified, and no hidden/unlinked URL was requested."
+  "annotations_access_check": "Official page says annotations have no restrictions, but its download action explicitly joins the general agreement. No separate public no-agreement endpoint verified, and no hidden/unlinked URL was requested.",
+  "latest_update_utc": "2026-10-13T21:53:09.286075+00:00"
 }
