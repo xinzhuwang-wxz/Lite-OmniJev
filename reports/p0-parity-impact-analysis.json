@@ -1,0 +1,96 @@
+{
+  "scope": "post-hoc diagnostic of existing synthetic text fixtures; U=0.5 is analytical slicing only, not a calibrated production policy",
+  "results": {
+    "base": {
+      "n": 100,
+      "flips": [],
+      "active_both_U_lt_half": 75,
+      "active_flip_indices": [],
+      "U_half_disagreement": 0,
+      "metrics": {
+        "conditional_max": {
+          "median": 9.964772274054522e-06,
+          "p95": 0.028525016331052255,
+          "max": 0.061476704094846624,
+          "count_ge_001": 23
+        },
+        "raw_max": {
+          "median": 0.0004376157434188288,
+          "p95": 0.0281664298352073,
+          "max": 0.05749319682582993,
+          "count_ge_001": 41
+        },
+        "pU_delta": {
+          "median": 1.6490778109723436e-07,
+          "p95": 7.206891245533964e-05,
+          "max": 0.0002584260618037269,
+          "count_ge_001": 0
+        },
+        "joint_TV": {
+          "median": 5.333869853744472e-06,
+          "p95": 0.00015689396677836772,
+          "max": 0.010261963243118222,
+          "count_ge_001": 1
+        }
+      },
+      "slices": {
+        "conditional_max_both_U_lt_half": 0.010259350212609264,
+        "bad_conditionals_count": 23,
+        "bad_conditionals_min_pU": 0.0011985319506677956,
+        "bad_conditionals_U_lt_half": [
+          {
+            "index": 90,
+            "delta": 0.010259350212609264,
+            "min_pU": 0.0011985319506677956
+          }
+        ]
+      }
+    },
+    "adapter": {
+      "n": 100,
+      "flips": [],
+      "active_both_U_lt_half": 75,
+      "active_flip_indices": [],
+      "U_half_disagreement": 0,
+      "metrics": {
+        "conditional_max": {
+          "median": 1.0298158072514512e-08,
+          "p95": 0.028212648059963624,
+          "max": 0.04401873806938439,
+          "count_ge_001": 24
+        },
+        "raw_max": {
+          "median": 1.3825225149144416e-05,
+          "p95": 0.0014593750874043465,
+          "max": 0.003427832903781569,
+          "count_ge_001": 8
+        },
+        "pU_delta": {
+          "median": 2.786165054898892e-12,
+          "p95": 4.480578130738877e-10,
+          "max": 1.3019074707187883e-09,
+          "count_ge_001": 0
+        },
+        "joint_TV": {
+          "median": 1.301907470718788e-09,
+          "p95": 4.422952090211434e-07,
+          "max": 5.707967546312694e-07,
+          "count_ge_001": 0
+        }
+      },
+      "slices": {
+        "conditional_max_both_U_lt_half": 5.707967547508019e-07,
+        "bad_conditionals_count": 24,
+        "bad_conditionals_min_pU": 0.9999999944462894,
+        "bad_conditionals_U_lt_half": []
+      }
+    }
+  },
+  "sources": {
+    "reports/p0-base-hf-001.json": "e19209074b7e34bb90cdc6cbca16fef64c3fb4ce4a02f97f3f34e4f0188242fe",
+    "reports/p0-base-vllm-triton-001.json": "a66a0dbdfdd0e6d14198bcfc9be7cb0ee5104ae61a975f3ab73289f4474458a5",
+    "reports/p0-adapter-hf-001.json": "936e5aa135e6e278e8c3af7f9f98ff7f8b1ee4bc678ceac1b46818d228f7fc10",
+    "reports/p0-adapter-vllm-triton-001.json": "3b667e69a16760affd132278d1a5976273e4dfe8a35a2167b9b4dc8aeb70be8a"
+  },
+  "formula": "joint = [(1-p_U)*conditional_i for each answer] + [p_U]; TV = 0.5*sum(abs(joint_HF-joint_vLLM))"
+}
