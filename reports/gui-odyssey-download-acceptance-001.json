@@ -1,0 +1,30 @@
+{
+  "repo_id": "hflqf88888/GUIOdyssey",
+  "revision": "61632d0f3f4d51d7e9561ce4f84347dd06b2019d",
+  "plan": "source-audit/stage3-source-audit/gui-odyssey/app-split-train-media-plan-under-19_5gb.json",
+  "output_root": "artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
+  "selected_episode_count": 1679,
+  "screenshot_count": 25809,
+  "compressed_bytes": 19066700692,
+  "bytes": 19499790993,
+  "reused_count": 13605,
+  "invalid_existing_count": 0,
+  "batch_bytes": 2097152,
+  "max_workers": 8,
+  "elapsed_sec": 2599.148,
+  "observed_utc": "2026-10-13T23:04:01.334076+00:00",
+  "status": "selected_train_download_complete_full_decode_pending",
+  "exit_code": 0,
+  "gpu_used": false,
+  "ready_to_open_gpu": false,
+  "training_admitted": false,
+  "test_episodes_used": 0,
+  "per_file_manifest": {
+    "remote_path": "/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json",
+    "sha256": "c025093e6fec56716f7efe8c26b42782fdf8f55e59141f8e0f2df9780804a66f",
+    "bytes": 10565313,
+    "rows": 25809
+  },
+  "plan_sha256": "661a56214ee442ae0c694b21c41b374fc02dad0ea1a962bb8d9638b3d393c0c4",
+  "receipt_scope": "Every selected file checked against source central-directory CRC/size and SHA recorded by fetch. Whole PNG decode is separate pending acceptance."
+}
