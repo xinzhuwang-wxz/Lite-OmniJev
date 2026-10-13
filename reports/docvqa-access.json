@@ -9,7 +9,8 @@
     "method": "Native Chrome View > Developer > View Source via cua_repl; authenticated official Download page source was readable after normal page rendering remained purple/blank.",
     "browser_extension_failed": "nodeRepl.fetch request failed",
     "credentials_cookies_or_browser_profile_read": false,
-    "security_warnings_bypassed": false
+    "security_warnings_bypassed": false,
+    "normal_page_restored": "Read-only Chrome print preview then Cancel restored normal rendered terms page and accessibility tree."
   },
   "dataset_terms": {
     "observed_on_official_page": true,
@@ -77,5 +78,29 @@
     "budget_rule": "Files over 5 GB require an exact file/budget report to root before action. No sizes obtained because downloading currently triggers a new legal agreement."
   },
   "status": "blocked_action_time_dataset_agreement_confirmation",
-  "next_action": "Root requests specific action-time confirmation for SP-DocVQA download terms; then inspect original package sizes and select train/val-only media/annotations without accessing hidden test answers."
+  "next_action": "Root requests specific action-time confirmation for SP-DocVQA download terms; then inspect original package sizes and select train/val-only media/annotations without accessing hidden test answers.",
+  "sdk_agreement_review": {
+    "browser_page": "https://developer.android.com/ndk/downloads",
+    "browser_observed_agreement": "Android Software Development Kit License Agreement",
+    "browser_displayed_date": "April 28, 2026",
+    "browser_modal_scope": "NDK current LTS r30; opened solely to inspect legal text; no r30 download started",
+    "checkbox_first_observed_value": 1,
+    "agent_clicked_acceptance_checkbox": false,
+    "agent_clicked_final_download": false,
+    "target_package": "ndk;28.1.13356709",
+    "target_archive": "android-ndk-r28b-linux.zip",
+    "official_repository_index": "https://dl.google.com/android/repository/repository2-3.xml",
+    "target_package_uses_license": "android-sdk-license",
+    "referenced_repository_license_date": "January 16, 2019",
+    "referenced_repository_license_text_sha256": "1f8729233617b193fd619213792ae16a41b95d2bbbf525dfe66998252ba68b16",
+    "referenced_repository_license_text_characters": 16962,
+    "version_conclusion": "Both are named Android SDK License Agreement, but date/content versions differ; do not claim that accepting the r30 2026 webpage proves acceptance of the exact r28b index-referenced 2019 text. Review/confirmation should identify the actual target license version.",
+    "confirmation_scope": "Accept the applicable SDK license for r28b only; no payment/account/new privileges; no r30 acceptance or download performed by agent."
+  },
+  "screenshots": {
+    "docvqa_normal_terms": "Observed and emitted inline via cua_repl getScreenshot; excludes raw source/download URLs in visible terms panel.",
+    "local_saved_path": null,
+    "persistence_limit": "Native screenshot tool returns in-memory pixels. Attempts with native area capture and Chrome built-in screenshot did not produce a file in observed Downloads/Desktop; no artifact claimed."
+  },
+  "annotations_access_check": "Official page says annotations have no restrictions, but its download action explicitly joins the general agreement. No separate public no-agreement endpoint verified, and no hidden/unlinked URL was requested."
 }

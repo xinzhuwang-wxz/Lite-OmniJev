@@ -32,3 +32,17 @@ Task 1为 **Single Page Document Visual Question Answering**，原V1.0标记2020
 此页新格式把资源合包列出，不能假定旧版train/val单独包仍为当前入口。取得条款确认后，先核官方包清单/大小与split组成；单包超过5GB先向主会话报告预算。没有读取隐藏test答案，没有下载MP-DocVQA、DocCVQA或Infographic扩展任务。
 
 具体下载URL不写本文/Git，账号信息不入报告。仅引用官方入口，必要的私密下载位置由浏览器会话处理。没有获得字节/哈希，不宣称DocVQA外部准备完成。机器可读证据见 `reports/docvqa-access.json`。AudioCaps已按用户明确省略及ADR0004保持不处理。
+
+## 一次集中确认所需的Android协议版本证据
+
+同时只读打开用户已有[NDK官方下载tab](https://developer.android.com/ndk/downloads)的Linux下载披露按钮。当前是r30，弹窗SDK License Agreement日期为 **2026-04-28**；首次观察时checkbox已显示勾选。agent没有点击checkbox或最终download，不把既有UI状态当成人工签约证据，也不下载r30。
+
+项目固定LiteRT-LM v0.9.0所需工具链是NDK **r28b / `28.1.13356709`**。[官方SDK repository索引](https://dl.google.com/android/repository/repository2-3.xml)中该包引用 `uses-license=android-sdk-license`，但这个license元素的正文日期是 **2019-01-16**，正文16962字符，UTF-8 SHA256为 `1f8729233617b193fd619213792ae16a41b95d2bbbf525dfe66998252ba68b16`。
+
+两者属于同名Android SDK License Agreement，不能说日期/文本完全相同。集中确认应明确覆盖实际r28b索引引用的2019版本；若选择当前网页办理路径，也应向本人列明2026修订版差异，不因r30页面已经勾选就宣称r28b接受手续完成。不要求用户为本地构建开付费/Play发布账号。协议涉及SDK用途限兼容Android应用、使用者代表权限/合法资格、OSS组件另按OSS许可及责任/赔偿等义务，完整条件以对应官方文本为准。
+
+可集中询问：是否接受DocVQA-SP上列下载条款，仅供非商用研究隔离使用，并接受NDKr28b实际适用的SDK License Agreement（官方索引2019-01-16版；当前下载网页显示2026-04-28修订版，需一并明确是否接受）？两份协议同意均不代表DocVQA图片商业训练授权；本轮等待本人明确回复，未点击接受或下载。
+
+正常DocVQA条款页面截图已在工具结果inline展示，未展示原文件download URL。截图API没有本地输出路径；OS区域截图/Chrome内置capture尝试未生成可找到的文件，因此不编造截图路径。截图保存问题不影响已核实的条款文字证据。
+
+对annotations另核：页面虽然明确其无额外限制，但入口仍位于“下载即同意”总条款下；没有核实独立免协议公开入口，不能据此绕过当前action-time确认或猜测未列出的下载URL。
