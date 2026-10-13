@@ -1,0 +1,78 @@
+{
+  "retrieved_at": "2026-10-13",
+  "repo_id": "google/gemma-4-E4B-it",
+  "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "gated": false,
+  "card": {
+    "library_name": "transformers",
+    "license": "apache-2.0",
+    "license_link": "https://ai.google.dev/gemma/docs/gemma_4_license",
+    "pipeline_tag": "any-to-any",
+    "base_model": [
+      "google/gemma-4-E4B"
+    ]
+  },
+  "safetensors": {
+    "parameters": {
+      "BF16": 7996156490
+    },
+    "total": 7996156490
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 1570,
+      "lfs": null
+    },
+    {
+      "path": "README.md",
+      "bytes": 27956,
+      "lfs": null
+    },
+    {
+      "path": "chat_template.jinja",
+      "bytes": 18569,
+      "lfs": null
+    },
+    {
+      "path": "config.json",
+      "bytes": 5145,
+      "lfs": null
+    },
+    {
+      "path": "generation_config.json",
+      "bytes": 208,
+      "lfs": null
+    },
+    {
+      "path": "model.safetensors",
+      "bytes": 15992595884,
+      "lfs": {
+        "sha256": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503",
+        "size": 15992595884,
+        "pointerSize": 136
+      }
+    },
+    {
+      "path": "processor_config.json",
+      "bytes": 1689,
+      "lfs": null
+    },
+    {
+      "path": "tokenizer.json",
+      "bytes": 32169626,
+      "lfs": {
+        "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+        "size": 32169626,
+        "pointerSize": 133
+      }
+    },
+    {
+      "path": "tokenizer_config.json",
+      "bytes": 3082,
+      "lfs": null
+    }
+  ],
+  "metadata_url": "https://huggingface.co/api/models/google/gemma-4-E4B-it?blobs=true",
+  "verification_status": "remote_metadata_only_not_downloaded"
+}
