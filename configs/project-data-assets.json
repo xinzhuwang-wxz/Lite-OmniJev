@@ -384,6 +384,11 @@
       "admission_status": "license_blocked",
       "next_commands": [
         "Verify COCO image license/attribution requirements and whether the HF parquet contains redistributable image bytes before training admission."
+      ],
+      "physical_staging_status": "3832_permissive_and_19860_known_restricted_COCO_images_hash_verified_separate_pools_64_representative_decodes_passed",
+      "offline_preparation_evidence": [
+        "reports/stage2-remote-completion-001.json",
+        "reports/stage2-media-cpu-validation-001.json"
       ]
     },
     {
@@ -431,11 +436,15 @@
       "label_origin": "Dataset multiple-choice science QA labels; use only image subset.",
       "media_availability": "HF mirror includes image-capable parquet; license obligations require review.",
       "public_sampling_plan": "Sample only image rows for the stage 2 10k visual tranche; keep train/dev/calibration by original problem id.",
-      "physical_staging_status": "metadata_ready_large_payload_root_coordination_required_with_attribution_sharealike_tracking",
+      "physical_staging_status": "three_pinned_parquet_files_hash_verified_footer_cpu_passed",
       "training_release_status": "pending_CC-BY-SA-4.0_attribution_sharealike_decision",
       "admission_status": "training_release_decision_pending",
       "next_commands": [
         "Physical staging can be planned for source audit after root coordination; before training/release, record attribution and resolve CC-BY-SA-4.0 obligations for derived data/model artifacts."
+      ],
+      "offline_preparation_evidence": [
+        "reports/stage2-remote-completion-001.json",
+        "reports/stage2-media-cpu-validation-001.json"
       ]
     },
     {
@@ -486,11 +495,15 @@
       "label_origin": "Original open answers; project requires teacher-generated distractors while preserving original answer as truth.",
       "media_availability": "Charts available in parquet mirror.",
       "public_sampling_plan": "Part of stage 2 10k chart/document tranche after conversion to Choice with recorded distractor generator.",
-      "physical_staging_status": "metadata_ready_large_payload_root_coordination_required_with_GPL_notice_tracking",
+      "physical_staging_status": "pinned_archive_hash_verified_full_crc_and_32_representative_images_decode_passed",
       "training_release_status": "pending_GPL-3.0_dataset_obligation_decision",
       "admission_status": "training_release_decision_pending",
       "next_commands": [
         "Physical staging can be planned for source audit after root coordination; before training/release, resolve GPL-3.0 obligations and whether derived model/data artifacts are compatible with release goals."
+      ],
+      "offline_preparation_evidence": [
+        "reports/stage2-remote-completion-001.json",
+        "reports/stage2-media-cpu-validation-001.json"
       ]
     },
     {
@@ -543,7 +556,11 @@
         "Use self-owned or explicitly licensed document media for first-release commercial document training; preserve stage2 10k chart/document tranche without double counting."
       ],
       "first_release_scope": "accepted_SP_terms_research_only_original_images_not_commercial_training",
-      "scope_decision": "docs/adr/0005-permitted-first-release-media.md"
+      "scope_decision": "docs/adr/0005-permitted-first-release-media.md",
+      "physical_staging_status": "specific_SP_research_agreement_user_accepted_annotations_downloaded_images_in_progress_no_ready_claim",
+      "offline_preparation_evidence": [
+        "reports/docvqa-access.json"
+      ]
     },
     {
       "asset_id": "multimodal-mind2web",
@@ -590,7 +607,11 @@
       "next_commands": [
         "Resolve official research-only declaration and exact OpenRAIL text before commercial training; do not infer unrestricted commercial use from generic license tag."
       ],
-      "training_release_status": "commercial_admission_unresolved_research_only_source_declaration"
+      "training_release_status": "commercial_admission_unresolved_research_only_source_declaration",
+      "physical_staging_status": "all49_fixed_revision_files_hash_verified_research_only",
+      "offline_preparation_evidence": [
+        "reports/mind2web-source-download-002.json"
+      ]
     },
     {
       "asset_id": "android-control",
@@ -634,8 +655,11 @@
         "Resolve datasheet non-commercial condition before commercial training; preserve exact GCS generation/MD5/CRC32C and split-by-episode rule.",
         "Research-only raw staging underway with pinned GCS generations, MD5/size and local SHA256; do not parse or train until family and label admission."
       ],
-      "physical_staging_status": "research_only_raw_download_running",
-      "training_release_status": "commercial_admission_blocked_by_explicit_official_noncommercial_condition"
+      "physical_staging_status": "all22_official_objects_hash_verified_research_only",
+      "training_release_status": "commercial_admission_blocked_by_explicit_official_noncommercial_condition",
+      "offline_preparation_evidence": [
+        "reports/android-control-source-download-002.json"
+      ]
     },
     {
       "asset_id": "gui-odyssey",
@@ -678,7 +702,9 @@
       "admission_status": "downloadable_with_root_coordination",
       "next_commands": [
         "Do not preserve obsolete account-blocked claim from earlier unauthorized response; verify exact fixed revision and public availability, preserve CC-BY attribution, split by episode/source family; training admission remains separate."
-      ]
+      ],
+      "physical_staging_status": "official_train1679_episode_19_499_790_993byte_selective_media_recovery_in_progress_no_ready_claim",
+      "offline_preparation_evidence": []
     },
     {
       "asset_id": "playwright-synthetic-pages",
@@ -776,9 +802,13 @@
       "next_commands": [
         "Complete pinned evaluation media hash verification; preserve Charades license and video-family identity; original source permission required before training or redistribution."
       ],
-      "physical_staging_status": "MVBench_STAR_media_research_eval_download_running; full STAR training media not staged",
+      "physical_staging_status": "public_eval600_of600_references_prepared_hash_crc_and_representative_full_decode_passed_three_window_bounds_protocol_pending",
       "first_release_scope": "research_evaluation_only_no_commercial_training",
-      "scope_decision": "docs/adr/0005-permitted-first-release-media.md"
+      "scope_decision": "docs/adr/0005-permitted-first-release-media.md",
+      "offline_preparation_evidence": [
+        "reports/public-eval-media-validation-001.json",
+        "reports/star-missing-source-recovery-001.json"
+      ]
     },
     {
       "asset_id": "clevrer",
@@ -820,7 +850,8 @@
       "offline_preparation_evidence": [
         "reports/clevrer-source-download-snapshot.json",
         "reports/clevrer-media-cpu.json"
-      ]
+      ],
+      "physical_staging_status": "all10_official_objects_size_sha_snapshot_crc_passed_nine_representative_videos_full_decode_passed"
     },
     {
       "asset_id": "perception-test",
@@ -883,11 +914,14 @@
       "label_origin": "Official multiple-choice evaluation labels where public.",
       "media_availability": "Video/audio archives available, each over 100 MB.",
       "public_sampling_plan": "Use as eval or stage 3 source only where labels are public; do not read hidden/blind answers.",
-      "physical_staging_status": "benchmark_metadata_ready_large_payload_root_coordination_required",
+      "physical_staging_status": "fixed_public_eval_archive_hash_crc_800references_and_representative_full_decode_passed",
       "training_release_status": "not_training_source_until_original_DeepMind_terms_and_public_label_scope_are_cross_checked",
       "admission_status": "benchmark_eval_staging_pending_original_terms",
       "next_commands": [
         "Cross-check original DeepMind/Perception Test terms and public-label scope before mirroring media for eval; keep hidden/blind labels out of developer access."
+      ],
+      "offline_preparation_evidence": [
+        "reports/public-eval-archives-validation-002.json"
       ]
     },
     {
@@ -1032,7 +1066,7 @@
       "label_origin": "Crowdsourced audio question answers and confidence scores; yes/no can map to Noul.",
       "media_availability": "audio_files.zip plus metadata CSV with original Freesound URL/license per file.",
       "public_sampling_plan": "Part of stage 3 audio tranche; split by original audio file and preserve Freesound license metadata.",
-      "physical_staging_status": "metadata_verified; CC0_or_CC_BY_subset_stageable_for_source_audit; audio_archive_large_payload_root_coordination_required",
+      "physical_staging_status": "official_archive_md5_sha_verified_1659_CC0_BY_audio_extracted_hashed_32_representatives_full_decode_passed",
       "training_release_status": "pending_attribution_packaging_and_exclusion_of_NC_SamplingPlus_blank_or_metadata_missing_files",
       "admission_status": "training_release_decision_pending",
       "next_commands": [
@@ -1040,7 +1074,8 @@
         "Keep CC-BY-NC, Sampling+, blank-license, and metadata-missing rows out of main training/release admission unless a later project decision explicitly creates a research-only lane."
       ],
       "offline_preparation_evidence": [
-        "reports/clotho-aqa-audio-preparation-002.json"
+        "reports/clotho-aqa-audio-preparation-002.json",
+        "reports/clotho-range-recovery-004.json"
       ]
     },
     {
@@ -1145,10 +1180,11 @@
       "next_commands": [
         "Complete isolated CPU ONNX WAV canary; investigate legitimately originally-public CC0 CommonVoice release without bypassing current gated terms."
       ],
-      "physical_staging_status": "KokoroONNX87MB_selected_weights_and_voices_verified; CommonVoice_official_account_terms_pending",
+      "physical_staging_status": "MDC_authorized_archive_sha_and_safe_CPU_preparation_passed_Kokoro_text_G2P_CPU_canary_passed",
       "offline_preparation_evidence": [
         "reports/commonvoice-cpu-prep.json",
-        "reports/speech-kokoro-text-g2p-cpu-canary.json"
+        "reports/speech-kokoro-text-g2p-cpu-canary.json",
+        "reports/mdc-commonvoice-download-002.json"
       ]
     },
     {
@@ -1186,8 +1222,11 @@
       "next_commands": [
         "Pin public test-mini manifest and audio files; do not read or fabricate blind-test answers."
       ],
-      "physical_staging_status": "public_mini_research_eval_download_running",
-      "training_release_status": "not_training_source; noncommercial public evaluation staging only"
+      "physical_staging_status": "pinned_mini_hash_verified_all1000_audio_CPU_decode_passed_original_30sec_mono_preprocessing_protocol_pending",
+      "training_release_status": "not_training_source; noncommercial public evaluation staging only",
+      "offline_preparation_evidence": [
+        "reports/public-eval-media-validation-001.json"
+      ]
     },
     {
       "asset_id": "mvbench",
@@ -1226,7 +1265,12 @@
       "next_commands": [
         "Mirror only after exact 14-task reproduction manifest is written; hash all videos/questions."
       ],
-      "physical_staging_status": "specific_approved_research_eval_archives_running; others require source permissions"
+      "physical_staging_status": "nine_public_tasks_1800_references_prepared_teacher14tasks2786_exact_manifest_not_recovered_other_required_sources_undetermined",
+      "offline_preparation_evidence": [
+        "reports/public-eval-archives-validation-002.json",
+        "reports/star-missing-source-recovery-001.json",
+        "reports/jev-omni-mvbench-protocol.json"
+      ]
     },
     {
       "asset_id": "jevbench",
@@ -1302,6 +1346,10 @@
       "admission_status": "downloadable_verified",
       "next_commands": [
         "Run kit metadata/list command only; create per-underlying-dataset blockers before fetching any payload."
+      ],
+      "physical_staging_status": "public_0_3_queue82plus_fixed_RAGTruth_recovery_hash_verified_RouterBench_isolated_conversion_pending_not_private_board_reproduction",
+      "offline_preparation_evidence": [
+        "reports/ragtruth-source-recovery-001.json"
       ]
     },
     {
@@ -1452,5 +1500,6 @@
       ]
     }
   ],
-  "first_release_source_scope_decision": "docs/adr/0005-permitted-first-release-media.md"
+  "first_release_source_scope_decision": "docs/adr/0005-permitted-first-release-media.md",
+  "physical_evidence_update": "2026-10-14: statuses describe actual external staging/CPU evidence only; admission, benchmark reproduction, and future generated training pools remain separate."
 }
