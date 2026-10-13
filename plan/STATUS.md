@@ -49,3 +49,9 @@
 - 本轮证据：queue valid、frontier=[]、claimed=[]；仅主worktree；无新的实例/SSH信息，无须等待的已知活跃作业。
 - native update_goal 已返回blocked。停止自动空转；收到实际无卡实例信息后恢复P0，先不启用GPU。
 - 本地M0验收保持有效；不重复下载/验证，不降低终局门槛，不擅自租用或付费。
+
+## 租机配置决策补充
+- 用户正在选择实例，尚未提供平台/SSH。已核对镜像、CUDA驱动要求与三档配置，详见docs/runbooks/compute-handoff.md的2026-10-13补充。
+- 推荐H10080GB整卡路线：正常开卡16–24vCPU/128GB RAM，系统盘100GB、数据盘500GB可扩至1TB；只做CPU准备且支持独立规格时8vCPU/32GB。
+- AutoDL特殊无卡模式按官方文档仅0.5核/2GB，不能当作普通8核32GB CPU实例；GPU会释放，不保证恢复时有库存。
+- 未租用、未开卡、未更换模型或阈值；原goal仍因实例接入缺失保持blocked。
