@@ -2,7 +2,7 @@
 
 更新时间：2026-10-13 18:52（Asia/Shanghai）
 当前里程碑：M0已完成；进入P0，等待用户提供持久无卡Linux实例。
-原生goal：active，终局目标不变；尚未交付真实模型/API/端侧产品，不能complete。
+原生goal：blocked（D001缺少无卡实例/SSH），终局目标不变；尚未交付真实模型/API/端侧产品，不能complete。
 
 ## 当前票与所有者
 - bootstrap:01–08：全部done；各票验收与证据已记录，无活跃执行者。
@@ -42,3 +42,10 @@
 - 本轮子代理全部结束；所有临时worktree已移除；验收服务器与浏览器均已退出。
 - 保留artifacts模型metadata、manifest和100样本缓存供续用；不删除用户原有资源。
 - 接续入口：plan/START.md；交接：plan/handoff-2026-10-13-bootstrap.md。
+
+## Goal阻塞复核
+- 时间：2026-10-13T18:55:40.066810+08:00。
+- 连续阻塞轮次：3（含用户发起轮结束时的D001）；上一轮无开发进展，本轮复核同一外部阻塞，不声称完成。
+- 本轮证据：queue valid、frontier=[]、claimed=[]；仅主worktree；无新的实例/SSH信息，无须等待的已知活跃作业。
+- native update_goal 已返回blocked。停止自动空转；收到实际无卡实例信息后恢复P0，先不启用GPU。
+- 本地M0验收保持有效；不重复下载/验证，不降低终局门槛，不擅自租用或付费。
