@@ -10,7 +10,10 @@ The upstream README says public 0.3 has 37 public-index benchmarks plus seven ad
 
 ## Remote evidence
 
-Evidence report: `reports/source-manifests/decision-index-public0.3-001.json`.
+Evidence reports:
+
+- `reports/source-manifests/decision-index-public0.3-001.json`
+- `reports/source-manifests/decision-index-public0.3-retry-002.json`
 
 Remote raw root: `/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3`.
 
@@ -18,14 +21,14 @@ The finished remote report records:
 
 | Field | Value |
 | --- | ---: |
-| Raw files staged | 5,861 |
-| Raw bytes staged | 2,388,936,304 |
+| Raw files staged | 5,901 |
+| Raw bytes staged | 2,501,210,679 |
 | New raw budget | 10,000,000,000 |
 | Git sources verified | 21 |
 | HTTP sources verified | 11 |
-| Git failures | 3 |
+| Git failures | 1 |
 | HTTP failures | 3 |
-| HF content sources downloaded | 0 |
+| HF content sources downloaded | 1 verified, retry queue running |
 
 No GPU work, model inference, full rebuild, archive extraction, or pickle loading was run.
 
@@ -43,16 +46,25 @@ The following direct HTTP sources were downloaded and hash-verified:
 - ChessBench `action_value_data.bag`.
 - ESCI examples and products parquet files, verified against the upstream LFS SHA prefixes recorded by the kit.
 
-Failed or intentionally stopped HTTP downloads were Habermas comparisons, GPQA `dataset.zip`, and the HoVer Wikipedia SQLite DB. These are recorded as gaps in the report, not silently treated as ready.
+Failed or intentionally stopped HTTP downloads in the first report were Habermas comparisons, GPQA `dataset.zip`, and the HoVer Wikipedia SQLite DB. Retry queue 002 is still running and should be treated as the current source for final status.
 
 ## HF and gated-source status
 
-HF metadata was resolved locally before the remote job. The report records resolved revisions, file sizes, expected hashes/LFS metadata, and patterns for the non-gated HF sources. Remote HF content transfers stalled before useful byte progress, so content staging is still pending for RouterBench, BRIGHT, ToolRet parquets, ANLI, MMLU, ARC, WinoGrande, HellaSwag, GSM8K, MMLU-Pro, When2Call, New Yorker, and PhishNChips.
+HF metadata was resolved locally before the remote job. The first report records resolved revisions, file sizes, expected hashes/LFS metadata, and patterns for the non-gated HF sources. The initial content transfers stalled because the full AutoDL bootstrap/proxy environment was not sourced; retry queue 002 sources both `infra/bootstrap/autodl-env.sh` and `/etc/network_turbo` and has started downloading HF content successfully.
+
+At the local snapshot, RouterBench `routerbench_0shot.pkl` was downloaded and hash-verified in quarantine at 99,567,659 bytes. RouterBench `routerbench_5shot.pkl` was actively downloading. No pickle was loaded.
+
+Retry queue 002:
+
+- PID file: `/root/autodl-tmp/lite-omnijev/artifacts/source-audit/public-index/decision-index-retry-002.pid`
+- Nohup log: `/root/autodl-tmp/lite-omnijev/artifacts/source-audit/public-index/decision-index-retry-002.nohup.log`
+- Live report: `/root/autodl-tmp/lite-omnijev/reports/source-manifests/decision-index-public0.3-retry-002.json`
+- Snapshot status: 83 tasks total, 3 done, 1 failed, 1 running, 2.50 GB raw staged, still within the 10 GB cap.
 
 HLE is explicitly blocked: `cais/hle` at `5a81a4c7271a2a2a312b9a690f0c2fde837e4c29` is gated. The report records the expected `data/test-00000-of-00001.parquet` size and LFS metadata, but no content was downloaded and no access bypass was attempted.
 
-RouterBench remains a quarantine-only source because the upstream files are `.pkl`. Future work must download raw bytes only, then convert in an isolated process that never imports or loads untrusted pickles in the normal agent/runtime environment.
+RouterBench remains a quarantine-only source because the upstream files are `.pkl`. Future work must convert in an isolated process that never imports or loads untrusted pickles in the normal agent/runtime environment.
 
 ## Use boundary
 
-This preparation is source-audit staging. It is not a Decision Index suite pass and cannot be used as evidence that public 0.3 is reproducible yet. The remaining minimum gaps are HF byte downloads, HLE account/terms authorization, safe pickle conversion for RouterBench, failed git sources for added benchmarks, and safe archive extraction/normalization under the remote CPU constraints.
+This preparation is source-audit staging. It is not a Decision Index suite pass and cannot be used as evidence that public 0.3 is reproducible yet. The remaining minimum gaps are completing retry queue 002, HLE account/terms authorization, safe pickle conversion for RouterBench, the persistent RAGTruth git failure, and safe archive extraction/normalization under the remote CPU constraints.
