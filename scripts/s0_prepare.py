@@ -51,6 +51,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-partial", action="store_true")
     args = parser.parse_args(argv)
+    if args.output.exists() or args.output.is_symlink():
+        parser.error("output path already exists; choose a new evidence report path")
     start = time.monotonic()
     report: dict[str, Any] = {
         "status": "pending",

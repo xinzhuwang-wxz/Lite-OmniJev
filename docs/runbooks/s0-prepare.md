@@ -28,8 +28,13 @@ uv run python -m scripts.s0_prepare \
 ```
 
 需已有 training CPU 依赖、Pillow/numpy、ffmpeg/ffprobe；不新增依赖，不自动下载。
-必须使用固定模型 revision 目录；加载设置 `local_files_only=True` 和
+必须使用固定 revision 对应且已验哈希的 metadata 文件；目录名不构成模型身份。
+本次两份 CPU 报告的 `model_files` 已逐文件与固定 revision 的项目下载回执及资产清单
+独立交叉核对，证据见 `reports/s0-prepare-model-metadata-crosscheck-001.json`；
+这只绑定 processor/tokenizer metadata 来源，不构成权重或整条 API 准入。
+加载设置 `local_files_only=True` 和
 `trust_remote_code=False`，不加载模型权重。完整运行要求100题、五类各20题、三primitive。
+已有 `--output` 路径（含目录、正常或悬空软链接）会在写入前拒绝；每次运行使用新报告路径。
 `--allow-partial` 仅作显式调试，成功也写 partial，不写 complete_100_cases。
 
 无卡远端运行整个 Python 进程时使用 `flock /tmp/omnijev-cpu-heavy.lock`、

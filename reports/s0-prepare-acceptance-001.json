@@ -68,5 +68,15 @@
   "video_frame_counts": {
     "8": 10,
     "16": 10
+  },
+  "model_metadata_identity": {
+    "repo_id": "google/gemma-4-E4B-it",
+    "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "license": "apache-2.0",
+    "source_url": "https://huggingface.co/google/gemma-4-E4B-it/tree/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "crosscheck_report": "reports/s0-prepare-model-metadata-crosscheck-001.json",
+    "crosscheck_sha256": "6cf50ff3a82764f09a7658e86896a806ad53fb0134633d9030e1e72075c115b9",
+    "all_six_files_in_each_existing_cpu_report_match": true,
+    "whole_api_or_training_admitted": false
   }
 }

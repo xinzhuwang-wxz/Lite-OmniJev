@@ -155,3 +155,44 @@ def test_audio_duration_limit_rejects_without_truncating(tmp_path: Path) -> None
         source.writeframes(b"\0\0" * 800)
     with pytest.raises(ValueError, match="duration"):
         load_media(media, "audio", num_frames=8, max_seconds=0.01)
+
+
+@pytest.mark.parametrize("existing_kind", ["file", "directory", "symlink", "dangling_symlink"])
+def test_cli_refuses_existing_output_without_changing_evidence(
+    tmp_path: Path, existing_kind: str
+) -> None:
+    output = tmp_path / "report.json"
+    sentinel = tmp_path / "previous-evidence"
+    before = b'{"status":"historical", "evidence":"keep exact bytes"}\n'
+    sentinel.write_bytes(before)
+    if existing_kind == "file":
+        output.write_bytes(before)
+    elif existing_kind == "directory":
+        output.mkdir()
+        (output / "historical.json").write_bytes(before)
+    elif existing_kind == "symlink":
+        output.symlink_to(sentinel)
+    else:
+        output.symlink_to(tmp_path / "missing-target")
+    with pytest.raises(SystemExit) as caught:
+        main(
+            [
+                "--manifest",
+                str(tmp_path / "missing-manifest"),
+                "--asset-root",
+                str(tmp_path),
+                "--model-dir",
+                str(tmp_path),
+                "--output",
+                str(output),
+            ]
+        )
+    assert caught.value.code == 2
+    assert sentinel.read_bytes() == before
+    if existing_kind in {"file", "symlink"}:
+        assert output.read_bytes() == before
+    elif existing_kind == "directory":
+        assert (output / "historical.json").read_bytes() == before
+    else:
+        assert output.is_symlink()
+        assert not output.exists()

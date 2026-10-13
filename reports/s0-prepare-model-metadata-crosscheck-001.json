@@ -1,0 +1,164 @@
+{
+  "status": "passed_metadata_identity_crosscheck",
+  "exit_code": 0,
+  "model": {
+    "repo_id": "google/gemma-4-E4B-it",
+    "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "license": "apache-2.0",
+    "source_url": "https://huggingface.co/google/gemma-4-E4B-it/tree/ee0ef6023621cff504d758262d4e04895a5af4a2"
+  },
+  "scope": "Independent post-run comparison of existing CPU reports, local metadata copies, pinned project asset manifest and hash-verified download receipt; no model computation, weights or whole-API admission.",
+  "evidence": {
+    "config": "configs/project-model-assets.json",
+    "config_file_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+    "config_canonical_sha256": "7c990dba2d80b48761ffdf5f975fc7316a21d5d7289e30ee511b7393fd6f6c8c",
+    "config_canonical_algorithm": "sha256(json.dumps(manifest, sort_keys=True).encode()), matching scripts/stage_models.py",
+    "receipt": "reports/project-model-download-001.json",
+    "receipt_sha256": "6b41bca6527d69fc4f97fe27ec2209abf437c87a6208f6d682a57ff15f30bf34",
+    "receipt_status": "all_required_files_hash_verified_not_admitted",
+    "receipt_manifest_sha256_matches_config_canonical": true
+  },
+  "method": "For each model_files entry in immutable CPU 004/005 reports: compare SHA256 to hash_verified same repo/revision receipt, recompute copied metadata SHA256 and byte length, then compare configured upstream LFS SHA256 or Git blob SHA1 over blob header+content.",
+  "runs": [
+    {
+      "report": "reports/s0-prepare-mac-cpu-004.json",
+      "report_sha256": "3fee40a43ba24be6486bffb7c356e5f5ae78ad4773ce0a71e51f05fc9e11ce1d",
+      "files_checked": 6,
+      "all_match": true,
+      "checks": [
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 3082,
+          "recorded_cpu_sha256": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+          "receipt_sha256": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+          "local_copy_sha256": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "6068e357379d36f823c377e30efb101fa2c67fe4",
+          "match": true
+        },
+        {
+          "file": "config.json",
+          "bytes": 5145,
+          "recorded_cpu_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "receipt_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "local_copy_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "d68960fdcce766f2bfe41436325a8a483a74d125",
+          "match": true
+        },
+        {
+          "file": "tokenizer.json",
+          "bytes": 32169626,
+          "recorded_cpu_sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "receipt_sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "local_copy_sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "upstream_hash_kind": "lfs_sha256",
+          "upstream_hash": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "match": true
+        },
+        {
+          "file": "processor_config.json",
+          "bytes": 1689,
+          "recorded_cpu_sha256": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "receipt_sha256": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "local_copy_sha256": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "5465974d23e1eca2c46c2809b26c997946ce0d90",
+          "match": true
+        },
+        {
+          "file": "generation_config.json",
+          "bytes": 208,
+          "recorded_cpu_sha256": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "receipt_sha256": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "local_copy_sha256": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "e605bb4523b1462ea9d9a3810b9e3ecf7ab7b1f6",
+          "match": true
+        },
+        {
+          "file": "chat_template.jinja",
+          "bytes": 18569,
+          "recorded_cpu_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "receipt_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "local_copy_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "fbe3b59b625cd1b8850ea592d4203df6ec04684b",
+          "match": true
+        }
+      ]
+    },
+    {
+      "report": "reports/s0-prepare-mac-cpu-005.json",
+      "report_sha256": "5e3ca0303982ca027b8a0b2b29944c47feec97cdc84ae2778f06f5898e0e167b",
+      "files_checked": 6,
+      "all_match": true,
+      "checks": [
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 3082,
+          "recorded_cpu_sha256": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+          "receipt_sha256": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+          "local_copy_sha256": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "6068e357379d36f823c377e30efb101fa2c67fe4",
+          "match": true
+        },
+        {
+          "file": "config.json",
+          "bytes": 5145,
+          "recorded_cpu_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "receipt_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "local_copy_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "d68960fdcce766f2bfe41436325a8a483a74d125",
+          "match": true
+        },
+        {
+          "file": "tokenizer.json",
+          "bytes": 32169626,
+          "recorded_cpu_sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "receipt_sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "local_copy_sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "upstream_hash_kind": "lfs_sha256",
+          "upstream_hash": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "match": true
+        },
+        {
+          "file": "processor_config.json",
+          "bytes": 1689,
+          "recorded_cpu_sha256": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "receipt_sha256": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "local_copy_sha256": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "5465974d23e1eca2c46c2809b26c997946ce0d90",
+          "match": true
+        },
+        {
+          "file": "generation_config.json",
+          "bytes": 208,
+          "recorded_cpu_sha256": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "receipt_sha256": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "local_copy_sha256": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "e605bb4523b1462ea9d9a3810b9e3ecf7ab7b1f6",
+          "match": true
+        },
+        {
+          "file": "chat_template.jinja",
+          "bytes": 18569,
+          "recorded_cpu_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "receipt_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "local_copy_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "upstream_hash_kind": "git_blob_sha1",
+          "upstream_hash": "fbe3b59b625cd1b8850ea592d4203df6ec04684b",
+          "match": true
+        }
+      ]
+    }
+  ],
+  "cpu_run_reports_unchanged": true,
+  "new_processor_runs": 0,
+  "output_guard_validation": "16 public CLI/preparation tests passed including byte preservation for existing file, directory, symlink and dangling symlink",
+  "training_or_whole_api_admitted": false
+}
