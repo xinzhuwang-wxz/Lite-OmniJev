@@ -763,7 +763,7 @@
       "name": "AudioCaps",
       "category": "stage_3_training_source",
       "modalities": ["audio", "text"],
-      "required_stages": [3],
+      "required_stages": [],
       "official_source": {
         "type": "github_and_project_page",
         "repo": "cdjkim/audiocaps",
@@ -778,8 +778,9 @@
       "label_origin": "Human-written captions; project converts sound events/captions to Choice with original caption/source retained.",
       "media_availability": "Requires download form; YouTube clip availability may be incomplete.",
       "public_sampling_plan": "Part of stage 3 Clotho/AudioCaps 10k audio tranche; split by YouTube id/audio id.",
-      "admission_status": "account_or_form_blocked",
-      "next_commands": ["User/root must decide whether to submit official form; after access, record file bytes and missing media rate."]
+      "admission_status": "deferred_by_user_adr0004",
+      "scope_decision": "docs/adr/0004-defer-audiocaps-for-first-release.md",
+      "next_commands": ["Do not submit or wait for AudioCaps raw-media approval for first release; preserve existing public audit metadata. Build the audio tranche under ADR-0004 without duplicate counting or reduced gates."]
     },
     {
       "asset_id": "vggsound",

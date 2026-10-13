@@ -6,12 +6,12 @@
 
 ## 现在必须本人处理
 
-下表3项直接覆盖阶段2/3/6。负责人不具备机构/学术资格时应如实申请替代授权，不能虚填身份。
+当前仅剩下表DocVQA下载核验和Android协议；AudioCaps已由用户决定首发省略，见ADR-0004，下方原行作为申请入口历史记录。负责人不具备机构/学术资格时应如实申请替代授权，不能虚填身份。
 
 | 项目与官方入口 | 本人动作、限制与交回证据 | 影响范围；是否阻碍下载 |
 |---|---|---|
 | DocVQA：[官方说明](https://www.docvqa.org/datasets/docvqa) → [RRC挑战17](https://rrc.cvc.uab.es/?ch=17) → [Download](https://rrc.cvc.uab.es/?ch=17&com=downloads) 的 **Single Document Visual Question Answering** | 注册/登录RRC，阅读实际下载页原数据条款，保存版本/文本与获准下载方式。官方说明确认图片来自UCSF Industry Documents Library；HF镜像Apache标签不能代替原文档权利。此次RRC读取超时/证书校验失败，未取得登录后条款全文，不能声称原数据已商用许可。 | 阶段2文档题；**是，原数据访问/条款仍缺**。已下载Valen中的docvqa派生文件不解除此缺口。 |
-| AudioCaps：[固定revision原音频说明](https://github.com/cdjkim/audiocaps/blob/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/README.md) → [现行申请表](https://forms.gle/2wF54Y1Ft2LtPdhW8) | 由本人填写真实身份、用途并申请原音频/视频，保存审批回复与许可范围。[主README](https://github.com/cdjkim/audiocaps)明确学术用途；商业用途另取明确授权及原媒体依据。表单短链本次返回401，正文未读取；需要实际账号访问，不推断问题字段。旧清单 `8sFHc3XJ32ERWxqF8` 实测404，不能再作为办理入口。 | 阶段3音频；**是，原音频需申请**。公开caption CSV无需另申请，已准备。 |
+| **已省略，无需办理（ADR-0004）** AudioCaps：[固定revision原音频说明](https://github.com/cdjkim/audiocaps/blob/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/README.md) → [现行申请表](https://forms.gle/2wF54Y1Ft2LtPdhW8) | 由本人填写真实身份、用途并申请原音频/视频，保存审批回复与许可范围。[主README](https://github.com/cdjkim/audiocaps)明确学术用途；商业用途另取明确授权及原媒体依据。表单短链本次返回401，正文未读取；需要实际账号访问，不推断问题字段。旧清单 `8sFHc3XJ32ERWxqF8` 实测404，不能再作为办理入口。 | 阶段3音频；**是，原音频需申请**。公开caption CSV无需另申请，已准备。 |
 | Android SDK/NDK：[NDK下载及完整SDK协议](https://developer.android.com/ndk/downloads)、[SDK协议独立页](https://developer.android.com/studio/terms) | 负责人以有权代表项目的身份审阅并明确接受Android SDK License Agreement，记录主体/日期/版本；随后agent可缓存和哈希指定工具链。协议2.1–2.4约束接受与代表权限；3.5另行保留组件OSS许可。无需购买开发者账号或Google Play上架账号来做本地构建。 | 阶段6 Android工具链；**是，官方二进制下载/使用协议未接受**。不是OpenJDK的独立签约阻塞。精确版本见下节。 |
 ### 条件性MVBench源授权：选中对应任务才办理
 
@@ -72,3 +72,5 @@
 ## 验证范围与限制
 
 本轮复核官方网页/固定源码，未读取评测隐藏答案、pickle或封存题。DocVQA登录后下载条款、Moments当前表单正文未取得；AudioCaps现行短链需要登录，旧短链404。文中保留这些边界，不承诺申请必获批或存在统一商业许可。后续收到条款/审批后由agent保存原文哈希、主体、适用资产及用途，再继续允许下载；每项哈希/CPU结果应写实际报告，本文不是这些结果的替代。
+
+2026-10-14会话更新：用户确认DocVQA已完成手续，agent继续验证实际已登录下载入口；AudioCaps首发省略，不再提交/等待申请。浏览器已查看真实表单，实际需完整姓名、机构类型/验证邮箱、Drive邮箱共3页，原先401不再代表当前浏览器访问状态。

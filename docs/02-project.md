@@ -82,3 +82,5 @@ API 服务端目标：文本<40ms、截图<60ms、16帧视频<200ms；含网关/
 安装：`uv sync --frozen --extra training --group dev`；CPU损失/LoRA验证：`uv run --extra training pytest tests/test_training.py`。
 十步真实训练的preflight/run入口见 `docs/runbooks/training.md`；`preflight` 在本机缺权重/CUDA时应返回blocked与非零退出，这个拒绝是预期行为，不能计为GPU通过。
 本地跑通的CPU版本锁用于验证代码，实际租机仍须核验驱动/CUDA组合与vLLM的独立环境。
+
+阶段3来源调整（用户批准）：AudioCaps首发省略，按ADR-0004使用Clotho-AQA及额外TTS程序化题补足原音频tranche；保持题量、原样本族隔离和质量门槛，不重复计数。

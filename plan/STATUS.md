@@ -66,3 +66,5 @@
 - 循环见plan/LOOP.md；native goal当前工具返回blocked（旧状态），用户已重新要求继续无卡准备，仍按原终局推进；工具不提供agent恢复接口，不能虚称active/complete。
 
 - 补漏核查：原方案ScreenSpot尚无显式资产证据，授权代理已认领审计/合法公开限定下载；运行时代理继续全阶段依赖闭包补漏，GUI代理检验multipart选择性读取，CommonVoice CPU代理与CLEVRER队列继续。Clotho004已排队完成后自动锁内提取，无需开GPU等待网络。
+
+- 用户新决定（2026-10-14）：AudioCaps申请耗时，首发省略；已落ADR-0004和资产required_stages空列表，不再等待该表单。DocVQA用户确认已办理，root核验实际下载入口再下载。Android具体SDK/NDK协议仍待实际接受记录，不能视为所有协议均已授权。
