@@ -48,6 +48,6 @@
 
 vLLM 请求直接提交 HF 使用的相同 prompt token IDs，按网关既有 `/v1/completions` 的 `logprob_token_ids` / `token_id:N` 协议索取完整答案集，`temperature=1, top_p=1, top_k=-1`。`logprobs=1` 不能作为截断 top-1 回退；缺任一指定 token、非有限值、正 logprob、≤-9999 裁剪哨兵均失败。校验 prompt token 数与真实输入一致。
 
-每题保存全词表归一化后的原始 token logprobs/probabilities、去 U 条件答案分布和合法集联合归一化的 p(U)。门槛是所有 100 题、全部条件答案概率及 p(U) 的最大绝对差 **严格小于 1e-3**；原始 token 概率最大差也报告，但不代替约定门槛。参考内每行的概率都会从 logprobs 重算核对，缺题或 token/输入哈希变化拒绝。
+每题保存全词表归一化后的原始 token logprobs/probabilities、去 U 条件答案分布和合法集联合归一化的 p(U)。门槛是所有 100 题、全部条件答案概率及 p(U) 的最大绝对差 **严格小于 1e-3**；全词表归一化的原始 token 概率最大差也必须 **严格小于 1e-3**；两个门槛同时通过才放行，不能用相同条件分布掩盖合法答案总概率质量变化。参考内每行的概率都会从 logprobs 重算核对，缺题或 token/输入哈希变化拒绝。
 
 报告含代码 revision、实际实现哈希、模型/manifest/数据/template/配置/adapter 哈希、耗时、退出码、HF runtime/CUDA/GPU 版本；费用未知保存 null，由实际账单补充。报告只保存样本 ID 哈希和输入哈希，不保存 prompt、tokenized prompt 或业务原文。异常只记类型以免上游响应泄漏原文；结合命令退出码和受控服务日志排查。既有报告永不覆盖，失败重试使用新路径。确认两组报告通过后，继续 P0 API/浏览器/资源交接验收。

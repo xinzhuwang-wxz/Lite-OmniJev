@@ -186,3 +186,13 @@ def test_compare_cli_rejects_stale_server_without_network(tmp_path, monkeypatch)
     assert saved["status"] == "blocked"
     assert saved["error_type"] == "ValueError"
     assert "rows" not in saved
+
+
+def test_raw_probability_mass_difference_fails_even_when_normalized_values_match():
+    baseline = rows()
+    shifted = [parity.row(example, [-3.0, -4.0, -5.0]) for example in examples()]
+    result = parity.compare_rows(baseline, shifted)
+    assert result["max_conditional_and_U_difference"] < 1e-12
+    assert result["max_raw_probability_difference"] > parity.THRESHOLD
+    assert result["status"] == "failed"
+    assert result["exit_code"] == 1

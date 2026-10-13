@@ -142,7 +142,7 @@ def compare_rows(left: list[dict[str, Any]], right: list[dict[str, Any]]) -> dic
                 for x, y in zip(a["raw_probabilities"], b["raw_probabilities"], strict=True)
             ),
         )
-    passed = maximum < THRESHOLD
+    passed = maximum < THRESHOLD and raw_maximum < THRESHOLD
     return {
         "status": "passed" if passed else "failed",
         "exit_code": 0 if passed else 1,
