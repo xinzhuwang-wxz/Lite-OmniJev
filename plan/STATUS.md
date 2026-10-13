@@ -24,11 +24,11 @@
 
 ## 下载实际状态（以PID/文件/最终退出报告为准）
 - 模型 flock1827/1828仍活；project-model-download-001.json running且零失败。另有约22.5GB和18.6GB partial，不计入已校验数。
-- AndroidControl官方GCS22对象49.93GB固定generation/MD5/CRC32C；001的3文件2,345,618,122B校验；实测同generation 1MiB段直连358KB/s、代理20–27KB/s，确认自有子进程13449后停旧任务，partial保留；002 flock17892已启动3并发直连+外部有界续传，旧失败报告保留。仅研究，商业训练/发布不准入。
-- Multimodal Mind2Web49文件13.58GB；10668/10669仍活，13文件2,634,066,033B校验。001曾误校验LFS指针，失败报告保留；002已区分原文件SHA与指针GitSHA。
-- Clotho3,140,677,494B归档尚未完成；5小文件全校验。002因curl内部重试丢掉本次新增内容而失败，保留123,907,028B partial；003改外部6次有界续传、每次独立curl且MD5通过才提升，PID17404/17408已确认活。完成后锁内提取1659 CC0/CCBY音频，排除332 NC/未知/其他许可。
+- AndroidControl官方GCS22对象49.93GB固定generation/MD5/CRC32C；001的3文件2,345,618,122B校验；实测同generation 1MiB段直连358KB/s、代理20–27KB/s，确认自有子进程13449后停旧任务，partial保留；002 flock17892已启动3并发直连+外部有界续传，最新7文件11,966,096,336B已校验，旧失败报告保留。仅研究，商业训练/发布不准入。
+- Multimodal Mind2Web49文件13.58GB；10668/10669仍活，14文件2,887,052,762B校验。001曾误校验LFS指针，失败报告保留；002已区分原文件SHA与指针GitSHA。
+- Clotho3,140,677,494B归档尚未完成；同源1MiB实测代理121,700B/s、直连超时仅9,870B/s，继续代理路线；5小文件全校验。002因curl内部重试丢掉本次新增内容而失败，保留123,907,028B partial；003改外部6次有界续传、每次独立curl且MD5通过才提升，PID17404/17408已确认活。完成后锁内提取1659 CC0/CCBY音频，排除332 NC/未知/其他许可。
 - MMAU mini1,213,407,227B和STAR727,887,646B哈希通过；STA1,085,038,855B和FunQA1,350,969,357B最新实际sha OK/exit0。
-- FunQA→Perception旧队列已退出；Perception5866MiB后curl18/sha失败，video代理已保留6,151,711,684B partial并启动PID17494续传；不能使用旧running快照。
+- FunQA→Perception旧队列已退出；Perception5866MiB后curl18/sha失败，video代理已保留6,537,976,772B partial并启动PID17710/17714外部有界续传；不能使用旧running快照。
 - Valen来源20文件约6.36GB全部哈希通过，隔离原料不准入训练；reports/valen-source-download-001.json。
 - 文本来源17文件30,666,690B本地上游/远端SHA通过；JevEmbed600k/Open-Jev113k仍是候选原料，不是样本族隔离/训练准入证据。
 - ScienceQA3parquet626MB、ChartQA875MB、AOKVQA已知可商用COCO3832图约660MB完成；reports/stage2-remote-completion-001.json。剩余已知许可研究专用图继续准备，未知许可不进池。
@@ -46,7 +46,7 @@
 ## 并行所有权
 - offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；官方llama.cpp预编译、Ollama1.427GB、quant独立完整依赖≤20GB、LiteRT/JDK准备；13直接轮子不算完整闭包。
 - whole_project_datasets：/tmp/lite-omnijev-project-datasets；阶段2剩余明确许可原料，≤10GB，复用已有图。
-- video_eval_sources：/tmp/lite-omnijev-video-eval；Perception续传、Charades缺12视频选择性恢复≤500MB；4801edd已合入f44588c。
+- video_eval_sources：/tmp/lite-omnijev-video-eval；Perception004外部有界续传；Charades缺12视频选择性恢复已验收，bae5338合入58588c6，原3条窗口越界保留；CPU恢复切片20定向测试/Ruff/mypy/build通过。
 - decision_index_assets：/tmp/lite-omnijev-decision-index；e99910a已合入8d8f164、47914bd合入d2e7512；retry队列17457补非门禁网络失败来源，≤10GB，不读pickle、不绕过HLE。
 - mdc_transport_fix：MDC闭环已整合并独立复核，过期worktree已清理；同一executor的独立非阻断offline-prep:05已交付合入746c534，主树273测试全部通过，不升级远端GPU环境。
 - teacher_head_conversion：Valen闭环已交付；新 /tmp/lite-omnijev-stage3-source-audit 负责NExTQA/CLEVRER/LLaVA/VGGSound/AudioCaps/GUI-Odyssey官方小原料/许可查明，≤50MB，不下载原视频或接受条款。

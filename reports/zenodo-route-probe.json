@@ -1,0 +1,16 @@
+[
+  {
+    "route": "zenodo-proxy",
+    "exit_code": 0,
+    "stats": "206 1048576 8.616060 121700",
+    "sha256": "bf38f7e537674654210b139f6c17d60fc2ca80751eecac0cf18403df424a58f9",
+    "error_type": null
+  },
+  {
+    "route": "zenodo-direct",
+    "exit_code": 28,
+    "stats": "206 246772 25.000576 9870",
+    "sha256": "5364e6a9d2627131ee34b54127e66a4d2ac7f6eb1c5f1ad85ca728dae5616376",
+    "error_type": "curl_failure"
+  }
+]
