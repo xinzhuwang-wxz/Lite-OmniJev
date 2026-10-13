@@ -1,0 +1,20 @@
+{
+  "observed_utc": "2026-10-13T21:00:08.781492+00:00",
+  "status": "model_download_ticket_passed_not_whole_project_ready",
+  "required_repositories": 7,
+  "verified_files": 70,
+  "verified_bytes": 121094724397,
+  "manifest_matches_receipt": true,
+  "remote_free_bytes": 548087324672,
+  "reserved_checkpoint_adapter_bytes": 150000000000,
+  "reserved_model_temp_bytes": 18164208659,
+  "remaining_for_pending_data_and_runtime_bytes": 379923116013,
+  "all_project_disk_sufficiency": false,
+  "training_admitted": false,
+  "ready_to_open_gpu": false,
+  "evidence": [
+    "configs/project-model-assets.json",
+    "reports/project-model-download-001.json"
+  ],
+  "gpu_used": false
+}
