@@ -86,3 +86,6 @@
 - 最新集成297测试全部通过（43.31s），Ruff/format190文件、mypy48源文件、wheel/sdist通过。offline-prep:06 Linux真实新adapter通过已关闭；不代表teacherforward。Clotho004终态MD5通过，首次提取001在2个上游名称点/下划线差异处拒绝，mdc代理正在显式2项alias修复及002重验，旧失败保留。CLEVRER代表视频完整解码代理继续。DecisionIndex配置已清掉HLE/HF/已恢复Git旧账号网络阻塞，RouterBench安全转换和公共suite执行仍待办。
 
 - 用户已具体确认全部协议/来源调整（2026-10-14）：ADR-0005生效，DocVQA-SP仅研究、NDKr28b SDK2019及适用2026修订已获本人同意；不再重复问同协议。auth代理继续真实DocVQA download≤30GB，runtime代理继续NDKr28b工具链≤5GB；无额外付费。视频12k用CLEVRER、原LLaVA5k用允许教师/许可明确媒体生成，DocVQA原图不进商用训练，保留所有题量/质量/样本族隔离；NExT/VGG等非首发前置。
+
+- Clotho002已真实完成：官方MD5+SHA、1991成员安全检查，1659 CC0/BY音频提取并逐文件hash，排除332，32代表完整音频EOF解码；2个上游点/下划线差异用显式固定alias处理，旧001拒绝保留。f86e677。CLEVRER9代表三split完整EOF解码通过72e7caa，源ZIP未改、temp已清；不冒称全部20k视频decode。
+- 当前继续：auth代理已获本人具体批准后下载DocVQA-SP隔离研究≤30GB；runtime代理root/工具wheelhouse no-index安装与NDKr28b；GUI代理优化Range往返/并发保留已验收文件；MDC代理RouterBench隔离转换；video代理只提取公开teacher verification协议汇总metadata，不输出预测/题内容。

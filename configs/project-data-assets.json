@@ -33,7 +33,8 @@
       "asset_id": "llava-video-178k",
       "bytes": 1281048393477,
       "status": "license_blocked"
-    }
+    },
+    "scope": "All originally named upstream catalogues, including excluded full LLaVA and optional sources; not the approved first-release download size or a disk sufficiency claim."
   },
   "existing_human_annotation_candidates": [
     {
