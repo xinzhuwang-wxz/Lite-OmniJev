@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-10-14",
+  "base_commit": "8c24c77",
+  "result": "blocked_no_existing_source_proven_to_satisfy_frozen_gate",
+  "confidence": {
+    "contract_and_task_distinctions": "high",
+    "upstream_worker_record_completeness": "medium"
+  },
+  "boundaries": {
+    "payloads_inspected": false,
+    "sealed_items_inspected": false,
+    "kappa_computed": false,
+    "new_datasets_downloaded": false,
+    "gpu_used": false,
+    "paid_resources_used": false
+  },
+  "contract": {
+    "metric": "paired Cohen kappa",
+    "minimum": 0.7,
+    "fixed_human_identities": 2,
+    "implemented_modalities": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "items_per_modality": {
+      "dev": 500,
+      "holdout": 1000
+    },
+    "external_gate_identity_required": true,
+    "family_isolation_required": true,
+    "wider_catalogue_modalities_not_silently_waived": [
+      "screenshot",
+      "crossmodal"
+    ],
+    "local_sources": [
+      ".scratch/s0/issues/06-human-label-evidence.md",
+      "docs/runbooks/sealed-gate.md",
+      "eval/sealed_gate.py",
+      "configs/project-data-assets.json"
+    ]
+  },
+  "candidates": [
+    {
+      "asset_id": "clotho-aqa",
+      "published_human_process": "Three different answerers per question; question writers separate.",
+      "matching_task_candidate": "audio Noul yes/no subset only",
+      "record_limits": [
+        "Persistent worker identities not established by reviewed documentation",
+        "Raw per-worker schema not verified by payload inspection",
+        "Single-word answers postprocessed; no assumption of raw preservation",
+        "No qualifying paired Cohen kappa established"
+      ],
+      "license": "QA MIT; audio per-file license; use already permitted CC0/BY subset only",
+      "admitted": false,
+      "sources": [
+        "https://arxiv.org/html/2204.09634",
+        "https://zenodo.org/records/6473207"
+      ]
+    },
+    {
+      "asset_id": "a-okvqa",
+      "published_human_process": "Question screening by three workers, nine additional free-form answers from a separate pool, three rationales.",
+      "matching_task_candidate": "Image direct-answer evidence, not proven independent MC double labels",
+      "record_limits": [
+        "Scalar MC correct-choice label is not two raw labels",
+        "Rationales and suitability judgments are different tasks",
+        "No stable pair identity or qualifying Cohen kappa established"
+      ],
+      "license": "COCO per-image provenance and existing stage2 audit apply; no blanket media admission",
+      "admitted": false,
+      "sources": [
+        "https://arxiv.org/html/2206.01718",
+        "docs/research/stage2-data-offline.md"
+      ]
+    },
+    {
+      "asset_id": "common-voice",
+      "published_human_process": "Crowd speech/transcript validation",
+      "matching_task_candidate": null,
+      "record_limits": [
+        "Vote totals do not establish two fixed project-task raters",
+        "Speaker/client identity is not validator identity",
+        "Transcript validation cannot silently substitute for Choice/Score/Noul judgment"
+      ],
+      "license": "Existing staged source audit applies; license alone cannot establish task applicability",
+      "admitted": false,
+      "sources": [
+        "https://commonvoice.mozilla.org/",
+        "https://github.com/common-voice/CorporaCreator",
+        "reports/commonvoice-cpu-prep.json"
+      ]
+    },
+    {
+      "asset_id": "scienceqa-image",
+      "published_human_process": "Original MC gold and explanations; raw independent pair not established",
+      "matching_task_candidate": "Image/science MC only if genuine paired records exist",
+      "record_limits": [
+        "Scalar gold is not double annotation",
+        "No qualifying kappa or two-rater identities established"
+      ],
+      "license": "Original dataset CC BY-NC-SA 4.0; mirror CC-BY-SA metadata does not override original; MIT code separate",
+      "admitted": false,
+      "sources": [
+        "https://github.com/lupantech/ScienceQA",
+        "docs/research/stage2-data-offline.md"
+      ]
+    },
+    {
+      "asset_id": "star",
+      "published_human_process": "Situation annotations and QA templates/programs do not prove paired QA raters",
+      "matching_task_candidate": "Video QA evidence only after same-task raw pair verification",
+      "record_limits": [
+        "No verified raw QA pair or qualifying kappa in reviewed evidence",
+        "Published project page is not annotation identity receipt"
+      ],
+      "license": "Charades research/evaluation terms, not blanket commercial media grant",
+      "admitted": false,
+      "sources": [
+        "https://bobbywu.com/STAR/",
+        "docs/research/stage3-remaining-media.md"
+      ]
+    },
+    {
+      "asset_id": "clevrer",
+      "published_human_process": "Staged scene/program ground truth; no verified human pair",
+      "matching_task_candidate": "Video real-result/source evidence, not human agreement",
+      "record_limits": [
+        "Program truth cannot be counted as two human decisions",
+        "No qualifying human kappa established"
+      ],
+      "license": "CC0 official dataset per existing source audit",
+      "admitted": false,
+      "sources": [
+        "https://clevrer.csail.mit.edu/",
+        "https://data.csail.mit.edu/clevrer/README.txt",
+        "docs/research/stage3-source-audit.md"
+      ]
+    }
+  ],
+  "metric_constraints": [
+    "Cohen and Fleiss kappa are not interchangeable",
+    "Counts or majority/unanimity are not stable paired rater identities",
+    "Do not filter on agreement to manufacture passing kappa",
+    "Published agreement for another task or subset does not prove this gate",
+    "Missing evidence does not prove unpublished records do not exist"
+  ],
+  "smallest_resource_path": {
+    "first_step": "External custodian checks existing Clotho worker-level records, task match, raw provenance, licenses and family split; check A-OKVQA only for genuine matching MC pairs. No payload returned to development agents.",
+    "fallback": "Two real independent human annotators plus external custodian/environment on unchanged four-modality contract; no presumed paid hiring.",
+    "implemented_contract_items": 6000,
+    "raw_decisions_before_adjudication": 12000,
+    "open_coverage_reconciliation": [
+      "screenshot",
+      "crossmodal",
+      "original task and primitive distribution"
+    ],
+    "output": "Aggregate counts, paired kappa, hashes, failures and provenance attestation only",
+    "requires_resource_owner_if_unavailable": true
+  },
+  "verification": {
+    "json_parse": "passed",
+    "diff_check": "passed",
+    "claims": "research only; no pool admission, isolation acceptance, or S0 pass"
+  },
+  "limitations": [
+    "No dataset annotation payload or worker schema was inspected",
+    "No actual cohort sizes after family/license filtering measured",
+    "Bounded primary-source review, not exhaustive search",
+    "Existing local source audits used for ScienceQA and CLEVRER license/provenance"
+  ]
+}
