@@ -1,6 +1,6 @@
 # AutoDL 无卡实例接续
 
-实例已实测：Ubuntu22.04 x86_64、0.5CPU/2GiB、无GPU；数据盘 `/root/autodl-tmp` 1050GiB，系统盘30GiB。
+当前实例已实测：Ubuntu22.04 x86_64、0.5CPU/2GiB、无GPU；数据盘 `/root/autodl-tmp` 800GiB。1050GiB属于早期实例历史证据，不能用于当前空间预算。
 SSH入口由用户提供，连接信息见 `plan/STATUS.md`；凭据禁止写到仓库。用户负责开/关卡。
 远程项目 `/root/autodl-tmp/lite-omnijev`，训练 `.venv`，独立服务 `/root/autodl-tmp/envs/serve`。
 
@@ -31,10 +31,10 @@ CLINC公开train仅下载到 `artifacts/data/raw/`，保留CC-BY3许可与归属
 
 ## 开卡门槛
 
-只有 `reports/no-gpu-readiness.json` 的必需项通过后才通知用户开卡；缺权重、损坏文件、环境导入失败或数据校验失败都保持blocked。
+当前全项目开卡门槛以 `.scratch/offline-prep/issues/04-integration.md` 为准；`reports/no-gpu-readiness.json` 仅为P0历史准备证据，不可凭其旧ready结论开卡。全部必需外部资产、完整离线fresh安装、媒体CPU验收及可在无卡执行的管线准备通过后才通知用户；缺权重、损坏文件、环境导入失败或数据校验失败都保持blocked。
 无卡阶段不做权重前向或GPU训练；硬件/内核、BF16、实际峰值显存、基座与LoRA重载、HF/vLLM概率对齐及真实API仍在P0 GPU票验收。
 先预留约1小时进行最小P0试跑（估算，吞吐未测），出现阻塞及时通知；不能将设计中的H100时直接折算H20实际时间。
 
 ## GPU命令预备
-`bash infra/bootstrap/run-p0.sh` 是用户开卡后的入口，先验证CUDA/BF16再训练，单次初试硬超时1小时；未在无卡实例执行。正常开卡单价按最近页面9.98元/小时估计，实际以平台账单为准，数据盘另计。训练通过仍需HF/vLLM与API验收，不代表P0完成。
+`bash infra/bootstrap/run-p0.sh` 是保留的P0复现入口，先验证CUDA/BF16再训练，单次初试硬超时1小时。P0工程冒烟已有真实通过证据，下一次开卡按S0当前作业清单执行，不默认重复训练。历史价格不作为本次预算承诺，实际以用户账单为准。严格概率、教师质量与阶段门槛仍须独立验收。
 外部Parquet结构检查用`infra/data`独立PyArrow锁，远端环境`/root/autodl-tmp/envs/data`；不修改训练/服务包。

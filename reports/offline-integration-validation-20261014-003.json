@@ -1,0 +1,59 @@
+{
+  "observed_at": "2026-10-13T23:27:54.008502+00:00",
+  "code_revision": "0d43005645821de7d9af7a9c001f6ecc1663ab7e",
+  "gpu_used": false,
+  "ready_to_open_gpu": false,
+  "checks": [
+    {
+      "command": "PUBLIC_EVAL_MEDIA_PYTHON=/tmp/lite-omnijev-video-eval/artifacts/public-eval-media-env/bin/python uv run pytest -q",
+      "exit_code": 0,
+      "passed": 317,
+      "skipped": 3,
+      "seconds": 7.02,
+      "skip_reasons": [
+        "Linux root chroot/seccomp integration (separate Linux evidence exists)",
+        "Pillow absent in Mac root environment: 2 cases (actual Linux6/0 skipped passed)"
+      ]
+    },
+    {
+      "command": "uv run ruff check .",
+      "exit_code": 0
+    },
+    {
+      "command": "uv run ruff format --check .",
+      "exit_code": 0,
+      "formatted_files": 206
+    },
+    {
+      "command": "uv run mypy data train eval serve scripts",
+      "exit_code": 0,
+      "source_files": 50
+    },
+    {
+      "command": "uv build",
+      "exit_code": 0
+    },
+    {
+      "command": "uv run python -m scripts.loop validate",
+      "exit_code": 0,
+      "tickets": 32
+    }
+  ],
+  "build_artifacts": [
+    {
+      "path": "dist/lite_omnijev-0.1.0.tar.gz",
+      "bytes": 5082416,
+      "sha256": "cb065320f087c11ffe802ed122c9caf65dd8167cbbe42fa77782e008a8634586"
+    },
+    {
+      "path": "dist/lite_omnijev-0.1.0-py3-none-any.whl",
+      "bytes": 146747,
+      "sha256": "74ccea78c3b017bbb1e74293cb186f950d17d90e0d696720454e07c77134498a"
+    }
+  ],
+  "limits": [
+    "CPU engineering behavior only, no model/GPU quality or release acceptance.",
+    "GUI whole PNG decode and complete dependency closure still running.",
+    "S0 shared multimodal prep and teacher processor integration work continues; omitted adapter code cannot be labeled GPU-only."
+  ]
+}

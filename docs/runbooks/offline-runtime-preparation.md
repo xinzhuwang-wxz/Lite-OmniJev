@@ -1,6 +1,10 @@
 # Offline Runtime Preparation
 
-This runbook is the `offline-prep:03` evidence trail for runtime and build dependencies. It does not admit models, datasets, teacher weights, generated LoRA adapters, calibration artifacts, quantized weights, mobile packages, or GPU results. The machine-readable ledger is `configs/project-runtime-assets.json`.
+This runbook is the `offline-prep:03` evidence trail for runtime and build dependencies. It does not admit models, datasets, teacher weights, generated LoRA adapters, calibration artifacts, quantized weights, mobile packages, or GPU results. The initial machine-readable inventory is `configs/project-runtime-assets.json`; its pending statuses are historical and must be reconciled with the acceptance reports below. Neither package metadata nor cached source archives establish complete offline readiness.
+
+## Evidence updates on 2026-10-14
+
+The instance is already rented and remains in no-GPU mode. Current scheduling and readiness are in `plan/STATUS.md` and `offline-prep:04`; do not act on the old P0 ready report. `reports/runtime-cpu-builds.json` records actual llama.cpp CPU build, Ollama binary and LiteRT host checks, and independent quantization-wheelhouse installation. `reports/offline-tools-canary-full.json` records the separate tool environment. Valen and Jev-Omni safe conversions have independent reports and closed security reviews. These resolve their respective initial inventory gaps; they do not prove GPU execution, trained artifacts, whole dependency closure, or model quality. Android/Chromium/frontend and complete root/service fresh offline installation must have final lane reports before closing `offline-prep:03`.
 
 ## Scope
 
@@ -14,7 +18,7 @@ The original S6 plan requires:
 
 Those are future S6 validation items. The current offline-prep task only records whether the software needed to rebuild or probe those paths is locked, installed, cached, or missing before the next GPU run.
 
-## Current Evidence
+## Initial Inventory (historical snapshot)
 
 Checked lockfiles:
 
@@ -216,9 +220,9 @@ PY
    done'
 ```
 
-## Before The Next GPU Run
+## Initial gap list (superseded only by explicit acceptance evidence)
 
-Do not claim offline runtime readiness until these are resolved or explicitly accepted as blocked:
+The initial gaps below are retained as audit history. Resolve each against newer reports; an unresolved required gap still prevents readiness. A blocked item is not a passing item:
 
 - Valen `checkpoint.pt` must remain quarantined until a tensor-only conversion and nested checkpoint mapping are audited. Do not load the raw `.pt` checkpoint in normal inference or service paths.
 - Quantization tooling source is cached, but the independent quantization environment and any quantized artifacts remain pending.

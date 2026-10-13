@@ -14,7 +14,7 @@
     "training_admission": "not_granted_by_this_file",
     "release_admission": "not_granted_by_this_file",
     "account_terms_policy": "No account login, gated terms, or form acceptance was used. The pinned HF API metadata reports gated=false and private=false.",
-    "media_download_status": "batch Range extraction in progress as PID 30008; 11,161 of 25,809 selected train PNGs recovered at checkpoint; 8 workers, 2MiB batch cap, per-member heavy-lock decompression; no test episodes used"
+    "media_download_status": "Completed: 1679 train episodes/25809 PNG/19,499,790,993B, source CRC/size and per-file SHA recorded; whole PNG decode is a separate running CPU acceptance, no test episodes used."
   },
   "source": {
     "id": "gui-odyssey",
@@ -259,5 +259,9 @@
       "effective_files_per_sec_since_batch2m_restart": 5.666,
       "range_bytes_over_compressed_ratio_estimate": 1.1687
     }
-  }
+  },
+  "physical_evidence": [
+    "reports/gui-odyssey-download-acceptance-001.json",
+    "reports/gui-media-validator-linux-tests.json"
+  ]
 }

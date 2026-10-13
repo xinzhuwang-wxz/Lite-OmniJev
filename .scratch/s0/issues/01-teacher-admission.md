@@ -5,7 +5,7 @@ Milestone: S0
 Category: enhancement
 Status: ready-for-agent
 Execution: claimed
-Owner: teacher-admission
+Owner: teacher-cpu-recovery
 Worktree: /tmp/lite-omnijev-s0-teacher
 Blocked by: p0:04
 
@@ -30,3 +30,5 @@ Blocked by: p0:04
 
 已查资产工具、教师未启用配置与研究报告；无已完成的head转换或教师加载证据。接口为资产准入命令和教师小样本报告。
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
+
+2026-10-14恢复：已核查旧执行者不在原生agent列表；保留head转换证据。teacher-cpu-recovery在既有worktree补项目持有的教师输入/安全加载预检适配层，先做无卡processor与拒绝路径验收；真实forward仍待用户开卡。范围限定train/teacher_inference.py、scripts/teacher_preflight.py及对应测试/runbook/报告，不改上游loader快照。

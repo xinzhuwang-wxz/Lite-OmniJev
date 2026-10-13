@@ -3,6 +3,7 @@
 状态：accepted（保留原方案定义，未改变产品目标）；证据见 docs/research/2026-10-13-feasibility.md。
 
 使用共享官方模板生成完整prompt，vLLM `/v1/completions` 请求 `logprob_token_ids` 覆盖全部合法答案及U，`return_tokens_as_token_ids=true`，返回按ID映射。
+2026-10-14实现补充（尚待集成验收）：文本保留completions，多模态使用固定vLLM0.26/0.31原生`/v1/chat/completions`及`logprobs=true`、完整`logprob_token_ids`；源码核验见[协议记录](../research/2026-10-14-vllm-multimodal-protocol.md)。保持相同官方template、答案映射、raw_logprobs与严格阈值，不定制引擎。HTTP schema支持不等于最终processor输入或概率一致。
 服务端必须 `--logprobs-mode raw_logprobs`；客户端 temperature=1，不使用 allowed_token_ids/top-k 截断代替完整原始读出。缺token、NaN或HTTP -9999裁剪哨兵均拒绝，不补零。
 HF/vLLM同100题最大概率差严格<1e-3才能科学放行；仅确认协议或mock HTTP不能代过。
 

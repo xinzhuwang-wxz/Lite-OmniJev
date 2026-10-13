@@ -404,6 +404,58 @@
   "exit_code": 0,
   "original_partial_prefix_verified": true,
   "finished_utc": "2026-10-13T22:21:08.708650+00:00",
+  "operational_script_sha256": {
+    "lite-docvqa-source-downloader.py": "d5a4b60868b07f41e4cefd2d8531154b5f45badb808cb7e7296b408b223ab15e",
+    "lite-docvqa-range-recover.py": "e09ec7d7530b308979996dce9e9bfb5a634fbd9d57e882c349873a52d2089d58",
+    "lite-docvqa-validate-media.py": "211acf00a781cc6ca272090e12896fad06fdcbd0f74839fbec482b41dc091f86"
+  },
+  "cpu_media_validation": {
+    "status": "passed",
+    "started_utc": "2026-10-13T22:25:04.920700+00:00",
+    "python": "3.11.17",
+    "pillow": "11.3.0",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "global_heavy_lock": "/tmp/omnijev-cpu-heavy.lock",
+    "test_annotations_parsed": false,
+    "test_images_decoded": false,
+    "extracted": false,
+    "gpu_used": false,
+    "tar_members": 12767,
+    "tar_files": 12767,
+    "tar_directories": 0,
+    "unsafe_members": 0,
+    "declared_file_bytes": 8614395059,
+    "decoded_images": 32,
+    "decode_sample_per_split": 16,
+    "validation_script_sha256": "211acf00a781cc6ca272090e12896fad06fdcbd0f74839fbec482b41dc091f86",
+    "independent_on_disk_sha256": "e7531f1598f6b85398f2f3c2e56ea0b565a314c6136c8fe82ff7cf9cc4dc4e98",
+    "independent_on_disk_sha256_match": true,
+    "gzip_total_uncompressed_bytes": 8624199680,
+    "train_val_question_counts": {
+      "train": 39463,
+      "val": 5349
+    },
+    "train_val_unique_image_references": {
+      "train": 10194,
+      "val": 1286
+    },
+    "official_train_val_image_overlap_count": 0,
+    "selected_decode_counts": {
+      "train": 16,
+      "val": 16
+    },
+    "missing_train_val_image_counts": {
+      "train": 0,
+      "val": 0
+    },
+    "tar_metadata_sha256": "69a058cdd5b60171b529cf1a517e8c57f060118d807ecde70fc51ee791b81fc2",
+    "duplicate_member_basename_count": 0,
+    "gzip_crc32_and_isize": "passed_full_stream_to_eof",
+    "gzip_crc_scope": "All compressed bytes validated opaquely; only train/val matching image payloads decoded, no test annotation parsed",
+    "exit_code": 0,
+    "elapsed_seconds": 134.014,
+    "finished_utc": "2026-10-13T22:27:18.934227+00:00"
+  },
   "annotation_metadata": {
     "archive": "spdocvqa_qas.zip",
     "members": [
@@ -434,12 +486,8 @@
     "exit_code": 0
   },
   "upstream_sha256_available": false,
-  "hash_claim": "Actual on-disk file SHA256 and exact server byte size/ETag snapshot; upstream did not publish SHA256.",
-  "cpu_media_validation": {
-    "status": "queued_on_shared_heavy_lock",
-    "job_pid": 35902,
-    "test_annotations_will_not_be_parsed": true
-  },
+  "hash_claim": "Actual on-disk SHA256 and exact server size/ETag snapshot; no unpublished official SHA256 matching claim.",
+  "physical_research_source_ready": true,
   "private_url_manifests_removed": true,
   "operational_source_cache": "artifacts/ops/docvqa-source-prep-001",
   "issuer_pem_sha256": "cdc78c3185ce918c8e87f9b2559197d641288e564c5a8b789cd796abdea298d4",
@@ -448,6 +496,15 @@
     "useful_source_bytes_per_download_and_hash_wall_second": 4767867.528,
     "range_recovery_including_assembly_hash_seconds": 1529.262,
     "useful_new_range_bytes_per_recovery_second": 4915074.334,
-    "scope": "Includes setup/recovery/assembly/hash; not a pure transport-only peak rate; excludes CPU CRC/decode validation."
+    "cpu_validation_seconds": 134.014,
+    "scope": "Download wall includes setup/recovery/assembly/hash, excludes shared-lock wait and CPU validation; no peak-rate or GPU inference claim."
+  },
+  "media_scope": {
+    "train_unique_images": 10194,
+    "val_unique_images": 1286,
+    "remaining_original_archive_images_unassigned_without_test_annotations": 1287,
+    "public_test_media_quarantined_with_original_bundle": true,
+    "test_annotation_payload_parsed": false,
+    "test_image_payload_decoded": false
   }
 }

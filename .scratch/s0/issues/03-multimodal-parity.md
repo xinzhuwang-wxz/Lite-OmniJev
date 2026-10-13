@@ -7,7 +7,7 @@ Status: ready-for-agent
 Execution: claimed
 Owner: offline-runtime
 Worktree: /tmp/lite-omnijev-offline-runtime
-Blocked by: p0:04
+Blocked by: p0:04, 09
 
 ## What to build
 复用 P0 读出与共享模板，加入真实媒体处理，形成100题HF→vLLM→网关概率与版本证据。

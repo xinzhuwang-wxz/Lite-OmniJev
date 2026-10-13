@@ -552,14 +552,16 @@
       "public_sampling_plan": "Part of stage 2 10k chart/document tranche; split by original document id.",
       "admission_status": "research_download_authorized_training_denied",
       "next_commands": [
-        "Use official logged-in browser download after approved specific SP agreement; store train/val media in research-only quarantine, hash and CPU-check without printing private download URLs.",
-        "Use self-owned or explicitly licensed document media for first-release commercial document training; preserve stage2 10k chart/document tranche without double counting."
+        "Reuse the official SP original research quarantine source and verified archive CPU receipt; do not repeat download or request the already accepted agreement.",
+        "Keep original document images out of commercial training; use self-owned or explicitly licensed document media per ADR-0005."
       ],
       "first_release_scope": "accepted_SP_terms_research_only_original_images_not_commercial_training",
       "scope_decision": "docs/adr/0005-permitted-first-release-media.md",
-      "physical_staging_status": "specific_SP_research_agreement_user_accepted_annotations_downloaded_images_in_progress_no_ready_claim",
+      "physical_staging_status": "official_SP_original_download_hash_full_archive_CPU_and_32_train_val_image_decode_passed_research_only",
       "offline_preparation_evidence": [
-        "reports/docvqa-access.json"
+        "reports/docvqa-access.json",
+        "reports/docvqa-source-download-001.json",
+        "reports/docvqa-annotation-metadata-private-001.json"
       ]
     },
     {
@@ -703,8 +705,11 @@
       "next_commands": [
         "Do not preserve obsolete account-blocked claim from earlier unauthorized response; verify exact fixed revision and public availability, preserve CC-BY attribution, split by episode/source family; training admission remains separate."
       ],
-      "physical_staging_status": "official_train1679_episode_19_499_790_993byte_selective_media_recovery_in_progress_no_ready_claim",
-      "offline_preparation_evidence": []
+      "physical_staging_status": "official_train1679_episode_25809_PNG_19_499_790_993byte_download_CRC_size_SHA_passed_full_PNG_decode_running",
+      "offline_preparation_evidence": [
+        "reports/gui-odyssey-download-acceptance-001.json",
+        "reports/gui-media-validator-linux-tests.json"
+      ]
     },
     {
       "asset_id": "playwright-synthetic-pages",

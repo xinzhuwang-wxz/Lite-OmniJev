@@ -13,23 +13,24 @@
 
 ## 资源与执行边界
 - SSH `root@region-42.seetacloud.com:48926`，mux `/tmp/omnijev-ssh-%C`；远端 `/root/autodl-tmp/lite-omnijev`。
-- 800GiB盘最近剩余525,057,953,792B；保留150GB checkpoint/adapter及18.16GB模型临时预算，不新增付费。
+- 800GiB盘本轮快照剩余482,313,883,648B；保留150GB checkpoint/adapter及18.16GB模型临时预算，不新增付费。
 - 无卡cgroup仅2GiB RAM/0.5核；重CPU用 `/tmp/omnijev-cpu-heavy.lock` 串行，网络锁外。不能按宿主机free/cpu调度。
 - 静默source `/etc/network_turbo`、HF_ENDPOINT=https://huggingface.co；密钥、私密URL不输出、不进Git/argv/日志。
-- Mac仅约11GiB空闲，不承接大原始包。只清理自己创建且无用资源，不删用户其它文件。
+- Mac本轮约13GiB空闲/24GiB RAM，不承接大原始包；仅复制约32MB processor metadata和约5MB选定公开媒体做CPU编译。只清理自己创建且无用资源，不删用户其它文件。
 - 不push、不建远端issue/PR、不轮询gh；只本地Lore提交/SSH同步。循环见 `plan/LOOP.md`。
 
 ## 票据与产品质量门槛
 - bootstrap:01–08、p0:01–07 done；reports/p0-engineering-acceptance.md仅工程冒烟。
 - offline-prep:01 done：7模型70必需文件121,094,724,397B固定revision/逐文件哈希相符；reports/project-model-offline-acceptance-001.json。
-- offline-prep:02 claimed：GUI/DocVQA和安全原料转换在途；不能以partial代替最终报告。
+- offline-prep:02 claimed（root-data-integration）：GUI 1679完整train episodes/25809 PNG下载、CRC/size/逐文件hash终态通过；DocVQA完整归档及32代表图CPU验收通过；GUI全量PNG解码作业在途，不能以partial关闭。
 - offline-prep:03 claimed：root/工具依赖闭包、NDK/Chromium在途；已有imports不代替离线fresh安装。
-- offline-prep:04 pending：01/02/03及全部必需外部准备通过前，ready_to_open_gpu=false。
+- offline-prep:04 pending：依赖01/02/03及新增s0:09；全部必需外部准备和可做CPU主链代码/测试通过前，ready_to_open_gpu=false。GPU-only不能用来掩盖尚未写的适配代码。
 - offline-prep:05 done：锁pytest9.1.1修复；offline-prep:06 done：教师音频实际Linux CPU适配通过。
-- s0:01 claimed：安全权重转换通过，教师forward/严格复现未通过。
-- s0:03 claimed：HF/vLLM maxTV .01129/.02292，严格<.001仍failed；用户质疑门槛但未批准变更，D004 FP32补丁未应用。
+- s0:01 claimed（teacher-cpu-recovery）：安全权重转换通过，正补项目持有的本地输入/processor适配与无卡预检；教师forward/严格复现未通过。
+- s0:03 claimed：HF/vLLM maxTV .01129/.02292，严格<.001仍failed；D004 FP32补丁未应用。只读审计确认现parity/网关仍纯文本，新增s0:09为共享多模态输入CPU前置；官方0.26/0.31 chat指定token原生协议已核验并补ADR-0002，适配代码/HTTP负测仍待写。
+- s0:09 claimed（multimodal-cpu-prep）：独立managed worktree `/Users/bamboo/.codex/worktrees/s0-multimodal-cpu/Lite-OmniJev`，拥有train/multimodal.py、scripts/s0_prepare.py及对应测试/runbook/公开fixture。真实100题、20×5类别、20video中10×8/10×16帧，4 source families变体不是100独立质量样本，family排除清单待整合。
 - s0:05/06 blocked：真实独立封存身份/双人标注资源未安排；不能用agent自标或合成κ代替。
-- S0全绿前禁止S1；delivery:01未完成。native goal旧状态blocked，工具无agent恢复接口，不虚称active/complete。
+- S0全绿前禁止S1；delivery:01未完成。本轮get_goal已确认同目标status=active，继续沿用；此前blocked快照已过时，终局仍未完成。
 
 ## 已完成外部准备与证据
 - AndroidControl22对象49,930,349,992B，Mind2Web49文件13,577,379,722B：官方/固定清单哈希通过，均仅研究隔离；source-download-002报告。
@@ -51,12 +52,13 @@
 
 ## 并行所有权与当前关键路径
 - root独占主树/票据/STATUS/整合；子代理各worktree，只交限定切片，不覆盖他人。
-- whole_project_datasets：`/tmp/lite-omnijev-project-datasets`；GUI官方train1679完整episodes/25,809 PNG/19,499,790,993B选择性Range恢复；a36c793已合入29cd742，8并发2MiB批比32MiB少过读。PID30008继续，早先root物理观察11,355图/8.536GB未代表终态；恢复复用CRC边界与最终全文件校验待补。
+- GUI：2082154已合入119c9d2，旧下载PID35376结束；最终25809文件/19,499,790,993B/1679train episodes、无无效复用。10,565,313B逐文件manifest在远端持久盘，SHA c025093e6fec56716f7efe8c26b42782fdf8f55e59141f8e0f2df9780804a66f；摘要reports/gui-odyssey-download-acceptance-001.json。root新增scripts.validate_gui_media，只读全量PNG decode监督作业PID42729/独立snapshot artifacts/gui-full-decode-cpu-001/，报告未落盘前pending。Linux公共CLI6 passed/0 skipped；本机无Pillow的两项skip不作decode证据。
 - offline_runtime_dependencies：`/tmp/lite-omnijev-offline-runtime`；d040acd已合入a61098e：工具独立no-index CPU canary、前端322包offline安装、NDKr28b官方SHA/交叉编译及LiteRT Android arm64 CLI hash/ELF已通过。root完整锁闭包/servev031/Chromium/前端实际build继续；root selected-noheavy+借serve-next torch的canary仅partial，pytest需按主树9.1.1锁补齐，不能当完整fresh通过。
-- remaining_authorizations：`/tmp/lite-omnijev-authorizations`；DocVQA-SP官方Annotations1,713,866B已hash，Images8,580,231,801B正在下载，总8.582GB<30GB；严格TLS链/hostname验证，不关闭校验，私密URL仅0600/STDIN。
+- DocVQA：两源文件8,581,945,667B已下载/hash；完整tar/gzip读至EOF，12767安全成员、train/val引用缺失0、32代表图完整decode，exit0。test载荷未读，仍研究隔离、不训练准入；reports/docvqa-source-download-001.json。c232402已合入964014a补metadata边界报告。
 - mdc_transport_fix：`/tmp/lite-omnijev-routerbench-cpu`；RouterBench真实隔离转换、Linux恶意fixture及独立安全review全部完成，5347b2b合入be41a35。
 - video_eval_sources：`/tmp/lite-omnijev-video-eval`；公开teacher verification仅提取协议/汇总metadata，不记录题/预测。精确14任务/2786IDs未公开，用户已批准ADR-0006改为固定9任务1800行真实baseline；此代理继续全行CPU协议冻结/16帧RGB hash验收，GPU两遍未做。
-- teacher_head_conversion：来源调整切片已完成整合；无未完成写入。
+- teacher-cpu-recovery：`/tmp/lite-omnijev-s0-teacher`；93667e9暂未合入，专属teacher_inference/preflight及测试/runbook/报告。root Python实际30 passed，无torch/numpy skip。safehead强制SHA锚/spec/finite，音频PCM→numpy；Linux137 killer未证实保留失败。独立review其余安全边界无问题，官方17帧round+set会少采样，保持上游公式并补明确拒绝诊断/边界测试。正用共享Mac小型metadata复测text/image/audio，并补可在CPU写/测的安全forward入口；真实24GB GPU forward未运行。
+- Mac共享媒体target：上述managed worktree `artifacts/mac-media-libs`，multimodal-cpu-prep唯一写入后只读共享，固定Pillow11.3.0/torchvision0.29.0 wheels/hash/license；复用root torch2.14.1/transformers5.19/numpy2.4.6，没有改root包或复制主干。s0:09 Linux两次loading processor即137/0 cases，不伪称Linuxpass；Mac先前100×2通过后发现fps元数据缺口，已修真实fps/indices并重冻结8/16帧两遍，最终证据待收口。
 
 ## 待我决策与后续资源
 - 本轮已具体确认的DocVQA/Android协议与首发来源无需再确认；AudioCaps无需办理。CommonVoice/HLE/模型访问均已完成，不再索要key/token。
@@ -65,8 +67,8 @@
 - 门槛/方向/大预算改变、付费/开关卡/生产/删数据仍用户决定。当前不要开卡。
 
 ## 下一步与验证
-1. 继续GUI/DocVQA、wheelhouse/NDK/浏览器二进制；下载exit0→固定hash→有界CPU reader或fresh离线安装，不把running当done。
+1. 收口GUI全量decode、wheelhouse完整fresh离线安装、浏览器/前端build和教师输入/视频全行CPU协议；NDK已有通过证据。用户最新确认已租实例，保持无卡，把可做下载/管线测试尽量做完再通知开卡。
 2. root阶段2CPU验证已用已有media-cpu Pillow环境完成exit0；未改共享环境，非全量图decode/标签准入。
 3. RouterBench安全review、剩余外部协议/依赖闭包审计后再执行offline-prep:04；未来LoRA/量化/校准模型是待生成产物，不是下载缺口。
-4. 当前主树最新301测试全部通过（7.17秒），core47/GUI5定向通过，Clotho定向18通过（2.98秒）；Ruff/format198文件/mypy48源文件通过，最新wheel/sdist通过；reports/offline-integration-validation-20261014-002.json。新一批整合后再验证相关检查。
-5. 只有全部必需外部准备/CPU验收真正通过才通知开GPU；严格质量门槛及S0人工/身份阻塞另列，不能暗改或混成全部产品完成。
+4. 本轮完整317 passed/3 skip（Linux root隔离集成1及本机root缺Pillow2；分别有独立Linux集成与GUI CLI6/0skip证据），Ruff/format206文件/mypy50/build/32票validate通过；reports/offline-integration-validation-20261014-003.json。新增代码后再跑相关检查；旧报告不覆盖。
+5. 只有全部必需外部准备/可做CPU管线验收真正通过才通知开GPU；严格质量门槛及S0人工/身份阻塞另列。reports/no-gpu-readiness.json仅P0历史范围，不可作为本轮开卡凭据；runbook已纠正。无GPU作业、无开关卡/付费/远端写入。

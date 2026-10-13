@@ -2,8 +2,9 @@
 
 ## 下一次用户动作
 
-本地 M0 验证通过后租一台可切换 GPU 的 Linux x86_64 无卡实例；推荐 Ubuntu 22.04/24.04、8 vCPU、32GB RAM，持久磁盘至少200GB用于E4B阶段0，完整E4B/E2B/两教师及视频数据建议500GB以上，按实际manifest重新算。
-这只是资源建议，不代表任何平台已验证或已下单。提供主机/端口/工作目录；SSH私钥留本机ssh-agent或用户配置，不贴聊天。先不开GPU。
+2026-10-14 用户确认已租实例，继续无卡准备，暂不开 GPU。连接、当前作业和资源约束以 `plan/STATUS.md` 为准，不重复要求租机或授权。当前实例实测 0.5 核/2GiB、800GiB 持久盘；2026-10-14 本轮快照余盘 482,313,883,648B，空间随下载变化，开卡前重新核算。
+
+`reports/no-gpu-readiness.json` 是 2026-10-13 的 **P0 历史准备报告**，不能作为当前全项目开卡依据；其中 `ready_for_user_gpu_start` 和旧磁盘快照仅对应当时范围。现在必须先关闭 `offline-prep:01/02/03`，再按 `offline-prep:04` 验收全项目。当前 `ready_to_open_gpu=false`。
 
 ## 无卡阶段 agent 执行
 
@@ -12,14 +13,14 @@
 3. 用资产工具固定E4B revision，按LFS清单下载并verify；metadata-only不得当full ready。
 4. 完成训练数据卡与manifest、split去污染、token和processor探针；断点续传缓存留持久盘。
 5. 准备100样本、十步LoRA配置、checkpoint目录、HF/服务启动和测试脚本；实际命令必须在该环境预检。
-6. 输出 `reports/no-gpu-readiness.json`：代码hash、环境锁hash、资产hash、磁盘、数据hash、检查项、GPU待验项目、预计时长/预算。
+6. 输出独立的新报告并保留历史证据：代码hash、环境锁hash、资产hash、磁盘、数据hash、检查项、GPU待验项目、预计时长/预算；范围覆盖阶段0–6首发必需外部准备，不能复用P0历史ready结论。
 7. 全部必需准备通过后通知用户开卡；仅有包安装成功不能承诺kernel/显存可用。
 
 ## GPU 阶段
 
 优先单张80GB级卡进行E4B BF16/教师验证；24GB仅用于已验证的精简试跑配置，不能承诺全部教师可用。具体型号由当前预算和作业峰值决定。
 先 `nvidia-smi`、torch CUDA算子、vLLM模型加载验证，再启动P0作业。记录峰值显存、tokens、时延及训练步数；出现OOM/NaN立即保存诊断并小规模修复。
-P0通过后生成S0详细票，按模型卡相同split/预处理复现；教师许可或head格式未通过准入时不加载。
+P0工程冒烟已经完成，证据见 `reports/p0-engineering-acceptance.md`。下一次开卡不默认重跑十步训练；先按S0当前票准备并执行必要的教师forward和严格概率对照。历史FP16/BF16对照失败仍须解决，FP32基座诊断通过不等于独立LoRA服务通过，D004未批准，不应用引擎补丁。教师许可或head格式未通过准入时不加载。
 
 ## 用完交接
 
