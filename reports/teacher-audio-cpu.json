@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "observed_utc": "2026-10-13T21:24:25.135284+00:00",
+  "code_base_revision": "aa078c420a1fcb5a3b1e92f5612e70f64014f613",
+  "adapter_sha256": "5e06b6eed623baa15958d3351c3a0c29c07d245c50f83ef9f0ccc2c4998c8d3b",
+  "tests_sha256": "653032459751e5cc904a905306224aaaa65eec6e3bd995bf2d7ae44fc8121362",
+  "python": "3.11.14",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "ffmpeg_path": "/opt/homebrew/bin/ffmpeg",
+  "ffmpeg_version": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "command": "uv run pytest tests/test_teacher_media.py -q; dedicated real synthetic public-interface cases recorded below",
+  "source_repo": "akhilaaa3/Jev-Omni",
+  "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+  "official_loader_sha256_before": "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0",
+  "official_loader_sha256_after": "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0",
+  "official_source_modified": false,
+  "original_reference_overwrite_regression": {
+    "command": [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/private/tmp/lite-omnijev-teacher-audio-cpu/artifacts/teacher-audio-cpu/synthetic-1ch-16000hz.wav",
+      "-t",
+      "30",
+      "-ac",
+      "1",
+      "-ar",
+      "16000",
+      "/private/tmp/lite-omnijev-teacher-audio-cpu/artifacts/teacher-audio-cpu/owned-reference-anz6hzf9.wav"
+    ],
+    "output_precreated_bytes": 0,
+    "exit_code": 0,
+    "stderr": "File '/private/tmp/lite-omnijev-teacher-audio-cpu/artifacts/teacher-audio-cpu/owned-reference-anz6hzf9.wav' already exists. Overwrite? [y/N] Not overwriting - exiting\nError opening output file /private/tmp/lite-omnijev-teacher-audio-cpu/artifacts/teacher-audio-cpu/owned-reference-anz6hzf9.wav.\n",
+    "stdout": "",
+    "output_bytes": 0
+  },
+  "actual_adapter_cases": [
+    {
+      "source_seconds": 0.1,
+      "source_rate": 16000,
+      "source_channels": 1,
+      "source_bytes": 3244,
+      "source_sha256": "2976da01e205a110c9fa41d47659e238a5c6d3c3f3137582f2949853faa201dd",
+      "output_bytes": 3278,
+      "output_sha256": "11b2c99f1a076fd75e7de868d8170e8d8983aafa78b7f9a7e3f07d78bda26676",
+      "output": {
+        "channels": 1,
+        "sample_rate": 16000,
+        "sample_width": 2,
+        "frames": 1600,
+        "read_bytes": 3200
+      },
+      "expected_frames": 1600
+    },
+    {
+      "source_seconds": 32.25,
+      "source_rate": 48000,
+      "source_channels": 6,
+      "source_bytes": 18576044,
+      "source_sha256": "2c9c29e6658c591569a81c3057b7c9eb3cdb6987c94f479a853d73cb4daae04a",
+      "output_bytes": 960078,
+      "output_sha256": "0d469a095141f8bab3a4ccd9eed4b33cc902ded72bfa4cf0e498c224c8e89286",
+      "output": {
+        "channels": 1,
+        "sample_rate": 16000,
+        "sample_width": 2,
+        "frames": 480000,
+        "read_bytes": 960000
+      },
+      "expected_frames": 480000
+    }
+  ],
+  "temporary_output_cleanup_verified": true,
+  "sources_unchanged": true,
+  "runtime_contract": {
+    "cap_seconds": 30,
+    "channels": 1,
+    "sample_rate": 16000,
+    "output_codec": "pcm_s16le",
+    "ffmpeg_threads": 1,
+    "timeout_seconds_default": 30,
+    "maximum_timeout_seconds": 180,
+    "overwrite_scope": "exclusive adapter-owned private temporary directory; no caller output path"
+  },
+  "preprocessing_status": "actual_cpu_adapter_passed",
+  "teacher_forward_integration": "pending; standalone context is not wired into upstream predict or project model forward",
+  "model_or_gpu_used": false,
+  "hidden_data_or_predictions_read": false,
+  "gate_or_label_changes": false,
+  "new_paid_actions": false,
+  "existing_cloud_cost": "not_measured; main adapter validation ran locally",
+  "elapsed_seconds": 1.217,
+  "exit_code": 0,
+  "linux_prior_probe_terminal": {
+    "terminal_exit_code": 0,
+    "evidence": {
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "ffmpeg_version": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers",
+      "driver_sha256": "42b7d908b80106b52c37cdf8c14ea4f175547952bcc4dce4d6a19e5b8e9603fc",
+      "synthetic_source_bytes": 3244,
+      "synthetic_source_sha256": "2976da01e205a110c9fa41d47659e238a5c6d3c3f3137582f2949853faa201dd",
+      "source_seconds": 0.1,
+      "source_rate": 16000,
+      "source_channels": 1,
+      "stdin": "DEVNULL for noninteractive job",
+      "cases": [
+        {
+          "variant": "literal-pinned-reference-command",
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-i",
+            "/root/autodl-tmp/lite-omnijev/artifacts/jev-protocol-probe/owned-synthetic-100ms.wav",
+            "-t",
+            "30",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "/root/autodl-tmp/lite-omnijev/artifacts/jev-protocol-probe/jev-protocol-owned-u7m6diaq.wav"
+          ],
+          "output_preexisted": true,
+          "output_before_bytes": 0,
+          "exit_code": 1,
+          "stdout": "",
+          "stderr": "File '/root/autodl-tmp/lite-omnijev/artifacts/jev-protocol-probe/jev-protocol-owned-u7m6diaq.wav' already exists. Overwrite? [y/N] Not overwriting - exiting\n",
+          "output_bytes": 0,
+          "elapsed_seconds": 0.1131,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "variant": "owned-output-overwrite-adapter",
+          "command": [
+            "ffmpeg",
+            "-y",
+            "-v",
+            "error",
+            "-i",
+            "/root/autodl-tmp/lite-omnijev/artifacts/jev-protocol-probe/owned-synthetic-100ms.wav",
+            "-t",
+            "30",
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "/root/autodl-tmp/lite-omnijev/artifacts/jev-protocol-probe/jev-protocol-owned-ope9ckhl.wav"
+          ],
+          "output_preexisted": true,
+          "output_before_bytes": 0,
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": "",
+          "output_bytes": 3278,
+          "elapsed_seconds": 0.1039,
+          "output_sha256": "6c87c49a16199ad61fc4c99a0e5c9d7e9993328066a9bbd7ba1e1072af459d37",
+          "wave_metadata": {
+            "channels": 1,
+            "sample_rate": 16000,
+            "frames": 1600,
+            "sample_width": 2
+          }
+        }
+      ],
+      "gpu_used": false,
+      "model_loaded": false,
+      "probe_exit_code": 0
+    },
+    "scope": "original reference overwrite regression plus owned-y synthetic candidate, not the new project adapter or model forward"
+  },
+  "validation": {
+    "tests": {
+      "command": "uv run pytest tests/test_teacher_media.py -q",
+      "passed": 8,
+      "skipped": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 3.57
+    },
+    "ruff": {
+      "command": "uv run ruff check train/teacher_media.py tests/test_teacher_media.py",
+      "exit_code": 0
+    },
+    "format": {
+      "command": "uv run ruff format --check train/teacher_media.py tests/test_teacher_media.py",
+      "exit_code": 0
+    },
+    "mypy": {
+      "command": "uv run mypy train/teacher_media.py tests/test_teacher_media.py",
+      "exit_code": 0
+    },
+    "build": {
+      "command": "uv build",
+      "exit_code": 0
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    "failure_test_scope": "public observable rejection/cleanup with controlled external converter executables; no model stubs or benchmark predictions"
+  }
+}
