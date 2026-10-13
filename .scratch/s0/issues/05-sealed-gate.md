@@ -5,8 +5,8 @@ Milestone: S0
 Category: enhancement
 Status: ready-for-agent
 Execution: blocked
-Owner: sealed-gate
-Worktree: /tmp/lite-omnijev-s0-sealed
+Owner: none
+Worktree: none
 Blocked by: p0:04
 
 ## What to build

@@ -4,9 +4,9 @@ ID: s0-data:01
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: done
-Owner: clinc-admission
-Worktree: /tmp/lite-omnijev-s0-clinc
+Execution: claimed
+Owner: root
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04
 
 ## What to build
