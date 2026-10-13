@@ -1,0 +1,20 @@
+{
+  "status": "blocked",
+  "exit_code": 137,
+  "signal": "SIGKILL",
+  "diagnosis": "Not established; official processor loading terminated twice under concurrent constrained-resource work. cgroup memory.events oom_kill=0 in observed file, so OOM not proven.",
+  "completed_cases": 0,
+  "last_phase": "loading_official_processor",
+  "checkpoint_sha256": "f717005715ad617e96682ef79d1457d7d2a400d2a96ccfebafd4712bc2589629",
+  "complete_100_cases": false,
+  "gpu_used": false,
+  "weights_loaded": false,
+  "new_paid_resources": 0,
+  "cost": "existing cloud instance not measured",
+  "pending_vllm_processor_and_transport": true,
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false flock /tmp/omnijev-cpu-heavy.lock /root/autodl-tmp/envs/media-cpu/bin/python -m scripts.s0_prepare --manifest ../s0-prepare-public-001/manifest.json --asset-root ../s0-prepare-public-001 --model-dir ../models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2 --output ../s0-prepare-public-001/run-002.json",
+  "cwd": "/root/autodl-tmp/lite-omnijev/artifacts/s0-prepare-code-001",
+  "elapsed_seconds": null,
+  "elapsed_gap": "process killed before final timer; no duration invented",
+  "manifest_sha256_at_failure_report_creation": "f23081136b4a8f5184ed095057622abae06a8066c298c67557b7211d2326d6ab"
+}
