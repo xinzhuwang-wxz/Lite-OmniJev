@@ -6,7 +6,7 @@
 - bootstrap:01–08、p0:01–07：done。P0验收见reports/p0-engineering-acceptance.md。
 - 原始P0/S0阶段归属已审计纠正；严格概率门槛始终失败，S1不放行。
 - s0:01 claimed：teacher-admission，worktree /tmp/lite-omnijev-s0-teacher；正在执行教师准入。
-- s0-data:01 claimed root：旧报告缺token探针，冲突标签去重风险已50aab51修正；等待远程全量重验/语义抽检，暂不准入训练。
+- s0-data:01 done：修正后远程15250条/33答案token全部通过，逐行语义保真和agent抽检完成；正式证据clinc-admission-corrected-001.json，旧报告不作准入证据。
 - s0:03 claimed：multimodal-probe，/tmp/lite-omnijev-s0-multimodal，先实现真实processor媒体探针，严格gate仍未过。
 - s0:05 blocked：canary导入/双标κ/脱敏工具已合入，12个sealed-gate测试通过；真实隔离身份仍缺。
 - 其余S0按依赖推进；实时前沿以scripts.loop list为准。

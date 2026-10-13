@@ -4,9 +4,9 @@ ID: offline-prep:01
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: project-model-assets
+Worktree: /tmp/lite-omnijev-project-assets
 Blocked by: None
 
 ## What to build

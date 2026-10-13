@@ -4,9 +4,9 @@ ID: s0-data:01
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: root
-Worktree: /Users/bamboo/Githubs/Lite-OmniJev
+Execution: done
+Owner: none
+Worktree: none
 Blocked by: p0:04
 
 ## What to build
@@ -31,3 +31,5 @@ Evidence: CLINC train admission report is recorded in `reports/clinc-admission.j
 无卡准备发现的非阻断后续；不扩大P0程序真值冒烟范围。证据：docs/research/2026-10-13-data-admission.md。
 
 复核发现旧准入报告缺官方token探针且冲突标签可被去重吞掉；50aab51修正，待远程全量重验和语义抽检后由root关票，旧training_admitted不作为当前准入证据。
+
+Evidence: reports/clinc-admission-corrected-001.json（完整15250条、33答案token、源码/模板/数据hash、退出0）与reports/clinc-semantic-preservation-001.json（逐行原句/原标签/答案位置/池一致，6条agent语义抽检，不冒称人工标注）。修正后22个CLINC+sealed行为测试通过。
