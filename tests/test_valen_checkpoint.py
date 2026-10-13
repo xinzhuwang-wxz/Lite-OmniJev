@@ -98,6 +98,102 @@ def test_load_expected_spec_rejects_missing_tensors(tmp_path):
         load_expected_spec(spec)
 
 
+def _valid_stage_payload(**extra):
+    payload = {
+        "schema_version": 1,
+        "status": "complete",
+        "elapsed_seconds": 1.5,
+        "stages": [
+            {
+                "name": "source_hash",
+                "started_seconds": 0,
+                "duration_seconds": 1.25,
+                "checkpoint_size": 10,
+            }
+        ],
+        "context": {
+            "torch_num_threads": 1,
+            "torch_num_interop_threads": 1,
+            "torch_load_mmap": True,
+        },
+    }
+    payload.update(extra)
+    return payload
+
+
+def test_read_stage_diagnostics_refuses_symlink_to_host_json(tmp_path):
+    secret = tmp_path / "host-secret.json"
+    secret.write_text(json.dumps(_valid_stage_payload(secret="do-not-read")))
+    link = tmp_path / "stage-diagnostics.json"
+    link.symlink_to(secret)
+
+    assert valen_checkpoint._read_stage_diagnostics(link) is None
+
+
+def test_read_stage_diagnostics_refuses_fifo_without_blocking(tmp_path):
+    if not hasattr(os, "mkfifo"):
+        pytest.skip("fifo unavailable")
+    fifo = tmp_path / "stage-diagnostics.json"
+    os.mkfifo(fifo)
+
+    assert valen_checkpoint._read_stage_diagnostics(fifo) is None
+
+
+def test_read_stage_diagnostics_refuses_oversize(tmp_path):
+    diagnostics = tmp_path / "stage-diagnostics.json"
+    diagnostics.write_bytes(b"{" + b" " * (valen_checkpoint.MAX_STAGE_DIAGNOSTICS_BYTES + 1))
+
+    assert valen_checkpoint._read_stage_diagnostics(diagnostics) is None
+
+
+def test_read_stage_diagnostics_sanitizes_arbitrary_child_fields(tmp_path):
+    diagnostics = tmp_path / "stage-diagnostics.json"
+    payload = _valid_stage_payload(
+        secret="host-value",
+        current_stage={
+            "name": "audit_tensors",
+            "started_seconds": 2,
+            "elapsed_seconds": 3,
+            "secret": "nested-host-value",
+        },
+        context={
+            "torch_num_threads": 1,
+            "torch_num_interop_threads": 1,
+            "torch_load_mmap": True,
+            "secret": "context-host-value",
+        },
+    )
+    payload["stages"][0]["secret"] = "stage-host-value"
+    diagnostics.write_text(json.dumps(payload))
+
+    sanitized = valen_checkpoint._read_stage_diagnostics(diagnostics)
+
+    assert sanitized == {
+        "schema_version": 1,
+        "status": "complete",
+        "stages": [
+            {
+                "name": "source_hash",
+                "started_seconds": 0,
+                "duration_seconds": 1.25,
+                "checkpoint_size": 10,
+            }
+        ],
+        "elapsed_seconds": 1.5,
+        "current_stage": {
+            "name": "audit_tensors",
+            "started_seconds": 2,
+            "elapsed_seconds": 3,
+        },
+        "context": {
+            "torch_num_threads": 1,
+            "torch_num_interop_threads": 1,
+            "torch_load_mmap": True,
+        },
+    }
+    assert "host-value" not in json.dumps(sanitized)
+
+
 def test_convert_cli_requires_isolation(tmp_path):
     checkpoint = tmp_path / "checkpoint.pt"
     checkpoint.write_bytes(b"checkpoint")

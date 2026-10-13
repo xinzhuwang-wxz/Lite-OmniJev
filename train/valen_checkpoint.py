@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import importlib
 import json
+import math
 import os
 import platform
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -50,6 +52,25 @@ SOURCE_FILE_SHA256S = {
     "valen/training/checkpoint.py": (
         "b3739da6db4202414da637b821ad99c97c13e618680b8dcc64893c65296ac438"
     ),
+}
+
+MAX_STAGE_DIAGNOSTICS_BYTES = 64 * 1024
+ALLOWED_STAGE_NAMES = {
+    "source_hash",
+    "load_weights_only",
+    "audit_tensors",
+    "save_safetensors",
+    "reload_safetensors",
+    "roundtrip_equal",
+    "output_hash",
+}
+ALLOWED_STAGE_NUMERIC_FIELDS = {
+    "started_seconds",
+    "duration_seconds",
+    "elapsed_seconds",
+    "checkpoint_size",
+    "tensor_count",
+    "output_size",
 }
 
 THREAD_LIMIT_ENV = {
@@ -154,14 +175,118 @@ class StageDiagnostics:
         temporary.replace(self.path)
 
 
-def _read_stage_diagnostics(path: Path) -> dict[str, Any] | None:
-    try:
-        value = json.loads(path.read_text())
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
+def _safe_number(value: Any) -> int | float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
+    if not math.isfinite(float(value)):
+        return None
+    return cast(int | float, value)
+
+
+def _read_regular_nofollow_bytes(path: Path, *, max_bytes: int) -> bytes | None:
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    try:
+        fd = os.open(path, flags)
+    except OSError:
+        return None
+    try:
+        status = os.fstat(fd)
+        if not stat.S_ISREG(status.st_mode):
+            return None
+        if status.st_size < 0 or status.st_size > max_bytes:
+            return None
+        chunks: list[bytes] = []
+        remaining = max_bytes + 1
+        while remaining > 0:
+            chunk = os.read(fd, min(8192, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        payload = b"".join(chunks)
+        if len(payload) > max_bytes:
+            return None
+        return payload
+    except OSError:
+        return None
+    finally:
+        os.close(fd)
+
+
+def _sanitize_stage_entry(value: Any) -> dict[str, Any] | None:
     if not isinstance(value, dict):
         return None
-    return value
+    name = value.get("name")
+    if not isinstance(name, str) or name not in ALLOWED_STAGE_NAMES:
+        return None
+    sanitized: dict[str, Any] = {"name": name}
+    for key in ALLOWED_STAGE_NUMERIC_FIELDS:
+        number = _safe_number(value.get(key))
+        if number is not None:
+            sanitized[key] = number
+    return sanitized
+
+
+def _sanitize_stage_diagnostics(value: Any) -> dict[str, Any] | None:
+    if not isinstance(value, dict):
+        return None
+    if value.get("schema_version") != SCHEMA_VERSION:
+        return None
+    status_value = value.get("status")
+    if status_value not in {"running", "complete"}:
+        return None
+    stages_value = value.get("stages")
+    if not isinstance(stages_value, list):
+        return None
+    stages: list[dict[str, Any]] = []
+    for stage in stages_value:
+        sanitized_stage = _sanitize_stage_entry(stage)
+        if sanitized_stage is None:
+            return None
+        stages.append(sanitized_stage)
+    sanitized: dict[str, Any] = {
+        "schema_version": SCHEMA_VERSION,
+        "status": status_value,
+        "stages": stages,
+    }
+    elapsed = _safe_number(value.get("elapsed_seconds"))
+    if elapsed is not None:
+        sanitized["elapsed_seconds"] = elapsed
+    current_stage = value.get("current_stage")
+    if current_stage is not None:
+        sanitized_current = _sanitize_stage_entry(current_stage)
+        if sanitized_current is None:
+            return None
+        sanitized["current_stage"] = sanitized_current
+    context = value.get("context")
+    if isinstance(context, dict):
+        sanitized_context: dict[str, Any] = {}
+        for key in ("torch_num_threads", "torch_num_interop_threads"):
+            number = _safe_number(context.get(key))
+            if number is not None:
+                sanitized_context[key] = number
+        torch_load_mmap = context.get("torch_load_mmap")
+        if isinstance(torch_load_mmap, bool):
+            sanitized_context["torch_load_mmap"] = torch_load_mmap
+        if sanitized_context:
+            sanitized["context"] = sanitized_context
+    return sanitized
+
+
+def _read_stage_diagnostics(path: Path) -> dict[str, Any] | None:
+    payload = _read_regular_nofollow_bytes(path, max_bytes=MAX_STAGE_DIAGNOSTICS_BYTES)
+    if payload is None:
+        return None
+    try:
+        value = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    return _sanitize_stage_diagnostics(value)
 
 
 def _json(path: Path) -> dict[str, Any]:
