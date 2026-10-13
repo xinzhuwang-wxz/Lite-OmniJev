@@ -26,6 +26,7 @@ def manifest(*, canary: bool = True) -> SealedManifest:
         dataset_version="sealed-canary-v1",
         source_digest=HEX_A,
         canary=canary,
+        annotator_ids=("ann-a", "ann-b"),
         expected_counts={"text": {"dev": 2, "holdout": 1}},
     )
 
@@ -36,10 +37,11 @@ def record(
     label: str,
     *,
     pool: Literal["dev", "holdout"] = "dev",
+    modality: Literal["text", "image", "audio", "video"] = "text",
 ) -> AnnotationRecord:
     return AnnotationRecord(
         item_id=item_id,
-        modality="text",
+        modality=modality,
         pool=pool,
         annotator_id=annotator_id,
         label=label,
@@ -114,8 +116,21 @@ def test_missing_or_duplicate_annotations_fail_closed() -> None:
 
 
 def test_non_canary_requires_kappa_threshold_and_never_passes_dev_summary() -> None:
+    real_manifest = SealedManifest(
+        audit_id="real-audit",
+        dataset_version="sealed-real-v1",
+        source_digest=HEX_A,
+        canary=False,
+        annotator_ids=("ann-a", "ann-b"),
+        expected_counts={
+            "text": {"dev": 500, "holdout": 1000},
+            "image": {"dev": 500, "holdout": 1000},
+            "audio": {"dev": 500, "holdout": 1000},
+            "video": {"dev": 500, "holdout": 1000},
+        },
+    )
     summary = summarize(
-        manifest(canary=False),
+        real_manifest,
         [
             record("item-1", "ann-a", "allow"),
             record("item-1", "ann-b", "deny"),
@@ -132,9 +147,8 @@ def test_non_canary_requires_kappa_threshold_and_never_passes_dev_summary() -> N
 
 
 def test_non_canary_rejects_degenerate_kappa() -> None:
-    summary = summarize(manifest(canary=False), complete_canary_records())
-    assert summary.passed is False
-    assert summary.failures["kappa_degenerate"] >= 1
+    with pytest.raises(ValidationError):
+        manifest(canary=False)
 
 
 def test_cross_pool_family_overlap_fails() -> None:
@@ -147,6 +161,129 @@ def test_cross_pool_family_overlap_fails() -> None:
 
 def test_kappa_reports_perfect_degenerate_agreement() -> None:
     assert cohen_kappa(["same", "same"], ["same", "same"]) == (1.0, True)
+
+
+def test_kappa_pairs_by_frozen_annotator_identity_not_row_order() -> None:
+    fixed_manifest = SealedManifest(
+        audit_id="canary-audit",
+        dataset_version="sealed-canary-v1",
+        source_digest=HEX_A,
+        canary=True,
+        annotator_ids=("ann-a", "ann-b"),
+        expected_counts={"text": {"dev": 3}},
+    )
+    rows = [
+        record("item-1", "ann-a", "allow"),
+        record("item-1", "ann-b", "deny"),
+        record("item-2", "ann-a", "deny"),
+        record("item-2", "ann-b", "deny"),
+        record("item-3", "ann-a", "allow"),
+        record("item-3", "ann-b", "allow"),
+    ]
+    permuted = [rows[1], rows[0], rows[3], rows[2], rows[5], rows[4]]
+    assert (
+        summarize(fixed_manifest, rows).cohorts["text:dev"].kappa
+        == summarize(fixed_manifest, permuted).cohorts["text:dev"].kappa
+    )
+
+
+def test_rejects_unexpected_annotator_and_unmanifested_records() -> None:
+    text_dev_only = SealedManifest(
+        audit_id="canary-audit",
+        dataset_version="sealed-canary-v1",
+        source_digest=HEX_A,
+        canary=True,
+        annotator_ids=("ann-a", "ann-b"),
+        expected_counts={"text": {"dev": 1}},
+    )
+    summary = summarize(
+        text_dev_only,
+        [
+            record("item-1", "ann-a", "allow"),
+            record("item-1", "ann-c", "allow"),
+            record("item-2", "ann-a", "allow", pool="holdout"),
+            record("item-3", "ann-a", "allow", modality="image"),
+        ],
+    )
+    assert summary.passed is False
+    assert summary.failures["unexpected_annotator"] == 1
+    assert summary.failures["unexpected_pool"] == 1
+    assert summary.failures["unexpected_modality"] == 1
+
+
+def test_manifest_fails_closed_for_empty_zero_and_real_shape() -> None:
+    with pytest.raises(ValidationError):
+        SealedManifest(
+            audit_id="bad",
+            dataset_version="sealed-canary-v1",
+            source_digest=HEX_A,
+            canary=True,
+            annotator_ids=("ann-a", "ann-b"),
+            expected_counts={},
+        )
+    with pytest.raises(ValidationError):
+        SealedManifest(
+            audit_id="bad",
+            dataset_version="sealed-canary-v1",
+            source_digest=HEX_A,
+            canary=True,
+            annotator_ids=("ann-a", "ann-b"),
+            expected_counts={"text": {"dev": 0}},
+        )
+    with pytest.raises(ValidationError):
+        SealedManifest(
+            audit_id="bad",
+            dataset_version="sealed-real-v1",
+            source_digest=HEX_A,
+            canary=False,
+            annotator_ids=("ann-a", "ann-b"),
+            expected_counts={"text": {"dev": 500, "holdout": 1000}},
+        )
+
+
+def test_cli_redacts_validation_errors(tmp_path: Path) -> None:
+    sentinel = "SECRET_SENTINEL_ITEM_LABEL_AND_CONTENT"
+    manifest_path = tmp_path / "manifest.json"
+    annotations_path = tmp_path / "annotations.jsonl"
+    out_path = tmp_path / "summary.json"
+    manifest_path.write_text(manifest().model_dump_json(), encoding="utf-8")
+    annotations_path.write_text(
+        json.dumps(
+            {
+                "item_id": sentinel,
+                "modality": "text",
+                "pool": "dev",
+                "annotator_id": "ann-a",
+                "label": sentinel,
+                "family_hash": HEX_A,
+                "source_hash": HEX_B,
+                "question": sentinel,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.sealed_gate",
+            "--manifest",
+            str(manifest_path),
+            "--annotations",
+            str(annotations_path),
+            "--out",
+            str(out_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    encoded = out_path.read_text(encoding="utf-8")
+    assert result.returncode == 1
+    assert "invalid_annotations" in encoded
+    assert sentinel not in result.stdout
+    assert sentinel not in result.stderr
+    assert sentinel not in encoded
 
 
 def test_cli_writes_redacted_summary_and_returns_fail_closed(tmp_path: Path) -> None:
