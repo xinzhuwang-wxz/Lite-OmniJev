@@ -48,7 +48,7 @@ HF 参考：`reports/p0-base-hf-001.json` 与 `reports/p0-adapter-hf-001.json` �
 
 FP32 只证明基座诊断：`reports/p0-fp32-base-full-comparison.json` 为 `status: passed`，最大差约 `7.9e-6`，但没有证明独立 LoRA 正式服务路径，也不能替代低精度产品完成。
 
-影子确认批不放行：主工作树的 `reports/confirmation-base-vllm-001.json` 与 `reports/confirmation-adapter-vllm-001.json` 均为 `status: failed`，但失败语义来自影子策略的尾部复核：base `joint_TV.max: 0.011289845561305085`，adapter `joint_TV.max: 0.022916160439071978`，聚合预算内但触发 `joint_TV_review_cases`。`configs/candidates/parity-shadow-v1.json` 写明 `release_or_stage_acceptance: false`，所以确认批最多支持后续 ADR/正式 gate 讨论，不支持 P0/S0 放行。
+影子确认批不放行：主工作树的 `reports/confirmation-base-vllm-001.json` 与 `reports/confirmation-adapter-vllm-001.json` 均为 `status: failed`，其顶层 failed 来自原始严格数值对照；独立 shadow_assessment 为 review_required，来自尾部复核：base `joint_TV.max: 0.011289845561305085`，adapter `joint_TV.max: 0.022916160439071978`，聚合预算内但触发 `joint_TV_review_cases`。`configs/candidates/parity-shadow-v1.json` 写明 `release_or_stage_acceptance: false`，所以确认批最多支持后续 ADR/正式 gate 讨论，不能作为 P0 工程验收的替代，也不支持 S0 放行。
 
 BF16 低精度风险是真实的：`reports/calibration-bf16-summary-001.json` 中 adapter `joint_TV.max: 0.24488756403077794`，并有 joint top 变化。FP16 定标更好，但 `reports/calibration-fp16-adapter-impact-001.json` 仍有 `joint_TV.max: 0.014920934950270377`；这说明阈值调整必须作为正式 gate 变更，而不是把现有失败说成通过。
 

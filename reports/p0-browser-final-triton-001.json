@@ -1,0 +1,197 @@
+{
+  "time": "2026-10-13T16:25:18.187092+00:00",
+  "base_url": "http://127.0.0.1:18080",
+  "expected_model_version": "p0-97db02cd2bb3-fp16-triton-vllm031",
+  "tool": "Python Playwright actual Chromium (MCP unavailable)",
+  "playwright_version": "1.63.0",
+  "environment": "macOS-26.5.1-arm64-arm-64bit",
+  "code_version": "a9ec4ae4f5d854539e897e69dce6eacc6c68d066",
+  "scope": "P0 text gateway contract; no accuracy, calibration, latency or parity gate claim",
+  "model_quality_verified": false,
+  "health_executed": true,
+  "requests": [
+    {
+      "name": "four_questions",
+      "request": {
+        "state": "There is one red box. Its origin is unknown.",
+        "questions": {
+          "choice": {
+            "type": "choice",
+            "instructions": "What color is the box?",
+            "criteria": {
+              "red": "Red",
+              "blue": "Blue"
+            }
+          },
+          "noul": {
+            "type": "noul",
+            "instructions": "Is the box red?"
+          },
+          "score": {
+            "type": "score",
+            "instructions": "Rate how many boxes there are.",
+            "criteria": [
+              "None",
+              "One",
+              "Two or more"
+            ]
+          },
+          "insufficient": {
+            "type": "noul",
+            "instructions": "Was the box manufactured in France?"
+          }
+        }
+      },
+      "status": 200,
+      "body": {
+        "model": "p0-97db02cd2bb3-fp16-triton-vllm031",
+        "answers": {
+          "choice": {
+            "type": "choice",
+            "probabilities": {
+              "red": 0.9999999988705812,
+              "blue": 1.129418708038426e-09
+            },
+            "confidence": 0.9999999977411624,
+            "p_insufficient": 1.326095310223303e-13,
+            "calibration": "unfitted",
+            "confidence_semantics": "normalized_peak_non_U",
+            "choice": "red"
+          },
+          "noul": {
+            "type": "noul",
+            "probabilities": {
+              "yes": 0.999999999267938,
+              "no": 7.320620094907851e-10
+            },
+            "confidence": 0.9999999985358761,
+            "p_insufficient": 9.140826909704423e-13,
+            "calibration": "unfitted",
+            "confidence_semantics": "normalized_peak_non_U",
+            "noul": 0.999999999267938
+          },
+          "score": {
+            "type": "score",
+            "probabilities": {
+              "0": 3.156103925675966e-07,
+              "1": 0.9999928300755805,
+              "2": 6.854314026974137e-06
+            },
+            "confidence": 0.9999892451133707,
+            "p_insufficient": 2.14385700919933e-12,
+            "calibration": "unfitted",
+            "confidence_semantics": "normalized_peak_non_U",
+            "score": 1.0000065387036345,
+            "legend": {
+              "0": "None",
+              "1": "One",
+              "2": "Two or more"
+            }
+          },
+          "insufficient": {
+            "type": "noul",
+            "probabilities": {
+              "yes": 0.8333245953120233,
+              "no": 0.16667540468797667
+            },
+            "confidence": 0.6666491906240466,
+            "p_insufficient": 0.9999999950810399,
+            "calibration": "unfitted",
+            "confidence_semantics": "normalized_peak_non_U",
+            "noul": 0.8333245953120233
+          }
+        },
+        "usage": {
+          "input_tokens": 275,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 275,
+          "output_tokens": 4
+        },
+        "validation_status": "GPU parity and calibration pending"
+      },
+      "elapsed_ms": 681.0999999046326
+    },
+    {
+      "name": "invalid_criteria",
+      "request": {
+        "state": "A red box.",
+        "questions": {
+          "bad": {
+            "type": "choice",
+            "instructions": "Color?",
+            "criteria": {
+              "red": "Red"
+            }
+          }
+        }
+      },
+      "status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "value_error",
+            "loc": [
+              "body",
+              "questions",
+              "bad"
+            ],
+            "msg": "Value error, choice requires 2\u201320 option IDs mapped to descriptions",
+            "input": {
+              "type": "choice",
+              "instructions": "Color?",
+              "criteria": {
+                "red": "Red"
+              }
+            },
+            "ctx": {
+              "error": {}
+            }
+          }
+        ]
+      },
+      "elapsed_ms": 34.10000002384186
+    },
+    {
+      "name": "malformed_json",
+      "request": "{broken",
+      "status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting property name enclosed in double quotes"
+            }
+          }
+        ]
+      },
+      "elapsed_ms": 31.899999976158142
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+  ],
+  "failed_requests": [],
+  "exit_code": 0,
+  "browser_version": "153.0.8010.12",
+  "health_status": 200,
+  "health": {
+    "status": "ok",
+    "inference_configured": true,
+    "model_version": "p0-97db02cd2bb3-fp16-triton-vllm031",
+    "scope": "local-text-only",
+    "model_quality_verified": false
+  },
+  "elapsed_seconds": 10.82567991700489,
+  "requests_sha256": "81e651382659d567d035f3ac26ed292855cda13567963c0b8f06c562eb7cd601"
+}

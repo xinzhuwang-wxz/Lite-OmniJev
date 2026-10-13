@@ -1,0 +1,53 @@
+{
+  "provenance": {
+    "purpose": "independent-confirmation",
+    "dtype": "float16",
+    "thinking": false,
+    "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "asset_hashes": {
+      "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+      "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+      "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+      "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+      "model.safetensors": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503",
+      "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+      "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+      "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+    },
+    "manifest_sha256": "207ce3a8b2ddc8a3a31f199935842bbb42e72ea029febf14978d895d120b1461",
+    "fixture_manifest_sha256": "8bc0fd0e42830902d0164220d04a78980bfbc5f5f00e08511b69bcb7f24b6a7e",
+    "data_file_sha256": "9f46f0145e9caf6a72e8239afc25a1772a61ed67d7eefe4ae7ee5aeba32cc79c",
+    "inputs_sha256": "796e0a6d1ae55733505744bc4ada82e60021e4a0c20437e1ac10313d2d40d6ca",
+    "template_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+    "reference_settings": {
+      "seed": 42,
+      "max_length": 2048
+    },
+    "mode": "base",
+    "adapter_hashes": null,
+    "implementation_hashes": {
+      "scripts/parity_calibration.py": "c61d9c0de5e049d1eb1eb4e91493ed9af6ec4b69fdb75e05a6940b0911fd139d",
+      "data/parity_fixture.py": "3f37a296b414d10b9e2f1dee0dc2ad5b164667987c45ac11b60958528c91f2bb",
+      "scripts/p0_parity.py": "5859dd2a330b1506ffe58415b5a3130a91e0c36a2838a4c08b66d7196bea19b0",
+      "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
+      "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+      "train/readout.py": "2a7f57741a53c244e26da9d644a9805160c35e7a0fe902067586a633704e5b3d",
+      "scripts/check_tokens.py": "d0606a6a4528d8a2b64a4b4726354fa701a4637d10052c4c529adb014ececc57",
+      "eval/program_truth.py": "d63205fd517d3b3281b026a92aeedd52b1bcd4003cfd74c23ae7fac5d19d4915",
+      "eval/parity_shadow.py": "199c4e9d1729fb0d36ec624e29245911cf09bb796ff42f7fe77ca16c39b9ee74"
+    },
+    "policy_sha256": "391c5f1d480bb39f1aca72bb178eb353cc5691514700f0c7022d385e64871cf2",
+    "registration_sha256": "4d24109a04474c553039525d4850eac9ed718679ae8b56adfc4401ad9947d9a1"
+  },
+  "served_model": "google/gemma-4-E4B-it",
+  "dtype": "float16",
+  "attention_backend": "TRITON_ATTN",
+  "logprobs_mode": "raw_logprobs",
+  "launch_command": "/root/autodl-tmp/envs/serve-next/bin/python /root/autodl-tmp/envs/serve-next/bin/vllm serve /root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2 --served-model-name google/gemma-4-E4B-it --host 127.0.0.1 --port 8002 --dtype float16 --attention-backend TRITON_ATTN --tensor-parallel-size 1 --max-model-len 2048 --max-num-seqs 1 --gpu-memory-utilization 0.30 --model-impl transformers --seed 42 --enforce-eager --generation-config vllm --logprobs-mode raw_logprobs --max-logprobs 32 --no-enable-prefix-caching --limit-mm-per-prompt {\"image\":0,\"audio\":0,\"video\":0} --skip-mm-profiling --enable-lora --max-lora-rank 16 --lora-modules decision=/root/autodl-tmp/lite-omnijev/artifacts/training/p0-20261013T131751Z/adapter",
+  "engine_source_sha256": {
+    "lora_shrink_op.py": "f4551143d4c9244fb7a4ad6cdd5330f13e302332aca2c4eb97b8d84a84fe8918",
+    "lora_expand_op.py": "aced1e1480052cb401497313042a611d376f23746face87879e969f98856568d"
+  },
+  "observed_server_pid": 9031,
+  "attestation": "Operator checked live command, registered models, pinned paths and unchanged engine source; not remote cryptographic attestation."
+}

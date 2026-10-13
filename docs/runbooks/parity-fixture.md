@@ -40,9 +40,11 @@ rows, text-only samples, one question per row and pool `calibration`.
 ## GPU calibration diagnostics
 
 Use the training environment for `python -m scripts.parity_calibration` and the
-isolated vLLM environment for serving. `--fixture-dir` always reads only
-`calibration.jsonl`; it rejects train/dev/holdout samples even if the manifest
-hash matches. Confirmation inference is deliberately not exposed here.
+isolated vLLM environment for serving. The default cohort reads only `calibration.jsonl` and requires the calibration
+pool, even if a different-pool file has a matching hash. Explicit
+`--cohort confirmation` requires `--policy` and `--registration`, verifies the
+frozen policy/data/model hashes, and accepts only the registered `dev` fixture.
+Product holdout data is rejected.
 
 Run `hf-reference` for base and `--adapter` separately, followed by
 `compare-vllm` against an operator-attested server record, as in the P0 parity
@@ -63,3 +65,26 @@ expected-value deltas. Argmax ties are not credited as a unique correct joint
 answer. These are program-fixture results, not production calibration or a
 release verdict. Strict numerical comparison failures are preserved even when
 most labels agree. Follow with `scripts.parity_impact` for paired error slices.
+
+## Preregistered confirmation
+
+The frozen policy is `configs/candidates/parity-shadow-v1.json`, selected in
+commit `f9335aa` before any confirmation inference. The registration sidecar
+binds its SHA-256, both dataset files, fixture manifest, model revision, and
+independent LoRA hash. Commit `a9ec4ae` recorded the registration and tested
+runner before generating model predictions.
+
+Add `--cohort confirmation --dtype float16 --policy
+configs/candidates/parity-shadow-v1.json --registration
+configs/candidates/parity-shadow-v1.registration.json` to the normal HF and
+vLLM commands. Use fresh `confirmation-base-*` / `confirmation-adapter-*` report
+paths. Server records must also attest `attention_backend: TRITON_ATTN`.
+
+The strict numeric verdict remains in the top-level report;
+`shadow_assessment.outcome` separately reports `reject`, `review_required`, or
+`shadow_supported`. Every outcome retains `release_or_stage_acceptance: false`.
+The assessor recomputes truth metrics from predictions and dataset labels and
+retains joint-label/tie changes, all TV/Score tails, and conditional-answer
+changes. It never trusts a supplied accuracy summary or filters confirmation
+rows. A new policy after observing these predictions requires new independent
+data rather than relabeling this cohort as unobserved.
