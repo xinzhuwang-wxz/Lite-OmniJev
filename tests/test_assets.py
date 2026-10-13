@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
+
 from scripts.assets import main, model_directory, plan_assets, prepare_assets
 from scripts.check_tokens import main as token_main
 
@@ -172,10 +173,11 @@ def test_metadata_kind_cannot_disguise_weights(tmp_path, manifest):
 
 
 def make_tokenizer_fixture(tmp_path, *, missing_answer=None, supports_thinking=True):
-    from scripts.check_tokens import ANSWERS
     from tokenizers import Tokenizer
     from tokenizers.models import WordLevel
     from tokenizers.pre_tokenizers import WhitespaceSplit
+
+    from scripts.check_tokens import ANSWERS
 
     vocabulary = {"[UNK]": 0, **{token: index + 1 for index, token in enumerate(ANSWERS)}}
     if missing_answer:

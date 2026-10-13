@@ -7,8 +7,15 @@ from data.schema import Prefix, Question, answer_tokens
 
 
 class ChatTokenizer(Protocol):
-    def apply_chat_template(self, conversation: list[dict[str, str]], **kwargs: Any) -> Any: ...
-    def encode(self, text: str, **kwargs: Any) -> list[int]: ...
+    def apply_chat_template(
+        self,
+        messages: list[dict[str, Any]],
+        *,
+        tokenize: bool = False,
+        add_generation_prompt: bool = True,
+        enable_thinking: bool = False,
+    ) -> str | list[int]: ...
+    def encode(self, text: str, *, add_special_tokens: bool = False) -> list[int]: ...
 
 
 def render_payload(prefix: Prefix, question: Question) -> str:
