@@ -76,17 +76,31 @@
   "download": {
     "started": true,
     "local_bytes": 0,
-    "remote_bytes": 0,
-    "hashes": [],
+    "remote_bytes": 8581945667,
+    "hashes": [
+      {
+        "label": "SP Annotations",
+        "bytes": 1713866,
+        "sha256": "546be9fd4ed6aff9d5a76a5120a71738a010833fa71dc919d5b8ead8e65ad85d"
+      },
+      {
+        "label": "SP Images",
+        "bytes": 8580231801,
+        "sha256": "e7531f1598f6b85398f2f3c2e56ea0b565a314c6136c8fe82ff7cf9cc4dc4e98"
+      }
+    ],
     "budget_rule": "Files over 5 GB require an exact file/budget report to root before action. No sizes obtained because downloading currently triggers a new legal agreement.",
     "remote_report": "reports/docvqa-source-download-001.json",
-    "job_pid": 30716,
+    "job_pid": null,
     "expected_bytes": 8581945667,
     "remote_budget_bytes": 30000000000,
     "local_safety": "Local free11GiB, remote497GiB; binary files go straight to remote without cookies/profile access.",
-    "transport": "4 workers, 512MiB exact HTTP ranges, verified TLS/ETag/Content-Range; final full-file hash pending"
+    "transport": "Complete strict range recovery, final image SHA256 recorded and original partial prefix verified",
+    "download_exit_code": 0,
+    "cpu_job_pid": 35902,
+    "private_url_records_removed": true
   },
-  "status": "authorized_original_download_running",
+  "status": "original_source_download_hash_passed_cpu_validation_queued",
   "next_action": "Complete and hash original SP packages, retain test members opaque, inspect train/val only; no repeated agreement confirmation.",
   "sdk_agreement_review": {
     "browser_page": "https://developer.android.com/ndk/downloads",

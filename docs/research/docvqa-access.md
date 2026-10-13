@@ -58,3 +58,5 @@ Task 1为 **Single Page Document Visual Question Answering**，原V1.0标记2020
 Annotations已下载、exit0，SHA256 `546be9fd4ed6aff9d5a76a5120a71738a010833fa71dc919d5b8ead8e65ad85d`。zip元信息3成员，只有train/val被解析用于计数：train39463、val5349；test成员只记录文件元信息，未读取/解析其payload。Images在独立有界恢复任务中下载；partial不计通过，最终实际大小、SHA256及退出码以 `reports/docvqa-source-download-001.json` 为准。OCR/IMDB和扩展DocVQA任务未下载，图片不准入商业训练/发布。
 
 原先截图API未给路径的限制后来通过Chrome内置Capture截图落盘得到解决。正常条款裁剪与SDK modal图现存忽略目录 `artifacts/docvqa-agreement-evidence/`，无私密下载URL或账号信息；不入Git。下载已从原单流切换为4×512MiB有界Range恢复，复用1,063,796,736B原partial；最终每段206/Content-Range/ETag、按序合并、原partial前缀一致性及全文件SHA256全部通过前仍不标Images完成。
+
+两原包现已真实下载/hash通过，总8,581,945,667B。Images SHA256为 `e7531f1598f6b85398f2f3c2e56ea0b565a314c6136c8fe82ff7cf9cc4dc4e98`；16段全部完成、严格范围/ETag和旧partial前缀核对通过。私密URL临时记录已清理。CPU全CRC/成员安全/32图解码仍在共享heavy lock队列，不能将下载完成解释为CPU验收通过。最终阶段时延和有效吞吐见机器报告 `timing`，口径包含合并及hash，非纯传输峰值。

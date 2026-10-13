@@ -48,10 +48,15 @@
       "last_modified": "Fri, 01 Sep 2023 06:49:07 GMT",
       "etag": "\"1ff6bf279-604468e9adec0\"",
       "attempts": [],
-      "status": "downloading"
+      "status": "download_size_sha256_recorded",
+      "bytes": 8580231801,
+      "sha256": "e7531f1598f6b85398f2f3c2e56ea0b565a314c6136c8fe82ff7cf9cc4dc4e98",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/docvqa-sp-original/2023-09-01/spdocvqa_images.tar.gz",
+      "download_exit_code": 0,
+      "transport": "Strict 206/Content-Range/ETag parallel ranges; final order and original prefix verified"
     }
   ],
-  "status": "running_range_recovery",
+  "status": "download_size_sha256_recorded",
   "direct_attempt_preserved": {
     "status_before_stop": "running",
     "files": [
@@ -82,7 +87,12 @@
         "last_modified": "Fri, 01 Sep 2023 06:49:07 GMT",
         "etag": "\"1ff6bf279-604468e9adec0\"",
         "attempts": [],
-        "status": "downloading"
+        "status": "download_size_sha256_recorded",
+        "bytes": 8580231801,
+        "sha256": "e7531f1598f6b85398f2f3c2e56ea0b565a314c6136c8fe82ff7cf9cc4dc4e98",
+        "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/docvqa-sp-original/2023-09-01/spdocvqa_images.tar.gz",
+        "download_exit_code": 0,
+        "transport": "Strict 206/Content-Range/ETag parallel ranges; final order and original prefix verified"
       }
     ],
     "terminated_owned_supervisor_pid": 30084,
@@ -124,127 +134,276 @@
       "index": 2,
       "start": 1073741824,
       "end": 1610612735,
-      "status": "downloading",
+      "status": "range_size_sha256_recorded",
       "attempts": [
         {
           "number": 1,
           "requested_start": 1073741824,
-          "requested_end": 1610612735
+          "requested_end": 1610612735,
+          "exit_code": 0,
+          "elapsed_seconds": 325.392,
+          "bytes_after_attempt": 536870912
         }
-      ]
+      ],
+      "bytes": 536870912,
+      "sha256": "a5b97b64c79148d8c8608f962485df2adcabdf7c232b1599e425edbf0b072fcb",
+      "exit_code": 0
     },
     {
       "index": 3,
       "start": 1610612736,
       "end": 2147483647,
-      "status": "downloading",
+      "status": "range_size_sha256_recorded",
       "attempts": [
         {
           "number": 1,
           "requested_start": 1610612736,
-          "requested_end": 2147483647
+          "requested_end": 2147483647,
+          "exit_code": 0,
+          "elapsed_seconds": 392.008,
+          "bytes_after_attempt": 536870912
         }
-      ]
+      ],
+      "bytes": 536870912,
+      "sha256": "3edf38624bf6a8ba0499cd58530cdfa1e42305d7c3ae9d7ec3e8978a96828f97",
+      "exit_code": 0
     },
     {
       "index": 4,
       "start": 2147483648,
       "end": 2684354559,
-      "status": "downloading",
+      "status": "range_size_sha256_recorded",
       "attempts": [
         {
           "number": 1,
           "requested_start": 2147483648,
-          "requested_end": 2684354559
+          "requested_end": 2684354559,
+          "exit_code": 0,
+          "elapsed_seconds": 385.198,
+          "bytes_after_attempt": 536870912
         }
-      ]
+      ],
+      "bytes": 536870912,
+      "sha256": "d13590a44a756907fecc7e0884d5a759bf047310e614172cd88f79c90a3bef73",
+      "exit_code": 0
     },
     {
       "index": 5,
       "start": 2684354560,
       "end": 3221225471,
-      "status": "downloading",
+      "status": "range_size_sha256_recorded",
       "attempts": [
         {
           "number": 1,
           "requested_start": 2684354560,
-          "requested_end": 3221225471
+          "requested_end": 3221225471,
+          "exit_code": 0,
+          "elapsed_seconds": 422.432,
+          "bytes_after_attempt": 536870912
         }
-      ]
+      ],
+      "bytes": 536870912,
+      "sha256": "4187f53bd28aaff52d29f090e030a391934df936638aed036a60f96f5c704ae6",
+      "exit_code": 0
     },
     {
       "index": 6,
       "start": 3221225472,
       "end": 3758096383,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 3221225472,
+          "requested_end": 3758096383,
+          "exit_code": 0,
+          "elapsed_seconds": 419.403,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "a47774ce76ad3d282584c3c905e71a14e6208b26a00abf91450a442f53de0395",
+      "exit_code": 0
     },
     {
       "index": 7,
       "start": 3758096384,
       "end": 4294967295,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 3758096384,
+          "requested_end": 4294967295,
+          "exit_code": 0,
+          "elapsed_seconds": 396.762,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "b5a7026a96f07484c8ced8491350473caa5ed64aa950b7bb0edc50432fd3fae2",
+      "exit_code": 0
     },
     {
       "index": 8,
       "start": 4294967296,
       "end": 4831838207,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 4294967296,
+          "requested_end": 4831838207,
+          "exit_code": 0,
+          "elapsed_seconds": 343.49,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "75336ea933116f791f745ff4eebff06039d395e282660650139c06c0c5981c25",
+      "exit_code": 0
     },
     {
       "index": 9,
       "start": 4831838208,
       "end": 5368709119,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 4831838208,
+          "requested_end": 5368709119,
+          "exit_code": 0,
+          "elapsed_seconds": 379.004,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "6dbcaa02712fb7ebe542e3c45aef7a4afbdd33e5dc499d2dc31a1ad5787160b2",
+      "exit_code": 0
     },
     {
       "index": 10,
       "start": 5368709120,
       "end": 5905580031,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 5368709120,
+          "requested_end": 5905580031,
+          "exit_code": 0,
+          "elapsed_seconds": 409.284,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "0529ff0023e340beb3a8aac2e034de6c2a2df38a31a4733d9c0427fafb409138",
+      "exit_code": 0
     },
     {
       "index": 11,
       "start": 5905580032,
       "end": 6442450943,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 5905580032,
+          "requested_end": 6442450943,
+          "exit_code": 0,
+          "elapsed_seconds": 407.2,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "82b5e5db3f47eea6eccc9b4b5ee2990c45358b47a9987a8bfcf2af5259fb8abd",
+      "exit_code": 0
     },
     {
       "index": 12,
       "start": 6442450944,
       "end": 6979321855,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 6442450944,
+          "requested_end": 6979321855,
+          "exit_code": 0,
+          "elapsed_seconds": 329.852,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "75179591a5b36a50d83333327a7a29e43cdefcf0c474dd37ab16260efc5f7607",
+      "exit_code": 0
     },
     {
       "index": 13,
       "start": 6979321856,
       "end": 7516192767,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 6979321856,
+          "requested_end": 7516192767,
+          "exit_code": 0,
+          "elapsed_seconds": 371.747,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "5ef5c3638a16b475725d1f31c05bf22b152967cdcb6c2621b4be4a09638884ce",
+      "exit_code": 0
     },
     {
       "index": 14,
       "start": 7516192768,
       "end": 8053063679,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 7516192768,
+          "requested_end": 8053063679,
+          "exit_code": 0,
+          "elapsed_seconds": 254.857,
+          "bytes_after_attempt": 536870912
+        }
+      ],
+      "bytes": 536870912,
+      "sha256": "0e3081e1cd6da92c72d91e62f50549db7feeec4f5869ff30960b2a09efd59ed6",
+      "exit_code": 0
     },
     {
       "index": 15,
       "start": 8053063680,
       "end": 8580231800,
-      "status": "pending",
-      "attempts": []
+      "status": "range_size_sha256_recorded",
+      "attempts": [
+        {
+          "number": 1,
+          "requested_start": 8053063680,
+          "requested_end": 8580231800,
+          "exit_code": 0,
+          "elapsed_seconds": 202.328,
+          "bytes_after_attempt": 527168121
+        }
+      ],
+      "bytes": 527168121,
+      "sha256": "a230cec18abc2cf67cad6c995267245beb02e0d2b7877299116d1a2667ffa116",
+      "exit_code": 0
     }
   ],
   "recovery_started_utc": "2026-10-13T21:55:39.446923+00:00",
   "original_partial_bytes_reused": 1063796736,
+  "actual_bytes": 8581945667,
+  "within_budget": true,
+  "exit_code": 0,
+  "original_partial_prefix_verified": true,
+  "finished_utc": "2026-10-13T22:21:08.708650+00:00",
   "annotation_metadata": {
     "archive": "spdocvqa_qas.zip",
     "members": [
@@ -275,5 +434,20 @@
     "exit_code": 0
   },
   "upstream_sha256_available": false,
-  "hash_claim": "Actual file SHA256 recorded against exact server byte sizes/ETags; not a claim of matching an unpublished official SHA256."
+  "hash_claim": "Actual on-disk file SHA256 and exact server byte size/ETag snapshot; upstream did not publish SHA256.",
+  "cpu_media_validation": {
+    "status": "queued_on_shared_heavy_lock",
+    "job_pid": 35902,
+    "test_annotations_will_not_be_parsed": true
+  },
+  "private_url_manifests_removed": true,
+  "operational_source_cache": "artifacts/ops/docvqa-source-prep-001",
+  "issuer_pem_sha256": "cdc78c3185ce918c8e87f9b2559197d641288e564c5a8b789cd796abdea298d4",
+  "timing": {
+    "download_and_hash_wall_seconds": 1799.955,
+    "useful_source_bytes_per_download_and_hash_wall_second": 4767867.528,
+    "range_recovery_including_assembly_hash_seconds": 1529.262,
+    "useful_new_range_bytes_per_recovery_second": 4915074.334,
+    "scope": "Includes setup/recovery/assembly/hash; not a pure transport-only peak rate; excludes CPU CRC/decode validation."
+  }
 }
