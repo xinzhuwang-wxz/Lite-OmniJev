@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source": "ParticleMedia/RAGTruth",
+  "revision": "c103204b9ce28d6bbad859304bf30de72b8ed8fe",
+  "attempt": {
+    "command": [
+      "git",
+      "fetch",
+      "--depth",
+      "1",
+      "origin",
+      "c103204b9ce28d6bbad859304bf30de72b8ed8fe"
+    ],
+    "cwd": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/cand-RAGTruth",
+    "exit_code": 0,
+    "stderr": "From https://github.com/ParticleMedia/RAGTruth\n * branch            c103204b9ce28d6bbad859304bf30de72b8ed8fe -> FETCH_HEAD\n",
+    "elapsed_seconds": 6.0065341126173735
+  },
+  "budget_bytes": 50000000,
+  "official_tree_total_blob_bytes": 36899928,
+  "training_admitted": false,
+  "commercial_release_admitted": false,
+  "old_report_modified": false,
+  "checkout_exit_code": 0,
+  "head": "c103204b9ce28d6bbad859304bf30de72b8ed8fe",
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 1071,
+      "sha256": "b7fd7d6bdfe0cbba63c63a310914beb4a4acb8bf08da73849219f45385f5b244"
+    },
+    {
+      "path": "README.md",
+      "bytes": 21234,
+      "sha256": "3686178d505a38cb20a94827917369bcb9d0aa44cf5154d7ddbac740ee06628d"
+    },
+    {
+      "path": "baseline/dataset.py",
+      "bytes": 7067,
+      "sha256": "50821b7f3c5c4cc5d6e04c4aeeef52a3a91b9f200488e209fd21c68aa22907fe"
+    },
+    {
+      "path": "baseline/predict_and_evaluate.py",
+      "bytes": 3940,
+      "sha256": "b919186293346d2c8036e1883cd03ad6bb93027b15b51665b145c2671bac7e2d"
+    },
+    {
+      "path": "baseline/prepare_dataset.py",
+      "bytes": 2599,
+      "sha256": "8bee7514afdf200bf4bd5c84e5c4b751a76d86319b9198eee84e0f1b108cd4b2"
+    },
+    {
+      "path": "baseline/readme.md",
+      "bytes": 1540,
+      "sha256": "dd6dbcae39c50dd4f49473d86dfd658fbc859113b2de8cb47f906f9aae95c085"
+    },
+    {
+      "path": "baseline/train.py",
+      "bytes": 7177,
+      "sha256": "adcf3c3275b5642be46404fe7e78f5130c555eafad79a67b13b0c3dc2be9df27"
+    },
+    {
+      "path": "dataset/response.jsonl",
+      "bytes": 21458735,
+      "sha256": "e4c2e4ac24fff676d8984cc61c35d791612fadc58015335d97dd632375e18073"
+    },
+    {
+      "path": "dataset/source_info.jsonl",
+      "bytes": 15117971,
+      "sha256": "0dffc26ea9f3c1c3d7c7e8336b56ef1646e3cec876edffcca3c9c624d12d578b"
+    }
+  ],
+  "payload_bytes": 36621334,
+  "within_budget": true,
+  "status": "download_hash_verified",
+  "finished_utc": "2026-10-13T20:59:00.307239+00:00",
+  "checkout_total_file_bytes_including_git": 45872275,
+  "checkout_including_git_within_budget": true,
+  "official_tree_url": "https://api.github.com/repos/ParticleMedia/RAGTruth/git/trees/c103204b9ce28d6bbad859304bf30de72b8ed8fe?recursive=1",
+  "boundaries": [
+    "Public source byte hashing only; dataset content not displayed or parsed",
+    "No hidden answers, pickle execution, GPU, terms acceptance, paid services or publication",
+    "Original retry-002 failed_git evidence preserved",
+    "Research evaluation quarantine only; no commercial training or redistribution admission"
+  ]
+}
