@@ -7,7 +7,7 @@
 - SSH root@region-42.seetacloud.com:48926；ControlPath=/tmp/omnijev-ssh-%C；远端 /root/autodl-tmp/lite-omnijev。
 - 数据盘800GiB（750GiB付费），最近实际剩余637GiB。无卡cgroup只有2GiB RAM/0.5核；证据 reports/no-gpu-resource-limits.json，不能按宿主机free/os.cpu_count调度。
 - 网络：静默source /etc/network_turbo，HF_ENDPOINT=https://huggingface.co；凭据不输出、不进Git。
-- 重型CPU作业用 /tmp/omnijev-cpu-heavy.lock 串行；网络继续。llama.cpp编译树8791/8962/8963/8965/8968/12081/14088/14089/14090暂停保留，先找官方预编译。
+- 重型CPU作业用 /tmp/omnijev-cpu-heavy.lock 串行；网络继续。llama.cpp原暂停树已恢复并完成CPU构建，不再使用旧暂停PID判断当前状态。
 
 ## 票据与门槛
 - bootstrap:01–08、p0:01–07 done，reports/p0-engineering-acceptance.md；工程冒烟不代表质量达标。
@@ -32,7 +32,7 @@
 - Valen来源20文件约6.36GB全部哈希通过，隔离原料不准入训练；reports/valen-source-download-001.json。
 - 文本来源17文件30,666,690B本地上游/远端SHA通过；JevEmbed600k/Open-Jev113k仍是候选原料，不是样本族隔离/训练准入证据。
 - ScienceQA3parquet626MB、ChartQA875MB、AOKVQA已知可商用COCO3832图约660MB完成；reports/stage2-remote-completion-001.json。剩余已知许可研究专用图继续准备，未知许可不进池。
-- Decision Index公开0.3原镜像5,861文件2,388,936,304B，21固定Git+11HTTP；retry-002已启动PID17457，最新5,910文件3,013,644,091B。HoVer/jev-phishing Git已恢复，RouterBench0shot/5shot均已哈希隔离，后续HF在传；RAGTruth仍失败，其余HF/HTTP继续队列。HLE受控，pickle未加载，不冒称完整可重建。
+- Decision Index公开0.3原镜像5,861文件2,388,936,304B，21固定Git+11HTTP；retry-002已启动PID17457，最新5,910文件3,013,644,091B。HoVer/jev-phishing Git已恢复，RouterBench0shot/5shot均已哈希隔离，后续HF在传；RAGTruth仍失败，其余HF/HTTP继续队列。HLE已通过已授权浏览器下载并同步实例，274,276,147B与官方LFS SHA一致，reports/hle-source-download-001.json；仅评测、不再受账号阻塞；pickle未加载，不冒称完整可重建。
 - JevBench正确项目fstandhartinger/jevbench固定7625ec...，231公开决策/8文件清单及远端SHA通过；literal group148不等于教师195，精确聚合协议仍缺，不下载隐藏题/预测。
 
 ## 已完成的CPU证据
@@ -44,8 +44,8 @@
 - 远端曾exit137但oom/oom_kill=0，原因未证实；公开媒体获批复制1.94GB到Mac验证，无卡准备不以开GPU解决。
 
 ## 并行所有权
-- offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；官方llama.cpp预编译、Ollama1.427GB、quant独立完整依赖≤20GB、LiteRT/JDK准备；13直接轮子不算完整闭包。
-- whole_project_datasets：/tmp/lite-omnijev-project-datasets；阶段2剩余明确许可原料，≤10GB，复用已有图；GUIOdyssey实证官方公开ungated CC-BY4，旧账号blocked已纠正，另批准<=20GB选定episode原料准备，先精确清单，不下全187GB。
+- offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；d695652/fdafbc2已整合：Ollama官方SHA/解包/版本通过；llama.cpp原树锁内编译rc0、4二进制hash通过；quant完整85wheel/2.7GiB及no-index独立安装/导入通过，无serve-next路径；GCC13缓存44deb/111MiB已到位，未改宿主机。Android NDK/移动构建仍未就绪，不因此开GPU。
+- whole_project_datasets：/tmp/lite-omnijev-project-datasets；fac39dd/e1e1a1f已整合：阶段2剩余19860张COCO已知许可图3,344,218,752B完成，0 missing/bad-size，受限池隔离，总阶段2 5.506GB；GUI官方all_annot+4split共3.96MB哈希通过，1169个app_split:test仅评测候选，截图92.64GB multipart超20GB内部切片配额，媒体仍缺，需选择性恢复或明确磁盘计划；DocVQA官方RRC登录/Download条款仍缺。
 - video_eval_sources：/tmp/lite-omnijev-video-eval；Perception004外部有界续传；Charades缺12视频选择性恢复已验收，bae5338合入58588c6，原3条窗口越界保留；CPU恢复切片20定向测试/Ruff/mypy/build通过。
 - decision_index_assets：/tmp/lite-omnijev-decision-index；e99910a已合入8d8f164、47914bd合入d2e7512；retry队列17457补非门禁网络失败来源，≤10GB，不读pickle、不绕过HLE。
 - mdc_transport_fix：MDC闭环已整合并独立复核，过期worktree已清理；同一executor的独立非阻断offline-prep:05已交付合入746c534，主树273测试全部通过，不升级远端GPU环境。
@@ -53,13 +53,13 @@
 - speech_assets已交付；所有切片主会话统一整合/关票。root独占主树、票据、STATUS；子代理不得写这些文件。
 
 ## 待我决策
-- 当前不需要开卡。已向用户一次发出CommonVoice官方MDC与HLE登录/条款授权请求；不替用户接受，不用镜像绕过。
-- CommonVoice所选544,267,165B官方English CC0资产：cmu5nqn1h00vwmi07b4dbk085；凭据待合法授权后仅放远端 /root/.config/lite-omnijev/mdc.key 0600，不发聊天/Git/日志。下载器DNS pin已合入faaf0f8并独立复核通过；资产直连禁代理，实际MDC访问仍待授权验证。
+- 当前不需要开卡。用户已明确确认CommonVoice官方MDC与HLE均已授权/登录；HLE真实浏览器已显示“You have been granted access”。登录授权与远端下载接入分开核验，不重新要求接受已完成条款，不用镜像绕过。
+- CommonVoice所选544,267,165B官方English CC0资产：cmu5nqn1h00vwmi07b4dbk085；用户提供的MDC key已仅存远端 /root/.config/lite-omnijev/mdc.key 0600，不回显/不进Git/日志。下载器DNS pin已合入faaf0f8并独立复核通过；资产直连禁代理，实际MDC标准curl POST已返回200并完成544,267,165B下载、官方SHA通过；urllib403原因未定，不能误判为条款未授权。用户指定本地同SHA副本已按明确指令删除，reports/commonvoice-user-file-move-001.json；其他本地文件未删。
 - 门槛改动、付费/开关卡、生产、删数据、方向/预算改变仍用户决定；真实隔离身份/人工资源后续需安排。其余下载继续。
 
 ## 下一步与验证
 1. 完成在途模型/数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。最近汇总 reports/offline-prep-progress-20261014.json（03:54本地），ready_to_open_gpu=false，不能替代各最终报告。
-2. MDC原4项及DNS pin发现全部关闭，reports/mdc-download-security-closure.json；授权后安全接入，不对外声称凭据下载已实跑。
+2. MDC/HLE授权下载均已真实完成并哈希核验；reports/mdc-commonvoice-download-002.json、reports/hle-source-download-001.json。凭据只放私密文件，API请求用官方curl流程；不公开签名URL/密钥、不准入训练。
 3. CLEVRER/GUI原未知状态已由官方证据解除，执行新批准的限定镜像；LLaVA全量1.28TB仍禁止，5k所选原媒体权利需逐项确认；AudioCaps原音频需官方表单。
 4. 完成全项目offline-prep:04审计，未来LoRA/量化/校准产物仅列待生成；全齐备前不开GPU。
 - 最近完整批次pytest9.1.1下273测试无skip、Ruff/format167文件、mypy44源文件、wheel/sdist通过（显式专用媒体runtime）；MDC独立安全32测试通过/1 torch测试按范围排除；新增STAR恢复20定向测试、169文件格式、mypy45/build通过。

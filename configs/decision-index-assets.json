@@ -95,9 +95,12 @@
       "gated_hle": {
         "repo_id": "cais/hle",
         "revision": "5a81a4c7271a2a2a312b9a690f0c2fde837e4c29",
-        "status": "account_or_terms_gap",
+        "status": "downloaded_hash_verified_evaluation_only",
         "file": "data/test-00000-of-00001.parquet",
-        "bytes": 274276147
+        "bytes": 274276147,
+        "evidence": "reports/hle-source-download-001.json",
+        "training_admitted": false,
+        "redistribution_allowed": false
       }
     }
   },
