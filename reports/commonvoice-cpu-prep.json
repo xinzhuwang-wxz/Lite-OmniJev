@@ -1,0 +1,181 @@
+{
+  "status": "commonvoice_archive_cpu_ready",
+  "exit_code": 0,
+  "started_at_utc": "2026-10-13T21:08:47.551695+00:00",
+  "python_version": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "script_sha256": "b0cc5b95bcc57822f48bd01c75793c2c806d0da1296b6acfc5bbd08c575c47d0",
+  "cpu_lock": "/tmp/omnijev-cpu-heavy.lock",
+  "thread_limits": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "training_admitted": false,
+  "source_only": true,
+  "gpu_seconds": 0,
+  "network_used": false,
+  "archive": {
+    "bytes": 544267165,
+    "sha256": "390b5a54c9afe0cc01da039ad206248f85682f247dd2b27d4cc0ab9a68e860b6",
+    "source": "Mozilla Data Collective Common Voice Spontaneous Speech 5.0 English"
+  },
+  "safety": {
+    "members": 8709,
+    "files": 8707,
+    "directories": 2,
+    "expanded_bytes": 563454954,
+    "audio_members": 8703,
+    "metadata_members": 2,
+    "suffix_counts": {
+      ".json": 1,
+      ".md": 1,
+      ".mp3": 8703,
+      ".tsv": 2
+    },
+    "top_level_counts": {
+      "sps-corpus-5.0-2026-09-11-en": 8707
+    },
+    "largest_member_bytes": 4444245,
+    "largest_member_name_sha256": "301c34ecf39840220b53885e5eff02626ec1ee885cc99c4ae2035193644c2744",
+    "limits": {
+      "max_members": 500000,
+      "max_member_bytes": 134217728,
+      "max_expanded_bytes": 2147483648
+    },
+    "scope": "all tar members streamed and validated before selected extraction",
+    "rejected_types": "absolute/up-level paths, links, special files, duplicate canonical names, oversize members, oversize total expansion"
+  },
+  "metadata": {
+    "schema_files_dir": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/commonvoice-spontaneous-5-en/cpu-prep-run/metadata-schema",
+    "files": 2,
+    "total_rows": 8836,
+    "schemas": [
+      {
+        "member_sha256": "a8dc75350eb6f27ed45576510af75c2f4501145a42e9ba7bd26a207a74d21ef5",
+        "columns": [
+          "redacted:65904271c7f48ee6",
+          "audio_id",
+          "audio_file",
+          "duration_ms",
+          "prompt_id",
+          "prompt",
+          "redacted:a9cae98aac1e8b11",
+          "votes",
+          "redacted:013f54400c82da08",
+          "redacted:de9feaea8b66f7ba",
+          "accents",
+          "redacted:cb7bf562420b82e9",
+          "language",
+          "prompt_upvotes",
+          "prompt_reports",
+          "is_edited",
+          "split",
+          "char_per_sec",
+          "quality_tags"
+        ],
+        "redacted_column_count": 5,
+        "redacted_column_name_sha256": [
+          "013f54400c82da08037759ada907a8b864e97de81c088a182062c4b5622fd2ab",
+          "65904271c7f48ee638a684f55f76a92a1c7ecc7a0c56e5c0a1b83e2510efcb4d",
+          "de9feaea8b66f7ba74845ee5fc156cdd22e8e4533de13ca76d71ac495da358ff",
+          "a9cae98aac1e8b11a4669d9556b4abfb8af4efc7ff86e6c884523fd17073e19d",
+          "cb7bf562420b82e97ee182f019c22e010e50b29334c036a8c23b8d7e617ed23c"
+        ],
+        "row_count": 5898,
+        "bytes": 1369972
+      },
+      {
+        "member_sha256": "d97eea1612cdbfe9a3fd3ce1068b920dff211a4462da1d7d0d7c74852d981486",
+        "columns": [
+          "redacted:65904271c7f48ee6",
+          "audio_id",
+          "audio_file",
+          "duration_ms",
+          "prompt_id",
+          "prompt",
+          "reason",
+          "comment",
+          "language"
+        ],
+        "redacted_column_count": 1,
+        "redacted_column_name_sha256": [
+          "65904271c7f48ee638a684f55f76a92a1c7ecc7a0c56e5c0a1b83e2510efcb4d"
+        ],
+        "row_count": 2938,
+        "bytes": 480574
+      }
+    ],
+    "raw_transcripts_or_speaker_fields_in_report": false
+  },
+  "audio_decode": {
+    "sample_limit": 32,
+    "selected": 32,
+    "selection": "sorted audio member names, fixed stride, numeric temp filenames",
+    "selected_member_name_sha256": [
+      "9d397d6dc8e6553a3a9934dcdd3d43c02d1b2fadba06cb812c2dfafa61c52a40",
+      "f0e8ced6be1f8f117530c40f447c341add1d39f031dea30fd2fb163e8f928a56",
+      "8dc98df403d60f10042a4b3241c6fbcf4b4ce33e541c614eee5ffc79daaf148a",
+      "452b63730b83ce555cc641a0bb47f23b959292681a6bbf6d61a4b5f2d0cef620",
+      "847ec1f9182b73333673d72de0cb9cabf2e2135e05284ef0197d6a29a60ae056",
+      "624a8bf975058a4efab59f254e488346a3f80a3057026fa55fc6f13f05623bcb",
+      "d9bfb3a297d806b64e80d3cf63576c92cd081e75b4ee9bd8a2f79956552eab7d",
+      "21f705a5c37ac30df579ea8651890fd7f8b35934f1e4e2f9e36115e63e37ec4c",
+      "19bb925278ace0ac6f2c4ff667f00c50454f85da7621cff49a57e98556f7f0f1",
+      "e882f0c3871f7050d91b8a9c16f4e1c15c8b245fad548abc78cb716bd52e5253",
+      "e1ab302fec2faa07d3a488f3a35fd8b016e3c9e1fe72ac62214b7c829bf628da",
+      "4d08e8c0092b1ecc179b87f57566c768c70e9c73cf6a2a5a85cfde33312b0a62",
+      "da8033fda0fcb4011ff9823b1887f97dda1250e362cda1c1575876ccfa4fd300",
+      "4b3bf36a9d40b77405e959a044fc4b174eb2975ce8fd33fe5b5f7832cee60171",
+      "0ace58b7cac595525911f5b08dbc0c12abdb1e748913dc36f405bf045b6cf954",
+      "b994cc89a9e45910521537dfec14da10fae69a7c430ba255e261807b9894edcc",
+      "9f698ae9a513c3bee2994dc025c1a5de9cd02449aaa40a533488ca4b5f32eb23",
+      "aea20be8a92fa3d09fe83f33cc709fe8419ac6113b61c43f54686418af152f94",
+      "3b14aa6b137843624b88916b154e95a1a358e2aa65d6cb52c9e26f0ec4cdcdb2",
+      "3e9dc4e94c0e7d01d99e7b58b0006f7bf48eb2e87baf3d6ea09d9f2a813d166e",
+      "c5bfa7ab5eec2bf0b3f5240d5f9aab5a4acaf769747a0b8ae225c6b1cf03ae47",
+      "19edc5dbf739d019fba5a617aa2cd36bd6b55f1b492c18fda24817d01ad5677e",
+      "42dcdb227ba9b6d9f74616164159c01e53c98272ea232b403ea926142c07ef25",
+      "d679ad851c4f343528b6040097181bfd5b8dae59762e0360c1ec17fb81876973",
+      "0befb69e362af0023cd7c5222ef25f29b10bf5c497cb4cc265bf2c2ee4f25f6f",
+      "42dfd7dc3ba98c5c607f409a1d800a4bdce07451d873aa80bf7a1b8d3042bffd",
+      "4a56085ad5c4aa4dc98844bb5b064446b95723c22588e9cd7e6a47362226a1dc",
+      "071eef41de5fafa03f5531511fb1637689382696cd6051fefd4657a601a2c0e6",
+      "1b326432dade014ffbc9c7d06bd39a50e7f65db97730b36f62ce9005614ebd4a",
+      "01d95b409edc27f756e237c8e67518d7bb0581b7d8f1eacaffdeffeb8e16abb8",
+      "21879885a457de337d2174b6a6b9acc69957ab0286962ca864ec2d689b748133",
+      "4fa43bef9b5164a20d7ff08408766a43ecb03053eea61f11c8523bf3ced79ff4"
+    ],
+    "decoded": 32,
+    "codecs": {
+      "mp3": 32
+    },
+    "sample_rates": {
+      "32000": 32
+    },
+    "channels": {
+      "1": 32
+    },
+    "duration_seconds": {
+      "min": 0.36,
+      "max": 28.98,
+      "total": 280.62
+    },
+    "bytes": {
+      "min": 2306,
+      "max": 173925,
+      "total": 1685556
+    },
+    "decode_scope": "complete selected audio streams through EOF using ffmpeg -f null"
+  },
+  "credentials_read": false,
+  "elapsed_seconds": 31.3063437435776,
+  "sample_accounting_note": "audio_members is a physical archive media-file count. The current MDC datasheet row count is 5898 clips; this report is source inventory only and must not treat physical file count as independent training samples. Training requires later audio_id and source-family deduplication plus split isolation.",
+  "post_run_note": {
+    "added_after_successful_exit0": true,
+    "reason": "Clarifies that 8703 physical audio members are not independent samples; no raw content or PII added.",
+    "current_script_sha256": "30ea604cf9295c96f849e19273eeb05c6b9704eb1abd31307eda9ef554ca9cb0"
+  }
+}
