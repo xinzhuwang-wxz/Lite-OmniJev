@@ -2,23 +2,24 @@
 
 This module intentionally does not import or execute the upstream
 ``jev_omni.py`` file. It preserves the upstream prompt, decoder-capture/head
-contract metadata, and processor call shape. Full teacher forward integration
-is still unwritten in this slice and requires separate implementation plus GPU
-evidence.
+contract metadata, processor call shape, and forward probability semantics.
+The real 24GB backbone loader is gated on CUDA and local safetensors only;
+CPU tests use tiny fake models to verify the project-owned forward boundary.
 """
 
 from __future__ import annotations
 
 import gc
+import inspect
 import json
 import tempfile
 import wave
 from collections.abc import Iterator, Mapping, Sequence
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from train.checkpoint import file_sha256
 from train.teacher_head import (
@@ -32,9 +33,7 @@ from train.teacher_media import SAMPLE_RATE, prepared_teacher_audio
 
 SCHEMA_VERSION = 1
 OFFICIAL_JEV_OMNI_SHA256 = "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0"
-DEFAULT_SOURCE_DIR = Path(
-    "artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917"
-)
+DEFAULT_SOURCE_DIR = Path("artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917")
 DEFAULT_SAFE_HEAD = Path(
     "artifacts/teacher/jev-omni/5addda86ddee081a68fb067477ea100c221b8917/head.safetensors"
 )
@@ -63,6 +62,22 @@ class PreparedTeacherInput:
 class ProcessorBuildResult:
     inputs: Mapping[str, Any]
     summary: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class TeacherForwardResult:
+    prediction: str
+    prediction_index: int
+    confidence: float
+    probabilities: dict[str, float]
+
+
+class TeacherForwardBlocked(RuntimeError):
+    """Raised when the real teacher loader is intentionally blocked."""
+
+    def __init__(self, message: str, report: Mapping[str, Any]):
+        super().__init__(message)
+        self.report = dict(report)
 
 
 def official_teacher_prompt(state: str, question: str, options: Sequence[str]) -> str:
@@ -128,7 +143,7 @@ def _video_frames(path: Path, *, count: int = 16) -> list[Any]:
 
 def _read_prepared_pcm16_wav(path: Path) -> Any:
     """Return the exact prepared mono16k PCM as float32 waveform samples."""
-    import numpy as np  # type: ignore[import-not-found]
+    import numpy as np
 
     with wave.open(str(path), "rb") as stream:
         if (
@@ -255,6 +270,319 @@ def load_teacher_processor(source_dir: Path) -> Any:
         str(source_dir),
         local_files_only=True,
         trust_remote_code=False,
+    )
+
+
+try:
+    _TORCH_NN_MODULE = __import__("torch").nn.Module
+except Exception:  # pragma: no cover - lets non-training envs import this module
+    _TORCH_NN_MODULE = object
+
+
+def _torch() -> Any:
+    return __import__("torch")
+
+
+def _safetensors_torch() -> Any:
+    return __import__("safetensors.torch", fromlist=["load_file"])
+
+
+def _teacher_count_tensor(option_count: int, *, device: Any) -> Any:
+    return _torch().tensor([option_count], device=device)
+
+
+class TeacherDecisionHead(_TORCH_NN_MODULE):  # type: ignore[misc, valid-type]
+    """Converted Jev-Omni _Head256 with safetensors-only loading."""
+
+    def __init__(self, hidden_size: int, output_classes: int = 256) -> None:
+        super().__init__()
+        torch = _torch()
+        self.register_buffer("mu", torch.zeros(1, hidden_size, dtype=torch.float32))
+        self.register_buffer("sd", torch.ones(1, hidden_size, dtype=torch.float32))
+        self.linear = torch.nn.Linear(hidden_size, output_classes, dtype=torch.float32)
+
+    def forward(self, features: Any, counts: Any) -> Any:
+        torch = _torch()
+        z = self.linear((features.float() - self.mu) / self.sd)
+        mask = torch.arange(z.shape[-1], device=z.device)[None] >= counts[:, None]
+        return z.masked_fill(mask, -1e30)
+
+
+def load_safe_teacher_head_module(
+    head_path: Path,
+    spec_path: Path,
+    *,
+    expected_sha256: str,
+    device: str = "cpu",
+) -> TeacherDecisionHead:
+    """Load the converted decision head without torch.load or upstream code."""
+    report = inspect_safe_teacher_head(head_path, spec_path, expected_sha256=expected_sha256)
+    tensors = _safetensors_torch().load_file(str(head_path.resolve(strict=True)), device=device)
+    hidden_shape = report["tensors"].get("mu", {}).get("shape")
+    if not isinstance(hidden_shape, list) or len(hidden_shape) != 2 or hidden_shape[0] != 1:
+        raise ValueError("teacher head mu tensor must have shape [1, hidden]")
+    linear_bias_shape = report["tensors"].get("linear.bias", {}).get("shape")
+    if (
+        not isinstance(linear_bias_shape, list)
+        or len(linear_bias_shape) != 1
+        or int(linear_bias_shape[0]) < 2
+    ):
+        raise ValueError("teacher head linear.bias tensor must define at least two outputs")
+    head = TeacherDecisionHead(int(hidden_shape[1]), int(linear_bias_shape[0])).to(device).eval()
+    head.load_state_dict(tensors)
+    return cast(TeacherDecisionHead, head)
+
+
+def find_teacher_decoder(model: Any) -> tuple[str, Any]:
+    """Locate the official Gemma4 text backbone module used for hidden capture."""
+    for path in ("model.language_model", "language_model.model", "model.text_model", "model"):
+        node = model
+        for part in path.split("."):
+            node = getattr(node, part, None)
+            if node is None:
+                break
+        if node is not None and hasattr(node, "layers") and hasattr(node, "register_forward_hook"):
+            return path, node
+    raise RuntimeError("Could not locate the Gemma text backbone")
+
+
+def _move_inputs_to_device(inputs: Mapping[str, Any], *, device: str) -> dict[str, Any]:
+    torch = _torch()
+    moved: dict[str, Any] = {}
+    for key, value in inputs.items():
+        to = getattr(value, "to", None)
+        if to is None:
+            moved[key] = value
+        elif bool(torch.is_tensor(value)) and torch.is_floating_point(value) and device == "cuda":
+            moved[key] = value.to(device, dtype=torch.bfloat16)
+        else:
+            moved[key] = value.to(device)
+    return moved
+
+
+class JevOmniTeacherForward:
+    """Project-owned Jev-Omni forward adapter with explicit hook cleanup."""
+
+    def __init__(
+        self,
+        *,
+        model: Any,
+        head: TeacherDecisionHead,
+        processor: Any,
+        decoder: Any,
+        device: str,
+    ) -> None:
+        self.model = model
+        self.head = head
+        self.processor = processor
+        self.device = device
+        self._capture: dict[str, Any] = {}
+        self._hook = decoder.register_forward_hook(self._capture_decoder_hidden)
+        self._extra = (
+            {"logits_to_keep": 1}
+            if "logits_to_keep" in inspect.signature(model.forward).parameters
+            else {}
+        )
+
+    def _capture_decoder_hidden(self, _module: Any, _args: Any, output: Any) -> None:
+        hidden = output.last_hidden_state if hasattr(output, "last_hidden_state") else output[0]
+        self._capture["hidden"] = hidden[:, -1].float()
+
+    def close(self) -> None:
+        if self._hook is not None:
+            self._hook.remove()
+            self._hook = None
+        self._capture.clear()
+
+    def __enter__(self) -> JevOmniTeacherForward:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.close()
+
+    def predict_prepared(
+        self,
+        prepared: PreparedTeacherInput,
+        inputs: Mapping[str, Any],
+        options: Sequence[str],
+    ) -> TeacherForwardResult:
+        checked = validate_teacher_options(options)
+        if len(checked) != prepared.option_count:
+            raise ValueError("teacher options changed after input preparation")
+        torch = _torch()
+        self._capture.clear()
+        try:
+            with torch.inference_mode():
+                moved = _move_inputs_to_device(inputs, device=self.device)
+                autocast = (
+                    torch.autocast("cuda", dtype=torch.bfloat16)
+                    if self.device == "cuda"
+                    else nullcontext()
+                )
+                with autocast:
+                    self.model(**moved, use_cache=False, **self._extra)
+                    hidden = self._capture.get("hidden")
+                    if hidden is None:
+                        raise RuntimeError("teacher decoder hidden capture was empty")
+                    logits = self.head(
+                        hidden, _teacher_count_tensor(len(checked), device=hidden.device)
+                    )
+                    probabilities = logits[0, : len(checked)].softmax(-1)
+            values = [float(item) for item in probabilities.float().cpu().tolist()]
+            best = max(range(len(values)), key=values.__getitem__)
+            return TeacherForwardResult(
+                prediction=checked[best],
+                prediction_index=best,
+                confidence=values[best],
+                probabilities=dict(zip(checked, values, strict=True)),
+            )
+        finally:
+            self._capture.clear()
+
+    def predict(
+        self,
+        *,
+        state: str,
+        question: str,
+        options: Sequence[str],
+        media: Path | None = None,
+        modality: str = "text",
+        video_frames: int = 16,
+        temp_parent: Path | None = None,
+        ffmpeg_binary: str = "ffmpeg",
+    ) -> TeacherForwardResult:
+        with prepared_teacher_input(
+            state=state,
+            question=question,
+            options=options,
+            modality=modality,
+            media=media,
+            video_frames=video_frames,
+            temp_parent=temp_parent,
+            ffmpeg_binary=ffmpeg_binary,
+        ) as prepared:
+            inputs = build_teacher_processor_inputs(self.processor, prepared).inputs
+            return self.predict_prepared(prepared, inputs, options)
+
+
+def _local_model_files_present(source_dir: Path) -> dict[str, Any]:
+    index = source_dir / "model.safetensors.index.json"
+    single = source_dir / "model.safetensors"
+    shards = sorted(source_dir.glob("model-*.safetensors"))
+    present = {
+        "model.safetensors": single.is_file(),
+        "model.safetensors.index.json": index.is_file(),
+        "model_shard_count": len(shards),
+    }
+    if not single.is_file() and not (index.is_file() and shards):
+        raise ValueError("teacher model safetensors manifest/shards are missing")
+    return present
+
+
+def teacher_forward_readiness_report(
+    *,
+    source_dir: Path = DEFAULT_SOURCE_DIR,
+    head_path: Path = DEFAULT_SAFE_HEAD,
+    spec_path: Path = DEFAULT_HEAD_SPEC,
+    conversion_report: Path = DEFAULT_HEAD_CONVERSION_REPORT,
+    expected_head_sha256: str | None = None,
+) -> dict[str, Any]:
+    started = datetime.now(UTC)
+    report: dict[str, Any] = {
+        "schema_version": SCHEMA_VERSION,
+        "status": "running",
+        "started_utc": started.isoformat(),
+        "model_forward_run": False,
+        "model_backbone_loaded": False,
+        "student_head_used": False,
+        "trust_remote_code": False,
+        "local_files_only": True,
+        "use_safetensors_for_model": True,
+        "use_safetensors_for_head": True,
+        "upstream_custom_code_executed": False,
+        "official_model_class": "Gemma4UnifiedForConditionalGeneration",
+        "loader_stage": "pre_from_pretrained",
+    }
+    try:
+        expected_head_sha256 = expected_head_sha256 or expected_head_sha256_from_report(
+            conversion_report
+        )
+        report["source"] = validate_teacher_source_tree(
+            source_dir, expected_jev_omni_sha256=OFFICIAL_JEV_OMNI_SHA256
+        )
+        report["head"] = inspect_safe_teacher_head(
+            head_path, spec_path, expected_sha256=expected_head_sha256
+        )
+        torch = _torch()
+        report["cuda_available"] = bool(torch.cuda.is_available())
+        if not report["cuda_available"]:
+            raise TeacherForwardBlocked(
+                "teacher forward loader requires CUDA before from_pretrained", report
+            )
+        report["model_files"] = _local_model_files_present(source_dir.resolve(strict=True))
+        report["status"] = "ready_for_explicit_cuda_load"
+        report["exit_code"] = 0
+    except TeacherForwardBlocked as exc:
+        report.update(exc.report)
+        report["status"] = "blocked"
+        report["exit_code"] = 1
+        report["blocker"] = type(exc).__name__
+        report["error"] = str(exc)
+    except Exception as exc:
+        report["status"] = "blocked"
+        report["exit_code"] = 1
+        report["blocker"] = type(exc).__name__
+        report["error"] = str(exc)
+    finished = datetime.now(UTC)
+    report["finished_utc"] = finished.isoformat()
+    report["elapsed_seconds"] = round((finished - started).total_seconds(), 3)
+    return report
+
+
+def load_teacher_forward_bundle(
+    *,
+    source_dir: Path = DEFAULT_SOURCE_DIR,
+    head_path: Path = DEFAULT_SAFE_HEAD,
+    spec_path: Path = DEFAULT_HEAD_SPEC,
+    conversion_report: Path = DEFAULT_HEAD_CONVERSION_REPORT,
+    expected_head_sha256: str | None = None,
+    device: str = "cuda",
+) -> JevOmniTeacherForward:
+    """Load the real teacher only from local pinned safetensors on CUDA."""
+    if device != "cuda":
+        raise ValueError("teacher forward loader only admits the CUDA device")
+    readiness = teacher_forward_readiness_report(
+        source_dir=source_dir,
+        head_path=head_path,
+        spec_path=spec_path,
+        conversion_report=conversion_report,
+        expected_head_sha256=expected_head_sha256,
+    )
+    if readiness.get("status") != "ready_for_explicit_cuda_load":
+        raise TeacherForwardBlocked(
+            str(readiness.get("error", "teacher forward blocked")), readiness
+        )
+    transformers = __import__("transformers", fromlist=["Gemma4UnifiedForConditionalGeneration"])
+    model_class = transformers.Gemma4UnifiedForConditionalGeneration
+    torch = _torch()
+    model = model_class.from_pretrained(
+        str(source_dir.resolve(strict=True)),
+        local_files_only=True,
+        trust_remote_code=False,
+        use_safetensors=True,
+        dtype=torch.bfloat16,
+        device_map=device,
+    ).eval()
+    expected_head_sha256 = expected_head_sha256 or expected_head_sha256_from_report(
+        conversion_report
+    )
+    head = load_safe_teacher_head_module(
+        head_path, spec_path, expected_sha256=expected_head_sha256, device=device
+    )
+    processor = load_teacher_processor(source_dir)
+    _decoder_path, decoder = find_teacher_decoder(model)
+    return JevOmniTeacherForward(
+        model=model, head=head, processor=processor, decoder=decoder, device=device
     )
 
 
@@ -433,7 +761,9 @@ def run_teacher_preflight(
         expected_head_sha256 = expected_head_sha256 or expected_head_sha256_from_report(
             conversion_report
         )
-        report["source"] = validate_teacher_source_tree(source_dir)
+        report["source"] = validate_teacher_source_tree(
+            source_dir, expected_jev_omni_sha256=OFFICIAL_JEV_OMNI_SHA256
+        )
         report["head"] = inspect_safe_teacher_head(
             head_path, spec_path, expected_sha256=expected_head_sha256
         )
@@ -447,7 +777,9 @@ def run_teacher_preflight(
                 ffmpeg_binary=ffmpeg_binary,
             ),
         }
-        report["forward_integration_status"] = "missing_unwritten_in_this_slice"
+        report["forward_integration_status"] = (
+            "project_owned_forward_entry_ready; real 24GB load remains CUDA gated"
+        )
         report["status"] = "passed"
         report["exit_code"] = 0
     except Exception as exc:

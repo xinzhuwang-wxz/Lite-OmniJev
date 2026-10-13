@@ -15,13 +15,18 @@ import pytest
 
 from train.teacher_inference import (
     OFFICIAL_JEV_OMNI_SHA256,
+    JevOmniTeacherForward,
+    TeacherDecisionHead,
     _video_frames,
     build_teacher_processor_inputs,
     expected_head_sha256_from_report,
+    find_teacher_decoder,
     inspect_safe_teacher_head,
+    load_safe_teacher_head_module,
     official_teacher_prompt,
     prepared_teacher_input,
     run_teacher_preflight,
+    teacher_forward_readiness_report,
     validate_teacher_options,
     validate_teacher_source_tree,
 )
@@ -283,3 +288,206 @@ def test_preflight_report_blocks_without_leaking_payloads(tmp_path: Path, monkey
     assert report["gpu_used"] is False
     assert report["model_backbone_loaded"] is False
     assert "Which option" not in json.dumps(report)
+
+
+class FakeBackbone:
+    def __init__(self, hidden: object) -> None:
+        self.layers = [object()]
+        self.hidden = hidden
+        self.hook = None
+        self.remove_count = 0
+
+    def register_forward_hook(self, hook):
+        self.hook = hook
+        owner = self
+
+        class Handle:
+            def remove(self) -> None:
+                owner.remove_count += 1
+                owner.hook = None
+
+        return Handle()
+
+    def __call__(self, **_kwargs: object):
+        output = types.SimpleNamespace(last_hidden_state=self.hidden)
+        if self.hook is not None:
+            self.hook(self, (), output)
+        return output
+
+
+class FakeForwardModel:
+    def __init__(self, hidden: object) -> None:
+        self.model = FakeBackbone(hidden)
+        self.calls: list[dict[str, object]] = []
+
+    def forward(self, input_ids: object, *, use_cache: bool = True, logits_to_keep: int = 0):
+        self.calls.append(
+            {
+                "input_ids": input_ids,
+                "use_cache": use_cache,
+                "logits_to_keep": logits_to_keep,
+            }
+        )
+        return self.model(input_ids=input_ids)
+
+    __call__ = forward
+
+
+def test_forward_adapter_captures_decoder_hidden_and_clears_hook_state() -> None:
+    torch = pytest.importorskip("torch")
+    hidden = torch.tensor([[[99.0, 99.0], [2.0, 3.0]]])
+    model = FakeForwardModel(hidden)
+    decoder_path, decoder = find_teacher_decoder(model)
+    assert decoder_path == "model"
+    head = TeacherDecisionHead(hidden_size=2)
+    with torch.no_grad():
+        head.mu.zero_()
+        head.sd.fill_(1.0)
+        head.linear.weight.zero_()
+        head.linear.bias.zero_()
+        head.linear.weight[0] = torch.tensor([1.0, 0.0])
+        head.linear.weight[1] = torch.tensor([0.0, 1.0])
+        head.linear.weight[2] = torch.tensor([-5.0, -5.0])
+    processor = RecordingProcessor()
+    adapter = JevOmniTeacherForward(
+        model=model, head=head, processor=processor, decoder=decoder, device="cpu"
+    )
+    prepared = types.SimpleNamespace(modality="text", option_count=2)
+    result = adapter.predict_prepared(
+        prepared, {"input_ids": torch.tensor([[1, 2, 3]])}, ["first", "second"]
+    )
+    assert result.prediction == "second"
+    assert result.prediction_index == 1
+    assert result.probabilities["second"] > result.probabilities["first"]
+    assert len(model.calls) == 1
+    assert torch.equal(model.calls[0]["input_ids"], torch.tensor([[1, 2, 3]]))
+    assert model.calls[0]["use_cache"] is False
+    assert model.calls[0]["logits_to_keep"] == 1
+    assert adapter._capture == {}
+    adapter.close()
+    assert decoder.remove_count == 1
+    assert decoder.hook is None
+
+
+def test_forward_adapter_rejects_stale_or_missing_decoder_capture() -> None:
+    torch = pytest.importorskip("torch")
+
+    class NoHookModel:
+        def forward(self, input_ids: object, *, use_cache: bool = True):
+            return types.SimpleNamespace()
+
+        __call__ = forward
+
+    class NoHookDecoder:
+        layers = [object()]
+
+        def register_forward_hook(self, _hook):
+            return types.SimpleNamespace(remove=lambda: None)
+
+    head = TeacherDecisionHead(hidden_size=2)
+    adapter = JevOmniTeacherForward(
+        model=NoHookModel(),
+        head=head,
+        processor=RecordingProcessor(),
+        decoder=NoHookDecoder(),
+        device="cpu",
+    )
+    adapter._capture["hidden"] = torch.ones((1, 2))
+    with pytest.raises(RuntimeError, match="decoder hidden capture was empty"):
+        adapter.predict_prepared(
+            types.SimpleNamespace(modality="text", option_count=2),
+            {"input_ids": torch.tensor([[1]])},
+            ["a", "b"],
+        )
+    assert adapter._capture == {}
+
+
+def test_load_safe_teacher_head_module_uses_converted_head_semantics(tmp_path: Path) -> None:
+    torch = pytest.importorskip("torch")
+    safetensors = pytest.importorskip("safetensors.torch")
+    head_path = tmp_path / "head.safetensors"
+    tensors = {
+        "linear.bias": torch.tensor([0.0, 0.0, 9.0], dtype=torch.float32),
+        "linear.weight": torch.eye(3, dtype=torch.float32),
+        "mu": torch.zeros((1, 3), dtype=torch.float32),
+        "sd": torch.ones((1, 3), dtype=torch.float32),
+    }
+    safetensors.save_file(tensors, str(head_path))
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "tensors": {
+                    key: {"shape": list(value.shape), "dtype": str(value.dtype)}
+                    for key, value in tensors.items()
+                },
+            }
+        )
+    )
+    head = load_safe_teacher_head_module(
+        head_path,
+        spec,
+        expected_sha256=hashlib.sha256(head_path.read_bytes()).hexdigest(),
+        device="cpu",
+    )
+    logits = head(torch.ones((1, 3), dtype=torch.float32), torch.tensor([2]))
+    assert logits.shape == (1, 3)
+    assert logits[0, 2].item() == pytest.approx(-1e30)
+
+
+def test_forward_readiness_blocks_before_from_pretrained_without_cuda(
+    tmp_path: Path, monkeypatch
+) -> None:
+    torch = pytest.importorskip("torch")
+    safetensors = pytest.importorskip("safetensors.torch")
+    source = _source_tree(tmp_path / "source")
+    expected_source_sha = hashlib.sha256(b"fixture").hexdigest()
+    monkeypatch.setattr("train.teacher_inference.OFFICIAL_JEV_OMNI_SHA256", expected_source_sha)
+    head_path = tmp_path / "head.safetensors"
+    tensors = {
+        "linear.bias": torch.zeros(2, dtype=torch.float32),
+        "linear.weight": torch.ones((2, 3), dtype=torch.float32),
+        "mu": torch.zeros((1, 3), dtype=torch.float32),
+        "sd": torch.ones((1, 3), dtype=torch.float32),
+    }
+    safetensors.save_file(tensors, str(head_path))
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "tensors": {
+                    key: {"shape": list(value.shape), "dtype": str(value.dtype)}
+                    for key, value in tensors.items()
+                },
+            }
+        )
+    )
+    conversion = tmp_path / "conversion.json"
+    conversion.write_text(
+        json.dumps(
+            {
+                "status": "converted",
+                "exit_code": 0,
+                "output_sha256": hashlib.sha256(head_path.read_bytes()).hexdigest(),
+            }
+        )
+    )
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+
+    report = teacher_forward_readiness_report(
+        source_dir=source,
+        head_path=head_path,
+        spec_path=spec,
+        conversion_report=conversion,
+    )
+
+    assert report["status"] == "blocked"
+    assert report["loader_stage"] == "pre_from_pretrained"
+    assert report["model_backbone_loaded"] is False
+    assert report["model_forward_run"] is False
+    assert report["trust_remote_code"] is False
+    assert report["local_files_only"] is True
+    assert report["use_safetensors_for_model"] is True
+    assert "requires CUDA before from_pretrained" in report["error"]
