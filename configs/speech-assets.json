@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-14",
+  "purpose": "Speech/TTS offline asset selection for stage 3 preparation before the next GPU window.",
+  "scope_guardrails": [
+    "Do not use paid APIs or non-commercial voice-cloning models.",
+    "Do not load PyTorch checkpoints with unsafe pickle paths; ONNX assets are preferred for canaries.",
+    "Do not treat derivative hosting licenses as washing original Common Voice consent or use conditions.",
+    "Do not claim Common Voice audio bytes are staged until the official API-key and terms flow is completed."
+  ],
+  "recommendation": {
+    "tts_engine": "Kokoro 82M ONNX, q8f16 model, two American English voices",
+    "tts_status": "remote_assets_downloaded_hash_verified_canary_blocked_runtime_install",
+    "common_voice_source": "Mozilla Data Collective Common Voice Spontaneous Speech 5.0 - English",
+    "common_voice_status": "metadata_selected_download_blocked_by_official_api_key_and_terms"
+  },
+  "tts_candidates": [
+    {
+      "name": "Kokoro 82M ONNX",
+      "selected": true,
+      "source": {
+        "type": "huggingface_model",
+        "repo_id": "onnx-community/Kokoro-82M-v1.0-ONNX",
+        "revision": "1939ad2a8e416c0acfeecc08a694d14ef25f2231",
+        "url": "https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX"
+      },
+      "upstream_model": {
+        "repo_id": "hexgrad/Kokoro-82M",
+        "revision_checked": "e8a90b41091c3c5b70375c47cc959799920fa4d6",
+        "url": "https://huggingface.co/hexgrad/Kokoro-82M"
+      },
+      "license": {
+        "model_declared": "apache-2.0",
+        "onnx_repo_declared": "apache-2.0",
+        "voice_embeddings_declared": "apache-2.0 via the same repository",
+        "runtime_note": "Prefer direct ONNX Runtime plus Apache-2.0 Misaki G2P without espeak fallback for production prep. The convenience kokoro-onnx wheel pulls espeakng-loader and was not adopted as a project dependency."
+      },
+      "selected_files": [
+        {
+          "path": "README.md",
+          "size_bytes": 10627,
+          "sha256": "b8fd888b4782f4d4ae85e2f1587cafd727037f4f138f72429ef1bd5908c0e9d8",
+          "kind": "metadata"
+        },
+        {
+          "path": "config.json",
+          "size_bytes": 44,
+          "sha256": "df34b4f930b23447cd4dc410fabfb42eb3f24e803e6c3f97d618fb359380a36f",
+          "kind": "metadata"
+        },
+        {
+          "path": "tokenizer.json",
+          "size_bytes": 3497,
+          "sha256": "77a02c8e164413299b4b4c403b14f8e0e1c1b727db4d46a09d6327b861060a34",
+          "kind": "metadata"
+        },
+        {
+          "path": "tokenizer_config.json",
+          "size_bytes": 113,
+          "sha256": "be1cb066d6ef6b074b3f15e6a6dd21ac88ff3cdaedf325f0aaed686c70f75d20",
+          "kind": "metadata"
+        },
+        {
+          "path": "onnx/model_q8f16.onnx",
+          "size_bytes": 86033585,
+          "sha256": "04c658aec1b6008857c2ad10f8c589d4180d0ec427e7e6118ceb487e215c3cd0",
+          "kind": "onnx_weights"
+        },
+        {
+          "path": "voices/af_heart.bin",
+          "size_bytes": 522240,
+          "sha256": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b",
+          "kind": "voice_embedding",
+          "voice": "American English female"
+        },
+        {
+          "path": "voices/am_puck.bin",
+          "size_bytes": 522240,
+          "sha256": "fcf73c989033e9233e0b98713eca600c8c74dcc1614b37009d5450ff4a2274a0",
+          "kind": "voice_embedding",
+          "voice": "American English male"
+        }
+      ],
+      "selected_payload_bytes": 87092342,
+      "staging": {
+        "local_status": "metadata_only_downloaded; local ONNX transfer stalled before bytes arrived",
+        "remote_status": "downloaded_hash_verified",
+        "remote_path": "/root/autodl-tmp/lite-omnijev/artifacts/speech-tts/downloads/kokoro-onnx",
+        "remote_environment": "/root/autodl-tmp/lite-omnijev/artifacts/speech-tts/.venv",
+        "remote_commands": [
+          "source /etc/network_turbo >/dev/null 2>&1 || true",
+          "HF_ENDPOINT=https://huggingface.co HF_HUB_DISABLE_XET=1 artifacts/speech-tts/.venv/bin/python - <<'PY' ... hf_hub_download selected files ... PY",
+          "find artifacts/speech-tts/downloads/kokoro-onnx -type f -not -path '*/.cache/*' -print0 | sort -z | xargs -0 sha256sum"
+        ]
+      },
+      "canary": {
+        "status": "blocked",
+        "blocker": "Direct ONNX canary needs onnxruntime in the dedicated remote speech venv. pip install of onnxruntime==1.31.0 and numpy==2.3.4 did not complete in the available window and was stopped; no unsafe PyTorch checkpoint was loaded."
+      },
+      "risk_notes": [
+        "Kokoro quality is good for compact offline TTS but synthetic speech truth remains programmatic; generated rows still need manifesting by prompt family, voice, text source, seed, and audio hash.",
+        "Avoid the convenience runtime if its espeak loader creates GPL obligations for project distribution; use direct ONNX plus Misaki with fallback disabled unless legal review approves another path."
+      ]
+    },
+    {
+      "name": "MeloTTS English",
+      "selected": false,
+      "source": {
+        "type": "huggingface_model",
+        "repo_id": "myshell-ai/MeloTTS-English",
+        "revision_checked": "17f1313104f4ad12d09bffc2fcbe2e72227ac161",
+        "url": "https://huggingface.co/myshell-ai/MeloTTS-English"
+      },
+      "code_source": {
+        "type": "github_repository",
+        "repo": "myshell-ai/MeloTTS",
+        "url": "https://github.com/myshell-ai/MeloTTS"
+      },
+      "license": {
+        "declared_model": "mit",
+        "declared_code": "mit",
+        "runtime_note": "MeloTTS model artifact is checkpoint.pth. Keep quarantined unless converted/audited; do not load with weights_only=False."
+      },
+      "checked_files": [
+        {
+          "path": "checkpoint.pth",
+          "size_bytes": 207860748,
+          "sha256": "acd278040eaf9536908e2b965273df5a731c44d8f0da66cc5fed7972772ed23c",
+          "kind": "pytorch_checkpoint_quarantine"
+        }
+      ],
+      "rejection_reason": "Larger runtime surface and unsafe checkpoint format for this offline-prep slice; Kokoro ONNX provides a smaller audited asset path with no pickle load."
+    }
+  ],
+  "common_voice_candidates": [
+    {
+      "name": "Common Voice Spontaneous Speech 5.0 - English",
+      "selected": true,
+      "source": {
+        "type": "mozilla_data_collective_dataset",
+        "dataset_id": "cmu5nqn1h00vwmi07b4dbk085",
+        "slug": "common-voice-spontaneous-speech-5-0-engl-97a82389",
+        "url": "https://mozilladatacollective.com/datasets/cmu5nqn1h00vwmi07b4dbk085",
+        "api_url": "https://mozilladatacollective.com/api/datasets/cmu5nqn1h00vwmi07b4dbk085"
+      },
+      "license": {
+        "declared": "Creative Commons Zero v1.0 Universal (CC0-1.0)",
+        "use_conditions": "Download requires the official Mozilla Data Collective API/terms flow; do not rehost or attempt speaker identification."
+      },
+      "file": {
+        "filename": "common-voice-spontaneous-speech-5-0-engl-97a82389.tar.gz",
+        "size_bytes": 544267165,
+        "sha256": "390b5a54c9afe0cc01da039ad206248f85682f247dd2b27d4cc0ab9a68e860b6",
+        "format": "MP3",
+        "locale": "en"
+      },
+      "status": "metadata_selected_download_blocked_by_api_key_and_terms",
+      "why_selected": "English public Common Voice audio under 1 GB; suitable as a source-family anchor for speech/audio preparation once API-key/terms access is handled."
+    },
+    {
+      "name": "Common Voice Scripted Speech 26.0 - Southern American English",
+      "selected": false,
+      "source": {
+        "type": "mozilla_data_collective_dataset",
+        "dataset_id": "cmryvrc6i014vo90786kriix5",
+        "slug": "common-voice-scripted-speech-26-0-southe-d50b474b",
+        "url": "https://mozilladatacollective.com/datasets/cmryvrc6i014vo90786kriix5",
+        "api_url": "https://mozilladatacollective.com/api/datasets/cmryvrc6i014vo90786kriix5"
+      },
+      "license": {
+        "declared": "Creative Commons Zero v1.0 Universal (CC0-1.0)",
+        "use_conditions": "Download requires official API/terms flow; derived subset adds no-rehost and no voice-cloning conditions."
+      },
+      "file": {
+        "filename": "common-voice-scripted-speech-26-0-southe-d50b474b.tar.gz",
+        "size_bytes": 33912283,
+        "sha256": "6badd6d6421fa395f680c23f6af0377df15a0429ff39f6e2230b05e1d29bee54",
+        "format": "TSV, MP3",
+        "locale": "en-US"
+      },
+      "status": "metadata_selected_download_blocked_by_api_key_and_terms",
+      "rejection_reason": "Useful tiny accent canary, but not the primary source-family anchor because it is a derived accent-filtered subset with stricter stated use conditions."
+    }
+  ],
+  "preparation_decision": {
+    "ready": [
+      "Kokoro ONNX q8f16 model and af_heart/am_puck voice embeddings are staged on remote with sha256 verification.",
+      "Common Voice source families are selected, license/size/checksum metadata captured, and payloads remain under the 1 GB preparation ceiling."
+    ],
+    "blocked": [
+      "Common Voice audio tarballs are not downloaded because official Mozilla Data Collective download requires API credentials and terms acceptance.",
+      "CPU WAV canary is not complete because ONNX Runtime installation stalled in the dedicated speech venv; no unsafe checkpoint was loaded."
+    ]
+  }
+}
