@@ -68,5 +68,5 @@
 1. 继续GUI/DocVQA、wheelhouse/NDK/浏览器二进制；下载exit0→固定hash→有界CPU reader或fresh离线安装，不把running当done。
 2. root阶段2CPU验证已用已有media-cpu Pillow环境完成exit0；未改共享环境，非全量图decode/标签准入。
 3. RouterBench安全review、剩余外部协议/依赖闭包审计后再执行offline-prep:04；未来LoRA/量化/校准模型是待生成产物，不是下载缺口。
-4. 当前主树297测试通过（43.31秒），最新core47/GUI5定向通过，Clotho定向18通过（2.98秒）；Ruff/format196文件/mypy48源文件通过，最近wheel/sdist通过。新一批整合后再验证相关检查。
+4. 当前主树最新301测试全部通过（7.17秒），core47/GUI5定向通过，Clotho定向18通过（2.98秒）；Ruff/format198文件/mypy48源文件通过，最新wheel/sdist通过；reports/offline-integration-validation-20261014-002.json。新一批整合后再验证相关检查。
 5. 只有全部必需外部准备/CPU验收真正通过才通知开GPU；严格质量门槛及S0人工/身份阻塞另列，不能暗改或混成全部产品完成。
