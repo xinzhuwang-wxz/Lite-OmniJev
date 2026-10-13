@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-14",
+  "scope": "bounded_stage2_offline_source_audit_for_scienceqa_chartqa_docvqa_aokvqa_media_provenance",
+  "quarantine_root": "artifacts/data/quarantine/stage2-sources",
+  "operational_report": {
+    "path": "artifacts/data/quarantine/stage2-sources/stage2_operational_download_report.json",
+    "bytes": 15142,
+    "sha256": "f988a23ed32b379b183097d323f88a71cc3ddc7866981881a16649a5844fb2c8",
+    "file_count": 67,
+    "quarantine_bytes_total": 1137251557
+  },
+  "policy": {
+    "download_budget_bytes": 10000000000,
+    "gpu_used": false,
+    "training_admission": "not_granted_by_this_file",
+    "release_admission": "not_granted_by_this_file",
+    "human_holdout_content_policy": "No internal holdout content was requested or staged. Public A-OKVQA JSONs were processed only for split, question_id, image_id, and COCO license joins; QA text was not inspected or exported.",
+    "account_terms_policy": "No account-gated dataset terms were accepted automatically."
+  },
+  "sources": [
+    {
+      "id": "scienceqa",
+      "status": "metadata_staged_raw_parquet_partial_due_network_failure",
+      "source_audit_staging": "partially_ready",
+      "training_release_status": "blocked_pending_noncommercial_sharealike_decision_and_complete_raw_mirror",
+      "official_sources": [
+        {
+          "type": "github_repository",
+          "repo": "lupantech/ScienceQA",
+          "license_evidence": "Project README says code is MIT and ScienceQA dataset is Creative Commons Attribution-NonCommercial-ShareAlike 4.0."
+        },
+        {
+          "type": "huggingface_dataset",
+          "repo": "derek-thomas/ScienceQA",
+          "revision": "f18b0a70359ebfb41f658fd564208d0355b013f4",
+          "gated": false,
+          "card_license": "cc-by-sa-4.0",
+          "total_files": 9,
+          "total_bytes": 626493224
+        }
+      ],
+      "completed_local_artifacts": [
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/scienceqa_hf_api_info.json",
+          "bytes": 4385,
+          "sha256": "783631ad6fd384a91962f2f848395eafa60f5b1d439371fcc139532b86de7be0"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/README.md",
+          "bytes": 10308,
+          "sha256": "3729fae304968ed8b9917b41034412aa142fb4760e2bfdab3dfe67a7fd78a17a"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/tutorial/ScienceQA.py",
+          "bytes": 5401,
+          "sha256": "a0806fb01130872aecb6ede47cf4fd392b373c993b303ccc6830a1ae9a258d1e"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/tutorial/download.sh",
+          "bytes": 684,
+          "sha256": "621b0720f17935e64992d6ce86621ade6678056b165c52ace28d0453de0b4d17"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/tutorial/create_dataset.ipynb",
+          "bytes": 392442,
+          "sha256": "67ede9b581b5c5332c1bc067a6e3000daf7d5cfa1662ab22ce149601ba5936e8"
+        }
+      ],
+      "partial_local_artifacts": [
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/test-00000-of-00001-f0e719df791966ff.parquet",
+          "bytes": 10485760,
+          "sha256_partial": "c705e75a6c54c48f6e6a4884f251e3934c56a8cfc1936a1c90a67e7a1192d0c6",
+          "expected_bytes": 122386007,
+          "expected_lfs_sha256": "235e92d1f30155266df76bc9f28fc6e4fcb6bec2c6a8c7d67f9086ea6b392a84",
+          "status": "partial_not_usable"
+        }
+      ],
+      "raw_release_files_to_complete": [
+        {
+          "remote_path": "data/test-00000-of-00001-f0e719df791966ff.parquet",
+          "bytes": 122386007,
+          "lfs_sha256": "235e92d1f30155266df76bc9f28fc6e4fcb6bec2c6a8c7d67f9086ea6b392a84"
+        },
+        {
+          "remote_path": "data/train-00000-of-00001-1028f23e353fbe3e.parquet",
+          "bytes": 377460993,
+          "lfs_sha256": "62c90a28e3fb1bc0ad7bbcab1ac62b483ae6758291a655944d8f494bf6445745"
+        },
+        {
+          "remote_path": "data/validation-00000-of-00001-6c7328ff6c84284c.parquet",
+          "bytes": 126235086,
+          "lfs_sha256": "e66b5215ce71e748ade4ee629bc14fbf86762071d355a4fcd831581cc04d72d8"
+        }
+      ],
+      "resume_commands": [
+        "huggingface-cli download derek-thomas/ScienceQA --repo-type dataset --revision f18b0a70359ebfb41f658fd564208d0355b013f4 --local-dir artifacts/data/quarantine/stage2-sources/scienceqa/hf",
+        "curl -L --fail --retry 5 --retry-delay 3 -C - -o artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/test-00000-of-00001-f0e719df791966ff.parquet https://huggingface.co/datasets/derek-thomas/ScienceQA/resolve/f18b0a70359ebfb41f658fd564208d0355b013f4/data/test-00000-of-00001-f0e719df791966ff.parquet"
+      ],
+      "attempt_log": "artifacts/data/quarantine/stage2-sources/logs/scienceqa-download.log"
+    },
+    {
+      "id": "chartqa",
+      "status": "metadata_staged_raw_release_not_started_after_scienceqa_transfer_failure",
+      "source_audit_staging": "remote_ready_exact_hashes_local_readme_only",
+      "training_release_status": "blocked_pending_gpl_and_original_chart_source_review",
+      "official_sources": [
+        {
+          "type": "github_repository",
+          "repo": "vis-nlp/ChartQA",
+          "evidence": "Official README points the full dataset with annotations to ahmed-masry/ChartQA on Hugging Face."
+        },
+        {
+          "type": "huggingface_dataset",
+          "repo": "ahmed-masry/ChartQA",
+          "revision": "af8b6f5c08c95085271561c2a3f9d15f2b5a9031",
+          "gated": false,
+          "card_license": "gpl-3.0",
+          "total_files": 8,
+          "total_bytes": 1848976638
+        }
+      ],
+      "completed_local_artifacts": [
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/chartqa/chartqa_hf_api_info.json",
+          "bytes": 3319,
+          "sha256": "988befbd769c0b0c27f20737ea3497e950cadf5a6dba4b3144d60436f2ddd011"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/chartqa/hf/README.md",
+          "bytes": 2121,
+          "sha256": "eacad5aa4aeb6ee7575fe8434a04d24554915d7898ecd1b02f4adb240f0c6814"
+        }
+      ],
+      "exact_remote_raw_files": [
+        {
+          "remote_path": "ChartQA Dataset.zip",
+          "bytes": 875370872,
+          "lfs_sha256": "1bf310e5a51101681495c4a24f4f29d22c4f70b52df24e2e4feb0d79cae3c160",
+          "recommended_first_download": true
+        },
+        {
+          "remote_path": "data/train-00000-of-00003.parquet",
+          "bytes": 219074332,
+          "lfs_sha256": "3cca5735d17267ba006b298f78743ef33156c18db9deeadc9c0982ad1ea74bb7"
+        },
+        {
+          "remote_path": "data/train-00001-of-00003.parquet",
+          "bytes": 313907067,
+          "lfs_sha256": "7325567601edb49501b7e3ae070f1a7fc9a0e69617803c50bd013a818a9b9610"
+        },
+        {
+          "remote_path": "data/train-00002-of-00003.parquet",
+          "bytes": 321464759,
+          "lfs_sha256": "e067dfcc67183219cfab854252038bcd517b26e37367ed6a2ff4ead8d0955c27"
+        },
+        {
+          "remote_path": "data/val-00000-of-00001.parquet",
+          "bytes": 50238778,
+          "lfs_sha256": "46ee830d03a1f288ef21be3d8d149d307cbf09404f9e056906169e617679fb09"
+        },
+        {
+          "remote_path": "data/test-00000-of-00001.parquet",
+          "bytes": 68916402,
+          "lfs_sha256": "84889bae30aaf6e24ff899e1604221606c0b65e658b6c70a7d02c79f50fc87df"
+        }
+      ],
+      "resume_commands": [
+        "huggingface-cli download ahmed-masry/ChartQA --repo-type dataset --revision af8b6f5c08c95085271561c2a3f9d15f2b5a9031 --include 'README.md' 'ChartQA Dataset.zip' --local-dir artifacts/data/quarantine/stage2-sources/chartqa/hf",
+        "huggingface-cli download ahmed-masry/ChartQA --repo-type dataset --revision af8b6f5c08c95085271561c2a3f9d15f2b5a9031 --include 'data/*.parquet' --local-dir artifacts/data/quarantine/stage2-sources/chartqa/hf-parquet"
+      ],
+      "attempt_log": "artifacts/data/quarantine/stage2-sources/logs/chartqa-download.log"
+    },
+    {
+      "id": "docvqa",
+      "status": "verified_blocker_no_original_raw_mirror",
+      "source_audit_staging": "metadata_only",
+      "training_release_status": "blocked_pending_original_docvqa_terms_access_and_source_license_review",
+      "official_source_note": "The DocVQA/competition lineage is hosted through official DocVQA/RRC channels. The public lmms-lab/DocVQA Hugging Face dataset is not treated as original-source provenance even though its card declares apache-2.0.",
+      "derivative_hf_metadata": {
+        "repo": "lmms-lab/DocVQA",
+        "revision": "539088ef8a8ada01ac8e2e6d4e372586748a265e",
+        "gated": false,
+        "card_license": "apache-2.0",
+        "total_files": 58,
+        "total_bytes": 12100689020
+      },
+      "completed_local_artifacts": [
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/docvqa_lmms/docvqa_lmms_hf_api_info.json",
+          "bytes": 16097,
+          "sha256": "3d6b7635dcec7b2a9edde982480bd7832630ba1f7559d9dbbf9981fbd11f1707"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/docvqa/lmms-lab-hf/README.md",
+          "bytes": 2689,
+          "sha256": "372cd2689649a29b4f4d1c9dbf7478d62b8331ab2af0720b5a1f6fa9d4f266c0"
+        }
+      ],
+      "blocked_actions": [
+        "Do not mirror lmms-lab/DocVQA as original DocVQA provenance.",
+        "Do not accept RRC or DocVQA terms automatically.",
+        "Do not read private test answers or internal holdout payloads."
+      ]
+    },
+    {
+      "id": "aokvqa_coco_media_provenance",
+      "status": "annotations_and_coco_license_metadata_staged",
+      "source_audit_staging": "ready_for_metadata_filtering_not_image_pixels",
+      "training_release_status": "blocked_pending_image_download_selection_and_per_image_attribution",
+      "official_sources": [
+        {
+          "type": "github_repository",
+          "repo": "allenai/aokvqa",
+          "download_source": "https://prior-datasets.s3.us-east-2.amazonaws.com/aokvqa/aokvqa_v1p0.tar.gz"
+        },
+        {
+          "type": "coco_2017_annotations",
+          "train_val_metadata": "http://images.cocodataset.org/annotations/annotations_trainval2017.zip",
+          "test_metadata": "http://images.cocodataset.org/annotations/image_info_test2017.zip"
+        }
+      ],
+      "completed_local_artifacts": [
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_v1p0.tar.gz",
+          "bytes": 3661719,
+          "sha256": "3992b488babc0c1147f0def18c7a55274aeeb37ab668cf80226b8f62ee35a8e1"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_v1p0.tar.list",
+          "bytes": 116,
+          "sha256": "100a08f849ad2e6b2db06608ed194583be67a08ccf973a7a0f4db0ba5c63a809"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/github/README.md",
+          "bytes": 8189,
+          "sha256": "ee2bd89d8675b9cb45d74e4587fe0aa4d1b2275d3f8dbd3f334f9e946ae2ac87"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/github/LICENSE",
+          "bytes": 11373,
+          "sha256": "3bcf720dc872fe00ef7bf7e07ebc7bc720e71cb6f7b43cb90241b9104f0ab617"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/github/load_aokvqa.py",
+          "bytes": 378,
+          "sha256": "df7fce7d633ef923591663777bbf928725b4a2a1eb81daf74a26ef95c725081c"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/coco2017/annotations_trainval2017.zip",
+          "bytes": 252907541,
+          "sha256": "113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/coco2017/image_info_test2017.zip",
+          "bytes": 1144034,
+          "sha256": "e52f412dd7195ac8f98d782b44c6dd30ea10241e9f42521f67610fbe055a74f8"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_license_summary.json",
+          "bytes": 6592,
+          "sha256": "e281d5ac71c089faaf568bebb7f300879dcf81213935366c55ebceef03309d7d"
+        }
+      ],
+      "coco_license_filter": {
+        "ccby_publicdomain_license_ids": {
+          "4": "Attribution License / http://creativecommons.org/licenses/by/2.0/",
+          "7": "No known copyright restrictions / http://flickr.com/commons/usage/",
+          "8": "United States Government Work / http://www.usa.gov/copyright.shtml"
+        },
+        "ccbysa_obligation_license_ids": {
+          "5": "Attribution-ShareAlike License / http://creativecommons.org/licenses/by-sa/2.0/"
+        },
+        "excluded_from_ccby_publicdomain_subset": {
+          "1": "CC BY-NC-SA",
+          "2": "CC BY-NC",
+          "3": "CC BY-NC-ND",
+          "6": "CC BY-ND"
+        }
+      },
+      "aokvqa_split_license_summary": [
+        {
+          "split": "train",
+          "rows": 17056,
+          "coco_split": "train",
+          "license_counts": {
+            "1": 4964,
+            "2": 2276,
+            "3": 4439,
+            "4": 2741,
+            "5": 1775,
+            "6": 861
+          },
+          "ccby_publicdomain_rows": 2741,
+          "ccbysa_rows": 1775,
+          "missing_image_ids": 0,
+          "ccby_publicdomain_manifest": {
+            "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_train_coco_ccby_publicdomain_image_manifest.jsonl",
+            "bytes": 834939,
+            "sha256": "e20747c1da29c44f93ff6fe9f1e300745234ab7926916773beb6e1ab7642a1dd"
+          },
+          "ccbysa_manifest": {
+            "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_train_coco_ccbysa_image_manifest.jsonl",
+            "bytes": 540643,
+            "sha256": "89e35f46156bbc5a6bce6d2189f7e4e651f7ad662d33b49ddaa6719b8daf037a"
+          }
+        },
+        {
+          "split": "val",
+          "rows": 1145,
+          "coco_split": "val",
+          "license_counts": {
+            "1": 323,
+            "2": 131,
+            "3": 312,
+            "4": 216,
+            "5": 105,
+            "6": 55,
+            "7": 3
+          },
+          "ccby_publicdomain_rows": 219,
+          "ccbysa_rows": 105,
+          "missing_image_ids": 0,
+          "ccby_publicdomain_manifest": {
+            "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_val_coco_ccby_publicdomain_image_manifest.jsonl",
+            "bytes": 65389,
+            "sha256": "bca547284f534837e819628ed154e295f117276ec0ea8771381d88508f42e64e"
+          },
+          "ccbysa_manifest": {
+            "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_val_coco_ccbysa_image_manifest.jsonl",
+            "bytes": 31346,
+            "sha256": "466dca49b08c35bc184e10b3163a93a1aa98c3613bb55efef378341410d9346a"
+          }
+        },
+        {
+          "split": "test",
+          "rows": 6702,
+          "coco_split": "test",
+          "license_counts": {
+            "1": 1803,
+            "2": 1008,
+            "3": 1867,
+            "4": 1069,
+            "5": 586,
+            "6": 359,
+            "7": 10
+          },
+          "ccby_publicdomain_rows": 1079,
+          "ccbysa_rows": 586,
+          "missing_image_ids": 0,
+          "ccby_publicdomain_manifest": {
+            "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_test_coco_ccby_publicdomain_image_manifest.jsonl",
+            "bytes": 260898,
+            "sha256": "a7a67c2b24380323b3f46c7c4f7c9f6178fbbe3317bacbd52f1927bf33c8f8c0"
+          },
+          "ccbysa_manifest": {
+            "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_test_coco_ccbysa_image_manifest.jsonl",
+            "bytes": 141709,
+            "sha256": "91e50fd0ee8304d0e18b757bef00730c93b97936ace30664068365fef296277c"
+          }
+        }
+      ],
+      "next_image_download_rule": "Download COCO image pixels only from the generated per-image manifests, preserving image_id, license_id, flickr_url, coco_url, and attribution metadata. Do not treat A-OKVQA code license as an image license."
+    }
+  ]
+}
