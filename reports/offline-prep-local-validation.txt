@@ -1,8 +1,8 @@
-2026-10-14 main025b0e1 + Clotho whitelist + optional media imports
-uv run pytest -q: 229 passed in 2.75s, exit0
+2026-10-14 mainfab318b + source-ledger corrections
+uv run pytest -q: 231 passed in 3.67s, exit0
 uv run ruff check .: All checks passed, exit0
-uv run ruff format --check .: 144 files already formatted, exit0
+uv run ruff format --check .: 149 files already formatted, exit0
 uv run mypy data train eval serve scripts: no issues found in 38 source files, exit0
 uv build: wheel and sdist built, exit0
 uv run python -m scripts.loop validate: valid true, 29 tickets, exit0
-CPU-only local verification; not model quality/GPU parity acceptance.
+CPU-only verification; not model quality/GPU parity acceptance.

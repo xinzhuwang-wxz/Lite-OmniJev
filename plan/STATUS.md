@@ -34,14 +34,14 @@
 - teacher head四张量FP32隔离转换通过；父进程输出nofollow/nonblock/regular/size/timeout修复已合入并独立复核；完整教师模型仍待下载和GPU验证。
 
 - AndroidControl官方GCS22对象49.93GB已固定generation/MD5/CRC32C；研究专用原料下载PID9047已启动，商业训练/发布受官方NC条款约束，不混入商用池。
-- 新增configs/gui-source-assets.json及GUI原始权利审计；Mind2Web官方research-only声明已显式记录，不能从OpenRAIL标签推断商用许可；49文件13.58GB研究专用下载PID9369已启动。
+- 新增configs/gui-source-assets.json及GUI原始权利审计；Mind2Web官方research-only声明已显式记录，不能从OpenRAIL标签推断商用许可；49文件13.58GB研究专用下载首次PID9369因LFS指针SHA被误当内容GitSHA校验失败，原报告保留；首个217MB原文件内容SHA256已独立通过，修正指针/内容字段后启动002续传，PID10668已启动，report mind2web-source-download-002.json。
 
 ## 并行所有权
 - offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；CPU媒体切片已交付，root整合。
-- speech_assets：/tmp/lite-omnijev-speech-assets；TTS模型/语音许可及CPU canary，仍执行。
+- speech_assets：/tmp/lite-omnijev-speech-assets；KokoroONNX87.09MB权重/双voice已下载校验，29fe5f8已合入；CPU ONNX WAV因初次依赖安装停滞继续改用可用网络/轮子准备。CommonVoice当前官方MDC需账号/条款，另查合法旧公开CC0来源，不绕过访问条件。
 - whole_project_datasets：/tmp/lite-omnijev-project-datasets；ScienceQA/ChartQA/DocVQA/A-OKVQA来源与媒体准备；来源账本3e1f794已合入，局部失败不算完成，继续远端可用学术网络下载ScienceQA/ChartQA和许可白名单COCO像素。
 - teacher_head_conversion：/tmp/lite-omnijev-s0-teacher；下一片为Valen嵌套PT的官方规格与隔离转换，仍执行。
-- video_eval_sources：/tmp/lite-omnijev-video-eval；MMAU公开mini与MVBench/STAR来源准备，MMAU1.21GB研究评测下载已批准；原researcher角色因模型不支持未启动，已换原生默认代理。
+- video_eval_sources：/tmp/lite-omnijev-video-eval；MMAU公开mini与MVBench/STAR来源准备，MMAU1.21GB及STAR727.89MB已下载、SHA/退出0通过；FunQA→Perception队列PID9338/curl9340仍活，STA1.085GB下载PID10304/curl10305已确认活。de46c38已合入，教师14任务2786题ID映射缺失保留blocked。原researcher角色因模型不支持未启动，已换原生默认代理。
 - root独占主目录、票据、STATUS与合入；子代理显式workdir，只写指定worktree，不改全局计划。
 
 ## 下一步
@@ -50,13 +50,15 @@
 3. 离线集成票逐项验证全项目外部依赖；缺口写blocked，不能以下载清单代替实际到位。
 4. 下载/CPU准备全部满足才通知用户开GPU，安排教师/媒体/概率任务批次减少卡时；不改变原门槛。
 
+- 原始STAR来源已纠正为NeurIPS2021 csbobby/STAR_Benchmark，不能把错误论文链接当来源；MMAU实际数据NC、MVBench原媒体协议均已纠正到主账本。
+
 ## 待我决策
 - 当前不需要用户开卡。正式改概率门槛需充分实测证据与ADR，现有门槛保持failed，D004搁置。
 - 真实封存隔离身份/人工标注资源后续仍需用户资源；先推进不依赖这些资源的离线工作。
 - 付费、生产、删除、方向/范围和预算改变仍由用户决定；账号/许可条款不擅自接受。
 
 ## 验证与卫生
-- Clotho+教师修复加入后本地226测试、Ruff/format/mypy/build通过；新CPU媒体切片整合后的可选依赖类型导入问题已修复；229测试、Ruff/format、mypy38源文件、wheel/sdist和29票规划校验全通过。
+- Clotho+教师修复加入后本地226测试、Ruff/format/mypy/build通过；新CPU媒体切片整合后的可选依赖类型导入问题已修复；当前整合后231测试、Ruff/format149文件、mypy38源文件、wheel/sdist和29票规划校验全通过。
 - 不push、不创建远端issue/PR、不轮询gh；只本地提交和SSH同步。
 - 保留模型、数据缓存与P0约561MiB完整备份；只清理自己创建且过期资源。
 - 运行循环 plan/LOOP.md；交接 plan/handoff-2026-10-14-offline-prep.md。

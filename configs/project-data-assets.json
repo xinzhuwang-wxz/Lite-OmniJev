@@ -176,8 +176,18 @@
       "asset_id": "valen-general-100k",
       "name": "Valen General-100k and companion game/eval data",
       "category": "stage_1_3_training_source",
-      "modalities": ["image", "text", "ui", "game", "document"],
-      "required_stages": [1, 2, 3],
+      "modalities": [
+        "image",
+        "text",
+        "ui",
+        "game",
+        "document"
+      ],
+      "required_stages": [
+        1,
+        2,
+        3
+      ],
       "official_source": {
         "type": "huggingface_dataset",
         "repo_id": "Valen-Team/Valen-Training-General-100k",
@@ -192,29 +202,75 @@
         "status": "official_api_metadata_verified_no_content_read",
         "file_count": 20,
         "total_bytes": 6359697280,
-        "splits": {"train_records": 100000, "eval_general_records": 5000, "eval_game_repo": "Valen-Team/Valen-Eval-Game"},
+        "splits": {
+          "train_records": 100000,
+          "eval_general_records": 5000,
+          "eval_game_repo": "Valen-Team/Valen-Eval-Game"
+        },
         "major_files": [
-          {"path": "assets.zip", "bytes": 6010410541, "sha256": "fbe265b5239edef98542624c6e836f35d7c4765dfa9075b21b7452cf89a7b9b1"},
-          {"path": "train.jsonl", "bytes": 171731849, "sha256": "5762c39f4440dcaa2443cc07773bb26e36ac499a68e87eeb35e609a91032788b"},
-          {"path": "data_manifest.json", "bytes": 9111541, "git_blob": "a0d83987948be5545cd24c3958b74b39244a4754"},
-          {"path": "chartqa.jsonl", "bytes": 14908660, "sha256": "8dd1cf44684455a2ccbd57fac3a95dd88df9f21c5657f250312d66e843df1131"},
-          {"path": "docvqa.jsonl", "bytes": 12538537, "sha256": "ae1d31a73fe3e3a54b1899535fc9a50947c102a5f1573aa7333bca15cbb1e931"},
-          {"path": "gameqa.jsonl", "bytes": 54077364, "sha256": "2f254d667ae0a139c8cffcc0cd0e8507be4533157a2b09a4978b8b781900838e"},
-          {"path": "programmatic.jsonl", "bytes": 2790826, "sha256": "2f1016beb7889640309469d38dba56e7fc13da5534ae32783586f328bb1094b2"},
-          {"path": "clevr.jsonl", "bytes": 3566318, "sha256": "4e0a6c05c7ee77fa1898baa778f4cd3877e030366ae75b3a8f5cac74a7e9a483"}
+          {
+            "path": "assets.zip",
+            "bytes": 6010410541,
+            "sha256": "fbe265b5239edef98542624c6e836f35d7c4765dfa9075b21b7452cf89a7b9b1"
+          },
+          {
+            "path": "train.jsonl",
+            "bytes": 171731849,
+            "sha256": "5762c39f4440dcaa2443cc07773bb26e36ac499a68e87eeb35e609a91032788b"
+          },
+          {
+            "path": "data_manifest.json",
+            "bytes": 9111541,
+            "git_blob": "a0d83987948be5545cd24c3958b74b39244a4754"
+          },
+          {
+            "path": "chartqa.jsonl",
+            "bytes": 14908660,
+            "sha256": "8dd1cf44684455a2ccbd57fac3a95dd88df9f21c5657f250312d66e843df1131"
+          },
+          {
+            "path": "docvqa.jsonl",
+            "bytes": 12538537,
+            "sha256": "ae1d31a73fe3e3a54b1899535fc9a50947c102a5f1573aa7333bca15cbb1e931"
+          },
+          {
+            "path": "gameqa.jsonl",
+            "bytes": 54077364,
+            "sha256": "2f254d667ae0a139c8cffcc0cd0e8507be4533157a2b09a4978b8b781900838e"
+          },
+          {
+            "path": "programmatic.jsonl",
+            "bytes": 2790826,
+            "sha256": "2f1016beb7889640309469d38dba56e7fc13da5534ae32783586f328bb1094b2"
+          },
+          {
+            "path": "clevr.jsonl",
+            "bytes": 3566318,
+            "sha256": "4e0a6c05c7ee77fa1898baa778f4cd3877e030366ae75b3a8f5cac74a7e9a483"
+          }
         ],
         "card_claims_requiring_audit": {
           "records": 100000,
           "referenced_images": 50203,
           "unique_image_sha256_hashes": 48445,
-          "domains": {"vqa": 33334, "ui": 28572, "game": 19047, "document": 19047},
-          "question_types": {"noul": 8109, "choice": 91409, "score": 482}
-        }
+          "domains": {
+            "vqa": 33334,
+            "ui": 28572,
+            "game": 19047,
+            "document": 19047
+          },
+          "question_types": {
+            "noul": 8109,
+            "choice": 91409,
+            "score": 482
+          }
+        },
+        "actual_download_report": "reports/valen-source-download-001.json"
       },
       "label_origin": "Original one-hot decision labels in Valen format.",
       "media_availability": "Images packaged in assets.zip; file exceeds 100 MB.",
       "public_sampling_plan": "Stage 1-3 can sample text/visual/game/document rows by domain, with sample-family split by image/group hash.",
-      "physical_staging_status": "metadata_ready_large_payload_root_coordination_required",
+      "physical_staging_status": "all20_fixed_revision_source_files_hash_verified_quarantine_only",
       "training_release_status": "pending_upstream_source_and_label_provenance_audit",
       "admission_status": "downloadable_with_root_coordination",
       "next_commands": [
@@ -509,16 +565,35 @@
       "asset_id": "star-video-qa",
       "name": "STAR video QA",
       "category": "stage_3_training_source",
-      "modalities": ["video", "text"],
-      "required_stages": [3],
-      "official_source": {"type": "paper_or_project_page", "url": "https://arxiv.org/abs/2405.09711"},
-      "license": {"declared": "not verified"},
-      "file_metadata": {"status": "official_payload_not_identified"},
+      "modalities": [
+        "video",
+        "text"
+      ],
+      "required_stages": [
+        3
+      ],
+      "official_source": {
+        "type": "github_repository",
+        "repo": "csbobby/STAR_Benchmark",
+        "revision": "8c3971891609e9c8e0665ffa0de1b28a0bfc166d",
+        "url": "https://github.com/csbobby/STAR_Benchmark",
+        "paper": "https://openreview.net/forum?id=EfgNF5-ZAjM"
+      },
+      "license": {
+        "declared": "Apache-2.0 repository; original Charades media permits internal evaluation with redistribution and commercial derivation restrictions"
+      },
+      "file_metadata": {
+        "status": "official_STAR_NeurIPS2021_identified_and_public_split_metadata_hashed",
+        "source_audit_manifest": "configs/video-eval-assets.json"
+      },
       "label_origin": "Original situated reasoning QA labels if official payload is obtained.",
       "media_availability": "Raw media and exact official repository need verification.",
       "public_sampling_plan": "Part of stage 3 video tranche only after exact source and split are pinned.",
-      "admission_status": "provenance_blocked",
-      "next_commands": ["Find official dataset repository used by the STAR benchmark paper; verify license, file list, split IDs, and raw video terms."]
+      "admission_status": "raw_evaluation_staging_separate_from_training_admission",
+      "next_commands": [
+        "Complete pinned evaluation media hash verification; preserve Charades license and video-family identity; original source permission required before training or redistribution."
+      ],
+      "physical_staging_status": "MVBench_STAR_media_research_eval_download_running; full STAR training media not staged"
     },
     {
       "asset_id": "clevrer",
@@ -699,72 +774,114 @@
       "asset_id": "common-voice-tts",
       "name": "Common Voice plus open-source TTS synthesis",
       "category": "stage_3_synthetic_source",
-      "modalities": ["speech", "audio", "text"],
-      "required_stages": [3],
+      "modalities": [
+        "speech",
+        "audio",
+        "text"
+      ],
+      "required_stages": [
+        3
+      ],
       "official_source": {
         "type": "hf_dataset_stub_and_mozilla_release",
         "hf_repo_id": "mozilla-foundation/common_voice_17_0",
         "hf_revision": "11dc88355e899d1bf2df74f01b904a8544a17b33",
         "url": "https://commonvoice.mozilla.org/en/datasets"
       },
-      "license": {"declared": "Common Voice releases are generally CC0; exact release/language terms must be preserved; TTS model licenses must be checked separately"},
+      "license": {
+        "declared": "Common Voice releases are generally CC0; exact release/language terms must be preserved; TTS model licenses must be checked separately"
+      },
       "file_metadata": {
         "status": "release_stub_verified_locale_payload_not_selected",
         "hf_stub_bytes": 2875,
-        "blocking_note": "No locale chosen; exact bytes unknown until locale/release files are selected."
+        "blocking_note": "No locale chosen; exact bytes unknown until locale/release files are selected.",
+        "source_audit_manifest": "configs/speech-assets.json"
       },
       "label_origin": "Programmatic truth generated from prompts/intents/emotions/instructions; not original Common Voice labels alone.",
       "media_availability": "Requires choosing languages/locales and TTS model/source; payload unknown.",
       "public_sampling_plan": "Stage 3 uses 8k TTS synthetic speech rows; split by prompt family, speaker/voice, and source text family.",
       "admission_status": "provenance_blocked",
       "next_commands": [
-        "Choose target language/locales and exact Common Voice release files.",
-        "Select TTS engine/model only after license allows commercial training outputs; record model revision and generated audio manifest."
-      ]
+        "Complete isolated CPU ONNX WAV canary; investigate legitimately originally-public CC0 CommonVoice release without bypassing current gated terms."
+      ],
+      "physical_staging_status": "KokoroONNX87MB_selected_weights_and_voices_verified; CommonVoice_official_account_terms_pending"
     },
     {
       "asset_id": "mmau",
       "name": "MMAU public benchmark",
       "category": "eval_only_public_benchmark",
-      "modalities": ["audio", "text"],
-      "required_stages": [0, 4, 5, 6],
+      "modalities": [
+        "audio",
+        "text"
+      ],
+      "required_stages": [
+        0,
+        4,
+        5,
+        6
+      ],
       "official_source": {
         "type": "github_repository",
         "repo": "Sakshi113/MMAU",
         "revision": "110127f54c0dfba3faa5ec9feee4a7e4148679c5",
         "url": "https://github.com/Sakshi113/MMAU"
       },
-      "license": {"declared": "Apache-2.0 for repository; test-mini public answers only"},
-      "file_metadata": {"status": "repo_revision_verified_no_audio_payload_mirrored", "public_scope": "test-mini 1000 questions; 9000 blind test has no public answers"},
+      "license": {
+        "declared": "Apache-2.0 repository; actual public mini media CC-BY-NC-4.0"
+      },
+      "file_metadata": {
+        "status": "repo_revision_verified_no_audio_payload_mirrored",
+        "public_scope": "test-mini 1000 questions; 9000 blind test has no public answers",
+        "source_audit_manifest": "configs/video-eval-assets.json"
+      },
       "label_origin": "Official benchmark labels for public subset only.",
       "media_availability": "Audio payload must be pinned from official instructions.",
       "public_sampling_plan": "Stage 0 uses public test-mini only; blind test cannot be used for local score claims.",
       "admission_status": "downloadable_verified",
-      "next_commands": ["Pin public test-mini manifest and audio files; do not read or fabricate blind-test answers."]
+      "next_commands": [
+        "Pin public test-mini manifest and audio files; do not read or fabricate blind-test answers."
+      ],
+      "physical_staging_status": "public_mini_research_eval_download_running",
+      "training_release_status": "not_training_source; noncommercial public evaluation staging only"
     },
     {
       "asset_id": "mvbench",
       "name": "MVBench",
       "category": "eval_only_public_benchmark",
-      "modalities": ["video", "text"],
-      "required_stages": [0, 4, 5, 6],
+      "modalities": [
+        "video",
+        "text"
+      ],
+      "required_stages": [
+        0,
+        4,
+        5,
+        6
+      ],
       "official_source": {
         "type": "huggingface_dataset",
         "repo_id": "OpenGVLab/MVBench",
         "revision": "230a2d4fac8900333c61754641c7a13e069ac9c6",
         "url": "https://huggingface.co/datasets/OpenGVLab/MVBench"
       },
-      "license": {"declared": "mit"},
+      "license": {
+        "declared": "MIT metadata/code; academic research-only media, original source agreements apply"
+      },
       "file_metadata": {
         "status": "official_api_metadata_verified_no_content_read",
         "file_count": 41,
-        "total_bytes": 17331064311
+        "total_bytes": 17331064311,
+        "source_audit_manifest": "configs/video-eval-assets.json",
+        "teacher_reproduction_gap": "14 tasks and2786 IDs/exclusions not published in fixed teacher tree; cannot infer from20x200 official rows"
       },
       "label_origin": "Official benchmark labels.",
       "media_availability": "Large video files available; root coordination required.",
       "public_sampling_plan": "Stage 0 must freeze the exact public task/ID list used to compare Jev-Omni 14-task 2786-question score.",
       "admission_status": "downloadable_with_root_coordination",
-      "next_commands": ["Mirror only after exact 14-task reproduction manifest is written; hash all videos/questions."]
+      "next_commands": [
+        "Mirror only after exact 14-task reproduction manifest is written; hash all videos/questions."
+      ],
+      "physical_staging_status": "specific_approved_research_eval_archives_running; others require source permissions"
     },
     {
       "asset_id": "jevbench",
