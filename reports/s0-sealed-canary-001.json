@@ -1,0 +1,21 @@
+{
+  "audit_id": "s0-sealed-canary-001",
+  "dataset_version": "sealed-canary-v1",
+  "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "canary": true,
+  "passed": true,
+  "modalities": {
+    "text": {
+      "items": 2,
+      "annotations": 4,
+      "annotators": 2,
+      "kappa": 0.0,
+      "missing_items": 0,
+      "invalid_items": 0
+    }
+  },
+  "total_items": 2,
+  "total_annotations": 4,
+  "redaction": "metadata_only_no_payload_or_labels",
+  "failures": []
+}

@@ -20,7 +20,11 @@ Blocked by: p0:04
 - [ ] 提供最小汇总证明（数量/模态覆盖、数据版本hash、人工来源签认、方法、κ、审计ID），模型封存评测仍只允许S4/5/6触发。无实际身份或权限条件则blocked，不能用目录命名冒充隔离。
 
 ## Evidence
-尚未执行；本票仅冻结验收。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
+部分完成：新增 `eval.sealed_gate` 与 `scripts.sealed_gate`，只从隔离导出的元数据/原始双标标签计算汇总，并拒绝题目、答案、媒体、prompt 等封存载荷字段。`reports/s0-sealed-canary-001.json` 是非封存 canary，显式 `canary=true`，仅证明权限拒绝、双标κ汇总和 redacted 输出路径；不是真实人标验收。
+
+验证：`uv run pytest tests/test_sealed_gate.py tests/test_core.py` 通过 53 项；`uv run ruff check eval/sealed_gate.py scripts/sealed_gate.py tests/test_sealed_gate.py` 通过；`uv run mypy eval scripts tests/test_sealed_gate.py` 通过。canary 输出经 `rg "allow|deny|question|prompt|answer|media_uri" reports/s0-sealed-canary-001.json` 未命中。
+
+剩余：真实隔离 gate 身份、每模态真实来源、独立人工标注者签认和真实 κ≥0.7 仍未取得；06 继续 blocked。本票不能替代封存集或模型封存评测。
 
 ## Out of scope
 agent读取/生成封存内容、提前模型封存评测、招聘/付费标注、冒充真实κ。
