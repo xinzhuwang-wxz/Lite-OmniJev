@@ -2,13 +2,14 @@
   "schema_version": 1,
   "created_at": "2026-10-13T17:04:08.071759+00:00",
   "scope": "whole-project-model-assets-before-gpu",
-  "status": "inventory_prepared_no_large_download_started_by_this_slice",
+  "status": "model_inventory_prepared_no_whole_project_disk_sufficiency_claim",
   "constraints": [
     "Do not use prohibited JEV-27B or JEV-27B-VL weights or labels.",
     "OneJev-27B is a distinct OmniJev repository and is required by the original teacher/reference plan.",
     "Downloads remain separate from training/data admission; this manifest is not model-quality evidence.",
     "Jev-Omni head.pt is required for the published teacher package and needs isolated conversion/audit before project runtime admission.",
-    "Valen-Preview-0923 does not duplicate its frozen Qwen3.5-2B base; both repos are required for the Valen-2B baseline."
+    "Valen-Preview-0923 does not duplicate its frozen Qwen3.5-2B base; both repos are required for the Valen-2B baseline.",
+    "Disk math is model-only lower-bound evidence until data/eval-media audit is complete."
   ],
   "sources": {
     "official_primary": [
@@ -25,14 +26,14 @@
     ]
   },
   "disk_budget_bytes": {
-    "required_model_assets": 121094724413,
+    "known_model_asset_lower_bound": 121094724397,
     "optional_card_assets": 29668006,
     "required_weights_or_checkpoints": 120934854747,
-    "model_download_cache_headroom_15_percent": 18164208661,
+    "model_download_cache_temp_reserve_15_percent": 18164208659,
     "checkpoint_and_adapter_headroom_minimum": 150000000000,
-    "data_and_eval_headroom_minimum": 80000000000,
-    "recommended_free_before_gpu": 369258933074,
-    "note": "Headroom covers HF cache/temp, E4B LoRA checkpoints, calibration/quantization outputs, prepared data/eval media, and avoids filling the paid disk during GPU work."
+    "known_model_plus_temp_plus_checkpoint_lower_bound": 289258933056,
+    "unknown_total_data_budget": null,
+    "note": "This is a model-only known lower bound plus download/temp and checkpoint reserve. It is not a whole-project enough-to-open-GPU assertion because dataset/eval media audit is incomplete."
   },
   "models": [
     {
@@ -227,19 +228,19 @@
       "id": "jev-omni-12b",
       "display_name": "Jev-Omni",
       "repo_id": "akhilaaa3/Jev-Omni",
-      "revision": "fee89b076e2263bfa8bce8d34142caa4ca733a48",
+      "revision": "5addda86ddee081a68fb067477ea100c221b8917",
       "role": "teacher_audio_video_and_s0_reproduction_baseline",
       "required": true,
       "original_identity": "Jev-Omni-12B teacher for audio/video",
-      "requested_revision": "main",
-      "source_url": "https://huggingface.co/akhilaaa3/Jev-Omni/tree/fee89b076e2263bfa8bce8d34142caa4ca733a48",
-      "metadata_api_url": "https://huggingface.co/api/models/akhilaaa3/Jev-Omni?blobs=true",
+      "requested_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+      "source_url": "https://huggingface.co/akhilaaa3/Jev-Omni/tree/5addda86ddee081a68fb067477ea100c221b8917",
+      "metadata_api_url": "https://huggingface.co/api/models/akhilaaa3/Jev-Omni/revision/5addda86ddee081a68fb067477ea100c221b8917?blobs=true",
       "license": "apache-2.0",
       "gated": false,
       "file_count": 21,
       "required_file_count": 13,
-      "total_bytes": 23976124780,
-      "required_bytes": 23955723337,
+      "total_bytes": 23976124764,
+      "required_bytes": 23955723321,
       "required_weight_bytes": 23923515487,
       "optional_bytes": 20401443,
       "files": [
@@ -253,11 +254,11 @@
         },
         {
           "path": "README.md",
-          "bytes": 4122,
+          "bytes": 4106,
           "required": true,
           "kind": "metadata",
           "lfs_sha256": null,
-          "git_blob_sha1": "e1a13c1258876dd4752f05682233a4c452fa1fa1"
+          "git_blob_sha1": "fe54aaff1d54d944b515e5e3de13af1f9c0a2ddc"
         },
         {
           "path": "assets/medium-accuracy.png",
@@ -411,7 +412,9 @@
           "lfs_sha256": null,
           "git_blob_sha1": "696f7f3d60a383d830ac8d749da1be25228a52c8"
         }
-      ]
+      ],
+      "current_main_observed_sha": "fee89b076e2263bfa8bce8d34142caa4ca733a48",
+      "pin_note": "Preserve frozen teacher audit/download SHA; current main is informational only and must not change admitted teacher provenance."
     },
     {
       "id": "onejev-4b",
@@ -948,7 +951,7 @@
     "gemma4-e4b-it": "STATUS says existing E4B 16GB verified at revision ee0ef6023621cff504d758262d4e04895a5af4a2; this slice did not re-download.",
     "gemma4-e2b-it": "Existing metadata only; full 10.25GB weights still need hash-verified download before GPU.",
     "onejev-27b": "Existing metadata only; 54.71GB weights still need hash-verified download before teacher/baseline use.",
-    "jev-omni-12b": "STATUS says teacher 24GB partial download in another lane; this slice does not claim admitted/complete.",
+    "jev-omni-12b": "STATUS says teacher 24GB partial download/audit exists in another lane at frozen SHA 5addda86ddee081a68fb067477ea100c221b8917; this manifest preserves that pin and does not claim admitted/complete.",
     "onejev-4b": "Newly inventoried here; required 10.37GB baseline not yet verified downloaded by this slice.",
     "valen-preview-0923": "Newly inventoried here; 1.16GB checkpoint plus required Qwen3.5-2B base not yet verified downloaded by this slice."
   }
