@@ -82,3 +82,22 @@ The upstream Completion API samples one token and may report `completion_tokens=
 - Production authentication, multimodal processing, final Playground, GPU numerical parity, teacher scores, human holdout agreement, and three-platform release acceptance are explicitly deferred; their absence is not counted as an M0 defect here.
 
 Parent is implementing fixes. This snapshot review is not a post-fix approval: record follow-up commit and fresh targeted/batch evidence before changing the verdict.
+
+## Post-fix verification addendum — 2026-10-13
+
+Verified fix commit: `06a9cdca93d9f39887846c8dc2d95992d97052e0`. This addendum supersedes the initial changes-required verdict **for F1–F6 and the reviewed M0 snapshot only**. All six findings are resolved; no remaining blocker was observed in this focused recheck. The concurrent training runner is still outside this review.
+
+Independent rerun: `PYTHONPATH=. /Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python -m pytest -q` → **84 passed in 0.41s**. Then reran the original public-interface counterexamples without editing tests or application code:
+
+| Finding | Fresh result |
+|---|---|
+| F1 | 100 equal-confidence rows with 65 correct/35 incorrect report coverage `0.0` in either order. The 20-row case recovering to 5% error still reports `1.0`. |
+| F2 | Metadata-only inventory raises incomplete-inventory ValueError. Additional probe with both correctly named/checksummed shards present but an index referring to only one shard also raises index-mismatch ValueError. Existing tests confirm metadata-only download still reports `weights_ready=false`. |
+| F3 | Score criteria `["low","high"]` round-trip as `legend={"0":"low","1":"high"}` through HTTP 200. |
+| F4 | Whitespace-equivalent Choice descriptions return HTTP 422 with no additional backend call. |
+| F5 | `OmniJev/OneJev-27B` reaches the mocked metadata client; exact prohibited basenames `JEV-27B` and `JEV-27B-VL` fail before any client call. License/source review is still required. |
+| F6 | Positive raw logprobs return HTTP 502 and no fabricated answer. |
+
+The accounting observation is also addressed: the HTTP probe preserves product `usage.output_tokens=0` while independently returning `backend_usage.output_tokens=1` for the actual backend work.
+
+No live GPU, teacher, human annotation, external leaderboard, complete SDK, multimodal or final release acceptance claim follows from these tests. Parent remains responsible for integration evidence and the separately reviewed training runner before marking the whole milestone complete.
