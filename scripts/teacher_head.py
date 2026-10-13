@@ -9,9 +9,10 @@ from typing import Any
 
 from scripts.assets import write_json
 from train.teacher_head import (
+    IsolationError,
     SeccompError,
+    child_chrooted_convert,
     convert_from_argv,
-    install_network_deny_seccomp,
     isolated_convert,
     parse_conversion_args,
     probe_isolation,
@@ -53,17 +54,7 @@ def _conversion_argv(args: argparse.Namespace) -> list[str]:
 def _run_convert(args: argparse.Namespace) -> dict[str, Any]:
     argv = _conversion_argv(args)
     if args.isolate:
-        completed = isolated_convert(argv)
-        if completed.returncode != 0:
-            return {
-                "schema_version": 1,
-                "status": "blocked",
-                "exit_code": completed.returncode,
-                "blocker": completed.stderr.strip().splitlines()[-1]
-                if completed.stderr.strip()
-                else "isolated conversion failed",
-            }
-        return dict(json.loads(completed.stdout))
+        return isolated_convert(argv)
     kwargs = parse_conversion_args(argv)
     report = convert_from_argv(argv)
     report["isolation"] = {
@@ -83,7 +74,9 @@ def main(argv: list[str] | None = None) -> int:
     convert.add_argument("--isolate", action="store_true")
     convert.add_argument("--report", type=Path, required=True)
 
-    sub.add_parser("_child-convert", parents=[_conversion_parser()])
+    child = sub.add_parser("_child-convert", parents=[_conversion_parser()])
+    child.add_argument("--jail-root", type=Path, required=True)
+    child.add_argument("--host-canary", required=True)
 
     probe = sub.add_parser("probe-isolation")
     probe.add_argument("--report", type=Path, required=True)
@@ -97,9 +90,11 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(report, ensure_ascii=False, allow_nan=False))
             return int(report["exit_code"])
         if args.command == "_child-convert":
-            install_network_deny_seccomp()
-            report = convert_from_argv(_conversion_argv(args))
-            report["isolation"] = {"mode": "seccomp", "network_denied": True}
+            report = child_chrooted_convert(
+                _conversion_argv(args),
+                jail_root=args.jail_root,
+                host_canary=args.host_canary,
+            )
             print(json.dumps(report, ensure_ascii=False, allow_nan=False))
             return 0
         report = _run_convert(args)
@@ -109,8 +104,10 @@ def main(argv: list[str] | None = None) -> int:
             "schema_version": 1,
             "status": "blocked",
             "exit_code": 1,
-            "blocker": f"{type(exc).__name__}: {exc}"
-            if isinstance(exc, (SeccompError, ValueError, OSError))
+            "blocker": "isolation_unavailable"
+            if isinstance(exc, (IsolationError, SeccompError))
+            else "conversion_failed"
+            if isinstance(exc, (ValueError, OSError, ModuleNotFoundError))
             else type(exc).__name__,
         }
     if args.command == "convert":

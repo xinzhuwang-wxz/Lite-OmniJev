@@ -9,9 +9,11 @@ import importlib
 import json
 import os
 import platform
+import pwd
 import shutil
 import subprocess
 import sys
+import tempfile
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
@@ -204,6 +206,10 @@ class SeccompError(RuntimeError):
     """Raised when the platform cannot install the network-deny boundary."""
 
 
+class IsolationError(RuntimeError):
+    """Raised when conversion cannot run inside the no-secrets boundary."""
+
+
 def install_network_deny_seccomp() -> None:
     if platform.system() != "Linux":
         raise SeccompError("seccomp network-deny boundary requires Linux")
@@ -282,29 +288,165 @@ def _scrubbed_env() -> dict[str, str]:
     return keep
 
 
-def isolated_convert(args: list[str]) -> subprocess.CompletedProcess[str]:
-    command = [sys.executable, "-m", "scripts.teacher_head", "_child-convert", *args]
-    setpriv = shutil.which("setpriv")
-    if setpriv:
+def _nobody_ids() -> tuple[int, int]:
+    try:
+        entry = pwd.getpwnam("nobody")
+    except KeyError:
+        return 65534, 65534
+    return int(entry.pw_uid), int(entry.pw_gid)
+
+
+def _drop_to_nobody() -> None:
+    uid, gid = _nobody_ids()
+    os.setgroups([])
+    os.setgid(gid)
+    os.setuid(uid)
+    if os.getuid() == 0 or os.geteuid() == 0:
+        raise IsolationError("failed to drop root privileges")
+
+
+def _set_no_new_privs() -> None:
+    if platform.system() != "Linux":
+        raise IsolationError("no_new_privs requires Linux")
+    libc = ctypes.CDLL(None, use_errno=True)
+    pr_set_no_new_privs = 38
+    result = libc.prctl(pr_set_no_new_privs, 1, 0, 0, 0)
+    if result != 0:
+        error = ctypes.get_errno()
+        raise IsolationError(f"prctl no_new_privs failed: {error}")
+
+
+def _assert_secret_denied(host_canary: str) -> bool:
+    try:
+        Path(host_canary).read_bytes()
+    except (FileNotFoundError, PermissionError, NotADirectoryError):
+        return True
+    raise IsolationError("host canary remained readable after chroot")
+
+
+def _assert_socket_denied() -> bool:
+    import socket
+
+    try:
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    except PermissionError:
+        return True
+    raise IsolationError("socket syscall was not denied")
+
+
+def child_chrooted_convert(argv: list[str], *, jail_root: Path, host_canary: str) -> dict[str, Any]:
+    if platform.system() != "Linux" or os.geteuid() != 0:
+        raise IsolationError("chroot conversion requires Linux root")
+    importlib.import_module("torch")
+    importlib.import_module("torch.utils.serialization")
+    importlib.import_module("numpy.ctypeslib")
+    importlib.import_module("safetensors.torch")
+    if not jail_root.is_dir():
+        raise IsolationError("missing conversion jail")
+    install_network_deny_seccomp()
+    os.chdir(jail_root)
+    os.chroot(jail_root)
+    os.chdir("/")
+    _set_no_new_privs()
+    _drop_to_nobody()
+    secret_denied = _assert_secret_denied(host_canary)
+    socket_denied = _assert_socket_denied()
+    report = convert_from_argv(argv)
+    report["isolation"] = {
+        "mode": "chroot+dropuid+seccomp",
+        "filesystem_boundary": "chroot",
+        "uid": os.getuid(),
+        "gid": os.getgid(),
+        "network_denied": socket_denied,
+        "host_canary_denied": secret_denied,
+        "no_new_privs": True,
+    }
+    report["expected_spec_provided"] = True
+    return report
+
+
+def _jail_conversion_args(args: list[str]) -> tuple[list[str], Path, Path, Path]:
+    parsed = parse_conversion_args(args)
+    if parsed["expected_spec"] is None:
+        raise IsolationError("isolated conversion requires a preapproved expected spec")
+    source = cast(Path, parsed["source"])
+    output = cast(Path, parsed["output"])
+    expected_spec_path: Path | None = None
+    for index, item in enumerate(args):
+        if item == "--expected-spec":
+            expected_spec_path = Path(args[index + 1])
+            break
+    if expected_spec_path is None:
+        raise IsolationError("isolated conversion requires a preapproved expected spec")
+    jail_args = args.copy()
+    replacements = {
+        "--source": "/input/head.pt",
+        "--output": "/output/head.safetensors",
+        "--expected-spec": "/input/expected-spec.json",
+    }
+    for index, item in enumerate(jail_args):
+        if item in replacements:
+            jail_args[index + 1] = replacements[item]
+    return jail_args, source, output, expected_spec_path
+
+
+def isolated_convert(args: list[str]) -> dict[str, Any]:
+    jail_args, source, output, expected_spec_path = _jail_conversion_args(args)
+    if platform.system() != "Linux" or os.geteuid() != 0:
+        raise IsolationError("isolated conversion requires Linux root chroot support")
+    with tempfile.TemporaryDirectory(prefix="teacher-head-jail-") as temporary:
+        jail = Path(temporary)
+        input_dir = jail / "input"
+        output_dir = jail / "output"
+        jail.chmod(0o755)
+        input_dir.mkdir()
+        output_dir.mkdir()
+        input_dir.chmod(0o755)
+        output_dir.chmod(0o777)
+        shutil.copy2(source, input_dir / "head.pt")
+        shutil.copy2(expected_spec_path, input_dir / "expected-spec.json")
+        host_canary = jail.parent / f"{jail.name}.host-canary"
+        host_canary.write_text("secret-canary")
         command = [
-            setpriv,
-            "--no-new-privs",
-            "--reuid",
-            str(os.getuid()),
-            "--regid",
-            str(os.getgid()),
-            "--clear-groups",
-            *command,
+            sys.executable,
+            "-m",
+            "scripts.teacher_head",
+            "_child-convert",
+            "--jail-root",
+            str(jail),
+            "--host-canary",
+            str(host_canary),
+            *jail_args,
         ]
-    return subprocess.run(
-        command,
-        check=False,
-        text=True,
-        capture_output=True,
-        stdin=subprocess.DEVNULL,
-        close_fds=True,
-        env=_scrubbed_env(),
-    )
+        try:
+            completed = subprocess.run(
+                command,
+                check=False,
+                text=True,
+                capture_output=True,
+                stdin=subprocess.DEVNULL,
+                close_fds=True,
+                env=_scrubbed_env(),
+            )
+            if completed.returncode != 0:
+                raise IsolationError("isolated conversion child failed")
+            report = dict(json.loads(completed.stdout))
+            converted = output_dir / "head.safetensors"
+            if not converted.is_file():
+                raise IsolationError("isolated conversion produced no safetensors output")
+            output.parent.mkdir(parents=True, exist_ok=True)
+            temporary_output = output.with_suffix(output.suffix + ".tmp")
+            shutil.copy2(converted, temporary_output)
+            temporary_output.replace(output)
+            if file_sha256(output) != report.get("output_sha256"):
+                output.unlink(missing_ok=True)
+                raise IsolationError("copied safetensors hash mismatch")
+            report["output_path"] = str(output)
+            report["output_size"] = output.stat().st_size
+            report["output_sha256"] = file_sha256(output)
+            return report
+        finally:
+            host_canary.unlink(missing_ok=True)
 
 
 def probe_isolation() -> dict[str, Any]:
@@ -319,14 +461,8 @@ def probe_isolation() -> dict[str, Any]:
     }
     try:
         install_network_deny_seccomp()
-        import socket
-
-        try:
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        except PermissionError:
-            report.update(libseccomp="available", network_denied=True, status="ready")
-        else:
-            report.update(libseccomp="available", blocker="socket syscall was not denied")
+        _assert_socket_denied()
+        report.update(libseccomp="available", network_denied=True, status="ready")
     except Exception as exc:
         report.update(libseccomp="blocked", blocker=f"{type(exc).__name__}: {exc}")
     return report

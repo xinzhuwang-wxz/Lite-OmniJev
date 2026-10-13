@@ -158,7 +158,34 @@ def test_cli_records_failure_without_leaking_payload(tmp_path):
     assert code == 1
     payload = json.loads(report.read_text())
     assert payload["status"] == "blocked"
-    assert "not a torch file" not in payload["blocker"]
+    assert payload["blocker"] == "conversion_failed"
+    assert "not a torch file" not in json.dumps(payload)
+
+
+def test_cli_isolate_requires_preapproved_spec(tmp_path):
+    source = tmp_path / "head.pt"
+    source.write_bytes(b"not loaded before spec check")
+    report = tmp_path / "report.json"
+    output = tmp_path / "head.safetensors"
+    code = main(
+        [
+            "convert",
+            "--isolate",
+            "--source",
+            str(source),
+            "--output",
+            str(output),
+            "--expected-sha256",
+            hashlib.sha256(source.read_bytes()).hexdigest(),
+            "--report",
+            str(report),
+        ]
+    )
+    payload = json.loads(report.read_text())
+    assert code == 1
+    assert payload["status"] == "blocked"
+    assert payload["blocker"] == "isolation_unavailable"
+    assert not output.exists()
 
 
 def test_cli_direct_conversion_report_marks_nonisolated_mode(tmp_path):

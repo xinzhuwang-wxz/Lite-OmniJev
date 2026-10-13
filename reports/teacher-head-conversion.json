@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "status": "converted",
-  "converted_at": "2026-10-13T17:09:34.191507+00:00",
+  "converted_at": "2026-10-13T17:19:47.891229+00:00",
   "source_repo": "akhilaaa3/Jev-Omni",
   "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
-  "source_path": "artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917/head.pt",
+  "source_path": "/input/head.pt",
   "source_size": 3966079,
   "source_sha256": "8c81edecd733f7db327604803c14cf9ecbee53d2af055eeb09f78b64bcbf2638",
   "output_path": "artifacts/teacher/jev-omni/5addda86ddee081a68fb067477ea100c221b8917/head.safetensors",
   "output_size": 3964424,
-  "output_sha256": "526af7409c23e250828a6dc5b18940a337eacfa5f7ccd7043cf033cff11615b1",
+  "output_sha256": "97c521b6ee32aae3d4ee48841e1513da1d22c9dddbdd8cf6aa8529724d6870cb",
   "tensor_count": 4,
   "tensors": {
     "linear.bias": {
@@ -55,8 +55,14 @@
     "safetensors": "0.8.0"
   },
   "isolation": {
-    "mode": "seccomp",
-    "network_denied": true
+    "mode": "chroot+dropuid+seccomp",
+    "filesystem_boundary": "chroot",
+    "uid": 65534,
+    "gid": 65534,
+    "network_denied": true,
+    "host_canary_denied": true,
+    "no_new_privs": true
   },
+  "expected_spec_provided": true,
   "exit_code": 0
 }
