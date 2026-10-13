@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "started_utc": "2026-10-13T23:24:26.654342+00:00",
+  "gpu_used": false,
+  "model_forward_run": false,
+  "model_backbone_loaded": false,
+  "student_head_used": false,
+  "trust_remote_code": false,
+  "local_files_only": true,
+  "use_safetensors_for_head": true,
+  "source_repo": "akhilaaa3/Jev-Omni",
+  "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+  "source_scope": "source-only structural check; only jev_omni.py and the converted head are hash anchored here, so this report is not full model-source admission",
+  "source": {
+    "source_repo": "akhilaaa3/Jev-Omni",
+    "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+    "files": {
+      "config.json": {
+        "bytes": 4034,
+        "sha256": "346145528d5ee228965be07212dc3ef1bc442629b12ba71b92528ea57540faa5"
+      },
+      "decision_config.json": {
+        "bytes": 1174,
+        "sha256": "2cf5e5781871ed86be130abe0fccda8dbad35f32c6deebe08cd8f92f5f452200"
+      },
+      "processor_config.json": {
+        "bytes": 1382,
+        "sha256": "6b938e76555b3e9946890770e1abcd442a4718f34041a58e8139dc8ad34545c9"
+      },
+      "tokenizer.json": {
+        "bytes": 32169626,
+        "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f"
+      },
+      "tokenizer_config.json": {
+        "bytes": 3735,
+        "sha256": "3776d16773f89b8047057deace4a362c0dc70853abadb2102bc1c19fc4b7af90"
+      },
+      "chat_template.jinja": {
+        "bytes": 18683,
+        "sha256": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4"
+      },
+      "jev_omni.py": {
+        "bytes": 6822,
+        "sha256": "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0"
+      }
+    },
+    "decision_config": {
+      "hidden_size": 3840,
+      "output_classes": 256,
+      "dtype": "float32"
+    },
+    "processor_config": {
+      "processor_class": "Gemma4UnifiedProcessor",
+      "audio_sampling_rate": 16000,
+      "video_num_frames_config": 32
+    },
+    "config": {
+      "architectures": [
+        "Gemma4UnifiedForConditionalGeneration"
+      ],
+      "model_type": "gemma4_unified"
+    },
+    "upstream_custom_code_executed": false
+  },
+  "head": {
+    "path": "/private/tmp/lite-omnijev-s0-teacher/artifacts/teacher-preflight-003/head/head.safetensors",
+    "bytes": 3964424,
+    "sha256": "e1e3e2b65281f5694c345613a278d561bc0d9faf389a5c81b95dd60f66cdf9a3",
+    "tensor_count": 4,
+    "tensors": {
+      "linear.bias": {
+        "shape": [
+          256
+        ],
+        "dtype": "torch.float32",
+        "sha256": "64fc4d7415e749ede5eb9d15d4a6be3f23791275e371bdeb6ca4017fee2ff8a7"
+      },
+      "linear.weight": {
+        "shape": [
+          256,
+          3840
+        ],
+        "dtype": "torch.float32",
+        "sha256": "77d888094e18126a43ececd4160a08031c636d20c27eb4607afe42e3818e0ea1"
+      },
+      "mu": {
+        "shape": [
+          1,
+          3840
+        ],
+        "dtype": "torch.float32",
+        "sha256": "100aa1863b2aa4b4822a7d6972e0640adf484fbe54ab716ca2ce16a26c963b53"
+      },
+      "sd": {
+        "shape": [
+          1,
+          3840
+        ],
+        "dtype": "torch.float32",
+        "sha256": "347e5b5b79d3a91fa8cad72702a3185812e4f45f2aad31dba49f5e1fbc3130a9"
+      }
+    },
+    "loaded_with": "safetensors.torch.load_file",
+    "torch_load_used": false
+  },
+  "processor": {
+    "class": "Gemma4UnifiedProcessor",
+    "synthetic_input": {
+      "modality": "audio",
+      "option_count": 2,
+      "keys": {
+        "attention_mask": {
+          "kind": "tensor",
+          "shape": [
+            1,
+            70
+          ],
+          "dtype": "torch.int64"
+        },
+        "input_features": {
+          "kind": "tensor",
+          "shape": [
+            1,
+            3,
+            640
+          ],
+          "dtype": "torch.float32"
+        },
+        "input_features_mask": {
+          "kind": "tensor",
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.bool"
+        },
+        "input_ids": {
+          "kind": "tensor",
+          "shape": [
+            1,
+            70
+          ],
+          "dtype": "torch.int64"
+        },
+        "mm_token_type_ids": {
+          "kind": "tensor",
+          "shape": [
+            1,
+            70
+          ],
+          "dtype": "torch.int64"
+        }
+      },
+      "thinking_disabled": true,
+      "tokenize": true,
+      "contains_payload_values": false
+    }
+  },
+  "forward_integration_status": "missing_unwritten_in_this_slice",
+  "exit_code": 0,
+  "finished_utc": "2026-10-13T23:24:29.351852+00:00",
+  "elapsed_seconds": 2.698
+}

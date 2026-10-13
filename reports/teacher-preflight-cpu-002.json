@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "created_utc": "2026-10-13T23:16:09.681782+00:00",
+  "scope": "bounded diagnostic for CPU-safe Jev-Omni teacher preflight after prior audio/text attempts",
+  "gpu_used": false,
+  "model_forward_run": false,
+  "model_backbone_loaded": false,
+  "script": {
+    "path": "reports/teacher-preflight-cpu-002.py",
+    "sha256": "ad09d351ec5d5218a3038fb7aba78a261726e36035cc053ffb0962f493922cd4"
+  },
+  "stdout": {
+    "path": "reports/teacher-preflight-cpu-002.stdout.txt",
+    "sha256": "36572a4630fc1b56e566ab1479c5ea66c556fcdd779b05b261b3057b105a5a4f",
+    "exit_code": 137
+  },
+  "memory_diagnosis": {
+    "memory_max_bytes": 2147483648,
+    "memory_current_before_latest_check_bytes": 2124083200,
+    "memory_current_after_failed_run_bytes": 1500295168,
+    "memory_events_after_failed_run": {
+      "low": 0,
+      "high": 0,
+      "max": 5502983,
+      "oom": 0,
+      "oom_kill": 0
+    },
+    "co_resident_processes_before_run": [
+      {
+        "name": "pip download",
+        "rss_kib": 324700
+      },
+      {
+        "name": "GUI media validation",
+        "rss_kib": 124400
+      },
+      {
+        "name": "jupyter-lab",
+        "rss_kib": 99668
+      },
+      {
+        "name": "tensorboard",
+        "rss_kib": 79464
+      }
+    ],
+    "conclusion": "exit 137 is confirmed, but cgroup oom and oom_kill remained 0; with memory.current near the 2GiB cgroup max and co-resident jobs present, the exact killer is not proven and must not be reported as a definite OOM kill."
+  },
+  "transformers_audio_path": {
+    "version": "5.19.0",
+    "audio_utils": "transformers/audio_utils.py load_audio accepts np.ndarray passthrough before path decoding; path strings can select librosa/torchaudio/torchcodec backends.",
+    "adapter_change": "prepared_teacher_input now reads the already validated mono 16kHz PCM16 WAV into a float32 numpy waveform, preserving PCM samples while avoiding the path-based load_audio decoder branch.",
+    "cpu_equivalence_status": "code-level PCM conversion implemented; real audio processor tensor construction remains blocked by current CPU memory pressure and has not passed.",
+    "mac_source_check": {
+      "python": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
+      "audio_utils_file": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/lib/python3.11/site-packages/transformers/audio_utils.py",
+      "command": "inspect transformers.audio_utils.load_audio and make_audio_chat_template_content with numpy arrays",
+      "exit_code": 0,
+      "evidence": {
+        "load_audio_ndarray_returns_before_backend_selection": true,
+        "make_audio_chat_template_content_ndarray_type": "audio",
+        "make_list_of_audio_chat_template_ndarray_length": 1
+      },
+      "conclusion": "PCM16 WAV to float32 numpy waveform keeps official processor audio semantics on the ndarray path and does not require adding librosa/soundfile for this adapter path; path-string audio remains unclaimed."
+    }
+  },
+  "prior_pass_evidence": {
+    "text_processor_step": "previous stepwise remote run loaded local Gemma4UnifiedProcessor and built text synthetic tensors with shapes [1,65] for input_ids/attention_mask/mm_token_type_ids at peak RSS about 1215256 KiB.",
+    "head": "safe head SHA e1e3e2b65281f5694c345613a278d561bc0d9faf389a5c81b95dd60f66cdf9a3 matched conversion report and expected tensor spec."
+  },
+  "limitations": [
+    "No full forward loader is present in this slice.",
+    "Image/audio real processor tensor construction is not claimed all-pass by this report.",
+    "No prompt text, token IDs, sample content, private URL, credential, or hidden-set content is persisted.",
+    "Mac source inspection and local pytest do not substitute for Linux/GPU teacher forward evidence."
+  ],
+  "exit_code": 1,
+  "local_real_dependency_tests": {
+    "python": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
+    "python_version": "3.11.14",
+    "torch": "2.14.1",
+    "transformers": "5.19.0",
+    "numpy": "2.4.6",
+    "safetensors": "0.8.0",
+    "env": {
+      "PYTHONPATH": "/tmp/lite-omnijev-s0-teacher",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "command": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python -m pytest tests/test_teacher_head.py tests/test_teacher_inference.py tests/test_teacher_media.py",
+    "workdir": "/tmp/lite-omnijev-s0-teacher",
+    "exit_code": 0,
+    "result": "30 passed in 3.56s",
+    "note": "train/teacher_media.py and tests/test_teacher_media.py were copied from the current main tree for this old worktree test only and are not part of this slice commit."
+  },
+  "review_followup": {
+    "video_sampling_boundary": {
+      "decision": "Keep the pinned upstream round-and-deduplicate sampling formula for same-condition protocol compatibility.",
+      "behavior": "If the formula yields fewer unique indices than requested, reject before decoding instead of silently reducing frame count.",
+      "covered_case": "total_frames=17, requested=16 -> ValueError: pinned sampling protocol yields 9 unique frames, requested 16",
+      "future_change": "Changing the formula requires a separate protocol decision."
+    }
+  }
+}
