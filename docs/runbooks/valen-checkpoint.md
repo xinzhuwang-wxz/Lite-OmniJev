@@ -20,9 +20,10 @@ python -m scripts.valen_checkpoint derive-spec \
   --report reports/valen-checkpoint-spec-report.json
 ```
 
-Convert in the hardened jail:
+Convert in the hardened jail. On the shared no-GPU host, take the CPU-heavy lock so the 0.5-core cgroup is not contended during the bounded conversion:
 
 ```bash
+flock /tmp/omnijev-cpu-heavy.lock \
 python -m scripts.valen_checkpoint convert --isolate \
   --checkpoint artifacts/quarantine/Valen-Team__Valen-Preview-0923/30096aaabb2689614c83a79f64f38c865c2ce1c1/checkpoint.pt \
   --output artifacts/valen/Valen-Preview-0923/30096aaabb2689614c83a79f64f38c865c2ce1c1/weights.safetensors \
@@ -32,4 +33,4 @@ python -m scripts.valen_checkpoint convert --isolate \
   --report reports/valen-checkpoint-conversion.json
 ```
 
-The isolated conversion path preimports the loader dependencies, enters an empty chroot containing only the copied input checkpoint and preapproved spec, drops to `nobody`, denies network syscalls with seccomp, checks a host canary is inaccessible, and copies the child output back through a no-follow, nonblocking, regular-file-only bounded read. The report must show `status: converted`, `isolation.network_denied: true`, `isolation.host_canary_denied: true`, and the `expected_spec_sha256`, `config_sha256`, and `training_metadata_sha256` values used for admission.
+The isolated conversion path preimports the loader dependencies, caps BLAS/OpenMP/PyTorch thread pools at one worker, enters an empty chroot containing only the copied input checkpoint and preapproved spec, drops to `nobody`, denies network syscalls with seccomp, checks a host canary is inaccessible, and copies the child output into a private staging file through a no-follow, nonblocking, regular-file-only bounded read. The parent verifies the staging hash and safetensors header before atomically promoting it over the destination, preserving any existing destination on failure. The report must show `status: converted`, `isolation.network_denied: true`, `isolation.host_canary_denied: true`, `tensor_manifest_redacted: true`, and the `expected_spec_sha256`, `config_sha256`, and `training_metadata_sha256` values used for admission.

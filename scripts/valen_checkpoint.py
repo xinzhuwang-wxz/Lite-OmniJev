@@ -13,7 +13,6 @@ from train.valen_checkpoint import (
     child_chrooted_convert,
     derive_spec,
     isolated_convert,
-    parse_conversion_args,
 )
 
 
@@ -24,6 +23,7 @@ def _conversion_parser() -> argparse.ArgumentParser:
     parser.add_argument("--expected-sha256", default=CHECKPOINT_SHA256)
     parser.add_argument("--expected-size", type=int)
     parser.add_argument("--expected-spec", type=Path, required=True)
+    parser.add_argument("--diagnostics-output", type=Path)
     return parser
 
 
@@ -40,6 +40,8 @@ def _conversion_argv(args: argparse.Namespace) -> list[str]:
     ]
     if args.expected_size is not None:
         argv.extend(["--expected-size", str(args.expected_size)])
+    if args.diagnostics_output is not None:
+        argv.extend(["--diagnostics-output", str(args.diagnostics_output)])
     return argv
 
 
@@ -86,14 +88,15 @@ def main(argv: list[str] | None = None) -> int:
             )
             print(json.dumps(report, ensure_ascii=False, allow_nan=False))
             return 0
-        if args.isolate:
-            report = isolated_convert(_conversion_argv(args))
+        if not args.isolate:
+            report = {
+                "schema_version": 1,
+                "status": "blocked",
+                "exit_code": 1,
+                "blocker": "isolation_required",
+            }
         else:
-            from train.valen_checkpoint import convert_checkpoint
-
-            kwargs = parse_conversion_args(_conversion_argv(args))
-            report = convert_checkpoint(**kwargs)
-            report["isolation"] = {"mode": "direct", "network_denied": False}
+            report = isolated_convert(_conversion_argv(args))
         report.setdefault("exit_code", 0 if report.get("status") == "converted" else 1)
     except Exception as exc:
         report = {

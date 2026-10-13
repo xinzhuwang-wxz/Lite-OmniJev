@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
@@ -50,6 +51,117 @@ SOURCE_FILE_SHA256S = {
         "b3739da6db4202414da637b821ad99c97c13e618680b8dcc64893c65296ac438"
     ),
 }
+
+THREAD_LIMIT_ENV = {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "TORCH_NUM_THREADS": "1",
+}
+
+
+def _valen_scrubbed_env() -> dict[str, str]:
+    env = _scrubbed_env()
+    env.update(THREAD_LIMIT_ENV)
+    return env
+
+
+def _configure_torch_threads(torch: Any) -> dict[str, int | str]:
+    for key, value in THREAD_LIMIT_ENV.items():
+        os.environ[key] = value
+    torch.set_num_threads(1)
+    try:
+        torch.set_num_interop_threads(1)
+    except RuntimeError:
+        pass
+    interop: int | str = "unknown"
+    try:
+        interop = int(torch.get_num_interop_threads())
+    except RuntimeError:
+        pass
+    return {
+        "torch_num_threads": int(torch.get_num_threads()),
+        "torch_num_interop_threads": interop,
+    }
+
+
+class StageDiagnostics:
+    def __init__(self, path: Path | None) -> None:
+        self.path = path
+        self.started = time.monotonic()
+        self.stages: list[dict[str, Any]] = []
+        self.current: dict[str, Any] | None = None
+        self.context: dict[str, Any] = {}
+
+    def update_context(self, **items: Any) -> None:
+        self.context.update(items)
+        self._write("running")
+
+    def start(self, name: str, **items: Any) -> None:
+        now = time.monotonic()
+        self.current = {"name": name, "started_seconds": round(now - self.started, 6), **items}
+        self._write("running")
+
+    def finish(self, name: str, **items: Any) -> None:
+        now = time.monotonic()
+        current = self.current if self.current and self.current.get("name") == name else None
+        started = (
+            float(current.get("started_seconds", now - self.started))
+            if current
+            else now - self.started
+        )
+        entry = {
+            "name": name,
+            "started_seconds": round(started, 6),
+            "duration_seconds": round((now - self.started) - started, 6),
+            **(current or {}),
+            **items,
+        }
+        self.stages.append(entry)
+        self.current = None
+        self._write("running")
+
+    def complete(self) -> None:
+        self._write("complete")
+
+    def snapshot(self, status: str) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "schema_version": SCHEMA_VERSION,
+            "status": status,
+            "elapsed_seconds": round(time.monotonic() - self.started, 6),
+            "stages": self.stages,
+            "context": self.context,
+        }
+        if self.current is not None:
+            current = dict(self.current)
+            current["elapsed_seconds"] = round(
+                time.monotonic() - self.started - float(current["started_seconds"]), 6
+            )
+            payload["current_stage"] = current
+        return payload
+
+    def _write(self, status: str) -> None:
+        if self.path is None:
+            return
+        payload = self.snapshot(status)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self.path.with_suffix(self.path.suffix + ".tmp")
+        temporary.write_text(
+            json.dumps(payload, ensure_ascii=False, allow_nan=False, indent=2) + "\n"
+        )
+        temporary.replace(self.path)
+
+
+def _read_stage_diagnostics(path: Path) -> dict[str, Any] | None:
+    try:
+        value = json.loads(path.read_text())
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(value, dict):
+        return None
+    return value
 
 
 def _json(path: Path) -> dict[str, Any]:
@@ -292,12 +404,12 @@ def _audit_weights(weights: Any, expected: Mapping[str, Mapping[str, Any]]) -> d
             raise ValueError(f"Valen checkpoint contains non-tensor weight: {key}")
         if tensor.layout != torch.strided:
             raise ValueError(f"Valen checkpoint tensor layout is unsupported: {key}")
-        if tensor.is_floating_point() and not bool(torch.isfinite(tensor).all()):
-            raise ValueError(f"Valen checkpoint tensor has nonfinite values: {key}")
         shape = list(tensor.shape)
         dtype = str(tensor.dtype)
         if shape != expected[key]["shape"] or dtype != expected[key]["dtype"]:
             raise ValueError(f"Valen checkpoint tensor spec mismatch: {key}")
+        if tensor.is_floating_point() and not bool(torch.isfinite(tensor).all()):
+            raise ValueError(f"Valen checkpoint tensor has nonfinite values: {key}")
         report[key] = {
             "shape": shape,
             "dtype": dtype,
@@ -313,27 +425,39 @@ def convert_checkpoint(
     expected_sha256: str,
     expected_size: int | None,
     expected_spec: Mapping[str, Mapping[str, Any]],
+    diagnostics_output: Path | None = None,
 ) -> dict[str, Any]:
+    diagnostics = StageDiagnostics(diagnostics_output)
     if checkpoint.name != "checkpoint.pt":
         raise ValueError("Valen source must be checkpoint.pt")
     if output.suffix != ".safetensors":
         raise ValueError("Valen output must be safetensors")
     if expected_size is not None and checkpoint.stat().st_size != expected_size:
         raise ValueError("Valen checkpoint size mismatch")
+    diagnostics.start("source_hash", checkpoint_size=checkpoint.stat().st_size)
     actual_sha256 = file_sha256(checkpoint)
+    diagnostics.finish("source_hash")
     if actual_sha256 != expected_sha256:
         raise ValueError("Valen checkpoint SHA256 mismatch")
     torch = importlib.import_module("torch")
+    diagnostics.update_context(**_configure_torch_threads(torch), torch_load_mmap=True)
+    diagnostics.start("load_weights_only")
     payload = torch.load(checkpoint, map_location="cpu", weights_only=True, mmap=True)
+    diagnostics.finish("load_weights_only")
     if not isinstance(payload, dict) or "weights" not in payload:
         raise ValueError("Valen checkpoint lacks nested weights")
-    tensor_report = _audit_weights(payload["weights"], expected_spec)
+    diagnostics.start("audit_tensors")
+    weights = payload["weights"]
+    tensor_report = _audit_weights(weights, expected_spec)
+    ordered_weights = {key: weights[key] for key in sorted(weights)}
+    diagnostics.finish("audit_tensors", tensor_count=len(tensor_report))
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
     safetensors = importlib.import_module("safetensors.torch")
-    safetensors.save_file(
-        payload["weights"],
-        str(temporary),
+    diagnostics.start("save_safetensors")
+    _save_safetensors_deterministic(
+        ordered_weights,
+        temporary,
         metadata={
             "source_repo": SOURCE_REPO,
             "source_revision": SOURCE_REVISION,
@@ -342,11 +466,15 @@ def convert_checkpoint(
             "payload": "weights",
         },
     )
+    diagnostics.finish("save_safetensors", output_size=temporary.stat().st_size)
+    diagnostics.start("reload_safetensors")
     converted = safetensors.load_file(str(temporary), device="cpu")
+    diagnostics.finish("reload_safetensors")
     if set(converted) != set(tensor_report):
         temporary.unlink(missing_ok=True)
         raise ValueError("Valen safetensors round-trip keys mismatch")
-    for key, tensor in payload["weights"].items():
+    diagnostics.start("roundtrip_equal")
+    for key, tensor in ordered_weights.items():
         converted_tensor = converted[key]
         if list(converted_tensor.shape) != tensor_report[key]["shape"]:
             temporary.unlink(missing_ok=True)
@@ -357,7 +485,12 @@ def convert_checkpoint(
         if not bool(torch.equal(tensor, converted_tensor)):
             temporary.unlink(missing_ok=True)
             raise ValueError(f"Valen tensor round-trip mismatch: {key}")
+    diagnostics.finish("roundtrip_equal", tensor_count=len(tensor_report))
     temporary.replace(output)
+    diagnostics.start("output_hash", output_size=output.stat().st_size)
+    output_sha256 = file_sha256(output)
+    diagnostics.finish("output_hash")
+    diagnostics.complete()
     return {
         "schema_version": SCHEMA_VERSION,
         "status": "converted",
@@ -369,7 +502,9 @@ def convert_checkpoint(
         "source_sha256": actual_sha256,
         "output_path": str(output),
         "output_size": output.stat().st_size,
-        "output_sha256": file_sha256(output),
+        "output_sha256": output_sha256,
+        "stage_timings_seconds": diagnostics.stages,
+        "runtime": diagnostics.context,
         "top_level_keys": sorted(str(key) for key in payload),
         "tensor_count": len(tensor_report),
         "groups": _summarize(tensor_report),
@@ -377,9 +512,91 @@ def convert_checkpoint(
     }
 
 
+def _safetensors_dtype(torch_dtype: str) -> str:
+    mapping = {
+        "torch.bfloat16": "BF16",
+        "torch.float32": "F32",
+        "torch.float16": "F16",
+        "torch.float64": "F64",
+        "torch.int64": "I64",
+        "torch.int32": "I32",
+        "torch.int16": "I16",
+        "torch.int8": "I8",
+        "torch.uint8": "U8",
+        "torch.bool": "BOOL",
+    }
+    if torch_dtype not in mapping:
+        raise ValueError(f"unsupported safetensors dtype: {torch_dtype}")
+    return mapping[torch_dtype]
+
+
+def _tensor_bytes(tensor: Any) -> bytes:
+    torch = importlib.import_module("torch")
+    value = tensor.detach().cpu().contiguous()
+    if value.numel() == 0:
+        return b""
+    return bytes(value.view(torch.uint8).numpy().tobytes())
+
+
+def _save_safetensors_deterministic(
+    tensors: Mapping[str, Any], path: Path, *, metadata: Mapping[str, str]
+) -> None:
+    entries: list[tuple[str, Any, int, int]] = []
+    offset = 0
+    for key in sorted(tensors):
+        tensor = tensors[key]
+        byte_count = int(tensor.numel()) * _dtype_size(str(tensor.dtype))
+        entries.append((key, tensor, offset, offset + byte_count))
+        offset += byte_count
+    header: dict[str, Any] = {"__metadata__": dict(sorted(metadata.items()))}
+    for key, tensor, start, end in entries:
+        header[key] = {
+            "dtype": _safetensors_dtype(str(tensor.dtype)),
+            "shape": list(tensor.shape),
+            "data_offsets": [start, end],
+        }
+    header_bytes = json.dumps(header, sort_keys=True, separators=(",", ":")).encode()
+    padding = (8 - ((8 + len(header_bytes)) % 8)) % 8
+    header_bytes += b" " * padding
+    with path.open("wb") as handle:
+        handle.write(len(header_bytes).to_bytes(8, "little"))
+        handle.write(header_bytes)
+        for _, tensor, _, _ in entries:
+            handle.write(_tensor_bytes(tensor))
+
+
+def _validate_safetensors_header(path: Path, expected: Mapping[str, Mapping[str, Any]]) -> None:
+    safe_open = importlib.import_module("safetensors").safe_open
+    with safe_open(str(path), framework="pt", device="cpu") as handle:
+        keys = set(handle.keys())
+        if keys != set(expected):
+            raise IsolationError("copied Valen safetensors keys mismatch")
+        for key, spec in expected.items():
+            slice_ = handle.get_slice(key)
+            if list(slice_.get_shape()) != spec["shape"]:
+                raise IsolationError("copied Valen safetensors shape mismatch")
+            if _torch_dtype_from_safetensors(slice_.get_dtype()) != spec["dtype"]:
+                raise IsolationError("copied Valen safetensors dtype mismatch")
+
+
+def _empty_staging_path(output: Path) -> Path:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fd, name = tempfile.mkstemp(
+        prefix=output.name + ".",
+        suffix=".staging",
+        dir=output.parent,
+    )
+    os.close(fd)
+    staging = Path(name)
+    staging.unlink()
+    return staging
+
+
 def child_chrooted_convert(argv: list[str], *, jail_root: Path, host_canary: str) -> dict[str, Any]:
     if platform.system() != "Linux" or os.geteuid() != 0:
         raise IsolationError("Valen chroot conversion requires Linux root")
+    for key, value in THREAD_LIMIT_ENV.items():
+        os.environ[key] = value
     importlib.import_module("torch")
     importlib.import_module("torch.utils.serialization")
     importlib.import_module("numpy.ctypeslib")
@@ -424,6 +641,7 @@ def parse_conversion_args(argv: list[str]) -> dict[str, Any]:
     parser.add_argument("--expected-sha256", required=True)
     parser.add_argument("--expected-size", type=int)
     parser.add_argument("--expected-spec", type=Path, required=True)
+    parser.add_argument("--diagnostics-output", type=Path)
     args = parser.parse_args(argv)
     return {
         "checkpoint": args.checkpoint,
@@ -431,6 +649,7 @@ def parse_conversion_args(argv: list[str]) -> dict[str, Any]:
         "expected_sha256": args.expected_sha256,
         "expected_size": args.expected_size,
         "expected_spec": load_expected_spec(args.expected_spec),
+        "diagnostics_output": args.diagnostics_output,
     }
 
 
@@ -450,7 +669,10 @@ def _jail_args(args: list[str]) -> tuple[list[str], Path, Path, Path]:
         "--checkpoint": "/input/checkpoint.pt",
         "--output": "/output/weights.safetensors",
         "--expected-spec": "/input/expected-spec.json",
+        "--diagnostics-output": "/output/stage-diagnostics.json",
     }
+    if "--diagnostics-output" not in jail_args:
+        jail_args.extend(["--diagnostics-output", "/output/stage-diagnostics.json"])
     for index, item in enumerate(jail_args):
         if item in replacements:
             jail_args[index + 1] = replacements[item]
@@ -500,19 +722,42 @@ def isolated_convert(args: list[str]) -> dict[str, Any]:
                     capture_output=True,
                     stdin=subprocess.DEVNULL,
                     close_fds=True,
-                    env=_scrubbed_env(),
+                    env=_valen_scrubbed_env(),
                     timeout=ISOLATED_CONVERSION_TIMEOUT_SECONDS,
                 )
-            except subprocess.TimeoutExpired as exc:
-                raise IsolationError("Valen isolated conversion child timed out") from exc
+            except subprocess.TimeoutExpired:
+                diagnostics = _read_stage_diagnostics(output_dir / "stage-diagnostics.json")
+                return {
+                    "schema_version": SCHEMA_VERSION,
+                    "status": "blocked",
+                    "exit_code": 1,
+                    "blocker": "isolation_timeout",
+                    "timeout_seconds": ISOLATED_CONVERSION_TIMEOUT_SECONDS,
+                    "stage_diagnostics": diagnostics,
+                    **evidence,
+                }
             if completed.returncode != 0:
                 raise IsolationError("Valen isolated conversion child failed")
             report = dict(json.loads(completed.stdout))
+            if "tensors" in report:
+                report.pop("tensors")
+                report["tensor_manifest_redacted"] = True
+            diagnostics = _read_stage_diagnostics(output_dir / "stage-diagnostics.json")
+            if diagnostics is not None:
+                report["stage_diagnostics"] = diagnostics
             converted = output_dir / "weights.safetensors"
-            _copy_regular_nofollow(converted, output, max_bytes=max_output_bytes)
-            if file_sha256(output) != report.get("output_sha256"):
-                output.unlink(missing_ok=True)
-                raise IsolationError("copied Valen safetensors hash mismatch")
+            staging = _empty_staging_path(output)
+            try:
+                _copy_regular_nofollow(converted, staging, max_bytes=max_output_bytes)
+                staging_sha256 = file_sha256(staging)
+                if staging_sha256 != report.get("output_sha256"):
+                    raise IsolationError("copied Valen safetensors hash mismatch")
+                _validate_safetensors_header(staging, expected)
+                staging.replace(output)
+            except Exception:
+                staging.unlink(missing_ok=True)
+                staging.with_suffix(staging.suffix + ".tmp").unlink(missing_ok=True)
+                raise
             report["output_path"] = str(output)
             report["output_size"] = output.stat().st_size
             report["output_sha256"] = file_sha256(output)

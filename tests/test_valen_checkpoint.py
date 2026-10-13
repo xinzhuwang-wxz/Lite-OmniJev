@@ -13,7 +13,7 @@ import pytest
 import train.valen_checkpoint as valen_checkpoint
 from scripts.valen_checkpoint import main
 from train.checkpoint import file_sha256
-from train.valen_checkpoint import derive_expected_tensors, load_expected_spec
+from train.valen_checkpoint import convert_checkpoint, derive_expected_tensors, load_expected_spec
 
 
 def test_derive_expected_tensors_matches_valen_preview_groups():
@@ -98,6 +98,37 @@ def test_load_expected_spec_rejects_missing_tensors(tmp_path):
         load_expected_spec(spec)
 
 
+def test_convert_cli_requires_isolation(tmp_path):
+    checkpoint = tmp_path / "checkpoint.pt"
+    checkpoint.write_bytes(b"checkpoint")
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps({"schema_version": 1, "tensors": {"x": {"shape": [1], "dtype": "torch.uint8"}}})
+    )
+    report = tmp_path / "report.json"
+
+    code = main(
+        [
+            "convert",
+            "--checkpoint",
+            str(checkpoint),
+            "--output",
+            str(tmp_path / "weights.safetensors"),
+            "--expected-sha256",
+            hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+            "--expected-spec",
+            str(spec),
+            "--report",
+            str(report),
+        ]
+    )
+
+    payload = json.loads(report.read_text())
+    assert code == 1
+    assert payload["status"] == "blocked"
+    assert payload["blocker"] == "isolation_required"
+
+
 def test_isolated_cli_refuses_fifo_output_and_preserves_destination(tmp_path, monkeypatch):
     if not hasattr(os, "mkfifo"):
         pytest.skip("fifo unavailable")
@@ -155,6 +186,61 @@ def test_isolated_cli_refuses_fifo_output_and_preserves_destination(tmp_path, mo
     assert output.read_text() == "previous-good-output"
 
 
+def test_isolated_cli_preserves_existing_output_on_child_hash_mismatch(tmp_path, monkeypatch):
+    checkpoint = tmp_path / "checkpoint.pt"
+    checkpoint.write_bytes(b"checkpoint")
+    config = tmp_path / "config.json"
+    metadata = tmp_path / "training_metadata.json"
+    config.write_text("{}")
+    metadata.write_text("{}")
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps({"schema_version": 1, "tensors": {"x": {"shape": [1], "dtype": "torch.uint8"}}})
+    )
+    output = tmp_path / "weights.safetensors"
+    output.write_text("previous-good-output")
+    report = tmp_path / "report.json"
+
+    monkeypatch.setattr(valen_checkpoint.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(valen_checkpoint.os, "geteuid", lambda: 0)
+
+    def fake_run(command, **_kwargs):
+        jail = Path(command[command.index("--jail-root") + 1])
+        (jail / "output" / "weights.safetensors").write_bytes(b"not a real safetensors file")
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=json.dumps(
+                {"schema_version": 1, "status": "converted", "output_sha256": "0" * 64}
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(valen_checkpoint.subprocess, "run", fake_run)
+    code = main(
+        [
+            "convert",
+            "--isolate",
+            "--checkpoint",
+            str(checkpoint),
+            "--output",
+            str(output),
+            "--expected-sha256",
+            hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+            "--expected-spec",
+            str(spec),
+            "--report",
+            str(report),
+        ]
+    )
+
+    payload = json.loads(report.read_text())
+    assert code == 1
+    assert payload["status"] == "blocked"
+    assert payload["blocker"] == "isolation_unavailable"
+    assert output.read_text() == "previous-good-output"
+
+
 def test_tiny_direct_conversion_round_trips_weights(tmp_path):
     torch = pytest.importorskip("torch")
     safetensors = pytest.importorskip("safetensors.torch")
@@ -177,28 +263,14 @@ def test_tiny_direct_conversion_round_trips_weights(tmp_path):
         )
     )
     output = tmp_path / "weights.safetensors"
-    report = tmp_path / "report.json"
-
-    code = main(
-        [
-            "convert",
-            "--checkpoint",
-            str(checkpoint),
-            "--output",
-            str(output),
-            "--expected-sha256",
-            file_sha256(checkpoint),
-            "--expected-size",
-            str(checkpoint.stat().st_size),
-            "--expected-spec",
-            str(spec),
-            "--report",
-            str(report),
-        ]
+    payload = convert_checkpoint(
+        checkpoint,
+        output,
+        expected_sha256=file_sha256(checkpoint),
+        expected_size=checkpoint.stat().st_size,
+        expected_spec=load_expected_spec(spec),
     )
 
-    assert code == 0
-    payload = json.loads(report.read_text())
     assert payload["status"] == "converted"
     loaded = safetensors.load_file(str(output), device="cpu")
     assert all(torch.equal(loaded[key], value) for key, value in weights.items())
