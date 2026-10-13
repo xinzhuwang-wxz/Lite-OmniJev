@@ -41,7 +41,7 @@
 - Perception/FunQA/STA：三包1200/1200公开引用、全ZIP安全CRC、27代表完整decode通过；reports/public-eval-archives-validation-002.json。
 - ScreenSpot原作者6文件597,662,567B、610图全decode；reports/screenspot-source-audit.json，仅隔离评测，不证明第三方截图商业再分发权。
 - 阶段2：ScienceQA3parquet626MB、ChartQA875MB、COCO3832许可明确图660MB、19860已知受限研究图3.344GB全部准备，未知许可不进池；CPU reader已通过：ChartQA全CRC、ChartQA/两COCO池共96代表图完整decode、ScienceQA3split只读footer；reports/stage2-media-cpu-validation-001.json。
-- DecisionIndex公开0.3：5978文件5.384GB；旧RAGTruth唯一失败通过固定gitHEAD恢复9文件36.6MB，联合证据不冒称完整私有榜。RouterBench未直接反序列化，隔离转换进行中。
+- DecisionIndex公开0.3：5978文件5.384GB；旧RAGTruth唯一失败通过固定gitHEAD恢复9文件36.6MB，联合证据不冒称完整私有榜。RouterBench两固定pickle已chroot/dropuid/seccomp转换36497/36511行JSONL，源值摘要与输出摘要相等；真实恶意pickle Linux/root10测试通过、独立安全review已关闭，be41a35；reports/routerbench-cpu.json及routerbench-security-review.json。
 - 文本17文件30.67MB已hash；JevEmbed/OpenJev仅候选原料，非训练准入。JevBench231公开决策/8文件已hash；148literal groups与教师195精确协议仍缺。
 - Valen20来源6.36GB；chroot/dropuid/seccomp转换428张量289,932,536B并逐张量相等、独立安全复核通过；reports/valen-source-download-001.json及teacher-head报告。
 - Jev-Omni固定head安全转换4张量3,964,424B、相等及独立安全复核通过；reports/teacher-head-conversion.json，非完整teacherforward。
@@ -54,7 +54,7 @@
 - whole_project_datasets：`/tmp/lite-omnijev-project-datasets`；GUI官方train1679完整episodes/25,809 PNG/19,499,790,993B选择性Range恢复；a36c793已合入29cd742，8并发2MiB批比32MiB少过读。PID30008继续，早先root物理观察11,355图/8.536GB未代表终态；恢复复用CRC边界与最终全文件校验待补。
 - offline_runtime_dependencies：`/tmp/lite-omnijev-offline-runtime`；d040acd已合入a61098e：工具独立no-index CPU canary、前端322包offline安装、NDKr28b官方SHA/交叉编译及LiteRT Android arm64 CLI hash/ELF已通过。root完整锁闭包/servev031/Chromium/前端实际build继续；root selected-noheavy+借serve-next torch的canary仅partial，pytest需按主树9.1.1锁补齐，不能当完整fresh通过。
 - remaining_authorizations：`/tmp/lite-omnijev-authorizations`；DocVQA-SP官方Annotations1,713,866B已hash，Images8,580,231,801B正在下载，总8.582GB<30GB；严格TLS链/hostname验证，不关闭校验，私密URL仅0600/STDIN。
-- mdc_transport_fix：`/tmp/lite-omnijev-routerbench-cpu`；RouterBench两固定pickle仅在chroot/dropuid/seccomp限资源沙箱转换，先恶意fixture，再真源，交付后独立安全review。
+- mdc_transport_fix：`/tmp/lite-omnijev-routerbench-cpu`；RouterBench真实隔离转换、Linux恶意fixture及独立安全review全部完成，5347b2b合入be41a35。
 - video_eval_sources：`/tmp/lite-omnijev-video-eval`；公开teacher verification仅提取协议/汇总metadata，不记录题/预测。精确14任务/2786IDs未公开，用户已批准ADR-0006改为固定9任务1800行真实baseline；此代理继续全行CPU协议冻结/16帧RGB hash验收，GPU两遍未做。
 - teacher_head_conversion：来源调整切片已完成整合；无未完成写入。
 

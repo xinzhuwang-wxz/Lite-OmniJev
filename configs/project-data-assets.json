@@ -1349,9 +1349,11 @@
       "next_commands": [
         "Run kit metadata/list command only; create per-underlying-dataset blockers before fetching any payload."
       ],
-      "physical_staging_status": "public_0_3_queue82plus_fixed_RAGTruth_recovery_hash_verified_RouterBench_isolated_conversion_pending_not_private_board_reproduction",
+      "physical_staging_status": "public_0_3_queue82plus_fixed_RAGTruth_recovery_hash_verified_RouterBench_two_sources_isolated_value_preserving_conversion_and_security_review_passed_not_private_board_reproduction",
       "offline_preparation_evidence": [
-        "reports/ragtruth-source-recovery-001.json"
+        "reports/ragtruth-source-recovery-001.json",
+        "reports/routerbench-cpu.json",
+        "reports/routerbench-security-review.json"
       ]
     },
     {
