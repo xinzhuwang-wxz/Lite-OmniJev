@@ -62,3 +62,27 @@ STAR 原 ZIP 425 members / 423 videos，全路径安全和 CRC 通过，32 个�
 Linux 32 份覆盖四类实际音频格式、五种采样率、1/2/6 通道（含三份 6 通道）及最长 34.4785 秒样本；源哈希全匹配，FFmpeg 4.4.2 完整解码通过、9.78 秒、退出 0。Linux 未检查全 1,000 份有限值/帧数，不能把本机全量结果冒称 Linux 全量结果。
 
 早期远端 full job 记录退出 137；当时 cgroup oom/oom_kill 计数为 0，原因未证实，未宣称 OOM。按主会话授权仅停止自己的暂停进程并转本机验证，保留原始失败/替换记录；未重启数据下载或改变公开标签。
+
+## 官方缺失视频补齐与下载恢复
+
+`reports/star-missing-source-recovery-001.json` 保留原包缺失的 12 个公开 row 引用、原 start/end、官方归档成员、CRC32、每文件 SHA256 和源版本。实跑命令：
+
+```bash
+cd /tmp/lite-omnijev-video-eval
+uv run python -m scripts.recover_star_media \
+  --star artifacts/public-eval-media/mvbench/230a2d4fac8900333c61754641c7a13e069ac9c6/star.zip \
+  --metadata /tmp/video-sources/mvbench-json-action_sequence.json \
+  --config configs/video-eval-assets.json \
+  --output artifacts/charades-selected-missing-001 \
+  --report reports/star-missing-source-recovery-001.json
+```
+
+从官方 AI2 16,339,546,533 B ZIP 仅用 35 个 206 Range 请求读取 36,286,885 B；12 个选定视频共 19,146,683 B。没有下载整个 ZIP。每次 HEAD/Range 必须匹配 `d37c91565b08ce1f432a46e11351751e-1948` ETag 与 `2I0cX8bvsoqLbtsk6mi6Wrb0d0uV1H8E` S3 version ID；ETag 是 multipart 标识，不能当整个归档 MD5/SHA256。ZIP 解析由标准库处理，filelike 单次读≤8 MiB、页1 MiB、缓存≤8页、实际下载总量≤500 MB，拒绝服务器忽略 Range、错 generation/ETag/Content-Range 或错 body 长度。
+
+仅选定 12 条内容做 CRC 和完整视频解码，不对 16.34 GB 源包声称全量 CRC。所有 12 文件已同步远端 `artifacts/data/research-eval/mvbench/230a2d4fac8900333c61754641c7a13e069ac9c6/supplemental-charades-2I0cX8bvsoqLbtsk6mi6Wrb0d0uV1H8E/`，逐项 SHA256 匹配，旁附原始 `LICENSE-Charades.txt`。原 STAR ZIP 保持不变；原包+补充的媒体存在性覆盖三项 STAR 任务各200条，共600条。
+
+三条原注释 end 超过对应官方完整视频时长：row92 EDXBD（14.0 vs12.864）、row107 K47J5（28.8 vs28.258005）、row140 ALXUC（17.0 vs15.58）。保留标签、分母和注释原值；参考 MVBench 代码会将 end frame 限到 max_frame，但教师实际同条件窗口协议缺失，因此窗口/裁剪协议继续 pending，不按得分猜规则或排除样本。
+
+FunQA 与 STA 已实算哈希通过。Perception 原作业在 6,151,711,684 B 处 curl18、SHA失败、exit1；恢复过程先保留为 `.partial`。根会话提供了另一下载使用 curl 内部重试会丢弃本轮已写字节的实测，因此确认自己的 curl PID 后停止该内部重试版本（143），保留已写到的6,183,660,484 B，并改为 `reports/video-eval-download-recovery-004.sh`：最多4次外部调用，每次 `curl --retry 0 --continue-at -`、超时3600秒、间隔5秒；每次核对字节数不下降，失败保留 `.partial`。最终仅在大小和预期 SHA256 均通过后提升为 final，SHA任务使用 CPU重型锁。
+
+当前004是带时间戳的实际续传快照，不是完成证据；日志出现最终 `process_exit_code=0`、预期 SHA通过和文件提升后，才能更新 ready。没有源码/标签/分母改变，没有自动接受协议或扩大训练准入。
