@@ -1,0 +1,23 @@
+[
+  {
+    "route": "xml-proxy",
+    "exit_code": 28,
+    "stats": "206 938064 34.999913 26801",
+    "sha256": "77796d7e43ccc53d96e976849d63b61dd868f2ed0b39d32ae9731690cbc3623f",
+    "error_type": "curl_failure"
+  },
+  {
+    "route": "json-proxy",
+    "exit_code": 28,
+    "stats": "206 723882 34.999636 20682",
+    "sha256": "3843407bbd30b9f094d248e0461fe04fae9d3bd5cd6d5fa80c08ed60dfdb01f0",
+    "error_type": "curl_failure"
+  },
+  {
+    "route": "xml-direct",
+    "exit_code": 0,
+    "stats": "206 1048576 2.927685 358158",
+    "sha256": "fade27f941826134aa24422dbb98b58f7a3aa61fcbe8f505d0ef43af942b77ab",
+    "error_type": null
+  }
+]

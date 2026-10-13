@@ -1,0 +1,8 @@
+{
+  "reason": "Owned curl transport replaced after bounded same-source probe showed faster direct route",
+  "stopped_pid": 13449,
+  "parent_pid": 9048,
+  "partial_preserved": true,
+  "old_report": "reports/android-control-source-download-001.json",
+  "new_report": "reports/android-control-source-download-002.json"
+}

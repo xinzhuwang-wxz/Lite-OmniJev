@@ -4,9 +4,9 @@ ID: offline-prep:05
 Milestone: S0
 Category: bug
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: dev-pytest-security
+Worktree: /tmp/lite-omnijev-pytest-security
 Blocked by: None
 
 ## What to build

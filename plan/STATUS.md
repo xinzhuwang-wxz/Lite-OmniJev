@@ -23,7 +23,7 @@
 
 ## 下载实际状态（以PID/文件/最终退出报告为准）
 - 模型 flock1827/1828仍活；project-model-download-001.json running且零失败。另有约22.5GB和18.6GB partial，不计入已校验数。
-- AndroidControl官方GCS22对象49.93GB固定generation/MD5/CRC32C；9047/9048仍活，3文件2,345,618,122B校验。仅研究，商业训练/发布不准入。
+- AndroidControl官方GCS22对象49.93GB固定generation/MD5/CRC32C；001的3文件2,345,618,122B校验；实测同generation 1MiB段直连358KB/s、代理20–27KB/s，确认自有子进程13449后停旧任务，partial保留；002 flock17892已启动3并发直连+外部有界续传，旧失败报告保留。仅研究，商业训练/发布不准入。
 - Multimodal Mind2Web49文件13.58GB；10668/10669仍活，13文件2,634,066,033B校验。001曾误校验LFS指针，失败报告保留；002已区分原文件SHA与指针GitSHA。
 - Clotho3,140,677,494B归档尚未完成；5小文件全校验。002因curl内部重试丢掉本次新增内容而失败，保留123,907,028B partial；003改外部6次有界续传、每次独立curl且MD5通过才提升，PID17404/17408已确认活。完成后锁内提取1659 CC0/CCBY音频，排除332 NC/未知/其他许可。
 - MMAU mini1,213,407,227B和STAR727,887,646B哈希通过；STA1,085,038,855B和FunQA1,350,969,357B最新实际sha OK/exit0。
@@ -31,7 +31,7 @@
 - Valen来源20文件约6.36GB全部哈希通过，隔离原料不准入训练；reports/valen-source-download-001.json。
 - 文本来源17文件30,666,690B本地上游/远端SHA通过；JevEmbed600k/Open-Jev113k仍是候选原料，不是样本族隔离/训练准入证据。
 - ScienceQA3parquet626MB、ChartQA875MB、AOKVQA已知可商用COCO3832图约660MB完成；reports/stage2-remote-completion-001.json。剩余已知许可研究专用图继续准备，未知许可不进池。
-- Decision Index公开0.3已镜像5,861文件2,388,936,304B，21固定Git+11HTTP来源；HF内容和6个失败Git/HTTP来源继续补齐；HLE受控，RouterBench只隔离原pickle未加载；不冒称完整套件可重建。
+- Decision Index公开0.3原镜像5,861文件2,388,936,304B，21固定Git+11HTTP；retry-002已启动PID17457，最新5,901文件2,501,210,679B。HoVer/jev-phishing Git已恢复，RouterBench 0shot99,567,659B已哈希隔离、5shot在传；RAGTruth仍失败，其余HF/HTTP继续队列。HLE受控，pickle未加载，不冒称完整可重建。
 - JevBench正确项目fstandhartinger/jevbench固定7625ec...，231公开决策/8文件清单及远端SHA通过；literal group148不等于教师195，精确聚合协议仍缺，不下载隐藏题/预测。
 
 ## 已完成的CPU证据
@@ -39,16 +39,17 @@
 - Valen010源PT仅在chroot/dropuid/seccomp沙箱加载，官方safetensors写出428张量289,932,536B，SHA27b8f6cd4874a356af8a5d6a3676d2a9a03e4b3301d066d13645f673f72f4468；张量逐项相等。父进程诊断FIFO/symlink/大小边界独立复核关闭；并非完整教师验收。
 - Kokoro canonical量化ONNX87.09MB/双voice已下载，专用Python3.11.17+Misaki G2P实际2文本×2voice→4份有限24kHz WAV通过；reports/speech-kokoro-text-g2p-cpu-canary.json。旧q8f16失败保留，不充当通过证据。
 - reports/public-eval-media-validation-001.json：Mac全1000音频完整解码/有限值/帧数通过；Linux32代表样本FFmpeg完整解码通过；STAR全425member安全/CRC+32视频全流解码通过。
-- STAR ActionSequence仅188/200，缺12个引用；video代理从官方Charades范围请求补齐，禁止拿缺失猜教师2786题排除。MMAU69份六声道、66份超30秒，裁剪/单声道协议待冻结，不暗排样本。
+- STAR ActionSequence仅188/200，缺12个引用；video代理已从官方Charades固定S3版本补齐12段，35Range请求36,286,885B、完整解码通过；3条官方end越界，裁剪/钳位协议待冻结，不暗排样本。禁止拿缺失猜教师2786题排除。MMAU69份六声道、66份超30秒，裁剪/单声道协议待冻结，不暗排样本。
 - 远端曾exit137但oom/oom_kill=0，原因未证实；公开媒体获批复制1.94GB到Mac验证，无卡准备不以开GPU解决。
 
 ## 并行所有权
 - offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；官方llama.cpp预编译、Ollama1.427GB、quant独立完整依赖≤20GB、LiteRT/JDK准备；13直接轮子不算完整闭包。
 - whole_project_datasets：/tmp/lite-omnijev-project-datasets；阶段2剩余明确许可原料，≤10GB，复用已有图。
 - video_eval_sources：/tmp/lite-omnijev-video-eval；Perception续传、Charades缺12视频选择性恢复≤500MB；4801edd已合入f44588c。
-- decision_index_assets：/tmp/lite-omnijev-decision-index；e99910a已合入8d8f164；补非门禁网络失败来源，≤10GB，不读pickle、不绕过HLE。
-- mdc_transport_fix：/tmp/lite-omnijev-mdc-transport；专属下载器DNS pin/TLS原host测试，API凭据隔离；root整合后由独立security reviewer复核。
-- speech_assets、teacher_head_conversion已交付；所有切片主会话统一整合/关票。root独占主树、票据、STATUS；子代理不得写这些文件。
+- decision_index_assets：/tmp/lite-omnijev-decision-index；e99910a已合入8d8f164、47914bd合入d2e7512；retry队列17457补非门禁网络失败来源，≤10GB，不读pickle、不绕过HLE。
+- mdc_transport_fix：MDC闭环已整合并独立复核，过期worktree已清理；同一executor转 /tmp/lite-omnijev-pytest-security 执行独立非阻断offline-prep:05，仅修现有开发pytest已证实漏洞，不升级远端GPU环境。
+- teacher_head_conversion：Valen闭环已交付；新 /tmp/lite-omnijev-stage3-source-audit 负责NExTQA/CLEVRER/LLaVA/VGGSound/AudioCaps/GUI-Odyssey官方小原料/许可查明，≤50MB，不下载原视频或接受条款。
+- speech_assets已交付；所有切片主会话统一整合/关票。root独占主树、票据、STATUS；子代理不得写这些文件。
 
 ## 待我决策
 - 当前不需要开卡。已向用户一次发出CommonVoice官方MDC与HLE登录/条款授权请求；不替用户接受，不用镜像绕过。
