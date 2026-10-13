@@ -4,6 +4,7 @@ import hashlib
 import io
 import os
 import socket
+import ssl
 import urllib.error
 import urllib.request
 
@@ -73,6 +74,88 @@ def test_verified_archive_uses_unauthenticated_asset_request(
     assert "signature" not in str(report)
     assert key_file.read_text().strip() not in str(report)
     assert not list(tmp_path.glob(".archive.*.partial"))
+
+
+def test_asset_download_disables_proxies(tmp_path, public_dns, monkeypatch):
+    payload = b"verified-public-data"
+    handlers = []
+
+    class Opener:
+        def open(self, request, timeout):
+            return io.BytesIO(payload)
+
+    def build_opener(*args):
+        handlers.extend(args)
+        return Opener()
+
+    monkeypatch.setattr(urllib.request, "build_opener", build_opener)
+    output = tmp_path / "archive"
+    size, digest = mdc.stream_download(
+        "https://cdn.example/data?signature=fake",
+        output,
+        expected_size_bytes=len(payload),
+        expected_sha256=hashlib.sha256(payload).hexdigest(),
+    )
+    assert size == len(payload)
+    assert digest == hashlib.sha256(payload).hexdigest()
+    proxy_handlers = [
+        handler for handler in handlers if isinstance(handler, urllib.request.ProxyHandler)
+    ]
+    assert len(proxy_handlers) == 1
+    assert proxy_handlers[0].proxies == {}
+
+
+def test_pinned_asset_connection_uses_validated_address_and_original_tls_host(monkeypatch):
+    dns_calls = []
+
+    def getaddrinfo(*args, **kwargs):
+        dns_calls.append(args)
+        if len(dns_calls) == 1:
+            return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))]
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", 443))]
+
+    connected_addresses = []
+    tls_hosts = []
+
+    class FakeSocket:
+        def settimeout(self, timeout):
+            pass
+
+        def setsockopt(self, level, option, value):
+            pass
+
+        def bind(self, source_address):
+            pass
+
+        def connect(self, sockaddr):
+            connected_addresses.append(sockaddr)
+
+        def close(self):
+            pass
+
+    class FakeContext:
+        verify_mode = ssl.CERT_REQUIRED
+        check_hostname = True
+
+        def wrap_socket(self, sock, server_hostname=None):
+            tls_hosts.append(server_hostname)
+            return sock
+
+    monkeypatch.setattr(socket, "getaddrinfo", getaddrinfo)
+    monkeypatch.setattr(socket, "socket", lambda *args: FakeSocket())
+    pinned_addresses = mdc.validate_asset_url("https://cdn.example/archive")
+    connection = mdc.PinnedHTTPSConnection(
+        "cdn.example",
+        pinned_addresses,
+        timeout=3,
+        context=FakeContext(),
+    )
+
+    connection.connect()
+
+    assert len(dns_calls) == 1
+    assert connected_addresses == [("93.184.216.34", 443)]
+    assert tls_hosts == ["cdn.example"]
 
 
 @pytest.mark.parametrize("payload", [b"different", b"x", b"much-longer-than-expected"])

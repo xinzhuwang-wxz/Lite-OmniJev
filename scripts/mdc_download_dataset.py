@@ -1,9 +1,14 @@
-"""Download MDC data after human authorization, without logging credentials or URLs."""
+"""Download MDC data after human authorization, without logging credentials or URLs.
+
+Asset archive requests intentionally disable proxy use so the validated public
+origin address is the address connected by the TLS socket.
+"""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import ipaddress
 import json
 import os
@@ -21,6 +26,7 @@ from typing import Any, cast
 API_BASE_URL = "https://mozilladatacollective.com/api"
 MAX_KEY_BYTES = 8192
 MAX_METADATA_BYTES = 65536
+AddressInfo = tuple[int, int, int, str, tuple[Any, ...]]
 
 
 class DownloadError(RuntimeError):
@@ -38,6 +44,53 @@ class RejectRedirect(urllib.request.HTTPRedirectHandler):
         newurl: str,
     ) -> None:
         raise DownloadError("redirect_refused")
+
+
+class PinnedHTTPSConnection(http.client.HTTPSConnection):
+    def __init__(self, host: str, pinned_addresses: list[AddressInfo], **kwargs: Any) -> None:
+        super().__init__(host, **kwargs)
+        self._pinned_addresses = pinned_addresses
+        self._create_connection = self._create_pinned_connection
+
+    def _create_pinned_connection(
+        self,
+        address: tuple[str, int],
+        timeout: Any = None,
+        source_address: tuple[str, int] | None = None,
+        *,
+        all_errors: bool = False,
+    ) -> socket.socket:
+        errors: list[Exception] = []
+        for family, socktype, proto, _canonname, sockaddr in self._pinned_addresses:
+            sock = socket.socket(family, socktype, proto)
+            try:
+                if isinstance(timeout, (int, float)):
+                    sock.settimeout(float(timeout))
+                if source_address is not None:
+                    sock.bind(source_address)
+                sock.connect(sockaddr)
+                return sock
+            except OSError as exc:
+                errors.append(exc)
+                sock.close()
+        if all_errors:
+            raise ExceptionGroup("asset_connection_failed", errors)
+        if errors:
+            raise errors[-1]
+        raise OSError("asset_connection_failed")
+
+
+class PinnedHTTPSHandler(urllib.request.HTTPSHandler):
+    def __init__(self, pinned_addresses: list[AddressInfo]) -> None:
+        super().__init__()
+        self._context: Any
+        self._pinned_addresses = pinned_addresses
+
+    def https_open(self, req: urllib.request.Request) -> Any:
+        return self.do_open(self._connection_factory, req, context=self._context)
+
+    def _connection_factory(self, host: str, **kwargs: Any) -> PinnedHTTPSConnection:
+        return PinnedHTTPSConnection(host, self._pinned_addresses, **kwargs)
 
 
 def read_secret(path: Path) -> str:
@@ -102,7 +155,7 @@ def request_json(url: str, api_key: str) -> dict[str, Any]:
     return cast(dict[str, Any], payload)
 
 
-def validate_asset_url(url: str) -> None:
+def validate_asset_url(url: str) -> list[AddressInfo]:
     try:
         parsed = urllib.parse.urlsplit(url)
         host = parsed.hostname
@@ -115,11 +168,15 @@ def validate_asset_url(url: str) -> None:
             or parsed.fragment
         ):
             raise DownloadError("asset_url_rejected")
-        addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+        addresses = cast(
+            list[AddressInfo],
+            socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM),
+        )
         if not addresses or any(
             not ipaddress.ip_address(address[4][0]).is_global for address in addresses
         ):
             raise DownloadError("asset_url_rejected")
+        return addresses
     except (ValueError, OSError):
         raise DownloadError("asset_url_rejected") from None
 
@@ -131,7 +188,7 @@ def stream_download(
     expected_size_bytes: int,
     expected_sha256: str,
 ) -> tuple[int, str]:
-    validate_asset_url(url)
+    pinned_addresses = validate_asset_url(url)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if shutil.disk_usage(output_path.parent).free < expected_size_bytes + 64 * 1024**2:
         raise DownloadError("insufficient_disk")
@@ -144,7 +201,12 @@ def stream_download(
         ) as handle:
             staged = Path(handle.name)
             # A separate unauthenticated request; never send API credentials to asset hosts.
-            with urllib.request.build_opener(RejectRedirect()).open(url, timeout=60) as response:
+            opener = urllib.request.build_opener(
+                RejectRedirect(),
+                PinnedHTTPSHandler(pinned_addresses),
+                urllib.request.ProxyHandler({}),
+            )
+            with opener.open(url, timeout=60) as response:
                 while True:
                     chunk = response.read(min(1024**2, expected_size_bytes - total + 1))
                     if not chunk:
