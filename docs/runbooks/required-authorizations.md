@@ -4,15 +4,16 @@
 
 这里列的是负责人一次性办理清单，不是开卡通知。账号获批、字节下载、逐文件哈希、无卡验收、训练准入是不同状态；全部必需外部准备与无卡验收未通过前不开GPU。
 
-## 现在必须本人处理
+## 当前本人办理状态
 
-当前仅剩下表DocVQA下载核验和Android协议；AudioCaps已由用户决定首发省略，见ADR-0004，下方原行作为申请入口历史记录。负责人不具备机构/学术资格时应如实申请替代授权，不能虚填身份。
+本轮具体协议/来源已全部确认（ADR-0005），没有新的无条件账号办理请求。DocVQA及Android正在执行下载/验收；这属于agent工作，不再要求本人重复确认。AudioCaps已按ADR-0004省略。
 
-| 项目与官方入口 | 本人动作、限制与交回证据 | 影响范围；是否阻碍下载 |
+| 项目 | 本人状态 | agent剩余工作与限制 |
 |---|---|---|
-| DocVQA：[官方说明](https://www.docvqa.org/datasets/docvqa) → [RRC挑战17](https://rrc.cvc.uab.es/?ch=17) → [Download](https://rrc.cvc.uab.es/?ch=17&com=downloads) 的 **Single Document Visual Question Answering** | 注册/登录RRC，阅读实际下载页原数据条款，保存版本/文本与获准下载方式。官方说明确认图片来自UCSF Industry Documents Library；HF镜像Apache标签不能代替原文档权利。此次RRC读取超时/证书校验失败，未取得登录后条款全文，不能声称原数据已商用许可。 | 阶段2文档题；**是，原数据访问/条款仍缺**。已下载Valen中的docvqa派生文件不解除此缺口。 |
-| **已省略，无需办理（ADR-0004）** AudioCaps：[固定revision原音频说明](https://github.com/cdjkim/audiocaps/blob/d004db3ea1b01cf4fd0347dd8d27db90cadc8809/dataset/README.md) → [现行申请表](https://forms.gle/2wF54Y1Ft2LtPdhW8) | 由本人填写真实身份、用途并申请原音频/视频，保存审批回复与许可范围。[主README](https://github.com/cdjkim/audiocaps)明确学术用途；商业用途另取明确授权及原媒体依据。表单短链本次返回401，正文未读取；需要实际账号访问，不推断问题字段。旧清单 `8sFHc3XJ32ERWxqF8` 实测404，不能再作为办理入口。 | 阶段3音频；**是，原音频需申请**。公开caption CSV无需另申请，已准备。 |
-| Android SDK/NDK：[NDK下载及完整SDK协议](https://developer.android.com/ndk/downloads)、[SDK协议独立页](https://developer.android.com/studio/terms) | 负责人以有权代表项目的身份审阅并明确接受Android SDK License Agreement，记录主体/日期/版本；随后agent可缓存和哈希指定工具链。协议2.1–2.4约束接受与代表权限；3.5另行保留组件OSS许可。无需购买开发者账号或Google Play上架账号来做本地构建。 | 阶段6 Android工具链；**是，官方二进制下载/使用协议未接受**。不是OpenJDK的独立签约阻塞。精确版本见下节。 |
+| DocVQA SP | RRC注册、激活、登录完成；用户具体接受原下载页研究/教育限制及责任条款 | Annotations已下载/hash；Images约8.58GB在下载，后续hash/安全CPU检查。原图只隔离研究，不作商用训练授权。实际条款与证据见`../research/docvqa-access.md`。 |
+| Android SDK/NDK | 已具体接受r28b引用2019-01-16 SDK协议及适用2026-04-28修订 | 缓存NDKr28b、锁版本/hash、CPU工具链验收；无需购买Google Play账号。 |
+| AudioCaps | 用户首发省略，ADR-0004 | 不再申请或等待；由Clotho-AQA/TTS补足题量，门槛不减。 |
+
 ### 条件性MVBench源授权：选中对应任务才办理
 
 以下5类先统一列出准确入口，**当前不要求本人立即办理**。原方案只要求MVBench决策子集；教师14任务/2786题的精确manifest仍缺。agent先冻结任务/ID并证明原媒体依赖，只有选中相应任务才触发申请；不得把全部20任务来源都升级为当前必需账号，也不得自行删题降门槛。
@@ -31,7 +32,7 @@
 
 该原生CLI路径没有在说明/CI固定Android SDK platform API或build-tools版本；[WORKSPACE](https://github.com/google-ai-edge/LiteRT-LM/blob/v0.9.0/WORKSPACE)声明SDK repository而没有指定 `api_level`/`build_tools_version`。不能编造“必须SDK35/36”。agent下一步应按实际目标冻结完整SDK包版本/哈希并CPU构建；如新增APK/Gradle宿主，依据那个宿主配置再锁compileSdk/build-tools。当前协议处理覆盖官方SDK/NDK发行包，包清单未冻结是工程缺口，不是让本人另办一个账号。
 
-已有OpenJDK17 Temurin（GPL-2.0 with Classpath exception）、Bazel7.6.1（Apache-2.0）、CMake、GCC缓存是普通OSS履约与工程准备，不要求本人去接受Oracle JDK商用协议；本项目并未选择Oracle JDK。已有版本/哈希证据见 `configs/runtime-cpu-builds.json`。Linux host CPU构建亦不因Android协议未接受而必须停下；不能声称全部剩余工作只有开GPU可做。
+已有OpenJDK17 Temurin（GPL-2.0 with Classpath exception）、Bazel7.6.1（Apache-2.0）、CMake、GCC缓存是普通OSS履约与工程准备，不要求本人去接受Oracle JDK商用协议；本项目并未选择Oracle JDK。已有版本/哈希证据见 `configs/runtime-cpu-builds.json`。Android协议已具体接受，Linux host及Android准备继续；不能声称全部剩余工作只有开GPU可做。
 
 ## 需产品权利/资源决策
 
@@ -71,7 +72,7 @@
 
 ## 验证范围与限制
 
-本轮复核官方网页/固定源码，未读取评测隐藏答案、pickle或封存题。DocVQA登录后下载条款、Moments当前表单正文未取得；AudioCaps现行短链需要登录，旧短链404。文中保留这些边界，不承诺申请必获批或存在统一商业许可。后续收到条款/审批后由agent保存原文哈希、主体、适用资产及用途，再继续允许下载；每项哈希/CPU结果应写实际报告，本文不是这些结果的替代。
+本轮复核官方网页/固定源码，未读取评测隐藏答案、pickle或封存题。DocVQA登录后实际SP条款已取得并由本人接受；Moments等条件性来源仍按必要任务触发申请。每项下载/hash/CPU结果另存实际报告，本文不是这些结果的替代。
 
 2026-10-14会话更新：用户确认DocVQA已完成手续，agent继续验证实际已登录下载入口；AudioCaps首发省略，不再提交/等待申请。浏览器已查看真实表单，实际需完整姓名、机构类型/验证邮箱、Drive邮箱共3页，原先401不再代表当前浏览器访问状态。
 
