@@ -5,7 +5,7 @@
 ## 当前票与结论
 - bootstrap:01–08、p0:01–07：done。P0验收见reports/p0-engineering-acceptance.md。
 - 原始P0/S0阶段归属已审计纠正；严格概率门槛始终失败，S1不放行。
-- s0:01 claimed：teacher_head_conversion，/tmp/lite-omnijev-s0-teacher；CPU转换首版完成，root复核要求补真实文件系统/密钥隔离，未准入。
+- s0:01 claimed：teacher_head_conversion，/tmp/lite-omnijev-s0-teacher；真实CPU chroot/dropuid/seccomp转换已完成并合入，host canary/网络拒绝通过；root复核父进程复制输出的symlink风险，补丁仍待合入，不准入教师推理。
 - s0-data:01 done：修正后远程15250条/33答案token全部通过，逐行语义保真和agent抽检完成；正式证据clinc-admission-corrected-001.json，旧报告不作准入证据。
 - s0:03 open：原媒体子代理未交付指定切片，已结束；等待离线媒体依赖准备，严格gate仍失败。
 - s0:05 blocked：canary导入/双标κ/脱敏工具已合入，12个sealed-gate测试通过；真实隔离身份仍缺。
@@ -61,8 +61,11 @@
 
 ## 全项目离线准备执行前沿
 - offline-prep:01 claimed project-model-assets；七项模型/依赖共约121GB，configs/project-model-assets.json已合入，教师固定5addda86不变；scripts.stage_models两线程下载/续传/哈希，pt只进quarantine，不加载权重。
-- offline-prep:02 claimed project-data-assets；29来源首版账本待纠正OneJev身份和下载/训练准入边界，原始媒体/账号/许可缺口继续研究。
+- offline-prep:02 claimed project-data-assets；configs/project-data-assets.json覆盖29来源，已纠正OneJev身份和下载/训练准入边界。Valen约6.36GB已启动隔离原料下载，flock PID4435，报告valen-source-download-001.json；只用于来源审计，不作训练准入。Clotho有1659条CC0/CCBY音频可准备，精确白名单提取待实现；其余媒体/账号/许可缺口继续核实。
 - offline-prep:03 claimed offline-runtime；训练/教师/服务/媒体/量化/端侧工具与离线依赖审计执行中。
 - offline-prep:04依赖前三票完成，全部必需资产/CPU准备通过后才通知开卡，缺口不准pending冒充ready。
 - 最新本地205tests/Ruff/format/mypy/build全通过，实际输出reports/offline-prep-local-validation.txt。
 - 当前优先下载链路：source /etc/network_turbo（不输出环境凭据）+HF_ENDPOINT官方；16MiB Range实测206、3.30秒、约5MB/s。备用loopback18081转发32MiB需278秒，优先不用。
+
+- 本轮新增教师CPU转换实际10tests通过，固定头4tensor/shape/dtype/bit-roundtrip有报告；GPU教师加载/复现仍未执行。
+- 实时下载证据已留本地snapshot（project-model-download-snapshot-001、valen-source-download-snapshot-001），均为running，不作下载完成证据。

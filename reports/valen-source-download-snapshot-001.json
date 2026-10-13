@@ -1,0 +1,138 @@
+{
+  "repo_id": "Valen-Team/Valen-Training-General-100k",
+  "revision": "c6128642d53ed5b9799749d82fd1ae2b2a201f0b",
+  "started_at": "2026-10-13T17:24:41.306479+00:00",
+  "status": "running",
+  "training_admitted": false,
+  "release_admitted": false,
+  "scope": "raw source audit staging; do not use as training or private holdout",
+  "files": [
+    {
+      "path": "image_archives.json",
+      "size": 650,
+      "upstream_sha256": null,
+      "git_blob_sha1": "d3dcad9f2189981aa5a31577503c641af5f4df5e",
+      "actual_sha256": "ebb5956b5f459babdae08913bb93ad947f3c2c25ae254c18f34f13e796f9ebc7"
+    },
+    {
+      "path": ".gitattributes",
+      "size": 2574,
+      "upstream_sha256": null,
+      "git_blob_sha1": "b93267a84b8cde29f45b9be6b85b1c303ee5a5c2",
+      "actual_sha256": "d33ce68be0f1b3d3cd87c93599c969785a582bd41d95a608803b726302de1d16"
+    },
+    {
+      "path": "dataset_info.json",
+      "size": 3683,
+      "upstream_sha256": null,
+      "git_blob_sha1": "7be67b692d998fdcb1dd18ae3bef965ac994549f",
+      "actual_sha256": "306ca27e045b2014d4e23ffb50347d0b0820f9a85fe006825164f0fe7c76b5b0"
+    },
+    {
+      "path": "README.md",
+      "size": 11314,
+      "upstream_sha256": null,
+      "git_blob_sha1": "1c65e36db91ac80ba9fbefe1ebbc306f97fd5831",
+      "actual_sha256": "4ad5f516858188a7ee2025c7f171234a9074fdcd35e4d8c40a2bc5c18780701d"
+    },
+    {
+      "path": "card-assets/valen-slogan.svg",
+      "size": 28965,
+      "upstream_sha256": null,
+      "git_blob_sha1": "e455e052765a50d327bd65fa4d98596514756093",
+      "actual_sha256": "d45532cbaf7ba5d94ba5a909825f6b5b64aa5ea51e872d7c3e301a896158c2e4"
+    },
+    {
+      "path": "card-assets/wechat_0930.jpg",
+      "size": 84256,
+      "upstream_sha256": "a2fc7724ae39dea1ddc38ba32c3b1b59f20c91de76352a06f88a388f9b3dcfe6",
+      "git_blob_sha1": null,
+      "actual_sha256": "a2fc7724ae39dea1ddc38ba32c3b1b59f20c91de76352a06f88a388f9b3dcfe6"
+    },
+    {
+      "path": "card-assets/valen-logo-v5-compact.svg",
+      "size": 633280,
+      "upstream_sha256": null,
+      "git_blob_sha1": "f2897412826a71b008b48bcb919c4243813e1278",
+      "actual_sha256": "4305386b3b72fdd6e51e85e5e65900387583b65366e44d89879b9cbc69b6c0be"
+    },
+    {
+      "path": "programmatic.jsonl",
+      "size": 2790826,
+      "upstream_sha256": "2f1016beb7889640309469d38dba56e7fc13da5534ae32783586f328bb1094b2",
+      "git_blob_sha1": null,
+      "actual_sha256": "2f1016beb7889640309469d38dba56e7fc13da5534ae32783586f328bb1094b2"
+    },
+    {
+      "path": "clevr.jsonl",
+      "size": 3566318,
+      "upstream_sha256": "4e0a6c05c7ee77fa1898baa778f4cd3877e030366ae75b3a8f5cac74a7e9a483",
+      "git_blob_sha1": null,
+      "actual_sha256": "4e0a6c05c7ee77fa1898baa778f4cd3877e030366ae75b3a8f5cac74a7e9a483"
+    },
+    {
+      "path": "data_manifest.json",
+      "size": 9111541,
+      "upstream_sha256": null,
+      "git_blob_sha1": "a0d83987948be5545cd24c3958b74b39244a4754",
+      "actual_sha256": "f609cbe51820ba53209231038943fbc4a3d890c8ebd1aebda70387e20b81783a"
+    },
+    {
+      "path": "textvqa.jsonl",
+      "size": 9588940,
+      "upstream_sha256": "70c3a1aaf4b4ea76afa4980020eb28e077a592610e1d814a023e48c052ae61ca",
+      "git_blob_sha1": null,
+      "actual_sha256": "70c3a1aaf4b4ea76afa4980020eb28e077a592610e1d814a023e48c052ae61ca"
+    },
+    {
+      "path": "vqav2.jsonl",
+      "size": 11772532,
+      "upstream_sha256": "82c9e1cbb41ff914ef699716d318a1d6963d5f1249b7780fc2123a342df4b942",
+      "git_blob_sha1": null,
+      "actual_sha256": "82c9e1cbb41ff914ef699716d318a1d6963d5f1249b7780fc2123a342df4b942"
+    },
+    {
+      "path": "docvqa.jsonl",
+      "size": 12538537,
+      "upstream_sha256": "ae1d31a73fe3e3a54b1899535fc9a50947c102a5f1573aa7333bca15cbb1e931",
+      "git_blob_sha1": null,
+      "actual_sha256": "ae1d31a73fe3e3a54b1899535fc9a50947c102a5f1573aa7333bca15cbb1e931"
+    },
+    {
+      "path": "showui_desktop.jsonl",
+      "size": 13502670,
+      "upstream_sha256": "ba05ad18e1e2e3f5054dff746791b29af251c89a77676f7a0a397216e5080a95",
+      "git_blob_sha1": null,
+      "actual_sha256": "ba05ad18e1e2e3f5054dff746791b29af251c89a77676f7a0a397216e5080a95"
+    },
+    {
+      "path": "gqa.jsonl",
+      "size": 14027417,
+      "upstream_sha256": "548593735b75ab74262600c90e131ffa6f69aa95d44a9cfe2452edf6432a9f7b",
+      "git_blob_sha1": null,
+      "actual_sha256": "548593735b75ab74262600c90e131ffa6f69aa95d44a9cfe2452edf6432a9f7b"
+    },
+    {
+      "path": "chartqa.jsonl",
+      "size": 14908660,
+      "upstream_sha256": "8dd1cf44684455a2ccbd57fac3a95dd88df9f21c5657f250312d66e843df1131",
+      "git_blob_sha1": null,
+      "actual_sha256": "8dd1cf44684455a2ccbd57fac3a95dd88df9f21c5657f250312d66e843df1131"
+    },
+    {
+      "path": "rico_screenqa.jsonl",
+      "size": 30905363,
+      "upstream_sha256": "e24b0fa6f692fc85991caca1178a0f7a92e408bd3037c4c6697752a0d3a43b15",
+      "git_blob_sha1": null,
+      "actual_sha256": "e24b0fa6f692fc85991caca1178a0f7a92e408bd3037c4c6697752a0d3a43b15"
+    },
+    {
+      "path": "gameqa.jsonl",
+      "size": 54077364,
+      "upstream_sha256": "2f254d667ae0a139c8cffcc0cd0e8507be4533157a2b09a4978b8b781900838e",
+      "git_blob_sha1": null,
+      "actual_sha256": "2f254d667ae0a139c8cffcc0cd0e8507be4533157a2b09a4978b8b781900838e"
+    }
+  ],
+  "script_sha256": "6d58ad48ff2e08f778d6c05384c8ceb8d99988d623e7898f9cfab98ae51c26bc"
+}
