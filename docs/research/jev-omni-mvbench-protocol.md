@@ -1,10 +1,10 @@
 # Jev-Omni 固定版本的公开评测协议审计
 
-截至本次审计，未从固定教师 `akhilaaa3/Jev-Omni@5addda86ddee081a68fb067477ea100c221b8917` 的公开接口和说明找到可重建的精确14任务／2,786行 manifest 或基准评测脚本。同条件复现继续缺少上游协议；这不阻止已获许可的公开媒体准备。此次只审计公开源代码、配置、公开任务引用和自有合成音频，不加载模型，不读取隐藏答案、私有 split 或预测，不按发布总数/分数选择排除项。机器证据、源文件 SHA256、官方20任务表和 CPU复现保存在 `reports/jev-omni-mvbench-protocol.json`。
+截至本次审计，未从固定教师 `akhilaaa3/Jev-Omni@5addda86ddee081a68fb067477ea100c221b8917` 的公开接口和说明找到可重建的精确14任务／2,786行 manifest 或基准评测脚本。同条件复现继续缺少上游协议；这不阻止已获许可的公开媒体准备。此次只审计公开源代码、配置、公开任务引用、自有合成音频及程序白名单提取的独立公开元数据，不加载模型，不读取本项目封存/隐藏答案或私有 split，不向agent展示或导出原题、答案、逐题概率/预测，不按发布总数/分数选择排除项。机器证据、源文件 SHA256、官方20任务表和 CPU复现保存在 `reports/jev-omni-mvbench-protocol.json`。
 
 ## 已证实范围与精确缺口
 
-[固定模型卡](https://huggingface.co/akhilaaa3/Jev-Omni/blob/5addda86ddee081a68fb067477ea100c221b8917/README.md) 报告14任务、2,786问、accuracy53.10%、micro53.09%，MMAU1,000问；这些是发布值，本项目没有复测结果。完整递归 [固定树](https://huggingface.co/api/models/akhilaaa3/Jev-Omni/tree/5addda86ddee081a68fb067477ea100c221b8917?recursive=true&expand=false) 有22个条目，含目录、loader、example、配置、权重与展示资产，但没有 eval脚本、任务名单或逐行选择清单。权重、head、验证结果文件和展示媒体未为此次协议审计下载/读取。模型卡没有指向可追溯的另一官方基准入口；公开讨论索引是标签PR和页面认领主题，没有提供评测清单入口。这里的“不存在”仅指所检查的公开固定源，不能证明作者没有未公开文件。
+[固定模型卡](https://huggingface.co/akhilaaa3/Jev-Omni/blob/5addda86ddee081a68fb067477ea100c221b8917/README.md) 报告14任务、2,786问、accuracy53.10%、micro53.09%，MMAU1,000问；这些是发布值，本项目没有复测结果。完整递归 [固定树](https://huggingface.co/api/models/akhilaaa3/Jev-Omni/tree/5addda86ddee081a68fb067477ea100c221b8917?recursive=true&expand=false) 有22个条目，含目录、loader、example、配置、权重与展示资产，但未找到可复现的eval脚本、任务名单或逐行选择清单。权重、head和展示媒体未为此次协议审计下载/读取；后续公开verification仅经下面的受限程序过滤，原始payload未展示或落盘。模型卡没有指向可追溯的另一官方基准入口；公开讨论索引是标签PR和页面认领主题，没有提供评测清单入口。这里的“不存在”仅指所检查的公开固定源，不能证明作者没有未公开文件。
 
 缺口需要由上游补充：
 
@@ -14,6 +14,20 @@
 - MMAU实际1,000公开ID/version、音频截断/混音/重采样/输出编码、运行时与依赖版本。
 
 本次固定官方源20任务每项200行，共4,000行。如果教师14任务使用这个版本的完整原行，应为2,800行；差14行本身不证明它们是哪14行、为何缺失，也不证明教师使用了这个dataset revision。不能把STAR缺失12条、时间越界3条或音频>30秒66条当成教师排除项，不能枚举任务组合匹配53.10%。
+
+## 公开verification的独立元数据补查
+
+先重新核对固定22-entry树：字节与前次完全一致，无分页Link；确认 `verification.json` 1,318B、`decision_config.json` 1,174B、`sha256.json` 1,757B，再只下载这三个固定官方小JSON。网络response body累计11,523B（含结构/别名复核的重复请求），低于20MB预算；未读取任何其他dataset、模型权重、禁止模型标签或本项目封存。
+
+程序在内存解析后只输出文件SHA、键类别/类型计数，以及允许字段的独立协议/汇总值。题目、state/text/options、答案/target、概率/logit/prediction等内容不输出；未知schema值也抑制，原始JSON不落盘、不进训练。公共任务字符串只允许已核对的官方20任务，ID必须另做明确public-MVBench身份验证才能导出，本次没有ID字段命中。提取器用自有合成控制样例验证了“独立metadata可保留、预测分支中同名字段和输入sentinel不得导出”，控制样例不算教师证据。提取器源码与SHA、过滤收据见报告 `public_verification_metadata_audit`。
+
+| 固定官方文件 | 结果 |
+|---|---|
+| [verification.json](https://huggingface.co/akhilaaa3/Jev-Omni/blob/5addda86ddee081a68fb067477ea100c221b8917/verification.json) | SHA `1cfcb382c193f4d02e4e230a75c94146e90f0d60584dd1c9265ce022b485030c`；12个受保护输入schema键、1个验证case/modalities类别、16个其他schema键；无协议/汇总白名单字段命中，未导出任何payload值。 |
+| [decision_config.json](https://huggingface.co/akhilaaa3/Jev-Omni/blob/5addda86ddee081a68fb067477ea100c221b8917/decision_config.json) | SHA `2cf5e5781871ed86be130abe0fccda8dbad35f32c6deebe08cd8f92f5f452200`；唯一可独立提取字段为seed3407，其父namespace保持抑制，不能据此确认MVBench评测seed、任务或行选择。 |
+| [sha256.json](https://huggingface.co/akhilaaa3/Jev-Omni/blob/5addda86ddee081a68fb067477ea100c221b8917/sha256.json) | SHA `07b8af912f4efbee98c610b681a3645b0e38501bedd983895c4aaaa5af543a97`；19个其他schema键，无协议字段命中，不展示原映射值。 |
+
+这次允许安全提取独立metadata，而不是因为文件可能含预测就跳过整个文件；实际仍未恢复14任务、2,786行ID、dataset/split/version或采帧协议。JSON结构计数不是评测样本数；例如decision_config的14个整数节点不能解释成14个评测任务。不能从被抑制的验证payload反推选择、排除或分数。精确协议缺口和上游草稿继续保留，±2门槛及其他验收条件没有降低。
 
 ## 可冻结的公开参考映射
 

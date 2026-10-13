@@ -43,7 +43,7 @@
     "exact_task_names_found": false,
     "exact_row_manifest_found": false,
     "dataset_revision_found": false,
-    "absence_claim_scope": "fixed complete public repository tree, README, example, loader and linked official sources; not a claim about unpublished/private author artifacts",
+    "absence_claim_scope": "Fixed complete public tree, README/example/loader, linked primary sources and allowlisted independent metadata from verification.json, decision_config.json and sha256.json; no claim about unpublished author artifacts.",
     "runtime_requirements": "transformers==5.17.0; other requirements include unpinned torch>=2.10, opencv-python-headless, FFmpeg not version pinned",
     "loader_snapshot_revision_argument": false,
     "native_processor_video_num_frames": 32,
@@ -65,7 +65,8 @@
       "PRECREATED_TEMP_WAV"
     ],
     "loader_enable_thinking": false,
-    "tree_pagination_link_present": false
+    "tree_pagination_link_present": false,
+    "verification_summary_programmatically_filtered": true
   },
   "primary_sources": [
     {
@@ -122,6 +123,24 @@
       "url": "https://github.com/huggingface/transformers/blob/856157a2f3e9594954310df18fdccc31ffddebe9/src/transformers/audio_utils.py",
       "bytes": 66553,
       "sha256": "f1e3bba3874a0166049cd1abd3e13eaa8ffed03a9c5d1db9501effbe9983e753"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/verification.json",
+      "bytes": 1318,
+      "sha256": "1cfcb382c193f4d02e4e230a75c94146e90f0d60584dd1c9265ce022b485030c",
+      "access_policy": "in-memory program-only allowlist; raw input/target/prediction values never exported or persisted"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/decision_config.json",
+      "bytes": 1174,
+      "sha256": "2cf5e5781871ed86be130abe0fccda8dbad35f32c6deebe08cd8f92f5f452200",
+      "access_policy": "in-memory program-only allowlist; raw input/target/prediction values never exported or persisted"
+    },
+    {
+      "url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/sha256.json",
+      "bytes": 1757,
+      "sha256": "07b8af912f4efbee98c610b681a3645b0e38501bedd983895c4aaaa5af543a97",
+      "access_policy": "in-memory program-only allowlist; raw input/target/prediction values never exported or persisted"
     }
   ],
   "official_mvbench": {
@@ -431,7 +450,7 @@
   "paid_actions": false,
   "gate_thresholds_changed": false,
   "labels_or_denominators_changed": false,
-  "source_bytes_downloaded_for_listed_primary_files": 126009,
+  "source_bytes_downloaded_for_listed_primary_files": 130258,
   "exit_code": 0,
   "public_supplemental_discovery": {
     "discussion_index_url": "https://huggingface.co/api/models/akhilaaa3/Jev-Omni/discussions",
@@ -553,5 +572,144 @@
     ],
     "linux_supplemental_probe": "queued; no completed Linux claim",
     "no_model_or_benchmark_quality_execution": true
+  },
+  "public_verification_metadata_audit": {
+    "status": "no_reproducible_mvbench_protocol_in_checked_metadata",
+    "files": [
+      {
+        "observed_utc": "2026-10-13T21:52:29.382769+00:00",
+        "source_url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/verification.json",
+        "source_file": "verification.json",
+        "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+        "bytes": 1318,
+        "sha256": "1cfcb382c193f4d02e4e230a75c94146e90f0d60584dd1c9265ce022b485030c",
+        "tree_entry_count": 22,
+        "tree_sha256": "8b2812c808f82cda7044a237c835ab940d30c6fd268a9f0a3bb5557de932fada",
+        "network_bytes_this_source_fetch": 1318,
+        "key_category_counts": {
+          "verification_case_or_modality_schema": 1,
+          "protected_input_content": 12,
+          "other_schema_key": 16
+        },
+        "value_type_counts": {
+          "dict": 9,
+          "list": 6,
+          "str": 22,
+          "float": 15
+        },
+        "protected_subtree_count": 12,
+        "safe_protocol_key_hits": {},
+        "independently_allowed_protocol_or_aggregate_metadata": [],
+        "unknown_task_metadata_fields_redacted_count": 0,
+        "raw_input_prediction_target_values_exported": false,
+        "raw_source_written_to_disk": false,
+        "filter_sha256": "b240b8a23610ad51b08f2fd78a5ef1a5aeb386561f6b19d5dcfa8d622bbaff63",
+        "training_data_or_private_project_files_read": false,
+        "thresholds_changed": false,
+        "owned_synthetic_redaction_and_metadata_test_passed": true,
+        "exit_code": 0
+      },
+      {
+        "observed_utc": "2026-10-13T21:53:31.632599+00:00",
+        "source_url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/decision_config.json",
+        "source_file": "decision_config.json",
+        "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+        "bytes": 1174,
+        "sha256": "2cf5e5781871ed86be130abe0fccda8dbad35f32c6deebe08cd8f92f5f452200",
+        "tree_entry_count": 22,
+        "tree_sha256": "8b2812c808f82cda7044a237c835ab940d30c6fd268a9f0a3bb5557de932fada",
+        "network_bytes_this_source_fetch": 1174,
+        "key_category_counts": {
+          "other_schema_key": 29,
+          "protocol": 1
+        },
+        "value_type_counts": {
+          "dict": 2,
+          "str": 13,
+          "int": 14,
+          "list": 1,
+          "float": 3
+        },
+        "protected_subtree_count": 0,
+        "safe_protocol_key_hits": {
+          "seed": 1
+        },
+        "independently_allowed_protocol_or_aggregate_metadata": [
+          {
+            "path": "$.<object>.seed",
+            "field": "seed",
+            "value": 3407
+          }
+        ],
+        "unknown_task_metadata_fields_redacted_count": 0,
+        "raw_input_prediction_target_values_exported": false,
+        "raw_source_written_to_disk": false,
+        "filter_sha256": "77af55274c9ac27cea8fa356acfed71f1c905f67d78cd9fd17044feacd7ec8f7",
+        "training_data_or_private_project_files_read": false,
+        "thresholds_changed": false,
+        "owned_synthetic_redaction_and_metadata_test_passed": true,
+        "exit_code": 0
+      },
+      {
+        "observed_utc": "2026-10-13T21:52:33.071526+00:00",
+        "source_url": "https://huggingface.co/akhilaaa3/Jev-Omni/resolve/5addda86ddee081a68fb067477ea100c221b8917/sha256.json",
+        "source_file": "sha256.json",
+        "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+        "bytes": 1757,
+        "sha256": "07b8af912f4efbee98c610b681a3645b0e38501bedd983895c4aaaa5af543a97",
+        "tree_entry_count": 22,
+        "tree_sha256": "8b2812c808f82cda7044a237c835ab940d30c6fd268a9f0a3bb5557de932fada",
+        "network_bytes_this_source_fetch": 1757,
+        "key_category_counts": {
+          "other_schema_key": 19
+        },
+        "value_type_counts": {
+          "dict": 1,
+          "str": 19
+        },
+        "protected_subtree_count": 0,
+        "safe_protocol_key_hits": {},
+        "independently_allowed_protocol_or_aggregate_metadata": [],
+        "unknown_task_metadata_fields_redacted_count": 0,
+        "raw_input_prediction_target_values_exported": false,
+        "raw_source_written_to_disk": false,
+        "filter_sha256": "b240b8a23610ad51b08f2fd78a5ef1a5aeb386561f6b19d5dcfa8d622bbaff63",
+        "training_data_or_private_project_files_read": false,
+        "thresholds_changed": false,
+        "owned_synthetic_redaction_and_metadata_test_passed": true,
+        "exit_code": 0
+      }
+    ],
+    "network_response_body_bytes_this_slice": 11523,
+    "network_budget_bytes": 20000000,
+    "unique_new_metadata_body_bytes": 4249,
+    "fetch_accounting": {
+      "fixed_tree": 3464,
+      "verification_initial_filter": 1318,
+      "verification_alias_filter": 1318,
+      "three_file_final_filter": 4249,
+      "decision_context_confirmation": 1174
+    },
+    "raw_sources_retained": false,
+    "raw_prediction_input_target_exported": false,
+    "private_or_sealed_project_data_read": false,
+    "model_or_gpu_used": false,
+    "training_data_admitted": false,
+    "thresholds_changed": false,
+    "filter_source_by_sha256": {
+      "b240b8a23610ad51b08f2fd78a5ef1a5aeb386561f6b19d5dcfa8d622bbaff63": "\"\"\"Only allowlisted public protocol metadata leaves may leave the parser.\"\"\"\nimport hashlib\nimport json\nimport re\nimport sys\nimport urllib.request\nfrom collections import Counter\nfrom datetime import UTC, datetime\nfrom pathlib import Path\n\nbase = Path(__file__).resolve().parent\nrevision = \"5addda86ddee081a68fb067477ea100c221b8917\"\ntree = json.loads((base / \"teacher-tree.json\").read_text())\nsource_file = sys.argv[1] if len(sys.argv) == 2 else \"verification.json\"\nassert source_file in {\"verification.json\", \"decision_config.json\", \"sha256.json\"}\nexpected = next(item[\"size\"] for item in tree if item[\"path\"] == source_file)\nassert expected == {\"verification.json\": 1318, \"decision_config.json\": 1174, \"sha256.json\": 1757}[source_file] and len(tree) == 22\nurl = f\"https://huggingface.co/akhilaaa3/Jev-Omni/resolve/{revision}/{source_file}\"\nwith urllib.request.urlopen(url, timeout=30) as response:\n    raw = response.read(expected + 1)\nassert len(raw) == expected\ndocument = json.loads(raw)\n\ntasks = json.loads((base.parents[1] / \"configs/video-eval-assets.json\").read_text())[\"mvbench\"][\"tasks\"]\ntask_names = {task[\"task\"] for task in tasks}\ntask_aliases = {Path(task[\"file\"]).name: task[\"task\"] for task in tasks}\ntask_aliases.update({Path(task[\"file\"]).stem: task[\"task\"] for task in tasks})\ntask_aliases.update({name: name for name in task_names})\nprotocol_fields = {\n    \"benchmark\", \"benchmark_name\", \"dataset\", \"dataset_name\", \"dataset_revision\",\n    \"dataset_version\", \"split\", \"version\", \"revision\", \"task\", \"task_name\", \"tasks\",\n    \"task_names\", \"num_frames\", \"video_frames\", \"frames\", \"fps\", \"seed\", \"frame_count\", \"sampled_frames\", \"start\", \"end\", \"audio_seconds\", \"sample_rate\", \"channels\",\n    \"mvbench_row_ids\", \"public_mvbench_ids\", \"row_ids\", \"sample_ids\", \"eval_ids\",\n    \"excluded_ids\", \"ids\", \"dataset_id\", \"dataset_split\", \"evaluated_tasks\",\n    \"frame_count\", \"sampled_frames\", \"sampling_strategy\", \"clip_bounds\",\n    \"start\", \"end\", \"audio_seconds\", \"sample_rate\", \"channels\",\n}\naggregate_fields = {\n    \"num_samples\", \"n_samples\", \"sample_count\", \"total_samples\", \"num_questions\",\n    \"total_questions\", \"num_tasks\", \"task_count\", \"evaluated_samples\", \"total\",\n    \"accuracy\", \"micro_accuracy\", \"macro_accuracy\", \"task_average\", \"correct\",\n    \"n\", \"n_questions\", \"n_tasks\", \"num_examples\", \"n_eval\", \"eval_size\",\n    \"samples\", \"questions\", \"total_count\", \"evaluated_count\",\n}\nprotected_prediction = {\n    \"prediction\", \"predictions\", \"prediction_index\", \"probabilities\", \"probability\",\n    \"probs\", \"prob\", \"pred\", \"distribution\", \"logits\", \"scores\", \"confidence\", \"answer\", \"answers\", \"label\", \"labels\",\n    \"target\", \"targets\", \"ground_truth\", \"expected\", \"expected_output\", \"output\", \"outputs\",\n}\nprotected_input = {\"question\", \"questions\", \"prompt\", \"prompts\", \"state\", \"text\", \"input\", \"inputs\", \"messages\", \"options\", \"content\"}\nsafe_datasets = {\"MVBench\", \"mvbench\", \"OpenGVLab/MVBench\", \"MMAU\", \"mmau\", \"gamma-lab-umd/MMAU-test-mini\"}\ncategory_counts = Counter()\nvalue_type_counts = Counter()\nsafe_metadata = []\nunknown_task_fields = 0\nprotected_subtrees = 0\nsafe_protocol_key_hits = Counter()\n\n\ndef classify(key):\n    normalized = key.lower()\n    if normalized in protocol_fields:\n        return \"protocol\"\n    if normalized in aggregate_fields:\n        return \"aggregate\"\n    if normalized in protected_prediction or any(word in normalized for word in (\"prediction\", \"prob\", \"logit\")):\n        return \"protected_prediction_or_target\"\n    if normalized in protected_input:\n        return \"protected_input_content\"\n    if key in task_names or key in task_aliases:\n        return \"known_public_task_key\"\n    if normalized in {\"mvbench\", \"mmau\"}:\n        return \"known_public_benchmark_key\"\n    if normalized in {\"noul\", \"choice\", \"score\", \"checks\", \"cases\", \"comparisons\", \"original\", \"merged\", \"before\", \"after\", \"image\", \"audio\", \"video\"}:\n        return \"verification_case_or_modality_schema\"\n    if any(token in normalized for token in (\"benchmark\", \"dataset\", \"protocol\", \"metadata\", \"summary\", \"evaluation\", \"notes\", \"description\")):\n        return \"unexported_potential_protocol_schema\"\n    return \"other_schema_key\"\n\n\ndef visit(value, path=\"$\", protected=False):\n    global unknown_task_fields, protected_subtrees\n    value_type_counts[type(value).__name__] += 1\n    if isinstance(value, dict):\n        for key, child in value.items():\n            category = classify(key)\n            category_counts[category] += 1\n            normalized = key.lower()\n            blocked = protected or category.startswith(\"protected_\")\n            if not protected and category.startswith(\"protected_\"):\n                protected_subtrees += 1\n            safe_path_key = normalized if category in {\"protocol\", \"aggregate\", \"known_public_benchmark_key\"} else \"<object>\"\n            location = path + \".\" + safe_path_key\n            if not blocked and category in {\"protocol\", \"aggregate\"}:\n                safe_protocol_key_hits[normalized] += 1\n                allowed = False\n                exported = child\n                if category == \"aggregate\" or normalized in {\"num_frames\", \"video_frames\", \"frames\", \"fps\", \"seed\", \"frame_count\", \"sampled_frames\", \"start\", \"end\", \"audio_seconds\", \"sample_rate\", \"channels\"}:\n                    allowed = isinstance(child, (int, float)) and not isinstance(child, bool)\n                elif normalized in {\"benchmark\", \"benchmark_name\", \"dataset\", \"dataset_name\"}:\n                    allowed = isinstance(child, str) and child in safe_datasets\n                elif normalized == \"split\":\n                    allowed = child in (\"train\", \"validation\", \"val\", \"test\", \"dev\", \"test-mini\")\n                elif normalized in {\"revision\", \"dataset_revision\"}:\n                    allowed = isinstance(child, str) and re.fullmatch(r\"[0-9a-f]{40}\", child) is not None\n                elif normalized in {\"version\", \"dataset_version\"}:\n                    allowed = isinstance(child, str) and re.fullmatch(r\"v?\\d+(?:\\.\\d+){0,3}\", child) is not None\n                elif normalized in {\"task\", \"task_name\"}:\n                    allowed = isinstance(child, str) and child in task_aliases\n                    if allowed:\n                        exported = task_aliases[child]\n                    elif isinstance(child, str):\n                        unknown_task_fields += 1\n                elif normalized in {\"tasks\", \"task_names\"} and isinstance(child, list):\n                    allowed = all(isinstance(item, str) and item in task_aliases for item in child)\n                    if allowed:\n                        exported = [task_aliases[item] for item in child]\n                    else:\n                        unknown_task_fields += 1\n                # IDs are never exported without an explicit public-MVBench\n                # identity/schema validation step; this bounded pass reports hits only.\n                if allowed:\n                    safe_metadata.append({\"path\": location, \"field\": normalized, \"value\": exported})\n            visit(child, location, blocked)\n    elif isinstance(value, list):\n        for child in value:\n            visit(child, path + \"[]\", protected)\n\n\n# Verify independent protocol extraction and payload exclusion on an owned\n# synthetic document before parsing the official file. Never emit this fixture.\nvisit({\"benchmark\": \"MVBench\", \"num_samples\": 2786, \"num_tasks\": 14,\n       \"task_names\": [\"Action Count\"],\n       \"predictions\": {\"num_samples\": 123, \"tasks\": [\"Action Count\"],\n                       \"question\": \"DO_NOT_EXPORT_SYNTHETIC_SENTINEL\"}})\nassert {item[\"field\"] for item in safe_metadata} == {\"benchmark\", \"num_samples\", \"num_tasks\", \"task_names\"}\nassert all(item[\"value\"] != 123 for item in safe_metadata)\nassert \"DO_NOT_EXPORT_SYNTHETIC_SENTINEL\" not in json.dumps(safe_metadata)\ncategory_counts.clear()\nvalue_type_counts.clear()\nsafe_metadata.clear()\nsafe_protocol_key_hits.clear()\nunknown_task_fields = protected_subtrees = 0\nvisit(document)\nresult = {\n    \"observed_utc\": datetime.now(UTC).isoformat(),\n    \"source_url\": url,\n    \"source_file\": source_file,\n    \"source_revision\": revision,\n    \"bytes\": len(raw),\n    \"sha256\": hashlib.sha256(raw).hexdigest(),\n    \"tree_entry_count\": len(tree),\n    \"tree_sha256\": hashlib.sha256((base / \"teacher-tree.json\").read_bytes()).hexdigest(),\n    \"network_bytes_this_source_fetch\": len(raw),\n    \"key_category_counts\": dict(category_counts),\n    \"value_type_counts\": dict(value_type_counts),\n    \"protected_subtree_count\": protected_subtrees,\n    \"safe_protocol_key_hits\": dict(safe_protocol_key_hits),\n    \"independently_allowed_protocol_or_aggregate_metadata\": safe_metadata,\n    \"unknown_task_metadata_fields_redacted_count\": unknown_task_fields,\n    \"raw_input_prediction_target_values_exported\": False,\n    \"raw_source_written_to_disk\": False,\n    \"filter_sha256\": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),\n    \"training_data_or_private_project_files_read\": False,\n    \"thresholds_changed\": False,\n    \"owned_synthetic_redaction_and_metadata_test_passed\": True,\n    \"exit_code\": 0,\n}\ndel document, raw\n(base / (source_file + \".filtered.json\")).write_text(json.dumps(result, indent=2) + \"\\n\")\nprint(json.dumps(result, indent=2))\n",
+      "77af55274c9ac27cea8fa356acfed71f1c905f67d78cd9fd17044feacd7ec8f7": "\"\"\"Only allowlisted public protocol metadata leaves may leave the parser.\"\"\"\nimport hashlib\nimport json\nimport re\nimport sys\nimport urllib.request\nfrom collections import Counter\nfrom datetime import UTC, datetime\nfrom pathlib import Path\n\nbase = Path(__file__).resolve().parent\nrevision = \"5addda86ddee081a68fb067477ea100c221b8917\"\ntree = json.loads((base / \"teacher-tree.json\").read_text())\nsource_file = sys.argv[1] if len(sys.argv) == 2 else \"verification.json\"\nassert source_file in {\"verification.json\", \"decision_config.json\", \"sha256.json\"}\nexpected = next(item[\"size\"] for item in tree if item[\"path\"] == source_file)\nassert expected == {\"verification.json\": 1318, \"decision_config.json\": 1174, \"sha256.json\": 1757}[source_file] and len(tree) == 22\nurl = f\"https://huggingface.co/akhilaaa3/Jev-Omni/resolve/{revision}/{source_file}\"\nwith urllib.request.urlopen(url, timeout=30) as response:\n    raw = response.read(expected + 1)\nassert len(raw) == expected\ndocument = json.loads(raw)\n\ntasks = json.loads((base.parents[1] / \"configs/video-eval-assets.json\").read_text())[\"mvbench\"][\"tasks\"]\ntask_names = {task[\"task\"] for task in tasks}\ntask_aliases = {Path(task[\"file\"]).name: task[\"task\"] for task in tasks}\ntask_aliases.update({Path(task[\"file\"]).stem: task[\"task\"] for task in tasks})\ntask_aliases.update({name: name for name in task_names})\nprotocol_fields = {\n    \"benchmark\", \"benchmark_name\", \"dataset\", \"dataset_name\", \"dataset_revision\",\n    \"dataset_version\", \"split\", \"version\", \"revision\", \"task\", \"task_name\", \"tasks\",\n    \"task_names\", \"num_frames\", \"video_frames\", \"frames\", \"fps\", \"seed\", \"frame_count\", \"sampled_frames\", \"start\", \"end\", \"audio_seconds\", \"sample_rate\", \"channels\",\n    \"mvbench_row_ids\", \"public_mvbench_ids\", \"row_ids\", \"sample_ids\", \"eval_ids\",\n    \"excluded_ids\", \"ids\", \"dataset_id\", \"dataset_split\", \"evaluated_tasks\",\n    \"frame_count\", \"sampled_frames\", \"sampling_strategy\", \"clip_bounds\",\n    \"start\", \"end\", \"audio_seconds\", \"sample_rate\", \"channels\",\n}\naggregate_fields = {\n    \"num_samples\", \"n_samples\", \"sample_count\", \"total_samples\", \"num_questions\",\n    \"total_questions\", \"num_tasks\", \"task_count\", \"evaluated_samples\", \"total\",\n    \"accuracy\", \"micro_accuracy\", \"macro_accuracy\", \"task_average\", \"correct\",\n    \"n\", \"n_questions\", \"n_tasks\", \"num_examples\", \"n_eval\", \"eval_size\",\n    \"samples\", \"questions\", \"total_count\", \"evaluated_count\",\n}\nprotected_prediction = {\n    \"prediction\", \"predictions\", \"prediction_index\", \"probabilities\", \"probability\",\n    \"probs\", \"prob\", \"pred\", \"distribution\", \"logits\", \"scores\", \"confidence\", \"answer\", \"answers\", \"label\", \"labels\",\n    \"target\", \"targets\", \"ground_truth\", \"expected\", \"expected_output\", \"output\", \"outputs\",\n}\nprotected_input = {\"question\", \"questions\", \"prompt\", \"prompts\", \"state\", \"text\", \"input\", \"inputs\", \"messages\", \"options\", \"content\"}\nsafe_datasets = {\"MVBench\", \"mvbench\", \"OpenGVLab/MVBench\", \"MMAU\", \"mmau\", \"gamma-lab-umd/MMAU-test-mini\"}\ncategory_counts = Counter()\nvalue_type_counts = Counter()\nsafe_metadata = []\nunknown_task_fields = 0\nprotected_subtrees = 0\nsafe_protocol_key_hits = Counter()\n\n\ndef classify(key):\n    normalized = key.lower()\n    if normalized in protocol_fields:\n        return \"protocol\"\n    if normalized in aggregate_fields:\n        return \"aggregate\"\n    if normalized in protected_prediction or any(word in normalized for word in (\"prediction\", \"prob\", \"logit\")):\n        return \"protected_prediction_or_target\"\n    if normalized in protected_input:\n        return \"protected_input_content\"\n    if key in task_names or key in task_aliases:\n        return \"known_public_task_key\"\n    if normalized in {\"mvbench\", \"mmau\"}:\n        return \"known_public_benchmark_key\"\n    if normalized in {\"noul\", \"choice\", \"score\", \"checks\", \"cases\", \"comparisons\", \"original\", \"merged\", \"before\", \"after\", \"image\", \"audio\", \"video\"}:\n        return \"verification_case_or_modality_schema\"\n    if any(token in normalized for token in (\"benchmark\", \"dataset\", \"protocol\", \"metadata\", \"summary\", \"evaluation\", \"notes\", \"description\")):\n        return \"unexported_potential_protocol_schema\"\n    return \"other_schema_key\"\n\n\ndef visit(value, path=\"$\", protected=False):\n    global unknown_task_fields, protected_subtrees\n    value_type_counts[type(value).__name__] += 1\n    if isinstance(value, dict):\n        for key, child in value.items():\n            category = classify(key)\n            category_counts[category] += 1\n            normalized = key.lower()\n            blocked = protected or category.startswith(\"protected_\")\n            if not protected and category.startswith(\"protected_\"):\n                protected_subtrees += 1\n            safe_contexts = {\"training\", \"evaluation\", \"eval\", \"inference\", \"metadata\", \"processor\", \"summary\", \"runtime\", \"training_config\", \"evaluation_config\", \"eval_config\"}\n            safe_path_key = normalized if category in {\"protocol\", \"aggregate\", \"known_public_benchmark_key\"} or normalized in safe_contexts else \"<object>\"\n            location = path + \".\" + safe_path_key\n            if not blocked and category in {\"protocol\", \"aggregate\"}:\n                safe_protocol_key_hits[normalized] += 1\n                allowed = False\n                exported = child\n                if category == \"aggregate\" or normalized in {\"num_frames\", \"video_frames\", \"frames\", \"fps\", \"seed\", \"frame_count\", \"sampled_frames\", \"start\", \"end\", \"audio_seconds\", \"sample_rate\", \"channels\"}:\n                    allowed = isinstance(child, (int, float)) and not isinstance(child, bool)\n                elif normalized in {\"benchmark\", \"benchmark_name\", \"dataset\", \"dataset_name\"}:\n                    allowed = isinstance(child, str) and child in safe_datasets\n                elif normalized == \"split\":\n                    allowed = child in (\"train\", \"validation\", \"val\", \"test\", \"dev\", \"test-mini\")\n                elif normalized in {\"revision\", \"dataset_revision\"}:\n                    allowed = isinstance(child, str) and re.fullmatch(r\"[0-9a-f]{40}\", child) is not None\n                elif normalized in {\"version\", \"dataset_version\"}:\n                    allowed = isinstance(child, str) and re.fullmatch(r\"v?\\d+(?:\\.\\d+){0,3}\", child) is not None\n                elif normalized in {\"task\", \"task_name\"}:\n                    allowed = isinstance(child, str) and child in task_aliases\n                    if allowed:\n                        exported = task_aliases[child]\n                    elif isinstance(child, str):\n                        unknown_task_fields += 1\n                elif normalized in {\"tasks\", \"task_names\"} and isinstance(child, list):\n                    allowed = all(isinstance(item, str) and item in task_aliases for item in child)\n                    if allowed:\n                        exported = [task_aliases[item] for item in child]\n                    else:\n                        unknown_task_fields += 1\n                # IDs are never exported without an explicit public-MVBench\n                # identity/schema validation step; this bounded pass reports hits only.\n                if allowed:\n                    safe_metadata.append({\"path\": location, \"field\": normalized, \"value\": exported})\n            visit(child, location, blocked)\n    elif isinstance(value, list):\n        for child in value:\n            visit(child, path + \"[]\", protected)\n\n\n# Verify independent protocol extraction and payload exclusion on an owned\n# synthetic document before parsing the official file. Never emit this fixture.\nvisit({\"benchmark\": \"MVBench\", \"num_samples\": 2786, \"num_tasks\": 14,\n       \"task_names\": [\"Action Count\"],\n       \"predictions\": {\"num_samples\": 123, \"tasks\": [\"Action Count\"],\n                       \"question\": \"DO_NOT_EXPORT_SYNTHETIC_SENTINEL\"}})\nassert {item[\"field\"] for item in safe_metadata} == {\"benchmark\", \"num_samples\", \"num_tasks\", \"task_names\"}\nassert all(item[\"value\"] != 123 for item in safe_metadata)\nassert \"DO_NOT_EXPORT_SYNTHETIC_SENTINEL\" not in json.dumps(safe_metadata)\ncategory_counts.clear()\nvalue_type_counts.clear()\nsafe_metadata.clear()\nsafe_protocol_key_hits.clear()\nunknown_task_fields = protected_subtrees = 0\nvisit(document)\nresult = {\n    \"observed_utc\": datetime.now(UTC).isoformat(),\n    \"source_url\": url,\n    \"source_file\": source_file,\n    \"source_revision\": revision,\n    \"bytes\": len(raw),\n    \"sha256\": hashlib.sha256(raw).hexdigest(),\n    \"tree_entry_count\": len(tree),\n    \"tree_sha256\": hashlib.sha256((base / \"teacher-tree.json\").read_bytes()).hexdigest(),\n    \"network_bytes_this_source_fetch\": len(raw),\n    \"key_category_counts\": dict(category_counts),\n    \"value_type_counts\": dict(value_type_counts),\n    \"protected_subtree_count\": protected_subtrees,\n    \"safe_protocol_key_hits\": dict(safe_protocol_key_hits),\n    \"independently_allowed_protocol_or_aggregate_metadata\": safe_metadata,\n    \"unknown_task_metadata_fields_redacted_count\": unknown_task_fields,\n    \"raw_input_prediction_target_values_exported\": False,\n    \"raw_source_written_to_disk\": False,\n    \"filter_sha256\": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),\n    \"training_data_or_private_project_files_read\": False,\n    \"thresholds_changed\": False,\n    \"owned_synthetic_redaction_and_metadata_test_passed\": True,\n    \"exit_code\": 0,\n}\ndel document, raw\n(base / (source_file + \".filtered.json\")).write_text(json.dumps(result, indent=2) + \"\\n\")\nprint(json.dumps(result, indent=2))\n"
+    },
+    "independent_seed_scope": "decision_config contains seed3407 under an otherwise redacted parent; this does not establish an MVBench evaluation seed or task/row selection",
+    "schema_counts_are_not_evaluation_counts": true,
+    "mvbench_task_names_recovered": false,
+    "mvbench_row_ids_recovered": false,
+    "dataset_revision_or_split_recovered": false,
+    "video_frame_protocol_recovered": false,
+    "metadata_request_timeout_seconds": 30,
+    "elapsed_seconds": null,
+    "elapsed_note": "This metadata-only pass did not measure total elapsed wall time; bounded requests and exact response body accounting recorded instead.",
+    "new_paid_actions": false,
+    "exit_code": 0
   }
 }
