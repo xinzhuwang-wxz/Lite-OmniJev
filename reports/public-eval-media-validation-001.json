@@ -1,0 +1,476 @@
+{
+  "status": "public_media_cpu_checks_completed",
+  "exit_code": 0,
+  "gpu_seconds": 0,
+  "cost_usd": 0,
+  "seed": 0,
+  "script_sha256": "87058a68e2dbc5f3db5b2fa8d250c060082a8c15a564c5a38d685116dc7ba844",
+  "started_at_utc": "2026-10-13T19:07:48.632779+00:00",
+  "environment": "macOS-26.5.1-arm64-arm-64bit",
+  "python_version": "3.11.14",
+  "training_admitted": false,
+  "cgroup_limits": {
+    "cpu_max": null,
+    "memory_max": null
+  },
+  "config_sha256": "4f7dc74d45c22e44b6e5fe8bb6ae6f3914464033e5e4617c671a643ef422bcc4",
+  "mmau": {
+    "status": "public_mini_mapping_and_all_audio_decode_verified",
+    "real_audio_preflight": {
+      "public_rows": [
+        0,
+        333,
+        666
+      ],
+      "domains": {
+        "sound": 2,
+        "music": 1
+      },
+      "decoded": 3,
+      "codecs": {
+        "WAV/PCM_16": 2,
+        "WAV/FLOAT": 1
+      },
+      "decoders": {
+        "libsndfile": 3
+      },
+      "fallback_original_codecs": {},
+      "finite_samples_verified": 3,
+      "frames_decoded": 1963000,
+      "sample_rates": {
+        "32000": 2,
+        "44100": 1
+      },
+      "channels": {
+        "1": 2,
+        "2": 1
+      },
+      "video_dimensions": {},
+      "duration_seconds": {
+        "min": 10.0,
+        "max": 30.0,
+        "total": 50.0,
+        "above_30_seconds": 0
+      },
+      "decode_scope": "complete selected stream through EOF; decoder-specific checks reported"
+    },
+    "parquet_sha256": "54b76f440db843546f9ad49a1518cc22371f63a266f034ba6bd4343b7b6fde86",
+    "public_metadata_sha256": "9f18fda99f8dbc2bc5ecd6323fb5063309f54969810b5c6f1caeb3b8d904cf1c",
+    "schema": "context: struct<bytes: binary, path: string>\n  child 0, bytes: binary\n  child 1, path: string\ninstruction: string\nchoices: list<element: string>\n  child 0, element: string\nanswer: string\nother_attributes: string\n-- schema metadata --\nhuggingface: '{\"info\": {\"features\": {\"context\": {\"_type\": \"Audio\"}, \"inst' + 238",
+    "parquet_rows": 1000,
+    "public_ids_matched": 1000,
+    "public_audio_ids_unique": 1000,
+    "embedded_audio_count": 1000,
+    "ffmpeg_fallback_count": 0,
+    "soundfile_worker_exit_code": 0,
+    "metadata_comparison": "HF choices/answer exactly equal public choices with (A) prefixes",
+    "unique_audio_content_hashes": 904,
+    "embedded_audio_total_bytes": 1815779127,
+    "id_audio_manifest_sha256": "2b2db924e731951bda12bb94d426ca8e07c40a40505e80a4de37e1146430bdaf",
+    "null_context_path_count_expected": "HF embeds audio bytes; path is not required",
+    "decode": {
+      "decoded": 1000,
+      "codecs": {
+        "WAV/PCM_16": 866,
+        "MP3/MPEG_LAYER_III": 46,
+        "WAV/FLOAT": 73,
+        "WAV/PCM_32": 15
+      },
+      "decoders": {
+        "libsndfile": 1000
+      },
+      "fallback_original_codecs": {},
+      "finite_samples_verified": 1000,
+      "frames_decoded": 446617655,
+      "sample_rates": {
+        "32000": 252,
+        "44100": 226,
+        "48000": 92,
+        "16000": 411,
+        "24000": 19
+      },
+      "channels": {
+        "1": 752,
+        "2": 179,
+        "6": 69
+      },
+      "video_dimensions": {},
+      "duration_seconds": {
+        "min": 1.4512471655328798,
+        "max": 34.4785,
+        "total": 14328.090515306136,
+        "above_30_seconds": 66
+      },
+      "decode_scope": "complete selected stream through EOF; decoder-specific checks reported"
+    },
+    "soundfile_version": "0.14.0",
+    "libsndfile_version": "1.2.2",
+    "training_admitted": false,
+    "teacher_same_version_reproduction": "pending_teacher_dataset_revision"
+  },
+  "pyarrow_version": "26.0.0",
+  "ffmpeg_version": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "ffprobe_version": "ffprobe version 8.0.1 Copyright (c) 2007-2025 the FFmpeg developers",
+  "star": {
+    "status": "archive_safety_crc_coverage_and_sample_decode_verified",
+    "archive_sha256": "bdb5f192a98f78e79e51da6ae801f8ba79d1d09c0d8c19b6e63105251cb17585",
+    "members": 425,
+    "expanded_bytes": 738845893,
+    "safety_scope": "all members checked before extraction; full archive CRC checked",
+    "video_members": 423,
+    "task_coverage": [
+      {
+        "task": "Action Sequence",
+        "rows": 200,
+        "present_rows": 188,
+        "unique_media_references": 179,
+        "present_unique_media": 167,
+        "coverage": 0.94
+      },
+      {
+        "task": "Action Prediction",
+        "rows": 200,
+        "present_rows": 200,
+        "unique_media_references": 184,
+        "present_unique_media": 184,
+        "coverage": 1.0
+      },
+      {
+        "task": "Action Antonym",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Fine-grained Action",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Unexpected Action",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 179,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Object Existence",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 193,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Object Interaction",
+        "rows": 200,
+        "present_rows": 200,
+        "unique_media_references": 200,
+        "present_unique_media": 200,
+        "coverage": 1.0
+      },
+      {
+        "task": "Object Shuffle",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Moving Direction",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Action Localization",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Scene Transition",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Action Count",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Moving Count",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Moving Attribute",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "State Change",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Fine-grained Pose",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Character Order",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Egocentric Navigation",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 200,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Episodic Reasoning",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 166,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      },
+      {
+        "task": "Counterfactual Inference",
+        "rows": 200,
+        "present_rows": 0,
+        "unique_media_references": 198,
+        "present_unique_media": 0,
+        "coverage": 0.0
+      }
+    ],
+    "source_tasks_coverage": {
+      "expected_rows": 600,
+      "present_rows": 588,
+      "complete": false
+    },
+    "sample_selection": "sorted names, stride floor(n/32), first 32; seed not needed",
+    "sample_members_sha256": "de1495da8a57a415c111867b8fa713ef60592dc07eb7bf2ea368e9a5fdef35d0",
+    "sample_decode": {
+      "decoded": 32,
+      "codecs": {
+        "h264": 32
+      },
+      "decoders": {
+        "ffmpeg": 32
+      },
+      "fallback_original_codecs": {},
+      "finite_samples_verified": null,
+      "frames_decoded": null,
+      "sample_rates": {},
+      "channels": {},
+      "video_dimensions": {
+        "480x270": 15,
+        "360x480": 5,
+        "270x480": 4,
+        "480x360": 7,
+        "320x480": 1
+      },
+      "duration_seconds": {
+        "min": 7.522993,
+        "max": 59.048005,
+        "total": 961.4733270000002,
+        "above_30_seconds": 21
+      },
+      "decode_scope": "complete selected stream through EOF; decoder-specific checks reported"
+    },
+    "all_video_members_decoded": false,
+    "training_admitted": false,
+    "teacher_14_task_2786_reproduction": "blocked_missing_exact_task_row_manifest"
+  },
+  "elapsed_seconds": 13.902093999902718,
+  "code_version": {
+    "base_git_revision": "ff5f7a6",
+    "exact_executed_script_sha256": "87058a68e2dbc5f3db5b2fa8d250c060082a8c15a564c5a38d685116dc7ba844"
+  },
+  "local_copy_receipt": [
+    {
+      "path": "/tmp/lite-omnijev-video-eval/artifacts/public-eval-media/mmau/ccd9696c0111ea7060827598f310558df0b71b0a/test_mini.parquet",
+      "bytes": 1213407227,
+      "sha256": "54b76f440db843546f9ad49a1518cc22371f63a266f034ba6bd4343b7b6fde86",
+      "canonical_remote_hash_match": true
+    },
+    {
+      "path": "/tmp/lite-omnijev-video-eval/artifacts/public-eval-media/mvbench/230a2d4fac8900333c61754641c7a13e069ac9c6/star.zip",
+      "bytes": 727887646,
+      "sha256": "bdb5f192a98f78e79e51da6ae801f8ba79d1d09c0d8c19b6e63105251cb17585",
+      "canonical_remote_hash_match": true
+    }
+  ],
+  "linux_representative_check": {
+    "status": "linux_representative_audio_decode_verified",
+    "exit_code": 0,
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "python_version": "3.11.14",
+    "sample_manifest_sha256": "67e7722cab988da29a2ef1ae24866bb9d62948f1253f2416a666be1e80abb446",
+    "probe_script_sha256": "87058a68e2dbc5f3db5b2fa8d250c060082a8c15a564c5a38d685116dc7ba844",
+    "source_rows": 1000,
+    "sample_rows": 32,
+    "all_1000_linux_decode": false,
+    "gpu_seconds": 0,
+    "cost_usd": 0,
+    "all_sample_hashes_match": true,
+    "decode": {
+      "decoded": 32,
+      "codecs": {
+        "pcm_s16le": 26,
+        "mp3": 2,
+        "pcm_f32le": 3,
+        "pcm_s32le": 1
+      },
+      "decoders": {
+        "ffmpeg": 32
+      },
+      "fallback_original_codecs": {},
+      "finite_samples_verified": null,
+      "frames_decoded": null,
+      "sample_rates": {
+        "32000": 6,
+        "44100": 6,
+        "48000": 4,
+        "16000": 14,
+        "24000": 2
+      },
+      "channels": {
+        "1": 24,
+        "2": 5,
+        "6": 3
+      },
+      "video_dimensions": {},
+      "duration_seconds": {
+        "min": 5.400063,
+        "max": 34.4785,
+        "total": 468.21337000000005,
+        "above_30_seconds": 3
+      },
+      "decode_scope": "complete selected stream through EOF; decoder-specific checks reported"
+    },
+    "source_features": [
+      "channels:1",
+      "channels:2",
+      "channels:6",
+      "codec:MP3/MPEG_LAYER_III",
+      "codec:WAV/FLOAT",
+      "codec:WAV/PCM_16",
+      "codec:WAV/PCM_32",
+      "domain:music",
+      "domain:sound",
+      "domain:speech",
+      "rate:16000",
+      "rate:24000",
+      "rate:32000",
+      "rate:44100",
+      "rate:48000"
+    ],
+    "source_max_sample_duration_seconds": 34.4785,
+    "max_duration_metadata_difference_seconds": 0.06909629705215536,
+    "ffprobe_version": "ffprobe version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2007-2021 the FFmpeg developers",
+    "ffmpeg_version": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers",
+    "elapsed_seconds": 9.782080497592688
+  },
+  "linux_sample_export_script_sha256": "e0dcc50cf37065de13e4596cac33d1c4a487f3446aa421ce00f26e8bfd0451f7",
+  "linux_check_driver_sha256": "6b88a44de06d86d2e6135c549fcbe30615b2dcc34530d5e5eae54fc5f2f4472a",
+  "source_training_admitted": false,
+  "source_commercial_release_admitted": false,
+  "prior_remote_attempts": {
+    "schema_probe": {
+      "exit_code": 1,
+      "reason": "initial comparison did not account for exact official (A) choice/answer prefixes; all1000 IDs/questions matched; corrected exact formatting then full rerun"
+    },
+    "original_paused_run": {
+      "replaced_root_pid": 13433,
+      "reason": "replace_2000_decoder_process_starts_with_persistent_soundfile_worker_under_cpu_lock",
+      "verified_owned_pids": [
+        13433,
+        13434,
+        13898
+      ],
+      "states_before_stop": {
+        "13433": "State:\tT (stopped)",
+        "13434": "State:\tT (stopped)",
+        "13898": "State:\tT (stopped)"
+      },
+      "prior_progress_log_bytes": 0,
+      "prior_progress_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "prior_state": "own_paused_subtree_stopped_after_progress_receipt"
+    },
+    "optimized_remote_job": {
+      "wrapper_pid": 15592,
+      "process_exit_code": 137,
+      "cause": "unconfirmed; SIGKILL observed, oom and oom_kill cgroup counters were0",
+      "limits": {
+        "cpu_max": "50000 100000",
+        "memory_max": 2147483648
+      },
+      "no_success_claim": true
+    }
+  },
+  "local_environment": {
+    "path": "/tmp/lite-omnijev-video-eval/artifacts/public-eval-media-env",
+    "disk_usage_mib": 151,
+    "official_index": "https://pypi.org/simple",
+    "packages": {
+      "pyarrow": "26.0.0",
+      "soundfile": "0.14.0",
+      "numpy": "2.4.6",
+      "cffi": "2.1.1",
+      "pycparser": "3.11",
+      "typing-extensions": "4.16.0"
+    }
+  },
+  "preprocessing_protocol_decision": {
+    "status": "pending",
+    "source_audio_max_seconds": 34.4785,
+    "above_30_seconds": 66,
+    "teacher_documented_audio_cap_seconds": 30,
+    "note": "Valid public source samples; do not mark corrupt or exclude. Pin matched teacher/student channel conversion,resampling and 30-second truncation policy before scoring."
+  },
+  "known_gaps": [
+    "Original STAR ZIP lacks12 ActionSequence video references; supplemental official source recovery separate, no teacher exclusion inference",
+    "Teacher exact14task/2786row manifest unavailable",
+    "All1000 streams decoded onMac; Linux only32 representative original-byte streams decoded",
+    "STAR423 archive video CRC checked but only32 fullvideo streams decoded",
+    "No model forward, quality scores or baseline gate pass"
+  ]
+}
