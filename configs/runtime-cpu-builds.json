@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-14T02:55:00+08:00",
+  "scope": "offline-prep:03 runtime CPU builds and package caches",
+  "claim": "Pre-GPU runtime preparation evidence only. GPU validation, model forward passes, quantized weights, mobile packages, and production readiness remain pending.",
+  "remote": {
+    "host": "root@region-42.seetacloud.com:48926",
+    "project": "/root/autodl-tmp/lite-omnijev",
+    "cgroup_limits": {
+      "memory_max_bytes": 2147483648,
+      "cpu_max": "50000 100000 (0.5 core)"
+    },
+    "heavy_job_lock": "/tmp/omnijev-cpu-heavy.lock"
+  },
+  "runtime_sources": [
+    {
+      "id": "llama.cpp",
+      "version": "v0.6.0",
+      "source_archive": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/llama.cpp-v0.6.0.tar.gz",
+      "sha256": "09b36dba235fcac180efff18514da7038e65d8e5b9e4aefa59238468abfdec12",
+      "license": "MIT",
+      "support_evidence": [
+        "common/parsers/gemma4.cpp",
+        "conversion/gemma.py contains Gemma4/E2B/multimodal/GGUF paths",
+        "convert_hf_to_gguf.py and convert_lora_to_gguf.py present",
+        "common/arg.cpp recognizes GGUF quant names including Q4_K_M/Q8_0"
+      ]
+    },
+    {
+      "id": "ollama",
+      "version": "v0.35.0",
+      "source_archive": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/ollama-v0.35.0.tar.gz",
+      "sha256": "2d24c59fe4aec09fa68994816cd24e233dff4d57cbc31ee9b46973fb0b3f55e7",
+      "license": "MIT",
+      "support_evidence": [
+        "create/gemma4.go",
+        "model/parsers/gemma4.go",
+        "model/renderers/testdata/gemma4_e2b_chat_template.jinja2",
+        "mlxrunner/model/gemma4 includes audio/vision/media code"
+      ]
+    },
+    {
+      "id": "LiteRT-LM",
+      "version": "v0.9.0",
+      "source_archive": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/litert-lm-v0.9.0.tar.gz",
+      "sha256": "bda82d61677965daa3b839cb70073f1ce9b0e151057ede54031df841a5d6c97f",
+      "license": "Apache-2.0",
+      "support_evidence": [
+        "README and C++/Kotlin docs mention E2B, audio, vision, multimodal",
+        "runtime/components/embedding_lookup has multimodal embedding code",
+        "python/litert_lm/examples/multimodal_main.py present"
+      ],
+      "build_blockers": [
+        "remote CMake is 3.22.1 while CMakeLists requires 3.25+",
+        "official CMake guide requires GCC/G++ 13+ on Ubuntu 24.04; remote has GCC/G++ 11.4 on Ubuntu 22.04",
+        "Bazel path requires Bazel 7.6.1 plus Java; remote has neither Java nor Bazel",
+        "Android SDK/JDK terms not accepted and must not be automated"
+      ]
+    },
+    {
+      "id": "llm-compressor",
+      "version": "0.14.0",
+      "source_archive": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/llm-compressor-0.14.0.tar.gz",
+      "sha256": "232c24db6a488b3bbeaed9dd8935941c4063c81e6ebc7cb8cba856e4f60cbefb",
+      "license": "Apache-2.0",
+      "support_evidence": [
+        "docs/key-models/gemma4 FP8/NVFP4 examples",
+        "examples/model_free_ptq/gemma4_fp8_block.py",
+        "examples/multimodal_vision/gemma4_example.py",
+        "examples/quantization_w4a16_fp4/nvfp4/gemma4_example.py"
+      ]
+    }
+  ],
+  "builds_and_caches": [
+    {
+      "id": "llama.cpp-cpu",
+      "status": "paused_build_in_progress",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/build/llama.cpp-v0.6.0-cpu-lowmem",
+      "target_binaries": [
+        "llama-cli",
+        "llama-quantize",
+        "llama-gguf",
+        "llama-gguf-split"
+      ],
+      "configure_flags": [
+        "LLAMA_BUILD_IS_DEV=OFF",
+        "LLAMA_BUILD_TESTS=OFF",
+        "LLAMA_CURL=OFF",
+        "GGML_NATIVE=OFF",
+        "GGML_CUDA=OFF",
+        "GGML_BLAS=OFF",
+        "GGML_OPENMP=ON"
+      ],
+      "evidence": "Initial -j8 build hit cgroup pressure; low-memory -j1 build reached llama-common/json.cpp and was SIGSTOPed on root request. PIDs recorded in reports/runtime-cpu-builds.json. Not marked ready until resumed and binaries are hashed."
+    },
+    {
+      "id": "llmcompressor-direct-wheel-cache",
+      "status": "cached",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/llmcompressor-0.14.0-direct",
+      "bytes": 41166938,
+      "items": 13,
+      "notes": [
+        "Direct wheels cached for cp311 manylinux or py3-none-any without installing into existing envs.",
+        "torch is intentionally not duplicated; llmcompressor release requires torch<=2.14.0 and service-next already has torch==2.13.0+cu130 while root train env torch==2.14.1 is outside release bounds.",
+        "Configured PyPI mirror served the artifacts; hashes are recorded for offline verification."
+      ]
+    },
+    {
+      "id": "ollama-linux-amd64-binary",
+      "status": "blocked_retryable_download",
+      "official_asset": "https://github.com/ollama/ollama/releases/download/v0.35.0/ollama-linux-amd64.tar.zst",
+      "official_sha256": "1c114a6b220c5efca2ef2b1e5f01d1e535e26f6cd6d1678c8489325d2835e525",
+      "bytes": 1427765407,
+      "evidence": "Remote curl received zero bytes for 90 seconds and failed with OpenSSL SSL_read unexpected eof. Source archive remains cached; source build requires Go 1.26 and remote has no Go."
+    },
+    {
+      "id": "litert-lm-host-build",
+      "status": "blocked_toolchain",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/litert-lm-v0.9.0.tar.gz",
+      "notes": [
+        "Source cached and support paths verified. Build not attempted because remote toolchain violates upstream minimums and Android terms/JDK acceptance cannot be automated. Local macOS has Xcode 26.5/CMake 4.1.1/Rust but no Java/Bazel/Android SDK."
+      ]
+    }
+  ],
+  "paused_processes": [
+    8791,
+    8962,
+    8963,
+    8965,
+    8968,
+    12081,
+    14088,
+    14089,
+    14090
+  ],
+  "not_ready_until": [
+    "resume and complete llama.cpp binary hashes",
+    "cache or explicitly waive Ollama v0.35.0 Linux binary after retry",
+    "GPU quant/import smoke in an isolated env after GPU is available",
+    "LiteRT-LM/Android build prerequisites accepted or scoped to non-Android alternatives"
+  ]
+}
