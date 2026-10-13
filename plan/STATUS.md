@@ -6,9 +6,9 @@
 - bootstrap:01–08、p0:01–07：done。P0验收见reports/p0-engineering-acceptance.md。
 - 原始P0/S0阶段归属已审计纠正；严格概率门槛始终失败，S1不放行。
 - s0:01 claimed：teacher-admission，worktree /tmp/lite-omnijev-s0-teacher；正在执行教师准入。
-- s0-data:01 done：CLINC公开train准入完成，reports/clinc-admission.json；15,250条训练样本入 ignored artifacts，未读validation/test/holdout。
+- s0-data:01 claimed root：旧报告缺token探针，冲突标签去重风险已50aab51修正；等待远程全量重验/语义抽检，暂不准入训练。
 - s0:03 claimed：multimodal-probe，/tmp/lite-omnijev-s0-multimodal，先实现真实processor媒体探针，严格gate仍未过。
-- s0:05 blocked：canary导入/双标κ/脱敏工具已合入，6个sealed-gate测试通过；真实隔离身份仍缺。
+- s0:05 blocked：canary导入/双标κ/脱敏工具已合入，12个sealed-gate测试通过；真实隔离身份仍缺。
 - 其余S0按依赖推进；实时前沿以scripts.loop list为准。
 - s0:03保留数值失败；s0:06需真实双人标注，agent不能伪造κ；s0:08待基线展开再triage。
 - delivery:01未完成，教师、多模态、端侧和终局不能由P0替代。
@@ -20,7 +20,7 @@
 - 严格gate failed，影子review_required。LoRA一例p(U)跨0.8，不能由argmax相同推断业务等价。
 - reports/p0-confirmation-review.md解释尾部；确认批不再用于选阈值。configs/gates.json未改，D004未应用。
 - reports/clinc-admission.json：CLINC train 15,250条转换为合法Choice样本，原始人工intent保留；oos不是U，输出SHA256 5aace71f0c9af2b30630e2b2b379881e1ebf946221c59355e733fe496e5971d8。
-- reports/s0-sealed-canary-001.json：封存gate canary路径通过，输出只含汇总；真实隔离身份和真实人工κ仍未通过。
+- reports/sealed-gate-canary.json：封存gate canary路径通过，输出只含汇总；真实隔离身份和真实人工κ仍未通过。
 - e73f6d0当前验证：`uv run pytest tests/test_sealed_gate.py tests/test_admit_clinc.py tests/test_core.py tests/test_assets.py` 79 passed；相关ruff通过；`uv run mypy eval scripts tests/test_sealed_gate.py tests/test_admit_clinc.py` 通过。
 
 ## 下一步与加速
@@ -53,3 +53,8 @@
 ## 本轮执行纠正
 - 网络直连超时报告已保留；SSH反向仅远端loopback18081复用本机代理，官方HTTP200，固定教师权重下载可续传。切换重启后需重建转发。
 - 部分子代理曾越界写main；已中止CLINC代理，现有产物保留待root复核，不将未审查training_admitted当完成证据。后续所有命令显式workdir，主会话独占票据/STATUS/合入。
+
+## 最新用户范围：全项目下载后再开卡
+- 2026-10-14用户明确要求全项目所需下载齐备再开卡，新增offline-prep:01–04规格/票据；不再只准备S0。
+- 已核实实例重启为无GPU，项目盘完整；root恢复SSH同endpoint/port，无需新凭据。原下载PID11060已不存在，按缓存续传；反向代理需重建。
+- 模型/数据/依赖/集成准备分票；未来训练生成的LoRA/校准/量化产物列待生成，账号/许可/封存身份缺口保留blocked，不假报离线全部就绪。
