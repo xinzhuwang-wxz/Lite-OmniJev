@@ -47,7 +47,7 @@
 
 ## 第二次来源补充与剩余精确缺口
 
-[新的固定审计](../../reports/video-eval-source-audit-002.json) 内嵌配置新快照；首次审计保持原样。此次全部源文档/公开 train/val metadata 共 11,471,627 B，小于 50 MB 限额。源文件原件在本机 `/tmp/video-sources-more`，逐文件 hashes/bytes 与 revision API 证据见报告；新增源元数据尚未同步远端，不误称所有原件都已到位。
+[新的固定审计](../../reports/video-eval-source-audit-002.json) 内嵌配置新快照；首次审计保持原样。此次全部源文档/公开 train/val metadata 共 11,471,627 B，小于 50 MB 限额。源文件原件在本机 `/tmp/video-sources-more`，逐文件 hashes/bytes 与 revision API 证据见报告；新增源元数据已同步远端 `artifacts/data/research-eval/video-eval-source-metadata-002/`；所有 27 文件逐一 SHA256 匹配，scp/tar/hash 返回 0，独立收据 `reports/video-eval-source-sync-003.json` 绑定审计002的哈希。
 
 - NExT-QA 官方 `doc-doc/NExT-QA@2432e9724f88ed9f40010e2989f104570a91de4e` repo/LICENSE 为 MIT，但 README 明确视频来自 VidOR，VidOR 官方页明确来自 YFCC100M。下载并哈希了公开 train.csv（34,132 QA / 3,870 视频）、val.csv（4,996 QA / 570 视频）和 map_vid_vidorID.json；未读取 test.csv。下一步按 map 将源 video family 连至 YFCC100M 原 Flickr metadata 的逐视频 license/attribution，不能让 code MIT 盖过原视频混合 Creative Commons 条款。未经该映射和预算，不启动 NExTVideo 原视频包。
 - CLEVRER 官方代码树没有 LICENSE；不能把另一个 CLEVR generator 的 BSD 或 CLEVRER-Humans CC0 当作此处视频许可。需要作者明确的原始视频许可或上游归档自带 license。
