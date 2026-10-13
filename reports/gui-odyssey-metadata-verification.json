@@ -2774,5 +2774,18 @@
     "all_files_manifest_sha256": "a6bbb12e5b3158eb1c51e257ef1721ca0887f792addd35144986ff783d7f9b21",
     "remote_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
     "note": "Snapshot while optimized extractor continued running; proves selective range extraction plus PNG header validation on actual recovered media."
+  },
+  "lock_release_media_checkpoint": {
+    "path": "reports/gui-odyssey-media-lock-release-checkpoint.json",
+    "bytes": 308960268,
+    "sha256": "35bd1957be0ab5ff483115fba71426edee494e6205ad4aa229ae772753e25d9a",
+    "status": "post_lock_release_media_checkpoint",
+    "file_count": 392,
+    "bad_png_count": 0,
+    "all_files_manifest_sha256": "8c7517b1e40667d104601ffdb26c645bf60fa796bac006f8ff1f8857c0724cc8",
+    "active_pid": 25918,
+    "restart_boundary": "old lock-wrapped PID 25357/25358 stopped after 392 files; restarted as network-outside-lock PID 25918 with per-member decompress lock",
+    "active_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch-network-outside-lock.log",
+    "active_report": "/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json"
   }
 }

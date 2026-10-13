@@ -103,3 +103,11 @@ The selective media extraction is queued on the remote persistent disk behind `/
 Selective media extraction was started under `/tmp/omnijev-cpu-heavy.lock` using the range extractor. The first stable checkpoint is copied to [`reports/gui-odyssey-media-partial-checkpoint.json`](../../reports/gui-odyssey-media-partial-checkpoint.json): 207 PNG screenshots recovered, 168,055,047 bytes, 0 bad PNG headers, manifest SHA-256 `a6bbb12e5b3158eb1c51e257ef1721ca0887f792addd35144986ff783d7f9b21`.
 
 This proves actual member recovery, decompression, hashing, and PNG header validation. The full 1,679-episode train-media candidate remains possible under the 20 GB media cap, but slow at current shared-lock/network throughput. It does not require a 92.64 GB full archive download unless root chooses to stage all GUI screenshots for a broader disk plan.
+
+## Lock-release restart
+
+The first optimized extractor was mistakenly launched under a process-wide `flock /tmp/omnijev-cpu-heavy.lock`, which blocked unrelated short CPU probes while doing long network Range reads. That owned job was safely stopped after confirming its command line and preserving recovered files. No `.partial` leftovers were reported.
+
+The extractor was changed so HTTP Range reads run outside the global lock. Only per-member decompression, CRC/size validation, PNG write, and hash collection take `/tmp/omnijev-cpu-heavy.lock`. The selected train-media recovery was restarted as PID `25918` with `--decompress-lock-path /tmp/omnijev-cpu-heavy.lock`, reusing existing recovered PNGs.
+
+Post-release checkpoint: [`reports/gui-odyssey-media-lock-release-checkpoint.json`](../../reports/gui-odyssey-media-lock-release-checkpoint.json), 392 PNGs, 308,960,268 bytes, 0 bad PNG headers, manifest SHA-256 `8c7517b1e40667d104601ffdb26c645bf60fa796bac006f8ff1f8857c0724cc8`. The active log is `/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch-network-outside-lock.log`; the final report target remains `/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json`.

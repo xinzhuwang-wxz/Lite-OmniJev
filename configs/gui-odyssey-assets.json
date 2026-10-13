@@ -5,8 +5,8 @@
   "quarantine_root": "artifacts/data/quarantine/gui-odyssey-source-audit",
   "report": {
     "path": "reports/gui-odyssey-metadata-verification.json",
-    "bytes": 80896,
-    "sha256": "e6ea0549f4f36eb0a6cb265f1bc562095520acc6346850f3ada0271e080e732c"
+    "bytes": 81745,
+    "sha256": "8f127f2b2d13d302a7028b08d7c3344b919d031ef6f71a359cd793cae5308c17"
   },
   "policy": {
     "gpu_used": false,
@@ -14,7 +14,7 @@
     "training_admission": "not_granted_by_this_file",
     "release_admission": "not_granted_by_this_file",
     "account_terms_policy": "No account login, gated terms, or form acceptance was used. The pinned HF API metadata reports gated=false and private=false.",
-    "media_download_status": "selective extraction started and produced a validated partial checkpoint; full 19.5GB train-media candidate remains in progress/slow under shared CPU lock and network constraints"
+    "media_download_status": "network Range extraction restarted outside the global heavy lock as PID 25918; only per-member decompression/write uses /tmp/omnijev-cpu-heavy.lock; 392 PNGs validated at lock-release checkpoint"
   },
   "source": {
     "id": "gui-odyssey",
@@ -219,9 +219,10 @@
       "official_family_boundary": "app_split train partition; whole episode_id units only; no official test episodes used for training media",
       "remote_output_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
       "remote_report": "/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json",
-      "remote_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch.log",
-      "queued_pid": 23798,
-      "status": "queued_behind_cpu_lock_at_update_time"
+      "remote_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch-network-outside-lock.log",
+      "queued_pid": null,
+      "status": "running_network_outside_global_lock_per_member_decompress_lock",
+      "active_pid": 25918
     },
     "partial_media_checkpoint": {
       "path": "reports/gui-odyssey-media-partial-checkpoint.json",
@@ -233,6 +234,19 @@
       "all_files_manifest_sha256": "a6bbb12e5b3158eb1c51e257ef1721ca0887f792addd35144986ff783d7f9b21",
       "remote_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
       "note": "Snapshot while optimized extractor continued running; proves selective range extraction plus PNG header validation on actual recovered media."
+    },
+    "lock_release_media_checkpoint": {
+      "path": "reports/gui-odyssey-media-lock-release-checkpoint.json",
+      "bytes": 308960268,
+      "sha256": "35bd1957be0ab5ff483115fba71426edee494e6205ad4aa229ae772753e25d9a",
+      "status": "post_lock_release_media_checkpoint",
+      "file_count": 392,
+      "bad_png_count": 0,
+      "all_files_manifest_sha256": "8c7517b1e40667d104601ffdb26c645bf60fa796bac006f8ff1f8857c0724cc8",
+      "active_pid": 25918,
+      "restart_boundary": "old lock-wrapped PID 25357/25358 stopped after 392 files; restarted as network-outside-lock PID 25918 with per-member decompress lock",
+      "active_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch-network-outside-lock.log",
+      "active_report": "/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json"
     }
   }
 }

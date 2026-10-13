@@ -3,11 +3,14 @@
 This helper is intentionally stdlib-only. It does not accept gated terms or use
 credentials; it reads the public pinned HF revision with HTTP Range requests.
 """
+
 from __future__ import annotations
 
 import argparse
 import binascii
 import concurrent.futures
+import contextlib
+import fcntl
 import hashlib
 import json
 import os
@@ -18,8 +21,9 @@ import time
 import urllib.error
 import urllib.request
 import zlib
+from collections.abc import Iterable, Iterator
 from dataclasses import asdict, dataclass
-from typing import BinaryIO, Iterable
+from typing import Any, cast
 
 REPO_ID = "hflqf88888/GUIOdyssey"
 REVISION = "61632d0f3f4d51d7e9561ce4f84347dd06b2019d"
@@ -58,7 +62,7 @@ def resolve_url(repo_id: str, revision: str, path: str) -> str:
 
 
 class HTTPRangeReader:
-    def __init__(self, url: str, timeout: int = 180, resolve_once: bool = False):
+    def __init__(self, url: str, timeout: int = 180, resolve_once: bool = False) -> None:
         self.url = url
         self.timeout = timeout
         if resolve_once:
@@ -70,7 +74,7 @@ class HTTPRangeReader:
         )
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                return response.geturl()
+                return str(response.geturl())
         except Exception:
             return url
 
@@ -89,36 +93,50 @@ class HTTPRangeReader:
             )
             try:
                 with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                    data = response.read()
+                    data = cast(bytes, response.read())
                     if response.status != 206:
                         raise RuntimeError(
                             f"range request returned HTTP {response.status} for {self.url}"
                         )
                     if len(data) != expected:
                         raise RuntimeError(
-                            f"range request returned {len(data)} bytes, expected {expected} for {self.url}"
+                            "range request returned "
+                            f"{len(data)} bytes, expected {expected} for {self.url}"
                         )
                     return data
             except (urllib.error.URLError, TimeoutError, RuntimeError) as exc:
                 last_error = exc
                 if attempt == 5:
                     break
-                time.sleep(min(30, 2 ** attempt))
+                time.sleep(min(30, 2**attempt))
         raise RuntimeError(
             f"failed range request {start}-{end_inclusive} for {self.url}: {last_error}"
         )
 
 
+@contextlib.contextmanager
+def optional_flock(lock_path: str | None) -> Iterator[None]:
+    if not lock_path:
+        yield
+        return
+    with open(lock_path, "w") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
 def _read_u16(data: bytes, offset: int) -> int:
-    return struct.unpack_from("<H", data, offset)[0]
+    return int(struct.unpack_from("<H", data, offset)[0])
 
 
 def _read_u32(data: bytes, offset: int) -> int:
-    return struct.unpack_from("<L", data, offset)[0]
+    return int(struct.unpack_from("<L", data, offset)[0])
 
 
 def _read_u64(data: bytes, offset: int) -> int:
-    return struct.unpack_from("<Q", data, offset)[0]
+    return int(struct.unpack_from("<Q", data, offset)[0])
 
 
 def _zip64_values(extra: bytes) -> list[int]:
@@ -129,7 +147,7 @@ def _zip64_values(extra: bytes) -> list[int]:
         payload = extra[pos : pos + size]
         pos += size
         if header_id == 0x0001:
-            return [struct.unpack_from("<Q", payload, i)[0] for i in range(0, len(payload), 8)]
+            return [int(struct.unpack_from("<Q", payload, i)[0]) for i in range(0, len(payload), 8)]
     return []
 
 
@@ -197,9 +215,7 @@ def fetch_central_directory(
     locator_pos = eocd_pos - 20
     if locator_pos < 0 or tail[locator_pos : locator_pos + 4] != b"PK\x06\x07":
         raise RuntimeError("ZIP64 locator not found before EOCD")
-    _, eocd64_disk, eocd64_offset, total_disks = struct.unpack_from(
-        "<4sLQL", tail, locator_pos
-    )
+    _, eocd64_disk, eocd64_offset, total_disks = struct.unpack_from("<4sLQL", tail, locator_pos)
     if eocd64_disk != len(sizes) - 1:
         raise RuntimeError(f"ZIP64 EOCD is on unexpected disk {eocd64_disk}")
     eocd64 = final.read_range(eocd64_offset, eocd64_offset + 75)
@@ -242,9 +258,9 @@ def entries_by_episode(entries: Iterable[ZipEntry]) -> dict[str, list[ZipEntry]]
     return by_episode
 
 
-def load_json(path: pathlib.Path):
+def load_json(path: pathlib.Path) -> Any:
     with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+        return cast(Any, json.load(handle))
 
 
 def build_episode_plans(
@@ -265,7 +281,8 @@ def build_episode_plans(
         media = by_episode.get(episode_id, [])
         if len(media) != expected_steps[episode_id]:
             raise RuntimeError(
-                f"episode {episode_id} expected {expected_steps[episode_id]} screenshots, found {len(media)}"
+                f"episode {episode_id} expected {expected_steps[episode_id]} "
+                f"screenshots, found {len(media)}"
             )
         plans.append(
             EpisodePlan(
@@ -290,7 +307,9 @@ def select_under_budget(
     selected: list[EpisodePlan] = []
     total = 0
     for plan in sorted(plans, key=lambda item: item.episode_id):
-        size = getattr(plan, budget_field)
+        size = (
+            plan.compressed_bytes if budget_field == "compressed_bytes" else plan.uncompressed_bytes
+        )
         if total + size > budget_bytes:
             continue
         selected.append(plan)
@@ -298,7 +317,12 @@ def select_under_budget(
     return selected
 
 
-def part_ranges(disk_start: int, offset: int, length: int, part_sizes: list[int] | None = None):
+def part_ranges(
+    disk_start: int,
+    offset: int,
+    length: int,
+    part_sizes: list[int] | None = None,
+) -> Iterator[tuple[int, int, int]]:
     sizes = part_sizes or PART_SIZES
     disk = disk_start
     pos = offset
@@ -346,25 +370,31 @@ def read_entry_compressed(readers: list[HTTPRangeReader], entry: ZipEntry) -> by
     return read_split_bytes(readers, entry.disk_start, data_offset, entry.compressed_size)
 
 
-def extract_entry(readers: list[HTTPRangeReader], entry: ZipEntry, out_path: pathlib.Path) -> dict:
+def extract_entry(
+    readers: list[HTTPRangeReader],
+    entry: ZipEntry,
+    out_path: pathlib.Path,
+    decompress_lock_path: str | None = None,
+) -> dict[str, Any]:
     compressed = read_entry_compressed(readers, entry)
-    if entry.method == 8:
-        payload = zlib.decompress(compressed, -15)
-    elif entry.method == 0:
-        payload = compressed
-    else:
-        raise RuntimeError(f"unsupported compression method {entry.method} for {entry.name}")
-    crc = binascii.crc32(payload) & 0xFFFFFFFF
-    if crc != entry.crc32:
-        raise RuntimeError(f"crc mismatch for {entry.name}: {crc:08x} != {entry.crc32:08x}")
-    if len(payload) != entry.uncompressed_size:
-        raise RuntimeError(
-            f"size mismatch for {entry.name}: {len(payload)} != {entry.uncompressed_size}"
-        )
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = out_path.with_suffix(out_path.suffix + ".partial")
-    tmp.write_bytes(payload)
-    os.replace(tmp, out_path)
+    with optional_flock(decompress_lock_path):
+        if entry.method == 8:
+            payload = zlib.decompress(compressed, -15)
+        elif entry.method == 0:
+            payload = compressed
+        else:
+            raise RuntimeError(f"unsupported compression method {entry.method} for {entry.name}")
+        crc = binascii.crc32(payload) & 0xFFFFFFFF
+        if crc != entry.crc32:
+            raise RuntimeError(f"crc mismatch for {entry.name}: {crc:08x} != {entry.crc32:08x}")
+        if len(payload) != entry.uncompressed_size:
+            raise RuntimeError(
+                f"size mismatch for {entry.name}: {len(payload)} != {entry.uncompressed_size}"
+            )
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = out_path.with_suffix(out_path.suffix + ".partial")
+        tmp.write_bytes(payload)
+        os.replace(tmp, out_path)
     return {
         "name": entry.name,
         "path": str(out_path),
@@ -392,7 +422,7 @@ def command_probe(args: argparse.Namespace) -> None:
         "manifest_jsonl": str(out),
         "manifest_jsonl_bytes": out.stat().st_size,
         "manifest_jsonl_sha256": hashlib.sha256(out.read_bytes()).hexdigest(),
-        "probe_downloaded_bytes": 8 * 1024 * 1024 + 76 + meta["central_directory_bytes"],
+        "probe_downloaded_bytes": 8 * 1024 * 1024 + 76 + int(meta["central_directory_bytes"]),
     }
     pathlib.Path(args.report).write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
@@ -423,30 +453,43 @@ def command_plan(args: argparse.Namespace) -> None:
         "selected_compressed_bytes": sum(p.compressed_bytes for p in selected),
         "selected_uncompressed_bytes": sum(p.uncompressed_bytes for p in selected),
         "budget_field": args.budget_field,
-        "selection_rule": "episode_id lexical order, whole episodes only, skip any episode that would exceed budget",
+        "selection_rule": (
+            "episode_id lexical order, whole episodes only, "
+            "skip any episode that would exceed budget"
+        ),
         "selected_episodes": [asdict(p) for p in selected],
     }
     pathlib.Path(args.output).write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print(json.dumps({k: v for k, v in report.items() if k != "selected_episodes"}, indent=2))
+    print(
+        json.dumps(
+            {k: v for k, v in report.items() if k != "selected_episodes"},
+            indent=2,
+        )
+    )
 
 
 def command_fetch(args: argparse.Namespace) -> None:
     entries = load_entries_jsonl(pathlib.Path(args.manifest))
-    by_name = {entry.name: entry for entry in entries}
     by_episode = entries_by_episode(entries)
     plan = load_json(pathlib.Path(args.plan))
     selected_ids = [item["episode_id"] for item in plan["selected_episodes"]]
-    readers = [HTTPRangeReader(resolve_url(args.repo_id, args.revision, name), resolve_once=True) for name in PART_NAMES]
+    readers = [
+        HTTPRangeReader(resolve_url(args.repo_id, args.revision, name), resolve_once=True)
+        for name in PART_NAMES
+    ]
     out_root = pathlib.Path(args.output_root)
     started = time.time()
-    tasks = []
+    tasks: list[tuple[ZipEntry, pathlib.Path]] = []
     for episode_id in selected_ids:
         for entry in by_episode[episode_id]:
-            step = SCREENSHOT_RE.match(entry.name).group("step")  # type: ignore[union-attr]
+            match = SCREENSHOT_RE.match(entry.name)
+            if match is None:
+                raise RuntimeError(f"non-screenshot entry selected: {entry.name}")
+            step = match.group("step")
             out = out_root / "screenshots" / f"{episode_id}_{step}.png"
             tasks.append((entry, out))
 
-    def one(task):
+    def one(task: tuple[ZipEntry, pathlib.Path]) -> dict[str, Any]:
         entry, out = task
         if out.exists() and not args.force:
             payload = out.read_bytes()
@@ -459,16 +502,21 @@ def command_fetch(args: argparse.Namespace) -> None:
                 "sha256": hashlib.sha256(payload).hexdigest(),
                 "reused": True,
             }
-        row = extract_entry(readers, entry, out)
+        row = extract_entry(readers, entry, out, args.decompress_lock_path)
         row["reused"] = False
         return row
 
-    results = []
+    results: list[dict[str, Any]] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as pool:
         for row in pool.map(one, tasks):
             results.append(row)
             if len(results) % args.progress_every == 0:
-                print(json.dumps({"phase": "fetch", "done": len(results), "elapsed_sec": round(time.time() - started, 1)}), flush=True)
+                progress = {
+                    "phase": "fetch",
+                    "done": len(results),
+                    "elapsed_sec": round(time.time() - started, 1),
+                }
+                print(json.dumps(progress), flush=True)
     report = {
         "repo_id": args.repo_id,
         "revision": args.revision,
@@ -503,7 +551,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--split-name", required=True)
     p.add_argument("--partition", required=True)
     p.add_argument("--budget-bytes", type=int, required=True)
-    p.add_argument("--budget-field", choices=["compressed_bytes", "uncompressed_bytes"], default="compressed_bytes")
+    p.add_argument(
+        "--budget-field",
+        choices=["compressed_bytes", "uncompressed_bytes"],
+        default="compressed_bytes",
+    )
     p.add_argument("--output", required=True)
     p.set_defaults(func=command_plan)
     p = sub.add_parser("fetch", help="extract selected screenshots with HTTP ranges")
@@ -515,6 +567,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--report", required=True)
     p.add_argument("--progress-every", type=int, default=250)
     p.add_argument("--max-workers", type=int, default=2)
+    p.add_argument("--decompress-lock-path")
     p.add_argument("--force", action="store_true")
     p.set_defaults(func=command_fetch)
     return parser
