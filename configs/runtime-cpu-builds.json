@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-14T02:55:00+08:00",
+  "generated_at": "2026-10-14T03:59:24+08:00",
   "scope": "offline-prep:03 runtime CPU builds and package caches",
   "claim": "Pre-GPU runtime preparation evidence only. GPU validation, model forward passes, quantized weights, mobile packages, and production readiness remain pending.",
   "remote": {
@@ -107,11 +107,94 @@
     },
     {
       "id": "ollama-linux-amd64-binary",
-      "status": "blocked_retryable_download",
+      "status": "cached_extracted_version_checked",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/packages/ollama-v0.35.0",
       "official_asset": "https://github.com/ollama/ollama/releases/download/v0.35.0/ollama-linux-amd64.tar.zst",
       "official_sha256": "1c114a6b220c5efca2ef2b1e5f01d1e535e26f6cd6d1678c8489325d2835e525",
+      "sha256sum_txt_sha256": "9f5c94636d06e93d1ad8a1f2386018b906dc4d7c9ff96d57efb01933d5f176a1",
       "bytes": 1427765407,
-      "evidence": "Remote curl received zero bytes for 90 seconds and failed with OpenSSL SSL_read unexpected eof. Source archive remains cached; source build requires Go 1.26 and remote has no Go."
+      "evidence_files": [
+        "sha256sums.local.txt",
+        "executables.txt",
+        "ollama.version.txt"
+      ],
+      "version_output": [
+        "Warning: could not connect to a running Ollama instance",
+        "Warning: client version is 0.35.0"
+      ],
+      "executable_evidence": [
+        "extract/bin/ollama",
+        "extract/lib/ollama/libggml-base.so.0.24.0",
+        "extract/lib/ollama/libggml.so.0.24.0",
+        "extract/lib/ollama/libgomp.so.1.0.0",
+        "extract/lib/ollama/libllama-common.so.0.4.1",
+        "extract/lib/ollama/libllama-quantize-impl.so",
+        "extract/lib/ollama/libllama-server-impl.so",
+        "extract/lib/ollama/libllama.so.0.4.1",
+        "extract/lib/ollama/libmtmd.so.0.4.1",
+        "extract/lib/ollama/llama-quantize",
+        "extract/lib/ollama/llama-server"
+      ],
+      "notes": [
+        "Official release asset staged and extracted without installing a service. Version command warns that no Ollama daemon is running, then reports client version 0.35.0."
+      ]
+    },
+    {
+      "id": "litert-toolchains",
+      "status": "cached_version_checked",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/toolchains",
+      "artifacts": [
+        {
+          "name": "OpenJDK17U-jdk_x64_linux_hotspot_17.0.20.1_1.tar.gz",
+          "sha256": "3808d1d15e3ec6bd5b84057fb5d84c33d8a1536a258146bcea2e603fc726e08e",
+          "license": "GPL-2.0-with-Classpath-exception"
+        },
+        {
+          "name": "bazel-7.6.1-linux-x86_64",
+          "sha256": "ac6249d1192aea9feaf49dfee2ab50c38cee2454b00cf29bbec985a11795c025",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "bazelisk-linux-amd64",
+          "sha256": "5a408715e932c0250d28bd84555f12edbf70117de42f9181691c736eacc4a992",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "cmake-4.4.4-linux-x86_64.tar.gz",
+          "sha256": "e5bb807f7728cb60cd8b27ebc97a2edb469b68655f21e844a600c3575b76f5bb",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "version_outputs": {
+        "bazel": "bazel 7.6.1",
+        "cmake": "cmake version 4.4.4",
+        "java": [
+          "openjdk version \"17.0.20.1\" 2026-08-18",
+          "OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)",
+          "OpenJDK 64-Bit Server VM Temurin-17.0.20.1+1 (build 17.0.20.1+1, mixed mode, sharing)"
+        ],
+        "javac": "javac 17.0.20.1"
+      },
+      "notes": [
+        "Bazelisk binary is cached and hashed, but its help/version path was not used as the primary proof because direct bazel-7.6.1 runs without mediated download. Android SDK terms remain unaccepted. Remote GCC/G++ is still 11.4, so LiteRT CMake host build is not marked ready."
+      ]
+    },
+    {
+      "id": "llmcompressor-quant-env",
+      "status": "env_import_checked_reuses_serve_next",
+      "path": "/root/autodl-tmp/envs/quant",
+      "wheel_cache": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/llmcompressor-0.14.0-direct",
+      "evidence_files": [
+        "quant-env-install.log",
+        "quant-env-deps-repair.log",
+        "quant-env-imports.json",
+        "quant-env-freeze.txt",
+        "quant-env-evidence.json"
+      ],
+      "import_summary": "2026-10-14T03:57:11.4202 | get_main_device | WARNING - No accelerator available! Compressing model on CPU instead\n{\n  \"packages\": {\n    \"PIL\": \"12.0.0\",\n    \"accelerate\": \"1.15.0\",\n    \"auto_round\": \"0.15.1\",\n    \"compressed_tensors\": \"0.19.0\",\n    \"datasets\": \"5.0.1\",\n    \"llmcompressor\": \"0.14.0\",\n    \"multiprocess\": \"0.70.19\",\n    \"numpy\": \"2.2.6\",\n    \"pandas\": \"3.0.6\",\n    \"pyarrow\": \"26.0.0\",\n    \"torch\": \"2.13.0\",\n    \"transformers\": \"5.17.0\"\n  },\n  \"python\": \"/root/autodl-tmp/envs/quant/bin/python\",\n  \"sys_path_contains_serve_next\": true,\n  \"torch_cuda\": \"13.0\",\n  \"torch_cuda_available\": false\n}\n",
+      "limitations": [
+        "Not a standalone torch wheelhouse closure. The env contains direct llm-compressor wheels plus missing transitive wheels, and reads torch/CUDA/serve-next dependencies through a quant-env .pth link to /root/autodl-tmp/envs/serve-next/lib/python3.11/site-packages. Existing serve-next was not modified. GPU/runtime quant validation remains pending."
+      ]
     },
     {
       "id": "litert-lm-host-build",
@@ -134,9 +217,9 @@
     14090
   ],
   "not_ready_until": [
-    "resume and complete llama.cpp binary hashes",
-    "cache or explicitly waive Ollama v0.35.0 Linux binary after retry",
-    "GPU quant/import smoke in an isolated env after GPU is available",
-    "LiteRT-LM/Android build prerequisites accepted or scoped to non-Android alternatives"
+    "resume and complete llama.cpp binary hashes or replace with official compatible prebuilt when available",
+    "standalone quant wheelhouse closure if required; current quant env reuses serve-next torch/CUDA site-packages",
+    "GPU quant/import smoke after GPU is available",
+    "LiteRT-LM host/mobile build prerequisites completed without Android SDK terms automation; remote GCC/G++ remains below upstream CMake guide minimum"
   ]
 }
