@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import math
 import os
@@ -16,9 +17,6 @@ import sys
 import wave
 from pathlib import Path
 from typing import Any
-
-import numpy as np
-import onnxruntime as ort
 
 README_TOKENS = [
     50,
@@ -173,7 +171,14 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def write_wav(path: Path, audio: np.ndarray, sample_rate: int) -> None:
+def load_runtime() -> tuple[Any, Any]:
+    """Load optional runtime dependencies only when executing the canary."""
+    np = importlib.import_module("numpy")
+    ort = importlib.import_module("onnxruntime")
+    return np, ort
+
+
+def write_wav(path: Path, audio: Any, sample_rate: int, np: Any) -> None:
     clipped = np.clip(audio, -1.0, 1.0)
     pcm = (clipped * 32767.0).astype("<i2")
     with wave.open(str(path), "wb") as wav_file:
@@ -184,6 +189,7 @@ def write_wav(path: Path, audio: np.ndarray, sample_rate: int) -> None:
 
 
 def run_canary(model: Path, voice: Path, wav: Path, report: Path) -> dict[str, Any]:
+    np, ort = load_runtime()
     os.environ.setdefault("ORT_DISABLE_TELEMETRY", "1")
     voices = np.fromfile(voice, dtype=np.float32).reshape(-1, 1, 256)
     ref_s = voices[len(README_TOKENS)]
@@ -206,7 +212,7 @@ def run_canary(model: Path, voice: Path, wav: Path, report: Path) -> dict[str, A
 
     wav.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
-    write_wav(wav, audio, 24_000)
+    write_wav(wav, audio, 24_000, np)
     result = {
         "status": "passed",
         "command_summary": (
@@ -257,10 +263,6 @@ def main() -> int:
     args = parser.parse_args()
     print(json.dumps(run_canary(args.model, args.voice, args.wav, args.report), indent=2))
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
 
 
 if __name__ == "__main__":

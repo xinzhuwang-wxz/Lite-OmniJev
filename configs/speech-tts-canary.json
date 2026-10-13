@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-14",
+  "purpose": "Python 3.11 CPU text-to-WAV Kokoro ONNX canary using Misaki English G2P and official tokenizer.json mapping.",
+  "asset_dir": "artifacts/speech-tts/downloads/kokoro-onnx",
+  "model": {
+    "path": "onnx/model_quantized.onnx",
+    "sha256": "fbae9257e1e05ffc727e951ef9b9c98418e6d79f1c9b6b13bd59f5c9028a1478",
+    "source": "onnx-community/Kokoro-82M-v1.0-ONNX@1939ad2a8e416c0acfeecc08a694d14ef25f2231"
+  },
+  "tokenizer": {
+    "path": "tokenizer.json",
+    "sha256": "77a02c8e164413299b4b4c403b14f8e0e1c1b727db4d46a09d6327b861060a34",
+    "model_max_length": 512,
+    "max_tokens_without_padding": 510,
+    "unsupported_phoneme_policy": "fail_before_tokenization"
+  },
+  "g2p": {
+    "engine": "misaki.en.G2P",
+    "version": "0.9.4",
+    "license": "Apache-2.0",
+    "settings": {
+      "trf": false,
+      "british": false,
+      "fallback": null
+    },
+    "support_packages": {
+      "num2words": "0.5.14",
+      "spacy": "3.8.11",
+      "en_core_web_sm": "3.8.0"
+    }
+  },
+  "voices": [
+    {
+      "id": "af_heart",
+      "path": "voices/af_heart.bin",
+      "sha256": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b",
+      "label": "American English female"
+    },
+    {
+      "id": "am_puck",
+      "path": "voices/am_puck.bin",
+      "sha256": "fcf73c989033e9233e0b98713eca600c8c74dcc1614b37009d5450ff4a2274a0",
+      "label": "American English male"
+    }
+  ],
+  "sentences": [
+    {
+      "id": "clear_assets",
+      "text": "Clear speech assets are ready."
+    },
+    {
+      "id": "offline_today",
+      "text": "Two voices render offline today."
+    }
+  ],
+  "runtime": {
+    "python_env": "artifacts/speech-tts/.venv311",
+    "python_version_required": "3.11",
+    "cpu_lock": "/tmp/omnijev-cpu-heavy.lock",
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "ORT_DISABLE_TELEMETRY": "1"
+    },
+    "onnxruntime_provider": "CPUExecutionProvider",
+    "onnxruntime_threads": {
+      "inter_op_num_threads": 1,
+      "intra_op_num_threads": 1
+    }
+  },
+  "output": {
+    "remote_dir": "artifacts/speech-tts/canary/text-g2p",
+    "report": "reports/speech-kokoro-text-g2p-cpu-canary.json"
+  }
+}

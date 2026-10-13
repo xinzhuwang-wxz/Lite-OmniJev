@@ -9,8 +9,8 @@
     "Do not claim Common Voice audio bytes are staged until the official API-key and terms flow is completed."
   ],
   "recommendation": {
-    "tts_engine": "Kokoro 82M ONNX, quantized CPU canary model, two American English voices",
-    "tts_status": "remote_assets_downloaded_hash_verified_cpu_wav_canary_passed",
+    "tts_engine": "Kokoro 82M ONNX, quantized Python 3.11 text-to-WAV CPU canary model, two American English voices",
+    "tts_status": "remote_assets_downloaded_hash_verified_text_g2p_cpu_wav_canary_passed",
     "common_voice_source": "Mozilla Data Collective Common Voice Spontaneous Speech 5.0 - English",
     "common_voice_status": "metadata_selected_download_blocked_by_official_api_key_and_terms"
   },
@@ -33,7 +33,7 @@
         "model_declared": "apache-2.0",
         "onnx_repo_declared": "apache-2.0",
         "voice_embeddings_declared": "apache-2.0 via the same repository",
-        "runtime_note": "Prefer direct ONNX Runtime plus Apache-2.0 Misaki G2P without espeak fallback for production prep. The convenience kokoro-onnx wheel pulls espeakng-loader and was not adopted as a project dependency."
+        "runtime_note": "Canonical canary uses direct ONNX Runtime plus Apache-2.0 Misaki English G2P with fallback disabled; espeakng-loader is not installed in the Python 3.11 canary env."
       },
       "selected_files": [
         {
@@ -101,6 +101,93 @@
       },
       "canary": {
         "status": "passed",
+        "type": "text_to_misaki_g2p_to_tokenizer_to_onnx_cpu_wav",
+        "config": "configs/speech-tts-canary.json",
+        "report": "reports/speech-kokoro-text-g2p-cpu-canary.json",
+        "remote_output_dir": "/root/autodl-tmp/lite-omnijev/artifacts/speech-tts/canary/text-g2p",
+        "case_count": 4,
+        "sample_rate_hz": 24000,
+        "channels": 1,
+        "runtime": {
+          "python": "3.11.17",
+          "python_executable": "/root/autodl-tmp/lite-omnijev/artifacts/speech-tts/.venv311/bin/python",
+          "onnxruntime": "1.31.0",
+          "numpy": "2.3.4",
+          "provider": "CPUExecutionProvider",
+          "cgroup": {
+            "cpu_max": "50000 100000",
+            "cpuset_cpus_effective": "0-127",
+            "memory_current": "2147328000",
+            "memory_max": "2147483648"
+          },
+          "thread_env": {
+            "MKL_NUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "ORT_DISABLE_TELEMETRY": "1"
+          }
+        },
+        "dependency_versions": {
+          "en-core-web-sm": "3.8.0",
+          "misaki": "0.9.4",
+          "num2words": "0.5.14",
+          "numpy": "2.3.4",
+          "onnxruntime": "1.31.0",
+          "spacy": "3.8.11"
+        },
+        "dependency_fingerprint_sha256": "965795436bc7638cafdb99c1bcd7bdb43179adb1d9610029b7ba2f8b3b1b20cc",
+        "wav_sha256s": [
+          "5d42bff0f1e33eb96761a258bad6d44ec4adaba17b61e314c23caccf226a8c35",
+          "d05f6e391c5c65d1324ba8bfeedfe1d91de8ef6988c89f8a3d5aa15c1cf7945a",
+          "b30aae9f1b0689d882c3b96b28d22679fefe41c68be40d4f9975ebb32967bf28",
+          "e641ddf034b5cd251dea9c239b91d54fc5fc53ba534d449a0401e0676edeb37d"
+        ],
+        "cases": [
+          {
+            "sentence_id": "clear_assets",
+            "voice_id": "af_heart",
+            "duration_seconds": 2.3,
+            "token_count_without_padding": 29,
+            "style_index": 29,
+            "wav_path": "artifacts/speech-tts/canary/text-g2p/clear_assets-af_heart.wav",
+            "wav_sha256": "5d42bff0f1e33eb96761a258bad6d44ec4adaba17b61e314c23caccf226a8c35"
+          },
+          {
+            "sentence_id": "clear_assets",
+            "voice_id": "am_puck",
+            "duration_seconds": 2.225,
+            "token_count_without_padding": 29,
+            "style_index": 29,
+            "wav_path": "artifacts/speech-tts/canary/text-g2p/clear_assets-am_puck.wav",
+            "wav_sha256": "d05f6e391c5c65d1324ba8bfeedfe1d91de8ef6988c89f8a3d5aa15c1cf7945a"
+          },
+          {
+            "sentence_id": "offline_today",
+            "voice_id": "af_heart",
+            "duration_seconds": 2.625,
+            "token_count_without_padding": 33,
+            "style_index": 33,
+            "wav_path": "artifacts/speech-tts/canary/text-g2p/offline_today-af_heart.wav",
+            "wav_sha256": "b30aae9f1b0689d882c3b96b28d22679fefe41c68be40d4f9975ebb32967bf28"
+          },
+          {
+            "sentence_id": "offline_today",
+            "voice_id": "am_puck",
+            "duration_seconds": 2.475,
+            "token_count_without_padding": 33,
+            "style_index": 33,
+            "wav_path": "artifacts/speech-tts/canary/text-g2p/offline_today-am_puck.wav",
+            "wav_sha256": "e641ddf034b5cd251dea9c239b91d54fc5fc53ba534d449a0401e0676edeb37d"
+          }
+        ]
+      },
+      "risk_notes": [
+        "Kokoro quality is good for compact offline TTS but synthetic speech truth remains programmatic; generated rows still need manifesting by prompt family, voice, text source, seed, and audio hash.",
+        "Text-to-WAV canary verifies G2P/token coverage and ONNX execution only; generated synthetic speech rows still need dataset manifests by prompt family, voice, text source, seed, and audio hash."
+      ],
+      "fixed_token_canary": {
+        "status": "passed",
         "report": "reports/speech-kokoro-cpu-wav-canary.json",
         "remote_wav_path": "/root/autodl-tmp/lite-omnijev/artifacts/speech-tts/canary/kokoro-af-heart-readme-token-canary.wav",
         "wav_sha256": "861b1e8a2a70f3c78b5176555115b04e92c8bbd05b86f7548f58d4fee9a5ae71",
@@ -113,12 +200,19 @@
           "numpy": "2.3.4",
           "provider": "CPUExecutionProvider"
         },
-        "q8f16_attempt": "model_q8f16.onnx segfaulted with ONNX Runtime 1.31.0 CPU, exit 139; model_quantized.onnx recovered the canary."
+        "q8f16_attempt": "model_q8f16.onnx segfaulted with ONNX Runtime 1.31.0 CPU, exit 139; model_quantized.onnx recovered the canary.",
+        "role": "historical_execution_proof_only",
+        "not_full_text_tts": true
       },
-      "risk_notes": [
-        "Kokoro quality is good for compact offline TTS but synthetic speech truth remains programmatic; generated rows still need manifesting by prompt family, voice, text source, seed, and audio hash.",
-        "Avoid the convenience runtime if its espeak loader creates GPL obligations for project distribution; use direct ONNX plus Misaki with fallback disabled unless legal review approves another path."
-      ]
+      "runtime_dependency_versions": {
+        "python_env": "artifacts/speech-tts/.venv311",
+        "en-core-web-sm": "3.8.0",
+        "misaki": "0.9.4",
+        "num2words": "0.5.14",
+        "numpy": "2.3.4",
+        "onnxruntime": "1.31.0",
+        "spacy": "3.8.11"
+      }
     },
     {
       "name": "MeloTTS English",
@@ -219,11 +313,11 @@
   "preparation_decision": {
     "ready": [
       "Kokoro ONNX q8f16, quantized model, and af_heart/am_puck voice embeddings are staged on remote with sha256 verification.",
-      "Kokoro ONNX Runtime CPU canary produced a finite 8.225 second 24 kHz mono PCM WAV with SHA256 861b1e8a2a70f3c78b5176555115b04e92c8bbd05b86f7548f58d4fee9a5ae71.",
+      "Kokoro quantized ONNX generated four finite Python 3.11 text-to-WAV CPU canaries from two English sentences across two voices using Misaki G2P, tokenizer.json coverage checks, and ONNX Runtime CPUExecutionProvider.",
       "Common Voice source families are selected, license/size/checksum metadata captured, and payloads remain under the 1 GB preparation ceiling."
     ],
     "blocked": [
-      "Common Voice audio tarballs are not downloaded because official Mozilla Data Collective download requires API credentials and terms acceptance."
+      "Common Voice audio tarballs are not downloaded because official Mozilla Data Collective download requires user API credentials and terms acceptance."
     ]
   }
 }

@@ -1,0 +1,253 @@
+{
+  "asset_dir": "artifacts/speech-tts/downloads/kokoro-onnx",
+  "case_count": 4,
+  "cases": [
+    {
+      "channels": 1,
+      "duration_seconds": 2.3,
+      "finite_waveform": true,
+      "float_mean": -0.0002003929257625714,
+      "float_peak_abs": 0.6419930458068848,
+      "float_rms": 0.06299325078725815,
+      "input_ids_shape": [
+        1,
+        31
+      ],
+      "onnx_elapsed_seconds": 2.91341,
+      "phonemes": "kl\u02c8\u026a\u0279 sp\u02c8i\u02a7 \u02c8\u00e6s\u02cc\u025bts \u0251\u0279 \u0279\u02c8\u025bdi.",
+      "sample_rate_hz": 24000,
+      "samples": 55200,
+      "sentence_id": "clear_assets",
+      "style_index": 29,
+      "text": "Clear speech assets are ready.",
+      "token_count_without_padding": 29,
+      "unsupported_phoneme_characters": [],
+      "voice_id": "af_heart",
+      "voice_label": "American English female",
+      "voice_path": "artifacts/speech-tts/downloads/kokoro-onnx/voices/af_heart.bin",
+      "voice_sha256": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b",
+      "voice_shape": [
+        510,
+        1,
+        256
+      ],
+      "wav_bytes": 110444,
+      "wav_path": "artifacts/speech-tts/canary/text-g2p/clear_assets-af_heart.wav",
+      "wav_sha256": "5d42bff0f1e33eb96761a258bad6d44ec4adaba17b61e314c23caccf226a8c35"
+    },
+    {
+      "channels": 1,
+      "duration_seconds": 2.225,
+      "finite_waveform": true,
+      "float_mean": -0.0007777389837428927,
+      "float_peak_abs": 0.8627751469612122,
+      "float_rms": 0.11387414485216141,
+      "input_ids_shape": [
+        1,
+        31
+      ],
+      "onnx_elapsed_seconds": 3.17986,
+      "phonemes": "kl\u02c8\u026a\u0279 sp\u02c8i\u02a7 \u02c8\u00e6s\u02cc\u025bts \u0251\u0279 \u0279\u02c8\u025bdi.",
+      "sample_rate_hz": 24000,
+      "samples": 53400,
+      "sentence_id": "clear_assets",
+      "style_index": 29,
+      "text": "Clear speech assets are ready.",
+      "token_count_without_padding": 29,
+      "unsupported_phoneme_characters": [],
+      "voice_id": "am_puck",
+      "voice_label": "American English male",
+      "voice_path": "artifacts/speech-tts/downloads/kokoro-onnx/voices/am_puck.bin",
+      "voice_sha256": "fcf73c989033e9233e0b98713eca600c8c74dcc1614b37009d5450ff4a2274a0",
+      "voice_shape": [
+        510,
+        1,
+        256
+      ],
+      "wav_bytes": 106844,
+      "wav_path": "artifacts/speech-tts/canary/text-g2p/clear_assets-am_puck.wav",
+      "wav_sha256": "d05f6e391c5c65d1324ba8bfeedfe1d91de8ef6988c89f8a3d5aa15c1cf7945a"
+    },
+    {
+      "channels": 1,
+      "duration_seconds": 2.625,
+      "finite_waveform": true,
+      "float_mean": -0.0001907910918816924,
+      "float_peak_abs": 0.49831199645996094,
+      "float_rms": 0.06268355995416641,
+      "input_ids_shape": [
+        1,
+        35
+      ],
+      "onnx_elapsed_seconds": 3.976312,
+      "phonemes": "t\u02c8u v\u02c8Ys\u1d7bz \u0279\u02c8\u025bnd\u0259\u0279 \u02cc\u0254fl\u02c8In t\u0259d\u02c8A.",
+      "sample_rate_hz": 24000,
+      "samples": 63000,
+      "sentence_id": "offline_today",
+      "style_index": 33,
+      "text": "Two voices render offline today.",
+      "token_count_without_padding": 33,
+      "unsupported_phoneme_characters": [],
+      "voice_id": "af_heart",
+      "voice_label": "American English female",
+      "voice_path": "artifacts/speech-tts/downloads/kokoro-onnx/voices/af_heart.bin",
+      "voice_sha256": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b",
+      "voice_shape": [
+        510,
+        1,
+        256
+      ],
+      "wav_bytes": 126044,
+      "wav_path": "artifacts/speech-tts/canary/text-g2p/offline_today-af_heart.wav",
+      "wav_sha256": "b30aae9f1b0689d882c3b96b28d22679fefe41c68be40d4f9975ebb32967bf28"
+    },
+    {
+      "channels": 1,
+      "duration_seconds": 2.475,
+      "finite_waveform": true,
+      "float_mean": -0.0008551591308787465,
+      "float_peak_abs": 0.9424744248390198,
+      "float_rms": 0.11884522438049316,
+      "input_ids_shape": [
+        1,
+        35
+      ],
+      "onnx_elapsed_seconds": 3.301821,
+      "phonemes": "t\u02c8u v\u02c8Ys\u1d7bz \u0279\u02c8\u025bnd\u0259\u0279 \u02cc\u0254fl\u02c8In t\u0259d\u02c8A.",
+      "sample_rate_hz": 24000,
+      "samples": 59400,
+      "sentence_id": "offline_today",
+      "style_index": 33,
+      "text": "Two voices render offline today.",
+      "token_count_without_padding": 33,
+      "unsupported_phoneme_characters": [],
+      "voice_id": "am_puck",
+      "voice_label": "American English male",
+      "voice_path": "artifacts/speech-tts/downloads/kokoro-onnx/voices/am_puck.bin",
+      "voice_sha256": "fcf73c989033e9233e0b98713eca600c8c74dcc1614b37009d5450ff4a2274a0",
+      "voice_shape": [
+        510,
+        1,
+        256
+      ],
+      "wav_bytes": 118844,
+      "wav_path": "artifacts/speech-tts/canary/text-g2p/offline_today-am_puck.wav",
+      "wav_sha256": "e641ddf034b5cd251dea9c239b91d54fc5fc53ba534d449a0401e0676edeb37d"
+    }
+  ],
+  "config_path": "configs/speech-tts-canary.json",
+  "config_sha256": "a4ca11b13f4d6beba3a46423b0d73ae1441fd38dca866beed96bf17cd73ff45c",
+  "dependency_fingerprint_sha256": "965795436bc7638cafdb99c1bcd7bdb43179adb1d9610029b7ba2f8b3b1b20cc",
+  "dependency_versions": {
+    "en-core-web-sm": "3.8.0",
+    "misaki": "0.9.4",
+    "num2words": "0.5.14",
+    "numpy": "2.3.4",
+    "onnxruntime": "1.31.0",
+    "spacy": "3.8.11"
+  },
+  "g2p": {
+    "engine": "misaki.en.G2P",
+    "license": "Apache-2.0",
+    "settings": {
+      "british": false,
+      "fallback": null,
+      "trf": false
+    },
+    "support_packages": {
+      "en_core_web_sm": "3.8.0",
+      "num2words": "0.5.14",
+      "spacy": "3.8.11"
+    },
+    "version": "0.9.4"
+  },
+  "generated_at": "2026-10-13T18:56:24.805376+00:00",
+  "graph_inputs": {
+    "input_ids": {
+      "shape": [
+        1,
+        "sequence_length"
+      ],
+      "type": "tensor(int64)"
+    },
+    "speed": {
+      "shape": [
+        1
+      ],
+      "type": "tensor(float)"
+    },
+    "style": {
+      "shape": [
+        1,
+        256
+      ],
+      "type": "tensor(float)"
+    }
+  },
+  "graph_outputs": {
+    "waveform": {
+      "shape": [
+        1,
+        "num_samples"
+      ],
+      "type": "tensor(float)"
+    }
+  },
+  "model_path": "artifacts/speech-tts/downloads/kokoro-onnx/onnx/model_quantized.onnx",
+  "model_sha256": "fbae9257e1e05ffc727e951ef9b9c98418e6d79f1c9b6b13bd59f5c9028a1478",
+  "quality_claim": "none; this is an execution and text-to-token coverage canary only",
+  "runtime": {
+    "cgroup": {
+      "cpu_max": "50000 100000",
+      "cpuset_cpus_effective": "0-127",
+      "memory_current": "2147328000",
+      "memory_max": "2147483648"
+    },
+    "numpy_version": "2.3.4",
+    "onnxruntime_threads": {
+      "inter_op_num_threads": 1,
+      "intra_op_num_threads": 1
+    },
+    "onnxruntime_version": "1.31.0",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "providers": [
+      "CPUExecutionProvider"
+    ],
+    "python": "3.11.17",
+    "python_executable": "/root/autodl-tmp/lite-omnijev/artifacts/speech-tts/.venv311/bin/python",
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "ORT_DISABLE_TELEMETRY": "1"
+    }
+  },
+  "sentences": [
+    {
+      "id": "clear_assets",
+      "text": "Clear speech assets are ready."
+    },
+    {
+      "id": "offline_today",
+      "text": "Two voices render offline today."
+    }
+  ],
+  "status": "passed",
+  "tokenizer_path": "artifacts/speech-tts/downloads/kokoro-onnx/tokenizer.json",
+  "tokenizer_sha256": "77a02c8e164413299b4b4c403b14f8e0e1c1b727db4d46a09d6327b861060a34",
+  "voices": [
+    {
+      "id": "af_heart",
+      "label": "American English female",
+      "path": "voices/af_heart.bin",
+      "sha256": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b"
+    },
+    {
+      "id": "am_puck",
+      "label": "American English male",
+      "path": "voices/am_puck.bin",
+      "sha256": "fcf73c989033e9233e0b98713eca600c8c74dcc1614b37009d5450ff4a2274a0"
+    }
+  ]
+}
