@@ -37,10 +37,23 @@ uv run python -m scripts.train_smoke run \
 
 已有 output 目录直接拒绝，防止覆盖实验。成功生成 `adapter/adapter_model.safetensors`、`data.jsonl`、`run.json`。报告含版本、资产/数据/适配器哈希、seed、逐步 loss、步数、时长和显存。`cost: null` 表示未接入租赁账单，不能当作零成本。异常保留已完成步数与失败原因。
 
+每个完成的优化步会原子写入 `checkpoints/step-000N/`。checkpoint 由 JSON provenance、LoRA 可训练张量 safetensors、optimizer tensor safetensors 和 RNG safetensors 组成；恢复不读取 pickle。恢复必须显式指定已有 run 目录里的 checkpoint，普通 `run` 仍拒绝已有 `--output-dir`：
+
+```bash
+uv run python -m scripts.train_smoke run \
+  --model-dir artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2 \
+  --asset-manifest artifacts/manifests/e4b.json \
+  --output-dir artifacts/training/p0-smoke-001 \
+  --report reports/train-smoke-001-resume.json \
+  --resume-from artifacts/training/p0-smoke-001/checkpoints/step-0004
+```
+
+恢复前会重新计算并比对 config、模型 revision、资产哈希、数据哈希和样本顺序；任一不一致都会拒绝继续。恢复只覆盖这个固定 10 步 smoke 的 optimizer、RNG、step、loss 和 LoRA 参数状态，不是通用训练框架。
+
 ## 验收与剩余缺口
 
 - `uv run pytest tests/test_training.py`：无卡契约和失败路径；未安装 torch/peft 时相关梯度测试会明确 skip。
 - `uv run --extra training pytest tests/test_training.py`：CPU 梯度及 LoRA 冻结测试；不下载真实模型、不证明 GPU 可运行。
 - CUDA 主机上必须实际跑满 10 步、有限 loss、非零有限 LoRA 梯度并保存适配器后，才可登记“text smoke 已通过”。
-- 未保存 optimizer/RNG 状态，不支持 resume，也不提供假冒完整恢复的 warmstart。断点恢复需独立票通过后才能关闭完整 P0。
+- resume 的 CPU 等价性测试只覆盖小模型状态恢复；真实 E4B/GPU 仍须在 CUDA 主机实跑中验证。
 - 单卡内存、真实 E4B BF16 加载、GPU 算子确定性、实测学习曲线、媒体路径和推理概率对齐均未在本机验证；失败时留报告并修复，不降低门槛。

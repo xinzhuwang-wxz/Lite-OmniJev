@@ -9,6 +9,7 @@ import pytest
 from pydantic import ValidationError
 
 from scripts.train_smoke import main
+from train.checkpoint import load_checkpoint, save_checkpoint, verify_checkpoint
 from train.monitoring import (
     MODE_ENV,
     OFFICIAL_API_KEY_ENV,
@@ -381,6 +382,130 @@ def test_run_refuses_existing_output_without_overwriting(tmp_path):
     assert report["exit_code"] == 1
     assert marker.read_text() == "preserve"
     assert not (tmp_path / "run.json").exists()
+
+
+def test_run_resume_requires_checkpoint_under_output_dir(tmp_path):
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "manifest.json",
+        tmp_path / "out",
+        execute=True,
+        resume_from=tmp_path / "elsewhere" / "step-0001",
+    )
+    assert report["status"] == "blocked"
+    assert "resume checkpoint must be inside output-dir/checkpoints" in report["error"]
+
+
+def test_checkpoint_resume_matches_uninterrupted_cpu_run(tmp_path):
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("safetensors")
+
+    config = SmokeConfig().model_dump()
+    model_revision = "b" * 40
+    data_sha256 = "data-hash"
+    asset_hashes = {"model.safetensors": "asset-hash"}
+    order = list(range(10))
+
+    def train_until(output_dir, *, stop_after=None, resume_from=None):
+        random = __import__("random")
+        random.seed(1234)
+        torch.manual_seed(1234)
+        model = torch.nn.Linear(3, 3, bias=False)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=0.05)
+        losses = []
+        start = 0
+        if resume_from is not None:
+            checkpoint = load_checkpoint(resume_from)
+            start = verify_checkpoint(
+                checkpoint,
+                config=config,
+                model_revision=model_revision,
+                data_sha256=data_sha256,
+                asset_hashes=asset_hashes,
+                order=order,
+            )
+            losses = list(checkpoint["losses"])
+            from train.checkpoint import restore_checkpoint
+
+            restore_checkpoint(model, optimizer, checkpoint)
+        for step in range(start, 10):
+            optimizer.zero_grad(set_to_none=True)
+            x = torch.randn(3) + order[step] / 100
+            target = [1.0, 0.0, 0.0] if step % 2 == 0 else [0.0, 1.0, 0.0]
+            loss = decision_loss(model(x), [0, 1, 2], target)
+            loss.backward()
+            optimizer.step()
+            losses.append(float(loss.detach()))
+            checkpoint_path = save_checkpoint(
+                output_dir,
+                step=step + 1,
+                config=config,
+                model_revision=model_revision,
+                data_sha256=data_sha256,
+                asset_hashes=asset_hashes,
+                order=order,
+                losses=losses,
+                model=model,
+                optimizer=optimizer,
+            )
+            if stop_after == step + 1:
+                return model, losses, checkpoint_path
+        return model, losses, checkpoint_path
+
+    uninterrupted, uninterrupted_losses, _ = train_until(tmp_path / "full")
+    _, _, checkpoint_path = train_until(tmp_path / "partial", stop_after=4)
+    resumed, resumed_losses, _ = train_until(tmp_path / "partial", resume_from=checkpoint_path)
+    assert resumed_losses == pytest.approx(uninterrupted_losses)
+    for left, right in zip(uninterrupted.parameters(), resumed.parameters(), strict=True):
+        assert torch.equal(left, right)
+
+
+def test_checkpoint_refuses_provenance_mismatch(tmp_path):
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("safetensors")
+
+    torch.manual_seed(1)
+    model = torch.nn.Linear(2, 2)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.01)
+    loss = model(torch.ones(2)).sum()
+    loss.backward()
+    optimizer.step()
+    path = save_checkpoint(
+        tmp_path,
+        step=1,
+        config=SmokeConfig().model_dump(),
+        model_revision="c" * 40,
+        data_sha256="data-a",
+        asset_hashes={"model": "hash"},
+        order=[0],
+        losses=[float(loss.detach())],
+        model=model,
+        optimizer=optimizer,
+    )
+    checkpoint = load_checkpoint(path)
+    with pytest.raises(ValueError, match="data hash"):
+        verify_checkpoint(
+            checkpoint,
+            config=SmokeConfig().model_dump(),
+            model_revision="c" * 40,
+            data_sha256="data-b",
+            asset_hashes={"model": "hash"},
+            order=[0],
+        )
+    with pytest.raises(FileExistsError):
+        save_checkpoint(
+            tmp_path,
+            step=1,
+            config=SmokeConfig().model_dump(),
+            model_revision="c" * 40,
+            data_sha256="data-a",
+            asset_hashes={"model": "hash"},
+            order=[0],
+            losses=[float(loss.detach())],
+            model=model,
+            optimizer=optimizer,
+        )
 
 
 def test_cli_invalid_config_is_structured(tmp_path, capsys):

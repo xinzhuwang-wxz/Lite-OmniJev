@@ -31,6 +31,12 @@ from data.schema import (
 from data.synth import generate_samples
 from scripts.assets import selected_files, verify_file, write_json
 from scripts.check_tokens import OfficialTokenizerAdapter
+from train.checkpoint import (
+    load_checkpoint,
+    restore_checkpoint,
+    save_checkpoint,
+    verify_checkpoint,
+)
 from train.monitoring import SwanLabConfig, Telemetry, start_swanlab
 from train.template import check_answer_tokens, render_prompt
 
@@ -246,6 +252,7 @@ def train_smoke(
     output_dir: Path,
     report: dict[str, Any],
     telemetry: Telemetry,
+    resume_from: Path | None = None,
 ) -> None:
     """Execute 10 optimizer steps, each accumulating 10 single-sequence examples."""
     torch = importlib.import_module("torch")
@@ -277,19 +284,39 @@ def train_smoke(
     report["trainable_parameters"] = sum(p.numel() for p in parameters)
     report["device"] = torch.cuda.get_device_name(0)
     report["cuda_version"] = torch.version.cuda
+    order = list(range(len(examples)))
+    random.Random(config.seed).shuffle(order)
+    checkpoint = None
+    start_step = 0
     report["steps_completed"] = 0
     report["losses"] = []
+    if resume_from is not None:
+        checkpoint = load_checkpoint(resume_from)
+        start_step = verify_checkpoint(
+            checkpoint,
+            config=config.model_dump(),
+            model_revision=report["model_revision"],
+            data_sha256=report["data_sha256"],
+            asset_hashes=report["asset_hashes"],
+            order=order,
+        )
+        if start_step > config.steps:
+            raise ValueError("checkpoint step exceeds configured smoke length")
+        restore_checkpoint(model, optimizer, checkpoint)
+        report["steps_completed"] = start_step
+        report["losses"] = list(checkpoint["losses"])
+        if len(report["losses"]) != start_step:
+            raise ValueError("checkpoint losses do not match completed steps")
+        report["resumed_from"] = str(resume_from)
     telemetry.log(
         {
             "validation/examples": float(report["examples"]),
             "validation/max_prompt_tokens": float(report["max_prompt_tokens"]),
             "train/learning_rate": config.learning_rate,
         },
-        step=0,
+        step=start_step,
     )
-    order = list(range(len(examples)))
-    random.Random(config.seed).shuffle(order)
-    for step in range(config.steps):
+    for step in range(start_step, config.steps):
         optimizer.zero_grad(set_to_none=True)
         losses = []
         for offset in range(config.accumulation):
@@ -315,6 +342,19 @@ def train_smoke(
         mean_loss = math.fsum(losses) / len(losses)
         report["losses"].append(mean_loss)
         log_training_metrics(telemetry, config, report, mean_loss=mean_loss, grad_norm=float(norm))
+        checkpoint_path = save_checkpoint(
+            output_dir,
+            step=report["steps_completed"],
+            config=config.model_dump(),
+            model_revision=report["model_revision"],
+            data_sha256=report["data_sha256"],
+            asset_hashes=report["asset_hashes"],
+            order=order,
+            losses=report["losses"],
+            model=model,
+            optimizer=optimizer,
+        )
+        report["checkpoint"] = str(checkpoint_path)
         write_json(output_dir / "run.json", report)
     model.save_pretrained(
         str(output_dir / "adapter"), safe_serialization=True, save_embedding_layers=False
@@ -342,6 +382,7 @@ def run(
     execute: bool,
     data_path: Path | None = None,
     monitoring: SwanLabConfig | None = None,
+    resume_from: Path | None = None,
 ) -> dict[str, Any]:
     start = time.monotonic()
     report: dict[str, Any] = {
@@ -353,7 +394,7 @@ def run(
         "config": config.model_dump(),
         "model_revision": model_dir.name,
         "scope": "text-only real-model plumbing smoke; not P0 completion or quality evidence",
-        "resume_supported": False,
+        "resume_supported": True,
         "cost": None,
         "steps_completed": 0,
     }
@@ -363,8 +404,15 @@ def run(
     telemetry: Telemetry | None = None
     try:
         if execute:
-            output_dir.mkdir(parents=True, exist_ok=False)
-            created = True
+            if resume_from is None:
+                output_dir.mkdir(parents=True, exist_ok=False)
+                created = True
+            else:
+                checkpoint_root = (output_dir / "checkpoints").resolve()
+                if not resume_from.resolve().is_relative_to(checkpoint_root):
+                    raise ValueError("resume checkpoint must be inside output-dir/checkpoints")
+                if not output_dir.is_dir():
+                    raise ValueError("resume requires an existing output directory")
         samples = smoke_samples(config, data_path)
         report["data_sha256"] = hashlib.sha256(data_bytes(samples)).hexdigest()
         blockers = []
@@ -390,12 +438,28 @@ def run(
         if blockers:
             raise ValueError("training preflight has blockers")
         if execute:
-            (output_dir / "data.jsonl").write_bytes(data_bytes(samples))
+            payload = data_bytes(samples)
+            data_output = output_dir / "data.jsonl"
+            if resume_from is None:
+                data_output.write_bytes(payload)
+            elif (
+                not data_output.is_file()
+                or hashlib.sha256(data_output.read_bytes()).hexdigest() != report["data_sha256"]
+            ):
+                raise ValueError("resume data.jsonl is missing or does not match current data")
             report["status"] = "running"
             write_json(output_dir / "run.json", report)
             telemetry = start_swanlab(monitoring_config, report)
             try:
-                train_smoke(config, model_dir, examples, output_dir, report, telemetry)
+                train_smoke(
+                    config,
+                    model_dir,
+                    examples,
+                    output_dir,
+                    report,
+                    telemetry,
+                    resume_from=resume_from,
+                )
             finally:
                 telemetry.finish(report)
         report.update(status="completed" if execute else "ready", exit_code=0)
@@ -405,6 +469,6 @@ def run(
             error=f"{type(exc).__name__}: {exc}",
         )
     report["duration_seconds"] = time.monotonic() - start
-    if created:
+    if created or (execute and resume_from is not None and output_dir.is_dir()):
         write_json(output_dir / "run.json", report)
     return report
