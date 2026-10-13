@@ -27,6 +27,7 @@ from train.teacher_inference import (
     prepared_teacher_input,
     run_teacher_preflight,
     teacher_forward_readiness_report,
+    validate_teacher_model_assets,
     validate_teacher_options,
     validate_teacher_source_tree,
 )
@@ -165,6 +166,68 @@ def test_pinned_video_sampling_rejects_duplicate_indices_before_decode(
 
     assert FakeCapture.grabbed == 0
     assert FakeCapture.read_called is False
+
+
+def _write_asset(path: Path, payload: bytes) -> dict[str, object]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(payload)
+    return {
+        "bytes": len(payload),
+        "actual_sha256": hashlib.sha256(payload).hexdigest(),
+    }
+
+
+def _teacher_model_assets(root: Path, *, repo_id: str = "akhilaaa3/Jev-Omni") -> tuple[Path, Path]:
+    revision = "5addda86ddee081a68fb067477ea100c221b8917"
+    model_dir = root / "akhilaaa3__Jev-Omni" / revision
+    payloads = {
+        ".gitattributes": b"attrs",
+        "README.md": b"readme",
+        "chat_template.jinja": b"template",
+        "config.json": json.dumps(
+            {
+                "architectures": ["Gemma4UnifiedForConditionalGeneration"],
+                "model_type": "gemma4_unified",
+            }
+        ).encode(),
+        "decision_config.json": b"{}",
+        "generation_config.json": b"{}",
+        "head.pt": b"raw-head-not-runtime",
+        "model.safetensors": b"safe-model",
+        "processor_config.json": b"{}",
+        "sha256.json": b"{}",
+        "tokenizer.json": b"{}",
+        "tokenizer_config.json": b"{}",
+        "verification.json": b"{}",
+    }
+    files = []
+    for name, payload in payloads.items():
+        info = _write_asset(model_dir / name, payload)
+        files.append(
+            {
+                "path": name,
+                "required": True,
+                "kind": "weights" if name.endswith(".safetensors") else "metadata",
+                **info,
+            }
+        )
+    for file in files:
+        if file["path"] == "head.pt":
+            file["kind"] = "checkpoint_or_head"
+    manifest = {
+        "schema_version": 1,
+        "models": [
+            {
+                "repo_id": repo_id,
+                "revision": revision,
+                "license": "apache-2.0",
+                "files": files,
+            }
+        ],
+    }
+    manifest_path = root / "project-model-assets.json"
+    manifest_path.write_text(json.dumps(manifest))
+    return model_dir, manifest_path
 
 
 def _source_tree(root: Path) -> Path:
@@ -442,6 +505,7 @@ def test_forward_readiness_blocks_before_from_pretrained_without_cuda(
     torch = pytest.importorskip("torch")
     safetensors = pytest.importorskip("safetensors.torch")
     source = _source_tree(tmp_path / "source")
+    model_dir, manifest = _teacher_model_assets(tmp_path / "assets")
     expected_source_sha = hashlib.sha256(b"fixture").hexdigest()
     monkeypatch.setattr("train.teacher_inference.OFFICIAL_JEV_OMNI_SHA256", expected_source_sha)
     head_path = tmp_path / "head.safetensors"
@@ -477,7 +541,9 @@ def test_forward_readiness_blocks_before_from_pretrained_without_cuda(
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
 
     report = teacher_forward_readiness_report(
-        source_dir=source,
+        protocol_source_dir=source,
+        model_dir=model_dir,
+        model_asset_manifest=manifest,
         head_path=head_path,
         spec_path=spec,
         conversion_report=conversion,
@@ -491,3 +557,48 @@ def test_forward_readiness_blocks_before_from_pretrained_without_cuda(
     assert report["local_files_only"] is True
     assert report["use_safetensors_for_model"] is True
     assert "requires CUDA before from_pretrained" in report["error"]
+
+
+def test_teacher_model_assets_verify_required_files_and_raw_head(tmp_path: Path) -> None:
+    model_dir, manifest = _teacher_model_assets(tmp_path)
+    report = validate_teacher_model_assets(model_dir, manifest)
+    assert report["source_repo"] == "akhilaaa3/Jev-Omni"
+    assert report["source_revision"] == "5addda86ddee081a68fb067477ea100c221b8917"
+    assert report["weights"] == ["model.safetensors"]
+    assert report["raw_head_verified_not_loaded"] is True
+    assert report["files"]["head.pt"]["runtime_loaded"] is False
+    assert "config.json" in report["files"]
+    assert "tokenizer.json" in report["files"]
+    assert "chat_template.jinja" in report["files"]
+
+
+def test_teacher_model_assets_reject_corrupt_hash(tmp_path: Path) -> None:
+    model_dir, manifest = _teacher_model_assets(tmp_path)
+    (model_dir / "config.json").write_text("tampered")
+    with pytest.raises(ValueError, match="Size mismatch|SHA256 mismatch"):
+        validate_teacher_model_assets(model_dir, manifest)
+
+
+def test_teacher_model_assets_reject_wrong_manifest_repo(tmp_path: Path) -> None:
+    model_dir, manifest = _teacher_model_assets(tmp_path, repo_id="other/repo")
+    with pytest.raises(ValueError, match="pinned Jev-Omni"):
+        validate_teacher_model_assets(model_dir, manifest)
+
+
+def test_teacher_model_assets_reject_bad_safetensors_index_reference(tmp_path: Path) -> None:
+    model_dir, manifest = _teacher_model_assets(tmp_path)
+    model = json.loads(manifest.read_text())["models"][0]
+    files = [file for file in model["files"] if file["path"] != "model.safetensors"]
+    for name in ["model-1-of-2.safetensors", "model-2-of-2.safetensors"]:
+        info = _write_asset(model_dir / name, name.encode())
+        files.append({"path": name, "required": True, "kind": "weights", **info})
+    index_payload = json.dumps({"weight_map": {"x": "model-1-of-2.safetensors"}}).encode()
+    info = _write_asset(model_dir / "model.safetensors.index.json", index_payload)
+    files.append(
+        {"path": "model.safetensors.index.json", "required": True, "kind": "metadata", **info}
+    )
+    (model_dir / "model.safetensors").unlink()
+    model["files"] = files
+    manifest.write_text(json.dumps({"schema_version": 1, "models": [model]}))
+    with pytest.raises(ValueError, match="index references unverified shards"):
+        validate_teacher_model_assets(model_dir, manifest)

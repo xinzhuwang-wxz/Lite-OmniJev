@@ -21,6 +21,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
 
+from scripts.assets import selected_files, verify_file
 from train.checkpoint import file_sha256
 from train.teacher_head import (
     ALLOWED_SOURCE_REPO,
@@ -34,6 +35,10 @@ from train.teacher_media import SAMPLE_RATE, prepared_teacher_audio
 SCHEMA_VERSION = 1
 OFFICIAL_JEV_OMNI_SHA256 = "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0"
 DEFAULT_SOURCE_DIR = Path("artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917")
+DEFAULT_MODEL_DIR = Path(
+    "artifacts/models/akhilaaa3__Jev-Omni/5addda86ddee081a68fb067477ea100c221b8917"
+)
+DEFAULT_MODEL_ASSET_MANIFEST = Path("configs/project-model-assets.json")
 DEFAULT_SAFE_HEAD = Path(
     "artifacts/teacher/jev-omni/5addda86ddee081a68fb067477ea100c221b8917/head.safetensors"
 )
@@ -465,23 +470,175 @@ class JevOmniTeacherForward:
             return self.predict_prepared(prepared, inputs, options)
 
 
-def _local_model_files_present(source_dir: Path) -> dict[str, Any]:
-    index = source_dir / "model.safetensors.index.json"
-    single = source_dir / "model.safetensors"
-    shards = sorted(source_dir.glob("model-*.safetensors"))
-    present = {
-        "model.safetensors": single.is_file(),
-        "model.safetensors.index.json": index.is_file(),
-        "model_shard_count": len(shards),
+def _teacher_manifest_model(manifest_path: Path) -> dict[str, Any]:
+    manifest = json.loads(manifest_path.resolve(strict=True).read_text())
+    models = manifest.get("models", []) if isinstance(manifest, dict) else []
+    matching = [
+        model
+        for model in models
+        if model.get("repo_id") == ALLOWED_SOURCE_REPO
+        and model.get("revision") == PINNED_SOURCE_REVISION
+    ]
+    if len(matching) != 1:
+        raise ValueError("teacher model manifest must contain exactly the pinned Jev-Omni entry")
+    selected = matching[0]
+    if not isinstance(selected, dict):
+        raise ValueError("teacher model manifest entry must be an object")
+    return selected
+
+
+def _required_teacher_files(model: Mapping[str, Any]) -> list[dict[str, Any]]:
+    files = model.get("files")
+    if not isinstance(files, list) or not files:
+        raise ValueError("teacher model manifest entry has no files")
+    required = [file for file in files if isinstance(file, dict) and file.get("required") is True]
+    if not required:
+        raise ValueError("teacher model manifest entry has no required files")
+    paths = [str(file.get("path")) for file in required]
+    if len(paths) != len(set(paths)):
+        raise ValueError("teacher model manifest has duplicate required paths")
+    return required
+
+
+def _checksum_fields(file: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "path": file["path"],
+        "size": file.get("size", file.get("bytes")),
+        "kind": file.get("kind"),
+        "upstream_sha256": file.get("upstream_sha256") or file.get("lfs_sha256"),
+        "actual_sha256": file.get("actual_sha256"),
+        "git_blob_sha1": file.get("git_blob_sha1"),
     }
-    if not single.is_file() and not (index.is_file() and shards):
-        raise ValueError("teacher model safetensors manifest/shards are missing")
-    return present
+
+
+def _selected_files_manifest(
+    model: Mapping[str, Any], required: Sequence[Mapping[str, Any]]
+) -> dict[str, Any]:
+    selected: list[dict[str, Any]] = []
+    for file in required:
+        path = str(file["path"])
+        kind = str(file.get("kind"))
+        if path == "head.pt":
+            continue
+        if path.endswith(".safetensors"):
+            if kind != "weights":
+                raise ValueError("teacher safetensors file is not marked as weights")
+            selected.append({**_checksum_fields(file), "kind": "weights"})
+        elif path in {
+            "config.json",
+            "generation_config.json",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "chat_template.jinja",
+            "processor_config.json",
+            "model.safetensors.index.json",
+        }:
+            selected.append({**_checksum_fields(file), "kind": "metadata"})
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "models": [
+            {
+                "repo_id": ALLOWED_SOURCE_REPO,
+                "revision": PINNED_SOURCE_REVISION,
+                "license": model.get("license"),
+                "files": selected,
+            }
+        ],
+    }
+
+
+def _verify_manifest_file(model_dir: Path, file: Mapping[str, Any]) -> tuple[str, dict[str, Any]]:
+    path = str(file["path"])
+    if not path or Path(path).is_absolute() or ".." in Path(path).parts:
+        raise ValueError("unsafe teacher model manifest path")
+    normalized = _checksum_fields(file)
+    if not isinstance(normalized.get("size"), int):
+        raise ValueError(f"teacher model manifest file lacks size: {path}")
+    target = model_dir / path
+    if not target.resolve().is_relative_to(model_dir.resolve()):
+        raise ValueError("teacher model file escapes pinned directory")
+    return path, {
+        "bytes": normalized["size"],
+        "sha256": verify_file(target, normalized),
+        "kind": normalized["kind"],
+    }
+
+
+def validate_teacher_model_assets(
+    model_dir: Path = DEFAULT_MODEL_DIR,
+    manifest_path: Path = DEFAULT_MODEL_ASSET_MANIFEST,
+) -> dict[str, Any]:
+    """Verify the full local Jev-Omni model snapshot before any CUDA load."""
+    model = _teacher_manifest_model(manifest_path)
+    validate_source(str(model.get("repo_id")), str(model.get("revision")))
+    model_dir = model_dir.resolve(strict=True)
+    expected_parent = ALLOWED_SOURCE_REPO.replace("/", "__")
+    if model_dir.name != PINNED_SOURCE_REVISION or model_dir.parent.name != expected_parent:
+        raise ValueError("teacher model_dir must be the pinned repo/revision directory")
+    required = _required_teacher_files(model)
+    selected = selected_files(_selected_files_manifest(model, required), metadata_only=False)
+    selected_paths = {file["path"] for _, file in selected}
+    hashes: dict[str, dict[str, Any]] = {}
+    for _, file in selected:
+        path, info = _verify_manifest_file(model_dir, file)
+        hashes[path] = info
+    raw_head = [file for file in required if file.get("path") == "head.pt"]
+    if len(raw_head) != 1:
+        raise ValueError("teacher manifest must retain exactly one raw head.pt provenance entry")
+    if raw_head[0].get("kind") == "weights":
+        raise ValueError("raw head.pt must not be admitted as model weights")
+    path, info = _verify_manifest_file(model_dir, raw_head[0])
+    hashes[path] = {**info, "runtime_loaded": False}
+    for file in required:
+        path = str(file["path"])
+        if path in selected_paths or path == "head.pt":
+            continue
+        path, info = _verify_manifest_file(model_dir, file)
+        hashes[path] = info
+    expected_weights = {file["path"] for _, file in selected if file["kind"] == "weights"}
+    actual_weights = {path.name for path in model_dir.glob("model*.safetensors")}
+    if actual_weights != expected_weights:
+        raise ValueError("unverified or missing teacher safetensors files in model directory")
+    index = model_dir / "model.safetensors.index.json"
+    index_in_manifest = "model.safetensors.index.json" in hashes
+    if index.is_file():
+        if not index_in_manifest:
+            raise ValueError("teacher safetensors index exists but is not manifest verified")
+        weight_map = json.loads(index.read_text()).get("weight_map", {})
+        if (
+            not isinstance(weight_map, dict)
+            or not weight_map
+            or any(not isinstance(value, str) for value in weight_map.values())
+            or set(weight_map.values()) != expected_weights
+        ):
+            raise ValueError("teacher safetensors index references unverified shards")
+    elif expected_weights != {"model.safetensors"}:
+        raise ValueError("teacher sharded safetensors require a verified index")
+    config = json.loads((model_dir / "config.json").read_text())
+    if config.get("architectures") != ["Gemma4UnifiedForConditionalGeneration"]:
+        raise ValueError("teacher model architecture mismatch")
+    if config.get("model_type") != "gemma4_unified":
+        raise ValueError("teacher model type mismatch")
+    return {
+        "model_dir": str(model_dir),
+        "manifest": str(manifest_path.resolve(strict=True)),
+        "source_repo": ALLOWED_SOURCE_REPO,
+        "source_revision": PINNED_SOURCE_REVISION,
+        "license": model.get("license"),
+        "files_verified": len(hashes),
+        "bytes_verified": sum(int(item["bytes"]) for item in hashes.values()),
+        "weights": sorted(expected_weights),
+        "raw_head_verified_not_loaded": True,
+        "index_verified": index.is_file(),
+        "files": hashes,
+    }
 
 
 def teacher_forward_readiness_report(
     *,
-    source_dir: Path = DEFAULT_SOURCE_DIR,
+    protocol_source_dir: Path = DEFAULT_SOURCE_DIR,
+    model_dir: Path = DEFAULT_MODEL_DIR,
+    model_asset_manifest: Path = DEFAULT_MODEL_ASSET_MANIFEST,
     head_path: Path = DEFAULT_SAFE_HEAD,
     spec_path: Path = DEFAULT_HEAD_SPEC,
     conversion_report: Path = DEFAULT_HEAD_CONVERSION_REPORT,
@@ -507,9 +664,10 @@ def teacher_forward_readiness_report(
         expected_head_sha256 = expected_head_sha256 or expected_head_sha256_from_report(
             conversion_report
         )
-        report["source"] = validate_teacher_source_tree(
-            source_dir, expected_jev_omni_sha256=OFFICIAL_JEV_OMNI_SHA256
+        report["protocol_source"] = validate_teacher_source_tree(
+            protocol_source_dir, expected_jev_omni_sha256=OFFICIAL_JEV_OMNI_SHA256
         )
+        report["model_assets"] = validate_teacher_model_assets(model_dir, model_asset_manifest)
         report["head"] = inspect_safe_teacher_head(
             head_path, spec_path, expected_sha256=expected_head_sha256
         )
@@ -519,7 +677,6 @@ def teacher_forward_readiness_report(
             raise TeacherForwardBlocked(
                 "teacher forward loader requires CUDA before from_pretrained", report
             )
-        report["model_files"] = _local_model_files_present(source_dir.resolve(strict=True))
         report["status"] = "ready_for_explicit_cuda_load"
         report["exit_code"] = 0
     except TeacherForwardBlocked as exc:
@@ -541,7 +698,9 @@ def teacher_forward_readiness_report(
 
 def load_teacher_forward_bundle(
     *,
-    source_dir: Path = DEFAULT_SOURCE_DIR,
+    protocol_source_dir: Path = DEFAULT_SOURCE_DIR,
+    model_dir: Path = DEFAULT_MODEL_DIR,
+    model_asset_manifest: Path = DEFAULT_MODEL_ASSET_MANIFEST,
     head_path: Path = DEFAULT_SAFE_HEAD,
     spec_path: Path = DEFAULT_HEAD_SPEC,
     conversion_report: Path = DEFAULT_HEAD_CONVERSION_REPORT,
@@ -552,7 +711,9 @@ def load_teacher_forward_bundle(
     if device != "cuda":
         raise ValueError("teacher forward loader only admits the CUDA device")
     readiness = teacher_forward_readiness_report(
-        source_dir=source_dir,
+        protocol_source_dir=protocol_source_dir,
+        model_dir=model_dir,
+        model_asset_manifest=model_asset_manifest,
         head_path=head_path,
         spec_path=spec_path,
         conversion_report=conversion_report,
@@ -566,7 +727,7 @@ def load_teacher_forward_bundle(
     model_class = transformers.Gemma4UnifiedForConditionalGeneration
     torch = _torch()
     model = model_class.from_pretrained(
-        str(source_dir.resolve(strict=True)),
+        str(model_dir.resolve(strict=True)),
         local_files_only=True,
         trust_remote_code=False,
         use_safetensors=True,
@@ -579,7 +740,7 @@ def load_teacher_forward_bundle(
     head = load_safe_teacher_head_module(
         head_path, spec_path, expected_sha256=expected_head_sha256, device=device
     )
-    processor = load_teacher_processor(source_dir)
+    processor = load_teacher_processor(model_dir)
     _decoder_path, decoder = find_teacher_decoder(model)
     return JevOmniTeacherForward(
         model=model, head=head, processor=processor, decoder=decoder, device=device
@@ -761,9 +922,7 @@ def run_teacher_preflight(
         expected_head_sha256 = expected_head_sha256 or expected_head_sha256_from_report(
             conversion_report
         )
-        report["source"] = validate_teacher_source_tree(
-            source_dir, expected_jev_omni_sha256=OFFICIAL_JEV_OMNI_SHA256
-        )
+        report["source"] = validate_teacher_source_tree(source_dir)
         report["head"] = inspect_safe_teacher_head(
             head_path, spec_path, expected_sha256=expected_head_sha256
         )
