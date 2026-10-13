@@ -51,8 +51,8 @@
 
 ## 并行所有权与当前关键路径
 - root独占主树/票据/STATUS/整合；子代理各worktree，只交限定切片，不覆盖他人。
-- whole_project_datasets：`/tmp/lite-omnijev-project-datasets`；GUI官方train1679完整episodes/19,499,790,993B选择性Range恢复，central-directory SHA固定，test1169仅评测；优化网络往返/锁外并发，最终receipt待完成。
-- offline_runtime_dependencies：`/tmp/lite-omnijev-offline-runtime`；固定root与工具wheelhouse下载→no-index fresh CPU验收，NDKr28b≤5GB及Chromium实际离线二进制准备。root旧PID25391仍活，不能仅数finalwheel忽略临时下载。
+- whole_project_datasets：`/tmp/lite-omnijev-project-datasets`；GUI官方train1679完整episodes/25,809 PNG/19,499,790,993B选择性Range恢复；a36c793已合入29cd742，8并发2MiB批比32MiB少过读。PID30008继续，早先root物理观察11,355图/8.536GB未代表终态；恢复复用CRC边界与最终全文件校验待补。
+- offline_runtime_dependencies：`/tmp/lite-omnijev-offline-runtime`；d040acd已合入a61098e：工具独立no-index CPU canary、前端322包offline安装、NDKr28b官方SHA/交叉编译及LiteRT Android arm64 CLI hash/ELF已通过。root完整锁闭包/servev031/Chromium/前端实际build继续；root selected-noheavy+借serve-next torch的canary仅partial，pytest需按主树9.1.1锁补齐，不能当完整fresh通过。
 - remaining_authorizations：`/tmp/lite-omnijev-authorizations`；DocVQA-SP官方Annotations1,713,866B已hash，Images8,580,231,801B正在下载，总8.582GB<30GB；严格TLS链/hostname验证，不关闭校验，私密URL仅0600/STDIN。
 - mdc_transport_fix：`/tmp/lite-omnijev-routerbench-cpu`；RouterBench两固定pickle仅在chroot/dropuid/seccomp限资源沙箱转换，先恶意fixture，再真源，交付后独立安全review。
 - video_eval_sources：`/tmp/lite-omnijev-video-eval`；公开teacher verification仅提取协议/汇总metadata，不记录题/预测。精确14任务/2786IDs未公开，用户已批准ADR-0006改为固定9任务1800行真实baseline；此代理继续全行CPU协议冻结/16帧RGB hash验收，GPU两遍未做。
@@ -61,12 +61,12 @@
 ## 待我决策与后续资源
 - 本轮已具体确认的DocVQA/Android协议与首发来源无需再确认；AudioCaps无需办理。CommonVoice/HLE/模型访问均已完成，不再索要key/token。
 - ADR-0006已批准：无需为现有九任务另办Moments/SSv2/TVQA/Matterport/NTU授权，只有明确扩范围才触发；禁止把候选升级为当前必办。
-- 真实独立gate身份、双人标注、阶段6真机和后续生产观测仍需安排；不阻塞其它公开下载，不能伪造验收。
+- 真实独立gate身份、双人标注、阶段6真机和后续生产观测仍需安排；reports/existing-human-annotation-evidence.json未找到可直接满足四模态配对Cohenκ的现成来源。现行契约两真人6000题/12000判断，不能把众包计数或模型自标冒充；不阻塞其他公开下载。
 - 门槛/方向/大预算改变、付费/开关卡/生产/删数据仍用户决定。当前不要开卡。
 
 ## 下一步与验证
 1. 继续GUI/DocVQA、wheelhouse/NDK/浏览器二进制；下载exit0→固定hash→有界CPU reader或fresh离线安装，不把running当done。
 2. root阶段2CPU验证已用已有media-cpu Pillow环境完成exit0；未改共享环境，非全量图decode/标签准入。
 3. RouterBench安全review、剩余外部协议/依赖闭包审计后再执行offline-prep:04；未来LoRA/量化/校准模型是待生成产物，不是下载缺口。
-4. 当前主树297测试通过（43.31秒），Clotho定向18通过（2.98秒）；Ruff/format196文件/mypy48源文件通过，最近wheel/sdist通过。新一批整合后再验证相关检查。
+4. 当前主树297测试通过（43.31秒），最新core47/GUI5定向通过，Clotho定向18通过（2.98秒）；Ruff/format196文件/mypy48源文件通过，最近wheel/sdist通过。新一批整合后再验证相关检查。
 5. 只有全部必需外部准备/CPU验收真正通过才通知开GPU；严格质量门槛及S0人工/身份阻塞另列，不能暗改或混成全部产品完成。
