@@ -85,4 +85,30 @@ uv run python -m scripts.recover_star_media \
 
 FunQA 与 STA 已实算哈希通过。Perception 原作业在 6,151,711,684 B 处 curl18、SHA失败、exit1；恢复过程先保留为 `.partial`。根会话提供了另一下载使用 curl 内部重试会丢弃本轮已写字节的实测，因此确认自己的 curl PID 后停止该内部重试版本（143），保留已写到的6,183,660,484 B，并改为 `reports/video-eval-download-recovery-004.sh`：最多4次外部调用，每次 `curl --retry 0 --continue-at -`、超时3600秒、间隔5秒；每次核对字节数不下降，失败保留 `.partial`。最终仅在大小和预期 SHA256 均通过后提升为 final，SHA任务使用 CPU重型锁。
 
-当前004是带时间戳的实际续传快照，不是完成证据；日志出现最终 `process_exit_code=0`、预期 SHA通过和文件提升后，才能更新 ready。没有源码/标签/分母改变，没有自动接受协议或扩大训练准入。
+004 保留当时带时间戳的续传快照。后续终态证据另存，不把历史 running 快照改写成当时已完成。没有源码/标签/分母改变，没有自动接受协议或扩大训练准入。
+
+## Perception、FunQA、STA 成品验证
+
+`reports/public-eval-archives-validation-002.py` 是固定范围证据驱动脚本，复用已有 `checked_zip_members` 与 `probe_decode`，不下载数据、不修改原归档。将该脚本、`scripts/public_eval_media.py`、当次 `configs/video-eval-assets.json` 快照复制到远端独立目录 `artifacts/public-eval-archives-validation-002/` 后实跑：
+
+```bash
+cd /root/autodl-tmp/lite-omnijev/artifacts/public-eval-archives-validation-002
+flock /tmp/omnijev-cpu-heavy.lock \
+  /root/autodl-tmp/envs/data/bin/python public-eval-archives-validation-002.py
+```
+
+逐包重算固定 SHA256、核对大小，先安全成员检查再流式验证全部 CRC。此处展开上限16 GiB，单 member256 MiB、最多10,000成员；不将全包展开到磁盘。任务引用只读取锁定 SHA 的 MVBench 公开 JSON，将其官方 source prefix 拼接原 `video` 路径精确匹配 ZIP member，不按 basename 模糊匹配，也不读取内部封存集。
+
+每项任务按原 row 顺序选首/中/末已存在引用，补充归档按大小排序最小/中位/最大的视频；去重后逐条提取到数值临时文件名，完整 FFmpeg 解码视频流，单线程，逐条删除。报告列全部引用的存在性、全 CRC 和有限代表样本解码；未选视频不声称全部解码，亦未核对所有时间窗、运行模型或产出分数。原时间窗与标签不变；教师14任务/2,786行清单和评测预处理仍是独立待决协议。
+
+实测终态见 `reports/video-eval-download-completion-005.json`：Perception 外部续传首次调用返回0，最终11,199,611,859 B，固定 SHA通过后提升到 final，脚本退出0且 partial不存在。该报告绑定原脚本/终态日志 SHA及 CPU002报告 SHA，不替换004历史快照。
+
+CPU002 在 Linux 0.5核/2 GiB限制下实跑361.516秒、退出0；三包全部重新计算固定 SHA、安全成员及全 CRC通过，无新增下载或本地大拷贝。只串行保留当前选定临时视频，解码后删除。
+
+| 归档 | 视频数 | 公开任务引用覆盖 | 完整解码代表视频 |
+|---|---:|---|---:|
+| Perception | 792 | Object Shuffle、Action Count、State Change、Character Order 各200/200 | 15 |
+| FunQA | 179 | Unexpected Action 200/200 | 6 |
+| STA | 200 | Action Localization 200/200 | 6 |
+
+本次共1,200/1,200条公开引用存在、27条代表完整解码通过；1,171个视频未全部解码。连同已验证的 STAR原包和12条官方补充，已核查的九项公开任务媒体存在性共1,800条；不能外推为全部20项或教师精确14项均已就绪。STA所有原时间窗未全量核对，STAR三条越界及MMAU长音频处理协议仍保留未决，不排除原始样本。

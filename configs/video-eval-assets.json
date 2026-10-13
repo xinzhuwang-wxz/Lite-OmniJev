@@ -268,7 +268,9 @@
         "sha256": "d6ef954652c2a1b48fb772d52c97da35dc7f8b54e5bdf4b43ba4f773ed726723",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/FunQA_test.zip",
         "staging": "approved_research_eval_only",
-        "download_status": "serial_queue_running_pid_9338"
+        "download_status": "completed_size_and_pinned_sha_verified",
+        "download_evidence": "reports/public-eval-archives-validation-002.json",
+        "cpu_media_validation": "reports/public-eval-archives-validation-002.json"
       },
       {
         "path": "video/Moments_in_Time_Raw.zip",
@@ -300,7 +302,9 @@
         "sha256": "98fc197a90c875fb24f34fe89cb91e2788e1e7ac2459bf860ed62d9f07104b34",
         "download_url": "https://huggingface.co/datasets/OpenGVLab/MVBench/resolve/230a2d4fac8900333c61754641c7a13e069ac9c6/video/perception.zip",
         "staging": "approved_research_eval_only",
-        "download_status": "serial_queue_running_pid_9338"
+        "download_status": "completed_size_and_pinned_sha_verified",
+        "download_evidence": "reports/video-eval-download-completion-005.json",
+        "cpu_media_validation": "reports/public-eval-archives-validation-002.json"
       },
       {
         "path": "video/scene_qa.zip",
@@ -327,7 +331,9 @@
         "source_repo": "jiyanggao/TALL",
         "source_revision": "3df6794af1482f5b3d48022bc05e5a4ecfae0e5d",
         "media_license_url": "https://prior.allenai.org/projects/data/charades/license.txt",
-        "download_status": "running_pid_10304_curl_10305"
+        "download_status": "completed_size_and_pinned_sha_verified",
+        "download_evidence": "reports/public-eval-archives-validation-002.json",
+        "cpu_media_validation": "reports/public-eval-archives-validation-002.json"
       },
       {
         "path": "video/star.zip",
