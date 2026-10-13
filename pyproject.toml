@@ -31,7 +31,7 @@ monitoring = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8.3,<9", "ruff>=0.11,<1", "mypy>=1.15,<2", "playwright>=1.51,<2"]
+dev = ["pytest>=9.0.3,<10", "ruff>=0.11,<1", "mypy>=1.15,<2", "playwright>=1.51,<2"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["data", "train", "eval", "serve", "scripts"]
