@@ -42,4 +42,21 @@ uv run mypy train/teacher_media.py tests/test_teacher_media.py
 
 `reports/teacher-audio-cpu.json` 记录命令、源码SHA、平台/FFmpeg、耗时和退出码。真实自有合成输入：0.1秒mono16kHz→1,600帧；32.25秒六通道48kHz→30秒mono16kHz、480,000帧。所有输出完整读取，源SHA不变，成功与失败路径的临时目录均清理。8项定向测试覆盖实际转换、exit0空/不可读输出、截断PCM/错误采样率、非零退出、超时和调用者异常；不使用真实题目或模型。
 
-原命令的覆盖回归也实测保留：macOS FFmpeg8.0.1拒绝覆盖时exit0且0B，Linux FFmpeg4.4.2拒绝覆盖时exit1且0B；两个平台仅对自有目标加 `-y` 的合成候选均exit0，输出可读1,600帧WAV。Linux结果是先前排队的原命令/候选小探针终态，**不是新项目适配器的Linux实跑或教师forward验收**。新适配器本次实际运行在macOS；未使用GPU、模型、隐藏真值或付费操作。
+原命令的覆盖回归也实测保留：macOS FFmpeg8.0.1拒绝覆盖时exit0且0B，Linux FFmpeg4.4.2拒绝覆盖时exit1且0B；两个平台仅对自有目标加 `-y` 的合成候选均exit0，输出可读1,600帧WAV。该旧Linux小探针与下面的新项目适配器验收分开记录，均不代表教师forward验收。未使用GPU、模型、隐藏真值或付费操作。
+
+## 新适配器的真实Linux验收
+
+将提交 `ec2fbdcc813552dfeb2d83d6f381cd5c21fcf6f1` 的 `train/teacher_media.py`、仅含包说明的 `train/__init__.py` 和全部 `tests/test_teacher_media.py` 复制到远端自有目录 `artifacts/teacher-audio-cpu-linux-001/`，没有覆盖项目其他文件、官方loader或环境。驱动源码、复制文件SHA、报告SHA和日志终态保存在报告的 `linux_project_adapter_validation`。
+
+实际调用：
+
+```bash
+cd /root/autodl-tmp/lite-omnijev/artifacts/teacher-audio-cpu-linux-001
+export PYTHONPATH="$PWD" OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+flock /tmp/omnijev-cpu-heavy.lock \
+  /root/autodl-tmp/lite-omnijev/.venv/bin/python linux_validate.py
+```
+
+Linux Python3.11.17、FFmpeg4.4.2、0.5核/2GiB限制，实跑5.91秒、驱动和外层脚本均exit0。调用实际项目context，将32.25秒六通道48kHz合成输入完整转换并读取为30秒mono16kHz PCM16、480,000帧/960,000 PCM字节；输入SHA与本机相同且前后不变。正常退出和真实调用者异常后，自有临时输出均清理，旁边无关文件未改。
+
+同一锁内调用全部8项公共行为测试，8 passed/0 skipped，2.30秒。使用已有Linux pytest8.4.2，无安装或升级；这不替代主项目锁定依赖验收。新适配器已分别在macOS与Linux实跑，Linux新证据不再只依赖旧 `-y` 探针；教师模型forward、处理器张量等价和精确评测协议仍保持pending。
