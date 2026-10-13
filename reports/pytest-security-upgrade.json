@@ -80,5 +80,22 @@
     "Real credentials or account-gated resources",
     "GPU or live remote environment upgrades",
     "Torch-backed optional tests in this independent dev environment"
-  ]
+  ],
+  "root_integration_verification": {
+    "commit": "746c534",
+    "pytest_version": "9.1.1",
+    "sync_command": "uv sync --frozen --inexact --group dev",
+    "tests": {
+      "passed": 273,
+      "skipped": 0,
+      "duration_seconds": 4.05,
+      "dedicated_media_runtime": true,
+      "existing_torch_environment_preserved": true
+    },
+    "ruff": "passed",
+    "format": "167 files already formatted",
+    "mypy": "44 source files passed",
+    "build": "wheel/sdist passed",
+    "gpu_or_remote_environment_modified": false
+  }
 }

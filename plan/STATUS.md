@@ -14,6 +14,7 @@
 - offline-prep:01 claimed：7模型70必需文件121,094,724,397B；68文件47,350,012,013B已校验，剩余两个大权重在传；不得关票。
 - offline-prep:02 claimed：全阶段来源原料与许可准备；下载和媒体验证继续，账号/许可/精确协议缺口不能标齐备。
 - offline-prep:03 claimed：运行时/依赖闭包；已有环境与源码归档不能替代可执行文件、完整依赖和CPU验证。
+- offline-prep:05 done：仅pytest现有开发依赖修复，锁9.1.1，主树273测试无skip通过；没有升级远端GPU环境。
 - offline-prep:04 pending：前三票及全部外部缺口解除前，开卡准备验收不通过。
 - s0:01 claimed：Valen安全转换428张量已通过；完整教师推理/复现未验收。
 - s0-data:01 done：CLINC train15250条语义保真、官方33token通过；clinc-admission-corrected-001.json。
@@ -47,7 +48,7 @@
 - whole_project_datasets：/tmp/lite-omnijev-project-datasets；阶段2剩余明确许可原料，≤10GB，复用已有图。
 - video_eval_sources：/tmp/lite-omnijev-video-eval；Perception续传、Charades缺12视频选择性恢复≤500MB；4801edd已合入f44588c。
 - decision_index_assets：/tmp/lite-omnijev-decision-index；e99910a已合入8d8f164、47914bd合入d2e7512；retry队列17457补非门禁网络失败来源，≤10GB，不读pickle、不绕过HLE。
-- mdc_transport_fix：MDC闭环已整合并独立复核，过期worktree已清理；同一executor转 /tmp/lite-omnijev-pytest-security 执行独立非阻断offline-prep:05，仅修现有开发pytest已证实漏洞，不升级远端GPU环境。
+- mdc_transport_fix：MDC闭环已整合并独立复核，过期worktree已清理；同一executor的独立非阻断offline-prep:05已交付合入746c534，主树273测试全部通过，不升级远端GPU环境。
 - teacher_head_conversion：Valen闭环已交付；新 /tmp/lite-omnijev-stage3-source-audit 负责NExTQA/CLEVRER/LLaVA/VGGSound/AudioCaps/GUI-Odyssey官方小原料/许可查明，≤50MB，不下载原视频或接受条款。
 - speech_assets已交付；所有切片主会话统一整合/关票。root独占主树、票据、STATUS；子代理不得写这些文件。
 
@@ -60,6 +61,6 @@
 1. 完成在途模型/数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。
 2. MDC原4项及DNS pin发现全部关闭，reports/mdc-download-security-closure.json；授权后安全接入，不对外声称凭据下载已实跑。
 3. 完成全项目offline-prep:04审计，未来LoRA/量化/校准产物仅列待生成；全齐备前不开GPU。
-- 最近完整批次271测试无skip、Ruff/format167文件、mypy44源文件、wheel/sdist通过（显式专用媒体runtime）；随后MDC pin变更16定向测试/Ruff/mypy通过，独立安全32测试通过/1 torch测试按范围排除。
+- 最近完整批次pytest9.1.1下273测试无skip、Ruff/format167文件、mypy44源文件、wheel/sdist通过（显式专用媒体runtime）；MDC独立安全32测试通过/1 torch测试按范围排除。
 - 不push、不建远端issue/PR、不轮询gh；只本地提交/SSH同步，保留缓存与约561MiB P0备份。
 - 循环见plan/LOOP.md；native goal当前工具返回blocked（旧状态），用户已重新要求继续无卡准备，仍按原终局推进；工具不提供agent恢复接口，不能虚称active/complete。
