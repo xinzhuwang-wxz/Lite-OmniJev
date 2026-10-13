@@ -5,8 +5,8 @@
   "quarantine_root": "artifacts/data/quarantine/gui-odyssey-source-audit",
   "report": {
     "path": "reports/gui-odyssey-metadata-verification.json",
-    "bytes": 80193,
-    "sha256": "f41ead22b746a05f0a7e2a5ee01d3e79a1fa779bcec3bbd423110f76d23638a8"
+    "bytes": 80896,
+    "sha256": "e6ea0549f4f36eb0a6cb265f1bc562095520acc6346850f3ada0271e080e732c"
   },
   "policy": {
     "gpu_used": false,
@@ -14,7 +14,7 @@
     "training_admission": "not_granted_by_this_file",
     "release_admission": "not_granted_by_this_file",
     "account_terms_policy": "No account login, gated terms, or form acceptance was used. The pinned HF API metadata reports gated=false and private=false.",
-    "media_download_status": "selective ZIP64 range recovery is feasible; app_split train media extraction is queued under the CPU lock for 1,679 whole train episodes within the 20GB actual PNG-byte cap"
+    "media_download_status": "selective extraction started and produced a validated partial checkpoint; full 19.5GB train-media candidate remains in progress/slow under shared CPU lock and network constraints"
   },
   "source": {
     "id": "gui-odyssey",
@@ -222,6 +222,17 @@
       "remote_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch.log",
       "queued_pid": 23798,
       "status": "queued_behind_cpu_lock_at_update_time"
+    },
+    "partial_media_checkpoint": {
+      "path": "reports/gui-odyssey-media-partial-checkpoint.json",
+      "bytes": 168055047,
+      "sha256": "1fd1b1a2282619b971083d774b8e0c865043e632aad1c06596056bf129203252",
+      "status": "partial_media_checkpoint",
+      "file_count": 207,
+      "bad_png_count": 0,
+      "all_files_manifest_sha256": "a6bbb12e5b3158eb1c51e257ef1721ca0887f792addd35144986ff783d7f9b21",
+      "remote_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+      "note": "Snapshot while optimized extractor continued running; proves selective range extraction plus PNG header validation on actual recovered media."
     }
   }
 }

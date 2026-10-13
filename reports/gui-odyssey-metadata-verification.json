@@ -2763,5 +2763,16 @@
     "remote_log": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch.log",
     "queued_pid": 23798,
     "status": "queued_behind_cpu_lock_at_update_time"
+  },
+  "partial_media_checkpoint": {
+    "path": "reports/gui-odyssey-media-partial-checkpoint.json",
+    "bytes": 168055047,
+    "sha256": "1fd1b1a2282619b971083d774b8e0c865043e632aad1c06596056bf129203252",
+    "status": "partial_media_checkpoint",
+    "file_count": 207,
+    "bad_png_count": 0,
+    "all_files_manifest_sha256": "a6bbb12e5b3158eb1c51e257ef1721ca0887f792addd35144986ff783d7f9b21",
+    "remote_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+    "note": "Snapshot while optimized extractor continued running; proves selective range extraction plus PNG header validation on actual recovered media."
   }
 }

@@ -97,3 +97,9 @@ Plan artifacts:
 - `artifacts/data/quarantine/gui-odyssey-source-audit/app-split-train-media-plan-under-19_5gb.json`, 490,161 bytes, SHA-256 `661a56214ee442ae0c694b21c41b374fc02dad0ea1a962bb8d9638b3d393c0c4`
 
 The selective media extraction is queued on the remote persistent disk behind `/tmp/omnijev-cpu-heavy.lock` to avoid competing with other CPU-heavy jobs. Queued command output is `artifacts/data/quarantine/gui-odyssey-source-audit/logs/gui-media-fetch.log`, and the expected completion report is `/root/autodl-tmp/lite-omnijev/reports/gui-odyssey-media-fetch-report.json`. Until that report exists, the train media candidate is planned and queued, not yet physically complete.
+
+## Actual media checkpoint
+
+Selective media extraction was started under `/tmp/omnijev-cpu-heavy.lock` using the range extractor. The first stable checkpoint is copied to [`reports/gui-odyssey-media-partial-checkpoint.json`](../../reports/gui-odyssey-media-partial-checkpoint.json): 207 PNG screenshots recovered, 168,055,047 bytes, 0 bad PNG headers, manifest SHA-256 `a6bbb12e5b3158eb1c51e257ef1721ca0887f792addd35144986ff783d7f9b21`.
+
+This proves actual member recovery, decompression, hashing, and PNG header validation. The full 1,679-episode train-media candidate remains possible under the 20 GB media cap, but slow at current shared-lock/network throughput. It does not require a 92.64 GB full archive download unless root chooses to stage all GUI screenshots for a broader disk plan.

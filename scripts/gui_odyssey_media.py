@@ -15,6 +15,7 @@ import pathlib
 import re
 import struct
 import time
+import urllib.error
 import urllib.request
 import zlib
 from dataclasses import asdict, dataclass
@@ -57,30 +58,55 @@ def resolve_url(repo_id: str, revision: str, path: str) -> str:
 
 
 class HTTPRangeReader:
-    def __init__(self, url: str, timeout: int = 180):
+    def __init__(self, url: str, timeout: int = 180, resolve_once: bool = False):
         self.url = url
         self.timeout = timeout
+        if resolve_once:
+            self.url = self._resolve(url)
+
+    def _resolve(self, url: str) -> str:
+        request = urllib.request.Request(
+            url, method="HEAD", headers={"User-Agent": "lite-omnijev-gui-odyssey-range"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                return response.geturl()
+        except Exception:
+            return url
 
     def read_range(self, start: int, end_inclusive: int) -> bytes:
         if start < 0 or end_inclusive < start:
             raise ValueError(f"invalid range {start}-{end_inclusive}")
-        request = urllib.request.Request(
-            self.url,
-            headers={
-                "Range": f"bytes={start}-{end_inclusive}",
-                "User-Agent": "lite-omnijev-gui-odyssey-range",
-            },
+        expected = end_inclusive - start + 1
+        last_error: BaseException | None = None
+        for attempt in range(1, 6):
+            request = urllib.request.Request(
+                self.url,
+                headers={
+                    "Range": f"bytes={start}-{end_inclusive}",
+                    "User-Agent": "lite-omnijev-gui-odyssey-range",
+                },
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                    data = response.read()
+                    if response.status != 206:
+                        raise RuntimeError(
+                            f"range request returned HTTP {response.status} for {self.url}"
+                        )
+                    if len(data) != expected:
+                        raise RuntimeError(
+                            f"range request returned {len(data)} bytes, expected {expected} for {self.url}"
+                        )
+                    return data
+            except (urllib.error.URLError, TimeoutError, RuntimeError) as exc:
+                last_error = exc
+                if attempt == 5:
+                    break
+                time.sleep(min(30, 2 ** attempt))
+        raise RuntimeError(
+            f"failed range request {start}-{end_inclusive} for {self.url}: {last_error}"
         )
-        with urllib.request.urlopen(request, timeout=self.timeout) as response:
-            data = response.read()
-            if response.status != 206:
-                raise RuntimeError(f"range request returned HTTP {response.status} for {self.url}")
-            expected = end_inclusive - start + 1
-            if len(data) != expected:
-                raise RuntimeError(
-                    f"range request returned {len(data)} bytes, expected {expected} for {self.url}"
-                )
-            return data
 
 
 def _read_u16(data: bytes, offset: int) -> int:
@@ -304,9 +330,24 @@ def local_data_offset(readers: list[HTTPRangeReader], entry: ZipEntry) -> int:
     return entry.local_header_offset + 30 + name_len + extra_len
 
 
+def read_entry_compressed(readers: list[HTTPRangeReader], entry: ZipEntry) -> bytes:
+    name_len = len(entry.name.encode("utf-8"))
+    probe_len = 30 + name_len + 256 + entry.compressed_size
+    blob = read_split_bytes(readers, entry.disk_start, entry.local_header_offset, probe_len)
+    if blob[:4] != b"PK\x03\x04":
+        raise RuntimeError(f"bad local header signature for {entry.name}")
+    local_name_len = _read_u16(blob, 26)
+    local_extra_len = _read_u16(blob, 28)
+    data_start = 30 + local_name_len + local_extra_len
+    data_end = data_start + entry.compressed_size
+    if data_end <= len(blob):
+        return blob[data_start:data_end]
+    data_offset = entry.local_header_offset + data_start
+    return read_split_bytes(readers, entry.disk_start, data_offset, entry.compressed_size)
+
+
 def extract_entry(readers: list[HTTPRangeReader], entry: ZipEntry, out_path: pathlib.Path) -> dict:
-    data_offset = local_data_offset(readers, entry)
-    compressed = read_split_bytes(readers, entry.disk_start, data_offset, entry.compressed_size)
+    compressed = read_entry_compressed(readers, entry)
     if entry.method == 8:
         payload = zlib.decompress(compressed, -15)
     elif entry.method == 0:
@@ -395,30 +436,36 @@ def command_fetch(args: argparse.Namespace) -> None:
     by_episode = entries_by_episode(entries)
     plan = load_json(pathlib.Path(args.plan))
     selected_ids = [item["episode_id"] for item in plan["selected_episodes"]]
-    readers = [HTTPRangeReader(resolve_url(args.repo_id, args.revision, name)) for name in PART_NAMES]
+    readers = [HTTPRangeReader(resolve_url(args.repo_id, args.revision, name), resolve_once=True) for name in PART_NAMES]
     out_root = pathlib.Path(args.output_root)
     started = time.time()
-    results = []
+    tasks = []
     for episode_id in selected_ids:
         for entry in by_episode[episode_id]:
             step = SCREENSHOT_RE.match(entry.name).group("step")  # type: ignore[union-attr]
             out = out_root / "screenshots" / f"{episode_id}_{step}.png"
-            if out.exists() and not args.force:
-                payload = out.read_bytes()
-                results.append(
-                    {
-                        "name": entry.name,
-                        "path": str(out),
-                        "compressed_bytes": entry.compressed_size,
-                        "bytes": len(payload),
-                        "crc32": f"{entry.crc32:08x}",
-                        "sha256": hashlib.sha256(payload).hexdigest(),
-                        "reused": True,
-                    }
-                )
-                continue
-            row = extract_entry(readers, entry, out)
-            row["reused"] = False
+            tasks.append((entry, out))
+
+    def one(task):
+        entry, out = task
+        if out.exists() and not args.force:
+            payload = out.read_bytes()
+            return {
+                "name": entry.name,
+                "path": str(out),
+                "compressed_bytes": entry.compressed_size,
+                "bytes": len(payload),
+                "crc32": f"{entry.crc32:08x}",
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "reused": True,
+            }
+        row = extract_entry(readers, entry, out)
+        row["reused"] = False
+        return row
+
+    results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as pool:
+        for row in pool.map(one, tasks):
             results.append(row)
             if len(results) % args.progress_every == 0:
                 print(json.dumps({"phase": "fetch", "done": len(results), "elapsed_sec": round(time.time() - started, 1)}), flush=True)
@@ -467,6 +514,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output-root", required=True)
     p.add_argument("--report", required=True)
     p.add_argument("--progress-every", type=int, default=250)
+    p.add_argument("--max-workers", type=int, default=2)
     p.add_argument("--force", action="store_true")
     p.set_defaults(func=command_fetch)
     return parser
