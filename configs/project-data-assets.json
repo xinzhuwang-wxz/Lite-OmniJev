@@ -16,7 +16,10 @@
   "status_definitions": {
     "downloadable_verified": "Official source, immutable revision or fixed upstream version, license is clear enough for offline mirroring; still requires per-file hash verification after download.",
     "downloadable_with_root_coordination": "Same as downloadable_verified, but one or more files exceed 100 MB or total payload is large.",
-    "license_blocked": "Terms, upstream component license, or commercial/training rights are unclear or restricted.",
+    "physical_staging_ready_with_obligations": "The bytes may be mirrored for source audit after root coordination and attribution/notice tracking; this does not admit them to training or release.",
+    "benchmark_eval_staging_pending_original_terms": "Benchmark metadata is available, but original publisher terms must be checked before evaluation media is mirrored or used for score claims.",
+    "training_release_decision_pending": "Physical staging may be possible, but model-training, model-release, data-card, attribution, share-alike, or copyleft implications require a later project decision.",
+    "license_blocked": "Terms, upstream component license, or commercial/training rights are unclear or restricted enough that even physical staging is not yet recommended.",
     "account_or_form_blocked": "Download requires account, form, external acceptance, or maintainer-mediated access.",
     "provenance_blocked": "Aggregate source or label lineage is not enough to prove original labels/media can enter training.",
     "externally_controlled": "Must be prepared or read by an isolated gate or external owner; development agents must not read contents.",
@@ -31,6 +34,43 @@
       "status": "license_blocked"
     }
   },
+  "existing_human_annotation_candidates": [
+    {
+      "source_asset_id": "clotho-aqa",
+      "candidate_use": "possible internal-gate or calibration evidence for audio Noul-style questions if raw independent annotator records can be preserved",
+      "known_metadata": "Official split CSVs expose answer and confidence; project context notes Clotho-AQA has three annotators for yes/no questions.",
+      "unproven_requirements": [
+        "raw distinct annotator identities or stable annotator slots",
+        "per-annotator labels rather than only aggregated answer/confidence",
+        "license-reusable audio subset after excluding CC-BY-NC/Sampling+/blank/missing rows",
+        "sample-family isolation from training/dev/calibration"
+      ],
+      "current_status": "future_candidate_metadata_only_not_holdout_admitted"
+    },
+    {
+      "source_asset_id": "a-okvqa",
+      "candidate_use": "possible visual QA human-evidence source if multiple raw answers and image rights are reusable",
+      "known_metadata": "A-OKVQA is crowdsourced and may include multiple direct answers/rationales in official records.",
+      "unproven_requirements": [
+        "raw distinct answer records or annotator slots",
+        "license-reusable COCO/image terms",
+        "identity/independence evidence sufficient for a gate report",
+        "no overlap with training families"
+      ],
+      "current_status": "future_candidate_metadata_only_not_holdout_admitted"
+    },
+    {
+      "source_asset_id": "scienceqa-image",
+      "candidate_use": "possible visual/science QA human-evidence source if raw independent labels are available and CC-BY-SA obligations are acceptable",
+      "known_metadata": "ScienceQA provides original multiple-choice labels and explanations; individual annotator identity/independence is not established here.",
+      "unproven_requirements": [
+        "raw distinct human labels or verifiable annotation process",
+        "CC-BY-SA training/release decision",
+        "sample-family isolation from training/dev/calibration"
+      ],
+      "current_status": "future_candidate_metadata_only_not_holdout_admitted"
+    }
+  ],
   "assets": [
     {
       "asset_id": "onejev-data-aggregate",
@@ -97,13 +137,13 @@
         ],
         "metadata_command": "python - <<'PY'\nfrom huggingface_hub import HfApi\nprint(HfApi().dataset_info('HIT-TMG/JevEmbed-Data', revision='fc7f44305315082d7d554d572024861e438aeffa', files_metadata=True))\nPY"
       },
-      "label_origin": "Original labels plus aggregate conversions; proposed design also mentioned OneJev-27B soft labels, which are forbidden until replaced by allowed teachers or excluded.",
+      "label_origin": "Original labels plus aggregate conversions; proposed design also mentioned OneJev-27B soft labels. OneJev-4B/27B is not the prohibited JEV-27B/JEV-27B-VL/API by name alone; the current blocker is unknown row-level label lineage and any source that used forbidden Jev API or prohibited JEV-family labels.",
       "media_availability": "text/json only; no raw media dependency.",
       "public_sampling_plan": "Stage 1 samples 2k then 30k text questions; at least 60% hard labels required; exclude NC/provenance-unclear rows before sampling.",
       "admission_status": "license_blocked",
       "next_commands": [
         "Download only README, MANIFEST.json, and processing report first; do not mirror train shards until row-level source whitelist exists.",
-        "Build a source whitelist from MANIFEST/source metadata; admit only Apache/CC0/CC-BY rows with non-Jev label origin."
+        "Build a source whitelist from MANIFEST/source metadata; admit only compatible-license rows whose label origin is original/programmatic, allowed OneJev, or otherwise proven not to be forbidden Jev API/JEV-27B/JEV-27B-VL derived."
       ]
     },
     {
@@ -144,25 +184,42 @@
         "revision": "c6128642d53ed5b9799749d82fd1ae2b2a201f0b",
         "url": "https://huggingface.co/datasets/Valen-Team/Valen-Training-General-100k"
       },
-      "license": {"declared": "apache-2.0"},
+      "license": {
+        "declared": "apache-2.0 on the HF repository",
+        "blocking_note": "The mirror card is not enough to wash every upstream source. Each row still needs source/provenance review via data_manifest and per-file metadata before training/release admission."
+      },
       "file_metadata": {
         "status": "official_api_metadata_verified_no_content_read",
         "file_count": 20,
         "total_bytes": 6359697280,
         "splits": {"train_records": 100000, "eval_general_records": 5000, "eval_game_repo": "Valen-Team/Valen-Eval-Game"},
         "major_files": [
-          {"path": "assets.zip", "bytes": 6010410541},
-          {"path": "chartqa.jsonl", "bytes": 14908660},
-          {"path": "clevr.jsonl", "bytes": 3566318}
-        ]
+          {"path": "assets.zip", "bytes": 6010410541, "sha256": "fbe265b5239edef98542624c6e836f35d7c4765dfa9075b21b7452cf89a7b9b1"},
+          {"path": "train.jsonl", "bytes": 171731849, "sha256": "5762c39f4440dcaa2443cc07773bb26e36ac499a68e87eeb35e609a91032788b"},
+          {"path": "data_manifest.json", "bytes": 9111541, "git_blob": "a0d83987948be5545cd24c3958b74b39244a4754"},
+          {"path": "chartqa.jsonl", "bytes": 14908660, "sha256": "8dd1cf44684455a2ccbd57fac3a95dd88df9f21c5657f250312d66e843df1131"},
+          {"path": "docvqa.jsonl", "bytes": 12538537, "sha256": "ae1d31a73fe3e3a54b1899535fc9a50947c102a5f1573aa7333bca15cbb1e931"},
+          {"path": "gameqa.jsonl", "bytes": 54077364, "sha256": "2f254d667ae0a139c8cffcc0cd0e8507be4533157a2b09a4978b8b781900838e"},
+          {"path": "programmatic.jsonl", "bytes": 2790826, "sha256": "2f1016beb7889640309469d38dba56e7fc13da5534ae32783586f328bb1094b2"},
+          {"path": "clevr.jsonl", "bytes": 3566318, "sha256": "4e0a6c05c7ee77fa1898baa778f4cd3877e030366ae75b3a8f5cac74a7e9a483"}
+        ],
+        "card_claims_requiring_audit": {
+          "records": 100000,
+          "referenced_images": 50203,
+          "unique_image_sha256_hashes": 48445,
+          "domains": {"vqa": 33334, "ui": 28572, "game": 19047, "document": 19047},
+          "question_types": {"noul": 8109, "choice": 91409, "score": 482}
+        }
       },
       "label_origin": "Original one-hot decision labels in Valen format.",
       "media_availability": "Images packaged in assets.zip; file exceeds 100 MB.",
       "public_sampling_plan": "Stage 1-3 can sample text/visual/game/document rows by domain, with sample-family split by image/group hash.",
+      "physical_staging_status": "metadata_ready_large_payload_root_coordination_required",
+      "training_release_status": "pending_upstream_source_and_label_provenance_audit",
       "admission_status": "downloadable_with_root_coordination",
       "next_commands": [
-        "Root-coordinated mirror with huggingface-cli download Valen-Team/Valen-Training-General-100k --revision c6128642d53ed5b9799749d82fd1ae2b2a201f0b --local-dir artifacts/raw/valen-general-100k",
-        "After download, hash assets.zip and all jsonl files; verify data_manifest image hashes before admission."
+        "Root-coordinated source-audit mirror with huggingface-cli download Valen-Team/Valen-Training-General-100k --revision c6128642d53ed5b9799749d82fd1ae2b2a201f0b --local-dir artifacts/raw/valen-general-100k",
+        "After download, hash assets.zip/jsonl/data_manifest, verify image hashes, then audit each JSONL row's source/provenance before training admission."
       ]
     },
     {
@@ -227,8 +284,10 @@
       "label_origin": "Dataset multiple-choice science QA labels; use only image subset.",
       "media_availability": "HF mirror includes image-capable parquet; license obligations require review.",
       "public_sampling_plan": "Sample only image rows for the stage 2 10k visual tranche; keep train/dev/calibration by original problem id.",
-      "admission_status": "license_blocked",
-      "next_commands": ["Legal review CC-BY-SA-4.0 obligations before commercial training pool admission."]
+      "physical_staging_status": "metadata_ready_large_payload_root_coordination_required_with_attribution_sharealike_tracking",
+      "training_release_status": "pending_CC-BY-SA-4.0_attribution_sharealike_decision",
+      "admission_status": "training_release_decision_pending",
+      "next_commands": ["Physical staging can be planned for source audit after root coordination; before training/release, record attribution and resolve CC-BY-SA-4.0 obligations for derived data/model artifacts."]
     },
     {
       "asset_id": "chartqa",
@@ -257,8 +316,10 @@
       "label_origin": "Original open answers; project requires teacher-generated distractors while preserving original answer as truth.",
       "media_availability": "Charts available in parquet mirror.",
       "public_sampling_plan": "Part of stage 2 10k chart/document tranche after conversion to Choice with recorded distractor generator.",
-      "admission_status": "license_blocked",
-      "next_commands": ["Review GPL-3.0 dataset obligations and whether derived model/data artifacts are compatible with release goals."]
+      "physical_staging_status": "metadata_ready_large_payload_root_coordination_required_with_GPL_notice_tracking",
+      "training_release_status": "pending_GPL-3.0_dataset_obligation_decision",
+      "admission_status": "training_release_decision_pending",
+      "next_commands": ["Physical staging can be planned for source audit after root coordination; before training/release, resolve GPL-3.0 obligations and whether derived model/data artifacts are compatible with release goals."]
     },
     {
       "asset_id": "docvqa",
@@ -455,16 +516,20 @@
         "total_bytes": 65593165514,
         "splits": {"mc_question_val": 1, "mc_question_test": 1, "test_media_archives": 2},
         "major_files": [
-          {"path": "test_videos.zip", "bytes": 44897811509},
-          {"path": "test_audios.zip", "bytes": 20693936963},
-          {"path": "test_annotations.zip", "bytes": 939011}
+          {"path": "test_videos.zip", "bytes": 44897811509, "sha256": "2029eb3fdfb73372a9cad488eec5a31dc71fe52c6d14cacf1d3949b5ba41ae21"},
+          {"path": "test_audios.zip", "bytes": 20693936963, "sha256": "9fde8f33e17ede23e35afa6c9bceb955b72b56d58a2348b55fcf938d2b26622a"},
+          {"path": "test_annotations.zip", "bytes": 939011, "sha256": "e657a73c8a1b9af51782f88273da51b7bb2ad45ce340a4d6a18f5a3cd88302e8"},
+          {"path": "mc_question/test-00000-of-00001.parquet", "bytes": 161062, "sha256": "795a92b8e437b8ba8c27799b5c047ddf0526f9f25b3b7279644baa28fe53361d"},
+          {"path": "mc_question_val/validation-00000-of-00001.parquet", "bytes": 313591, "sha256": "645050834e6f1bb84f2e3e46887fd926809d664b11cf301388b3829abf28cab2"}
         ]
       },
       "label_origin": "Official multiple-choice evaluation labels where public.",
       "media_availability": "Video/audio archives available, each over 100 MB.",
       "public_sampling_plan": "Use as eval or stage 3 source only where labels are public; do not read hidden/blind answers.",
-      "admission_status": "downloadable_with_root_coordination",
-      "next_commands": ["Root-coordinate media archive mirror and hash verification; keep hidden/blind labels out of developer access."]
+      "physical_staging_status": "benchmark_metadata_ready_large_payload_root_coordination_required",
+      "training_release_status": "not_training_source_until_original_DeepMind_terms_and_public_label_scope_are_cross_checked",
+      "admission_status": "benchmark_eval_staging_pending_original_terms",
+      "next_commands": ["Cross-check original DeepMind/Perception Test terms and public-label scope before mirroring media for eval; keep hidden/blind labels out of developer access."]
     },
     {
       "asset_id": "llava-video-178k",
@@ -507,15 +572,41 @@
       },
       "license": {"declared": "MIT for question/answer CSV files; audio files carry per-file Freesound licenses, mostly Creative Commons with attribution"},
       "file_metadata": {
-        "status": "official_record_verified_no_payload_metadata_captured",
-        "splits": ["clotho_aqa_train.csv", "clotho_aqa_val.csv", "clotho_aqa_test.csv"],
-        "audio_files": 1991
+        "status": "official_zenodo_metadata_and_small_manifest_files_verified; audio archive not downloaded",
+        "zenodo_record_id": 6473207,
+        "concept_doi": "10.5281/zenodo.6473206",
+        "doi": "10.5281/zenodo.6473207",
+        "files": [
+          {"path": "LICENSE.txt", "bytes": 1467, "md5": "41460130242fbd61fa2615a0e6622d3a", "sha256_verified_from_small_download": "3194248833935838e6e6365f4e25d0132c1f2db427f58b0cd9bd707089fb2eb4"},
+          {"path": "clotho_aqa_metadata.csv", "bytes": 427441, "md5": "e555d8a5a4b275ca7c437a33c0739d65", "sha256_verified_from_small_download": "7505ba93c291d344b31e5c33e872b95d84255852cff93278bbdf549402acc1f5"},
+          {"path": "clotho_aqa_train.csv", "bytes": 1453735, "md5": "508513b91001ab17e641eaaa162ca045", "sha256_verified_from_small_download": "237c692e21e015a3e9b4391edd716b1387d7eb2d068d7ecdb5a6d6ead7e7a992"},
+          {"path": "clotho_aqa_val.csv", "bytes": 428232, "md5": "41b8f6d906a57d7a5a4ee02bbcdefcc9", "sha256_verified_from_small_download": "c69b32095d70740cee49d66dc33690d0267cf7bc821d71d834725f9d24c0a491"},
+          {"path": "clotho_aqa_test.csv", "bytes": 586749, "md5": "6fd0e75dffba561805fa37c668ce99a4", "sha256_verified_from_small_download": "6b72ea4722e2a4dde53465f9a0c165c901b16a2fb4ef16356d37891f71496737"},
+          {"path": "audio_files.zip", "bytes": 3140677494, "md5": "48c2c46ccd71dc06121228e2ed68d6b9", "downloaded": false}
+        ],
+        "audio_license_manifest_counts": {
+          "audio_files_total": 1991,
+          "CC0_1_0_audio_files": 864,
+          "CC_BY_3_0_audio_files": 795,
+          "CC_BY_NC_3_0_audio_files": 263,
+          "SamplingPlus_1_0_audio_files": 63,
+          "blank_license_audio_files": 6,
+          "CC0_or_CC_BY_audio_files_stageable_for_source_audit": 1659
+        },
+        "qa_rows_by_audio_license": {
+          "train": {"CC0_1_0": 9666, "CC_BY_3_0": 7848, "CC_BY_NC_3_0": 2862, "SamplingPlus_1_0": 684, "blank": 54, "metadata_missing": 18},
+          "validation": {"CC0_1_0": 2538, "CC_BY_3_0": 2646, "CC_BY_NC_3_0": 828, "SamplingPlus_1_0": 180},
+          "test": {"CC0_1_0": 3348, "CC_BY_3_0": 3798, "CC_BY_NC_3_0": 1044, "SamplingPlus_1_0": 270, "blank": 54},
+          "CC0_or_CC_BY_total_QA_rows_stageable_for_source_audit": 29844
+        }
       },
       "label_origin": "Crowdsourced audio question answers and confidence scores; yes/no can map to Noul.",
       "media_availability": "audio_files.zip plus metadata CSV with original Freesound URL/license per file.",
       "public_sampling_plan": "Part of stage 3 audio tranche; split by original audio file and preserve Freesound license metadata.",
-      "admission_status": "license_blocked",
-      "next_commands": ["Capture Zenodo file bytes/checksums; filter audio by compatible per-file licenses before training admission."]
+      "physical_staging_status": "metadata_verified; CC0_or_CC_BY_subset_stageable_for_source_audit; audio_archive_large_payload_root_coordination_required",
+      "training_release_status": "pending_attribution_packaging_and_exclusion_of_NC_SamplingPlus_blank_or_metadata_missing_files",
+      "admission_status": "training_release_decision_pending",
+      "next_commands": ["Root-coordinate audio_files.zip only if the CC0/CC-BY subset extraction plan is ready; after download, verify MD5 and extract only the 1,659 CC0/CC-BY audio files for source audit.", "Keep CC-BY-NC, Sampling+, blank-license, and metadata-missing rows out of main training/release admission unless a later project decision explicitly creates a research-only lane."]
     },
     {
       "asset_id": "audiocaps",
