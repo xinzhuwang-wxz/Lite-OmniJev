@@ -77,3 +77,6 @@
 - LiteRT host官方可执行证明已整合。reports/offline-dependency-gaps.json揭示root/serve/media离线wheelhouse尚缺；runtime代理继续固定全阶段必需工具版本/许可及增量下载，非仅现有imports。future LoRA/量化模型是待生成产物，不混为外部下载。
 - 教师原loader音频输出预创建空临时文件但FFmpeg未加-y，Mac最小CPU复现可exit0却0B输出；video代理Linux复核并冻结官方16帧/30秒mono16kHz与MVBench协议证据，未修改官方loader/门槛，精确14任务2786ID仍未证实。
 - 浏览器授权：已亲眼确认RRC账号激活成功及已登录User页面；用户已完成DocVQA手续。进入ch17下载页后Chrome正文/控制异常（扩展连接失败、native间歇noWindowsAvailable），不能把账号成功冒称数据已下载。未接受Android SDK/NDK协议、未提交AudioCaps申请（已省略）。继续无需浏览器的下载/CPU验收。
+
+- 自动接续已创建：heartbeat ID lite-omnijev，ACTIVE，每15分钟，限本会话无卡准备；无实质变化保持安静，仅可行动失败/需用户/全就绪通知；全就绪后通知开卡并暂停，不自行开卡。交接 plan/handoff-2026-10-14-whole-project-offline.md。
+- GUI锁拆分/全仓lint/type修复已整合b0a2a6d，最新Ruff/format184文件、mypy47源文件通过；289测试通过。新增offline-prep:06教师音频适配票已认领video代理，/tmp/lite-omnijev-teacher-audio-cpu，待交付/定向验证。
