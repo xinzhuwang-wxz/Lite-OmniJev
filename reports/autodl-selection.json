@@ -1,0 +1,32 @@
+{
+  "time": "2026-10-13T19:45:25.877548+08:00",
+  "source": "https://www.autodl.com/create",
+  "status": "selected_in_browser_not_submitted_or_paid",
+  "region": "北京A区",
+  "host_name": "700机",
+  "host_id": "bce24a9cd7",
+  "billing": "按量计费",
+  "gpu": "H20-NVLink",
+  "gpu_count": 1,
+  "vram_gb": 96,
+  "cpu_cores": 16,
+  "cpu_model": "AMD EPYC 9K84",
+  "ram_gb": 150,
+  "system_disk_gb": 30,
+  "data_disk_gb": 500,
+  "free_data_disk_gb": 50,
+  "paid_data_disk_gb": 450,
+  "driver": "580.82.07",
+  "host_cuda_display": "13.0",
+  "image": "PyTorch 2.12.1 / Python 3.12 (Ubuntu22.04) / CUDA13.0",
+  "gpu_hour_cny_at_observation": 10.5,
+  "paid_disk_day_cny_at_observation": 3.15,
+  "no_gpu_hour_cny_official_docs": 0.1,
+  "notes": [
+    "Project Python3.11 environment installed separately; image packages not reused blindly.",
+    "H20 throughput not measured; cannot substitute H100-hours directly.",
+    "Observed create control is 创建并开机; submitting starts regular GPU billing.",
+    "User owns payment, instance creation, GPU on/off. No rental/payment submitted.",
+    "Inventory not reserved and may change before user submits."
+  ]
+}
