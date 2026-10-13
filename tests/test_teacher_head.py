@@ -15,6 +15,8 @@ from scripts.teacher_head import main
 from train.checkpoint import file_sha256
 from train.teacher_head import (
     PINNED_SOURCE_REVISION,
+    IsolationError,
+    _copy_regular_nofollow,
     convert_head,
     load_expected_spec,
 )
@@ -186,6 +188,22 @@ def test_cli_isolate_requires_preapproved_spec(tmp_path):
     assert payload["status"] == "blocked"
     assert payload["blocker"] == "isolation_unavailable"
     assert not output.exists()
+
+
+def test_parent_copy_refuses_child_symlink_to_host_secret(tmp_path):
+    if not hasattr(os, "symlink"):
+        pytest.skip("symlink unavailable")
+    host_secret = tmp_path / "host-secret"
+    host_secret.write_text("private-key-material")
+    child_output = tmp_path / "jail-output.safetensors"
+    child_output.symlink_to(host_secret)
+    destination = tmp_path / "admitted.safetensors"
+    destination.write_text("previous-good-output")
+
+    with pytest.raises(IsolationError, match="regular file"):
+        _copy_regular_nofollow(child_output, destination, max_bytes=1024)
+
+    assert destination.read_text() == "previous-good-output"
 
 
 def test_cli_direct_conversion_report_marks_nonisolated_mode(tmp_path):

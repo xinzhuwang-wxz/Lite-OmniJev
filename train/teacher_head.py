@@ -11,6 +11,7 @@ import os
 import platform
 import pwd
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -25,6 +26,7 @@ SCHEMA_VERSION = 1
 ALLOWED_SOURCE_REPO = "akhilaaa3/Jev-Omni"
 PINNED_SOURCE_REVISION = "5addda86ddee081a68fb067477ea100c221b8917"
 FORBIDDEN_SOURCE_NAMES = {"JEV-27B", "JEV-27B-VL"}
+SAFETENSORS_HEADER_RESERVE_BYTES = 64 * 1024
 
 
 def tensor_bytes_sha256(tensor: Any) -> str:
@@ -78,6 +80,31 @@ def load_expected_spec(path: Path | None) -> dict[str, dict[str, Any]] | None:
             raise ValueError(f"invalid expected tensor dtype: {key}")
         expected[key] = {"shape": shape, "dtype": dtype}
     return expected
+
+
+def expected_tensor_payload_bytes(expected: dict[str, dict[str, Any]]) -> int:
+    dtype_sizes = {
+        "torch.float64": 8,
+        "torch.float32": 4,
+        "torch.float16": 2,
+        "torch.bfloat16": 2,
+        "torch.int64": 8,
+        "torch.int32": 4,
+        "torch.int16": 2,
+        "torch.int8": 1,
+        "torch.uint8": 1,
+        "torch.bool": 1,
+    }
+    total = 0
+    for key, item in expected.items():
+        dtype = str(item["dtype"])
+        if dtype not in dtype_sizes:
+            raise ValueError(f"unsupported expected tensor dtype: {key}")
+        numel = 1
+        for dim in item["shape"]:
+            numel *= int(dim)
+        total += numel * dtype_sizes[dtype]
+    return total
 
 
 def _extract_tensor_mapping(value: Any) -> dict[str, Any]:
@@ -334,6 +361,43 @@ def _assert_socket_denied() -> bool:
     raise IsolationError("socket syscall was not denied")
 
 
+def _copy_regular_nofollow(source: Path, destination: Path, *, max_bytes: int) -> None:
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+    try:
+        fd = os.open(source, flags)
+    except OSError as exc:
+        raise IsolationError("isolated conversion output is not a regular file") from exc
+    try:
+        status = os.fstat(fd)
+        if not stat.S_ISREG(status.st_mode):
+            raise IsolationError("isolated conversion output is not a regular file")
+        if status.st_size <= 0 or status.st_size > max_bytes:
+            raise IsolationError("isolated conversion output size is outside expected bounds")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        temporary = destination.with_suffix(destination.suffix + ".tmp")
+        digest = hashlib.sha256()
+        copied = 0
+        with os.fdopen(fd, "rb", closefd=False) as src, temporary.open("xb") as dst:
+            while True:
+                chunk = src.read(1024 * 1024)
+                if not chunk:
+                    break
+                copied += len(chunk)
+                if copied > max_bytes:
+                    raise IsolationError("isolated conversion output exceeded expected bounds")
+                digest.update(chunk)
+                dst.write(chunk)
+        if copied != status.st_size:
+            temporary.unlink(missing_ok=True)
+            raise IsolationError("isolated conversion output changed while copying")
+        temporary.replace(destination)
+    except Exception:
+        destination.with_suffix(destination.suffix + ".tmp").unlink(missing_ok=True)
+        raise
+    finally:
+        os.close(fd)
+
+
 def child_chrooted_convert(argv: list[str], *, jail_root: Path, host_canary: str) -> dict[str, Any]:
     if platform.system() != "Linux" or os.geteuid() != 0:
         raise IsolationError("chroot conversion requires Linux root")
@@ -394,6 +458,18 @@ def isolated_convert(args: list[str]) -> dict[str, Any]:
     jail_args, source, output, expected_spec_path = _jail_conversion_args(args)
     if platform.system() != "Linux" or os.geteuid() != 0:
         raise IsolationError("isolated conversion requires Linux root chroot support")
+    expected_spec = load_expected_spec(expected_spec_path)
+    if expected_spec is None:
+        raise IsolationError("isolated conversion requires a preapproved expected spec")
+    max_output_bytes = (
+        expected_tensor_payload_bytes(expected_spec) + SAFETENSORS_HEADER_RESERVE_BYTES
+    )
+    spec_sha256 = file_sha256(expected_spec_path)
+    source_evidence: dict[str, Any] = {"expected_spec_sha256": spec_sha256}
+    for name in ("decision_config.json", "jev_omni.py"):
+        candidate = source.parent / name
+        if candidate.is_file():
+            source_evidence[f"{name}_sha256"] = file_sha256(candidate)
     with tempfile.TemporaryDirectory(prefix="teacher-head-jail-") as temporary:
         jail = Path(temporary)
         input_dir = jail / "input"
@@ -432,18 +508,14 @@ def isolated_convert(args: list[str]) -> dict[str, Any]:
                 raise IsolationError("isolated conversion child failed")
             report = dict(json.loads(completed.stdout))
             converted = output_dir / "head.safetensors"
-            if not converted.is_file():
-                raise IsolationError("isolated conversion produced no safetensors output")
-            output.parent.mkdir(parents=True, exist_ok=True)
-            temporary_output = output.with_suffix(output.suffix + ".tmp")
-            shutil.copy2(converted, temporary_output)
-            temporary_output.replace(output)
+            _copy_regular_nofollow(converted, output, max_bytes=max_output_bytes)
             if file_sha256(output) != report.get("output_sha256"):
                 output.unlink(missing_ok=True)
                 raise IsolationError("copied safetensors hash mismatch")
             report["output_path"] = str(output)
             report["output_size"] = output.stat().st_size
             report["output_sha256"] = file_sha256(output)
+            report.update(source_evidence)
             return report
         finally:
             host_canary.unlink(missing_ok=True)
