@@ -6,9 +6,6 @@
       "teacher_mmau_delta_abs": {
         "max": 0.02
       },
-      "teacher_mvbench_delta_abs": {
-        "max": 0.02
-      },
       "repeat_identical": {
         "min": 1
       },
@@ -23,6 +20,10 @@
       },
       "baseline_table_complete": {
         "min": 1
+      },
+      "teacher_mvbench_baseline_verified": {
+        "min": 1,
+        "max": 1
       }
     },
     "S1": {
@@ -160,5 +161,8 @@
         "min": 1
       }
     }
+  },
+  "approved_protocol_decisions": {
+    "S0_teacher_mvbench": "docs/adr/0006-reproducible-public-video-baseline.md"
   }
 }

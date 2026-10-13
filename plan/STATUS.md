@@ -3,6 +3,7 @@
 更新时间：2026-10-14。当前S0；P0工程冒烟完成，S0–S6/FINAL未完成。
 
 ## 本轮目标与已确认决策
+- 用户已批准ADR-0006：只替换S0 MVBench发布53.10±2复现项为固定9任务/1800行真实独立baseline；MMAU±2、S3≥90%、S4≥97%及其他门槛不变。
 - 先完成首发阶段0–6必需外部模型、数据、依赖下载/哈希/无卡验收，再通知开卡；当前禁止GPU作业。
 - 用户要求当前会话直接推进，不要定时任务；heartbeat `lite-omnijev` 已删除，禁止重建。
 - 用户已具体接受DocVQA-SP研究下载条款、NDK r28b引用2019 SDK协议及适用2026修订；不重复索要相同确认。
@@ -54,12 +55,12 @@
 - offline_runtime_dependencies：`/tmp/lite-omnijev-offline-runtime`；固定root与工具wheelhouse下载→no-index fresh CPU验收，NDKr28b≤5GB及Chromium实际离线二进制准备。root旧PID25391仍活，不能仅数finalwheel忽略临时下载。
 - remaining_authorizations：`/tmp/lite-omnijev-authorizations`；DocVQA-SP官方Annotations1,713,866B已hash，Images8,580,231,801B正在下载，总8.582GB<30GB；严格TLS链/hostname验证，不关闭校验，私密URL仅0600/STDIN。
 - mdc_transport_fix：`/tmp/lite-omnijev-routerbench-cpu`；RouterBench两固定pickle仅在chroot/dropuid/seccomp限资源沙箱转换，先恶意fixture，再真源，交付后独立安全review。
-- video_eval_sources：`/tmp/lite-omnijev-video-eval`；公开teacher verification仅提取协议/汇总metadata，不记录题/预测。精确14任务/2786IDs仍未证实，不能猜排除来匹配分数。
+- video_eval_sources：`/tmp/lite-omnijev-video-eval`；公开teacher verification仅提取协议/汇总metadata，不记录题/预测。精确14任务/2786IDs未公开，用户已批准ADR-0006改为固定9任务1800行真实baseline；此代理继续全行CPU协议冻结/16帧RGB hash验收，GPU两遍未做。
 - teacher_head_conversion：来源调整切片已完成整合；无未完成写入。
 
 ## 待我决策与后续资源
 - 本轮已具体确认的DocVQA/Android协议与首发来源无需再确认；AudioCaps无需办理。CommonVoice/HLE/模型访问均已完成，不再索要key/token。
-- 如精确MVBench教师协议选中受限任务，Moments/SSv2/TVQA/Matterport/NTU原媒体条件性授权仍需本人；先由agent证明必要任务，不能把所有候选升级为立即必办。
+- ADR-0006已批准：无需为现有九任务另办Moments/SSv2/TVQA/Matterport/NTU授权，只有明确扩范围才触发；禁止把候选升级为当前必办。
 - 真实独立gate身份、双人标注、阶段6真机和后续生产观测仍需安排；不阻塞其它公开下载，不能伪造验收。
 - 门槛/方向/大预算改变、付费/开关卡/生产/删数据仍用户决定。当前不要开卡。
 

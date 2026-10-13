@@ -1263,14 +1263,16 @@
       "public_sampling_plan": "Stage 0 must freeze the exact public task/ID list used to compare Jev-Omni 14-task 2786-question score.",
       "admission_status": "downloadable_with_root_coordination",
       "next_commands": [
-        "Mirror only after exact 14-task reproduction manifest is written; hash all videos/questions."
+        "Freeze all1800 original row IDs/source hashes/clip16frame RGB hashes and validate CPU; fixed teacher real forward twice only after user opens GPU. Additional restricted task media not first-release prerequisites."
       ],
-      "physical_staging_status": "nine_public_tasks_1800_references_prepared_teacher14tasks2786_exact_manifest_not_recovered_other_required_sources_undetermined",
+      "physical_staging_status": "approved_nine_public_tasks_1800_references_sources_prepared_full_clip16frame_CPU_protocol_freeze_in_progress",
       "offline_preparation_evidence": [
         "reports/public-eval-archives-validation-002.json",
         "reports/star-missing-source-recovery-001.json",
         "reports/jev-omni-mvbench-protocol.json"
-      ]
+      ],
+      "first_release_scope": "ADR-0006 fixed9tasks1800 real teacher baseline; original53.10±2 reproduction replaced only for MVBench, no other gate waiver",
+      "scope_decision": "docs/adr/0006-reproducible-public-video-baseline.md"
     },
     {
       "asset_id": "jevbench",

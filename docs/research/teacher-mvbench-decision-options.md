@@ -1,4 +1,6 @@
-# S0教师MVBench复现：待用户决定的一页提案
+# S0教师MVBench复现：已批准方案与原提案
+
+用户2026-10-14已明确批准方案A；现行执行契约以 `../adr/0006-reproducible-public-video-baseline.md` 为准。以下保留决定时的完整提案，不代表CPU或GPU验收已完成。
 
 **推荐A：仅将S0①的“Jev-Omni/MVBench复现53.10±2分”替换为冻结公开9任务/1,800行的实际独立baseline。** 这是实质验收变更，尚未批准；不改现有gate/config。官方教师仍为 `akhilaaa3/Jev-Omni@5addda86ddee081a68fb067477ea100c221b8917`，原件、模型/head、官方template/概率映射及允许来源不变。53.10只能列“未复现的发布引用”，不能声称新集合与其同集。
 
