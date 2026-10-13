@@ -1,4 +1,4 @@
-"""Run independent calibration fixtures without admitting confirmation data or changing gates."""
+"""Run program calibration or preregistered shadow confirmation without changing stage gates."""
 
 from __future__ import annotations
 
@@ -17,9 +17,9 @@ from data.schema import (
     HardTarget,
     InsufficientTarget,
     Sample,
-    answer_tokens,
 )
-from eval.metrics import evaluate
+from eval.parity_shadow import assess, load_registered_confirmation
+from eval.program_truth import truth_metrics as truth_metrics
 from scripts.check_tokens import OfficialTokenizerAdapter
 from scripts.p0_parity import (
     compare_rows,
@@ -47,54 +47,6 @@ def load_calibration(directory: Path) -> list[Sample]:
     return samples
 
 
-def truth_metrics(samples: list[Sample], rows: list[dict[str, Any]]) -> dict[str, Any]:
-    if len(samples) != len(rows):
-        raise ValueError("complete predictions required")
-    known: dict[str, list[tuple[list[float], int]]] = {k: [] for k in ("choice", "noul", "score")}
-    correct, brier = [], []
-    u_squared: dict[str, list[float]] = {"sufficient": [], "insufficient": []}
-    score_errors = []
-    for sample, row in zip(samples, rows, strict=True):
-        if row["id_sha256"] != digest(sample.id):
-            raise ValueError("prediction identity mismatch")
-        question = sample.questions[0]
-        ca, u = row["conditional"], row["p_U"]
-        if len(ca) != len(answer_tokens(question)):
-            raise ValueError("answer count mismatch")
-        target = question.target
-        insufficient = isinstance(target, InsufficientTarget)
-        if isinstance(target, HardTarget):
-            index = answer_tokens(question).index(str(target.value))
-            known[question.type].append((ca, index))
-            if question.type == "score":
-                score_errors.append(abs(math.fsum(i * p for i, p in enumerate(ca)) - index))
-        elif insufficient:
-            index = len(ca)
-        else:
-            raise ValueError("hard truth required")
-        joint = [*(p * (1 - u) for p in ca), u]
-        winners = [i for i, p in enumerate(joint) if p == max(joint)]
-        correct.append(int(winners == [index]))
-        brier.append(math.fsum((p - int(i == index)) ** 2 for i, p in enumerate(joint)))
-        u_squared["insufficient" if insufficient else "sufficient"].append((u - insufficient) ** 2)
-    return {
-        "scope": "program fixture only; no production accuracy or calibrated abstention claim",
-        "joint_unique_top1_accuracy": math.fsum(correct) / len(correct),
-        "joint_brier": math.fsum(brier) / len(brier),
-        "conditional_known_target_by_type": {
-            k: evaluate([p for p, _ in group], [t for _, t in group]) if group else None
-            for k, group in known.items()
-        },
-        "p_U_mse_by_truth": {
-            k: {"count": len(values), "mse": math.fsum(values) / len(values) if values else None}
-            for k, values in u_squared.items()
-        },
-        "conditional_score_mae": math.fsum(score_errors) / len(score_errors)
-        if score_errors
-        else None,
-    }
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("hf-reference", "compare-vllm"))
@@ -107,6 +59,9 @@ def main() -> int:
     parser.add_argument("--upstream-url", default="http://127.0.0.1:8002")
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--dtype", choices=("bfloat16", "float16"), default="bfloat16")
+    parser.add_argument("--cohort", choices=("calibration", "confirmation"), default="calibration")
+    parser.add_argument("--policy", type=Path)
+    parser.add_argument("--registration", type=Path)
     args = parser.parse_args()
     if args.report.exists():
         raise FileExistsError("choose a new report path")
@@ -120,7 +75,29 @@ def main() -> int:
         "cost": None,
     }
     try:
-        samples = load_calibration(args.fixture_dir)
+        policy = None
+        if args.cohort == "confirmation":
+            if args.policy is None or args.registration is None:
+                raise ValueError("confirmation requires preregistered shadow policy")
+            samples, policy = load_registered_confirmation(
+                args.fixture_dir, args.policy, args.registration
+            )
+            if args.dtype != policy["dtype"]:
+                raise ValueError("confirmation dtype differs from frozen policy")
+            registered_assets = json.loads(args.registration.read_text())
+            if args.model_dir.name != registered_assets.get("model_revision") or (
+                args.adapter is not None
+                and file_hash(args.adapter / "adapter_model.safetensors")
+                != registered_assets.get("adapter_sha256")
+            ):
+                raise ValueError("confirmation model or adapter differs from registration")
+            report["scope"] = "preregistered program confirmation; shadow only, no stage acceptance"
+            report["policy_sha256"] = file_hash(args.policy)
+            report["registration_sha256"] = file_hash(args.registration)
+        else:
+            if args.policy is not None or args.registration is not None:
+                raise ValueError("shadow registration is only valid for confirmation")
+            samples = load_calibration(args.fixture_dir)
         config = SmokeConfig()
         tokenizer = OfficialTokenizerAdapter(args.model_dir)
         examples = prepare_examples(samples, tokenizer, config.max_length)
@@ -128,14 +105,14 @@ def main() -> int:
             raise ValueError("prompt must leave generation room")
         assets = verified_assets(args.model_dir, args.asset_manifest)
         provenance = {
-            "purpose": "independent-calibration",
+            "purpose": "independent-" + args.cohort,
             "dtype": args.dtype,
             "thinking": False,
             "model_revision": args.model_dir.name,
             "asset_hashes": assets,
             "manifest_sha256": file_hash(args.asset_manifest),
             "fixture_manifest_sha256": file_hash(args.fixture_dir / "manifest.json"),
-            "data_file_sha256": file_hash(args.fixture_dir / "calibration.jsonl"),
+            "data_file_sha256": file_hash(args.fixture_dir / (args.cohort + ".jsonl")),
             "inputs_sha256": digest(examples),
             "template_sha256": hashlib.sha256(tokenizer.template.encode()).hexdigest(),
             "reference_settings": {"seed": config.seed, "max_length": config.max_length},
@@ -156,9 +133,14 @@ def main() -> int:
                     "train/template.py",
                     "train/readout.py",
                     "scripts/check_tokens.py",
+                    "eval/program_truth.py",
+                    "eval/parity_shadow.py",
                 )
             },
         }
+        if policy is not None:
+            provenance["policy_sha256"] = report["policy_sha256"]
+            provenance["registration_sha256"] = report["registration_sha256"]
         report["provenance"] = provenance
         if args.action == "hf-reference":
             report["rows"] = hf_reference(
@@ -177,6 +159,7 @@ def main() -> int:
                 or server.get("logprobs_mode") != "raw_logprobs"
                 or not server.get("launch_command")
                 or not server.get("served_model")
+                or (policy is not None and server.get("attention_backend") != policy["backend"])
             ):
                 raise ValueError("server attestation mismatch")
             with httpx.Client(timeout=120) as client:
@@ -207,6 +190,8 @@ def main() -> int:
             report["reference_sha256"] = file_hash(args.reference)
             report["server_record_sha256"] = file_hash(args.server_record)
             report["server_identity_verification"] = "operator-attested; not remote attestation"
+            if policy is not None:
+                report["shadow_assessment"] = assess(samples, reference, report, policy)
         report["truth_metrics"] = truth_metrics(samples, report["rows"])
     except (Exception, KeyboardInterrupt) as exc:
         report.update(status="blocked", exit_code=1, error_type=type(exc).__name__)

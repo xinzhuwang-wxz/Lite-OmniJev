@@ -4,9 +4,9 @@ ID: p0:07
 Milestone: P0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: root
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: 06
 
 ## What to build

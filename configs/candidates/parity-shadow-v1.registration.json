@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "purpose": "preregistered-shadow-confirmation",
+  "policy_git_commit": "f9335aa6810a4267bf40aba504ed672cd2e400b0",
+  "registered_at_utc": "2026-10-13T16:04:26.155778+00:00",
+  "policy_sha256": "391c5f1d480bb39f1aca72bb178eb353cc5691514700f0c7022d385e64871cf2",
+  "fixture_manifest_sha256": "8bc0fd0e42830902d0164220d04a78980bfbc5f5f00e08511b69bcb7f24b6a7e",
+  "calibration_sha256": "460202634293fa00d6f2771eb86ce157b806aad3b855d4636489c3c52f578e89",
+  "confirmation_sha256": "9f46f0145e9caf6a72e8239afc25a1772a61ed67d7eefe4ae7ee5aeba32cc79c",
+  "confirmation_outputs_generated_at_registration": false,
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "97db02cd2bb3a4990fb68ceb3c3e863b9a2cb72669406926745a9e4c052b1b42"
+}

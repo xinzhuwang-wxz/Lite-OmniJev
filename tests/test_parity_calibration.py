@@ -2,6 +2,8 @@
 
 import hashlib
 import json
+import sys
+from pathlib import Path
 
 import pytest
 
@@ -70,3 +72,63 @@ def test_truth_metrics_keep_abstention_error_separate_from_answer_accuracy():
     predicted["id_sha256"] = "wrong"
     with pytest.raises(ValueError, match="identity"):
         truth_metrics([sample], [predicted])
+
+
+def test_confirmation_rejects_wrong_registered_model_before_loading(tmp_path, monkeypatch):
+    import scripts.parity_calibration as runner
+    from data.parity_fixture import build_fixture
+    from eval.parity_shadow import sha
+
+    build_fixture(tmp_path)
+    policy_path = tmp_path / "policy.json"
+    policy_path.write_bytes(Path("configs/candidates/parity-shadow-v1.json").read_bytes())
+    manifest = json.loads((tmp_path / "manifest.json").read_text())
+    reg_path = tmp_path / "registration.json"
+    reg_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "purpose": "preregistered-shadow-confirmation",
+                "policy_sha256": sha(policy_path),
+                "fixture_manifest_sha256": sha(tmp_path / "manifest.json"),
+                "calibration_sha256": manifest["files"]["calibration.jsonl"]["sha256"],
+                "confirmation_sha256": sha(tmp_path / "confirmation.jsonl"),
+                "policy_git_commit": "before-confirmation",
+                "registered_at_utc": "2026-10-14",
+                "model_revision": "registered-revision",
+            }
+        )
+    )
+    output = tmp_path / "result.json"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "parity-calibration",
+            "hf-reference",
+            "--cohort",
+            "confirmation",
+            "--dtype",
+            "float16",
+            "--fixture-dir",
+            str(tmp_path),
+            "--policy",
+            str(policy_path),
+            "--registration",
+            str(reg_path),
+            "--model-dir",
+            str(tmp_path / "wrong-revision"),
+            "--asset-manifest",
+            "missing",
+            "--report",
+            str(output),
+        ],
+    )
+
+    def unexpected_load(_):
+        raise AssertionError("model loading must not be attempted")
+
+    monkeypatch.setattr(runner, "OfficialTokenizerAdapter", unexpected_load)
+    assert runner.main() == 1
+    result = json.loads(output.read_text())
+    assert result["status"] == "blocked" and result["error_type"] == "ValueError"
