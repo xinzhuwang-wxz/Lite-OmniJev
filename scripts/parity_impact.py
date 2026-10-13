@@ -97,7 +97,7 @@ def analyze(reference: dict[str, Any], candidate: dict[str, Any]) -> dict[str, A
         "status": "analysis-only",
         "gate_changed": False,
         "quality_verified": False,
-        "scope": "training smoke fixtures; no labels or calibrated decision policy evaluated",
+        "scope": "paired program fixtures; no labels or calibrated decision policy evaluated",
         "slice_semantics": "fixed reference p(U) bins, descriptive only; all rows retained",
         "joint_formula": "[(1-p_U)*conditional_i for each answer] + [p_U]",
         "sample_count": len(details),

@@ -159,8 +159,13 @@ def hf_reference(
     adapter: Path | None,
     examples: list[dict[str, Any]],
     report: dict[str, Any],
+    *,
+    dtype: str = "bfloat16",
 ) -> list[dict[str, Any]]:
+    if dtype not in {"bfloat16", "float16"}:
+        raise ValueError("unsupported reference inference dtype")
     report["versions"] = runtime_requirements()  # Reject CPU/MPS before loading weights.
+    report["inference_dtype"] = dtype
     torch = importlib.import_module("torch")
     transformers = importlib.import_module("transformers")
     random.seed(config.seed)
@@ -172,7 +177,7 @@ def hf_reference(
         local_files_only=True,
         trust_remote_code=False,
         use_safetensors=True,
-        dtype=torch.bfloat16,
+        dtype=getattr(torch, dtype),
         attn_implementation="sdpa",
     )
     if adapter is not None:

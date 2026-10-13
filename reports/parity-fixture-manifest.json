@@ -1,0 +1,66 @@
+{
+  "data_version": "parity-fixture-v1",
+  "files": {
+    "calibration.jsonl": {
+      "case_status_counts": {
+        "insufficient": 65,
+        "sufficient": 35
+      },
+      "effective_sample_families": 100,
+      "generator_families": [
+        "calibration-interval-register-v1"
+      ],
+      "generator_rule_count": 3,
+      "generator_source_sha256": "765ab484fbec7061aa42beb6f88abbeadab6c5e7bfa656dec196f39647ca9112",
+      "independence_limit": "100 case families are content-isolated rows, not 100 independent algorithms or statistically independent production samples; each file uses one combined generator family with three task rules.",
+      "pool": "calibration",
+      "quota_counts": {
+        "choice-10": 12,
+        "choice-2": 12,
+        "choice-20": 12,
+        "choice-3": 12,
+        "choice-5": 12,
+        "noul": 20,
+        "score-10": 5,
+        "score-2": 5,
+        "score-3": 5,
+        "score-5": 5
+      },
+      "rows": 100,
+      "sha256": "460202634293fa00d6f2771eb86ce157b806aad3b855d4636489c3c52f578e89"
+    },
+    "confirmation.jsonl": {
+      "case_status_counts": {
+        "insufficient": 65,
+        "sufficient": 35
+      },
+      "effective_sample_families": 100,
+      "generator_families": [
+        "confirmation-event-sequence-v1"
+      ],
+      "generator_rule_count": 3,
+      "generator_source_sha256": "4a8dd01cb986576248b11edbb2f02fec684a7ca35f9d6cc7894b08143428b93d",
+      "independence_limit": "100 case families are content-isolated rows, not 100 independent algorithms or statistically independent production samples; each file uses one combined generator family with three task rules.",
+      "pool": "dev",
+      "quota_counts": {
+        "choice-10": 12,
+        "choice-2": 12,
+        "choice-20": 12,
+        "choice-3": 12,
+        "choice-5": 12,
+        "noul": 20,
+        "score-10": 5,
+        "score-2": 5,
+        "score-3": 5,
+        "score-5": 5
+      },
+      "rows": 100,
+      "sha256": "9f46f0145e9caf6a72e8239afc25a1772a61ed67d7eefe4ae7ee5aeba32cc79c"
+    }
+  },
+  "license": "internal",
+  "schema_version": 1,
+  "scope": "program-truth calibration/dev fixtures for numerical parity policy; not a production-quality or holdout benchmark",
+  "source_revision": "lite-omnijev-parity-fixture-v1",
+  "usage": "commercial"
+}

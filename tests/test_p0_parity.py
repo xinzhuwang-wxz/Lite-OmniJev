@@ -196,3 +196,10 @@ def test_raw_probability_mass_difference_fails_even_when_normalized_values_match
     assert result["max_raw_probability_difference"] > parity.THRESHOLD
     assert result["status"] == "failed"
     assert result["exit_code"] == 1
+
+
+def test_reference_rejects_unsupported_dtype_before_gpu_loading():
+    from train.trainer import SmokeConfig
+
+    with pytest.raises(ValueError, match="unsupported reference inference dtype"):
+        parity.hf_reference(SmokeConfig(), Path("missing"), None, [], {}, dtype="float64")

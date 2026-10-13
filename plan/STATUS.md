@@ -78,3 +78,15 @@ Native goal已核实恢复active；用户要求实测重新评估门槛，当前
 - 全套145测试、Ruff、mypy25文件、wheel/sdist均通过；正式引擎/gate未改。
 - p0:06为下一可执行票，按已写数据协议先准备独立定标/确认批；只运行定标批，确认侧等待候选规则冻结。
 - 原D004补丁提案搁置，不继续催促批准；用户最新任务是基于实测重审门槛。P0集成和S0仍未放行。
+
+## p0:06 实测进行中
+- root已认领；数据子代理的生成器与独立题面oracle测试已整合（c781142/ea3cb6c），定标和确认各100案例，35充分/65缺失或冲突；每批一个组合生成族、3种规则，不是100独立算法。
+- 数据manifest见reports/parity-fixture-manifest.json，训练/定标/确认case family交集为0，限制见reports/parity-fixture-overlap.json。确认批仅固定文件，未作模型推理。
+- 新scripts/parity_calibration.py只允许calibration文件/pool，保持BF16、原引擎与原严格gate；增加truth与Score偏移报告。159测试/Ruff/mypy28文件/build通过。
+- 远程任务artifacts/p0-calibration-run.sh，日志reports/calibration-run-001.log，已核实PID8579在运行，HF base/adapter reference-ready，vLLM8638已健康；待完整两组对照。PID只是本轮快照，续接先核实，不重启活跃作业。
+
+## 最新：p0:06完成，影子规则待独立确认
+- BF16和FP16各完成HF/vLLM base+adapter定标对照。BF16 adapter联合决策翻转1/100，FP16两组0/100；FP16 adapter meanTV0.000556、p95TV0.002742、maxTV0.014921，原严格gate依然失败。
+- FP16编排曾因重复文件前缀失败；HF参考未重跑、服务未重启，纠正后用独立compare脚本完成，日志保留。
+- p0:06完成；p0:07是可执行前沿：候选影子规则已固定，尚无确认批模型输出。候选不替代正式gate，尾部超过0.01明确review_required。
+- GPU服务9031（FP16/TRITON）仍为本轮自建候选，执行前须核实；下轮可复用已初始化服务并让HF顺序推理（先核实96GB显存余量；禁止vLLM初始化与HF显存变化并行），避免重复加载。当前无训练作业。

@@ -34,3 +34,14 @@
 可复现实测影响分析：
 `uv run python -m scripts.parity_impact --reference reports/p0-adapter-hf-001.json --candidate reports/p0-adapter-vllm-triton-001.json --output <新的报告路径>`
 该命令从raw logprobs核对概率、检查100题身份/provenance，输出analysis-only，永不覆盖已有报告；不会改变原验收脚本的判断。跨平台libm重算允许rel_tol=1e-12/abs_tol=1e-15，仅作报告完整性容差，远小于引擎门槛。
+
+## 实测后的候选影子规则 v1（不是正式gate）
+新定标结果见reports/calibration-bf16-summary-001.json及calibration-fp16-*-impact-001.json。BF16 adapter出现一次联合答案/U翻转，p(U)0.617→0.372；FP16同条件0次，但仍有最高约1.49pp的p(U)差。不能把旧训练fixture的结论外推。
+
+固定候选为configs/candidates/parity-shadow-v1.json，尚未运行确认批。它只产生reject/review_required/shadow_supported，不改变原严格门槛、不关闭P0：
+- 身份、模板、资产、完整原始概率/非有限值检查零容忍；联合argmax（含并列集合）不得变化，程序真值准确率不得降低。
+- 平均联合TV预算0.002，p95预算0.01。对[0,1]有界线性评分，TV约束的是模型分布下期望差；不能宣称它保证真实业务准确率。数值是待验证的工程预算，不是已有业务风险结论。
+- Joint Brier和每题型已知真值ECE15劣化预算0.005；作为概率质量防线，避免仅凭标签相同放行。小样本不构成生产校准证明。
+- 任意联合TV>0.01、归一化Score期望差>0.01、条件答案并列集合变化都触发review_required；必须保留逐题证据，不能平均掉，也不能自动把“需复核”当通过。
+- 当前FP16定标结果仍触发尾部复核。这些尾部阈值没有被抬到观测最大值之上以追求通过。
+- 确认批检验此候选的迁移性；若失败，保存v1失败记录，不能用确认批调参后再次宣称独立验证。正式修改gate仍需ADR和用户对具体变更的决定。
