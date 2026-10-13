@@ -9,8 +9,8 @@
     "Do not claim Common Voice audio bytes are staged until the official API-key and terms flow is completed."
   ],
   "recommendation": {
-    "tts_engine": "Kokoro 82M ONNX, q8f16 model, two American English voices",
-    "tts_status": "remote_assets_downloaded_hash_verified_canary_blocked_runtime_install",
+    "tts_engine": "Kokoro 82M ONNX, quantized CPU canary model, two American English voices",
+    "tts_status": "remote_assets_downloaded_hash_verified_cpu_wav_canary_passed",
     "common_voice_source": "Mozilla Data Collective Common Voice Spontaneous Speech 5.0 - English",
     "common_voice_status": "metadata_selected_download_blocked_by_official_api_key_and_terms"
   },
@@ -64,7 +64,13 @@
           "path": "onnx/model_q8f16.onnx",
           "size_bytes": 86033585,
           "sha256": "04c658aec1b6008857c2ad10f8c589d4180d0ec427e7e6118ceb487e215c3cd0",
-          "kind": "onnx_weights"
+          "kind": "onnx_weights_staged_but_cpu_canary_failed"
+        },
+        {
+          "path": "onnx/model_quantized.onnx",
+          "size_bytes": 92361116,
+          "sha256": "fbae9257e1e05ffc727e951ef9b9c98418e6d79f1c9b6b13bd59f5c9028a1478",
+          "kind": "onnx_weights_cpu_canary_passed"
         },
         {
           "path": "voices/af_heart.bin",
@@ -81,7 +87,7 @@
           "voice": "American English male"
         }
       ],
-      "selected_payload_bytes": 87092342,
+      "selected_payload_bytes": 179453458,
       "staging": {
         "local_status": "metadata_only_downloaded; local ONNX transfer stalled before bytes arrived",
         "remote_status": "downloaded_hash_verified",
@@ -94,8 +100,20 @@
         ]
       },
       "canary": {
-        "status": "blocked",
-        "blocker": "Direct ONNX canary needs onnxruntime in the dedicated remote speech venv. pip install of onnxruntime==1.31.0 and numpy==2.3.4 did not complete in the available window and was stopped; no unsafe PyTorch checkpoint was loaded."
+        "status": "passed",
+        "report": "reports/speech-kokoro-cpu-wav-canary.json",
+        "remote_wav_path": "/root/autodl-tmp/lite-omnijev/artifacts/speech-tts/canary/kokoro-af-heart-readme-token-canary.wav",
+        "wav_sha256": "861b1e8a2a70f3c78b5176555115b04e92c8bbd05b86f7548f58d4fee9a5ae71",
+        "duration_seconds": 8.225,
+        "sample_rate_hz": 24000,
+        "channels": 1,
+        "runtime": {
+          "python": "Python 3.12.3",
+          "onnxruntime": "1.31.0",
+          "numpy": "2.3.4",
+          "provider": "CPUExecutionProvider"
+        },
+        "q8f16_attempt": "model_q8f16.onnx segfaulted with ONNX Runtime 1.31.0 CPU, exit 139; model_quantized.onnx recovered the canary."
       },
       "risk_notes": [
         "Kokoro quality is good for compact offline TTS but synthetic speech truth remains programmatic; generated rows still need manifesting by prompt family, voice, text source, seed, and audio hash.",
@@ -132,6 +150,22 @@
       "rejection_reason": "Larger runtime surface and unsafe checkpoint format for this offline-prep slice; Kokoro ONNX provides a smaller audited asset path with no pickle load."
     }
   ],
+  "common_voice_public_alternative_check": {
+    "status": "no_legitimate_ungated_original_publisher_audio_subset_found",
+    "checked": [
+      {
+        "candidate": "Older Mozilla S3 cv-corpus release links mentioned in Mozilla Discourse",
+        "decision": "rejected",
+        "reason": "Mozilla's current Data Collective FAQ says old versions are limited through an email request and terms flow to honor deletion requests."
+      },
+      {
+        "candidate": "Third-party Hugging Face mirror fsicoli/common_voice_17_0 audio/en/test/en_test_0.tar",
+        "decision": "rejected",
+        "reason": "Direct downloadable CC0-tagged mirror exists, but it is not an original-publisher current download path and does not resolve Mozilla's deletion-request stewardship note."
+      }
+    ],
+    "result": "Keep the selected MDC Common Voice source metadata pinned and account/terms blocked; do not download older mirrors or direct legacy links as a substitute."
+  },
   "common_voice_candidates": [
     {
       "name": "Common Voice Spontaneous Speech 5.0 - English",
@@ -184,12 +218,12 @@
   ],
   "preparation_decision": {
     "ready": [
-      "Kokoro ONNX q8f16 model and af_heart/am_puck voice embeddings are staged on remote with sha256 verification.",
+      "Kokoro ONNX q8f16, quantized model, and af_heart/am_puck voice embeddings are staged on remote with sha256 verification.",
+      "Kokoro ONNX Runtime CPU canary produced a finite 8.225 second 24 kHz mono PCM WAV with SHA256 861b1e8a2a70f3c78b5176555115b04e92c8bbd05b86f7548f58d4fee9a5ae71.",
       "Common Voice source families are selected, license/size/checksum metadata captured, and payloads remain under the 1 GB preparation ceiling."
     ],
     "blocked": [
-      "Common Voice audio tarballs are not downloaded because official Mozilla Data Collective download requires API credentials and terms acceptance.",
-      "CPU WAV canary is not complete because ONNX Runtime installation stalled in the dedicated speech venv; no unsafe checkpoint was loaded."
+      "Common Voice audio tarballs are not downloaded because official Mozilla Data Collective download requires API credentials and terms acceptance."
     ]
   }
 }
