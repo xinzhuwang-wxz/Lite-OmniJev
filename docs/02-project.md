@@ -76,3 +76,9 @@ API 服务端目标：文本<40ms、截图<60ms、16帧视频<200ms；含网关/
 常规 spec/拆票/triage、技术验证、里程碑推进由 agent 决定；用户负责租用/开关卡及必须本人完成的账号授权。
 封存集人工标注不是 agent 自己生成的“人工真值”；有合规现成人工标注则复用，否则列阻塞，不能伪造 κ。
 生产发布、付费、删除数据、重大预算/阈值/方向改变仍须用户决定；继续其它不受影响票。
+
+## 可选训练准备命令
+
+安装：`uv sync --frozen --extra training --group dev`；CPU损失/LoRA验证：`uv run --extra training pytest tests/test_training.py`。
+十步真实训练的preflight/run入口见 `docs/runbooks/training.md`；`preflight` 在本机缺权重/CUDA时应返回blocked与非零退出，这个拒绝是预期行为，不能计为GPU通过。
+本地跑通的CPU版本锁用于验证代码，实际租机仍须核验驱动/CUDA组合与vLLM的独立环境。

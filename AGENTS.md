@@ -27,6 +27,7 @@
 - 当前可用命令及验证状态以 `docs/02-project.md` 为准；新增命令必须实跑后才能标为可用。
 - `uv sync --frozen --group dev` 安装本地环境；`uv run pytest` 测外部行为。
 - `uv run ruff check .`、`uv run ruff format --check .`；`uv run mypy data train eval serve scripts` 做类型检查。
+- 训练入口先 `uv sync --frozen --extra training --group dev`；CPU验证 `make training-check`，GPU实跑按训练runbook。
 - `uv build` 构建 Python 包；`uv run uvicorn serve.gateway.app:app --host 127.0.0.1 --port 8000` 本地开发。
 - `data/` 数据契约/构建/去污染；`train/` 共享模板/训练/校准；`eval/` 指标和门槛。
 - `serve/` 网关与部署适配；`configs/` 阶段配置；`infra/` 可复现环境；`scripts/` 操作入口；`tests/` 行为测试。

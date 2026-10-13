@@ -23,7 +23,7 @@
 ## 状态与恢复规则
 
 票据是任务状态源；STATUS 是人可读调度快照，不能与票矛盾。每轮结束检查两者。
-triage Status 和 Execution 分开；blocked 票保留真实依赖，不能伪装 ready frontier。
+triage Status 和 Execution 分开；仅受票据依赖限制的任务用open+Blocked by，依赖完成即自动进入frontier。blocked用于额外外部/信息/未展开门槛，恢复时须有解除证据，不能无限留在blocked或伪装ready。
 新会话发现 claimed：先检查 agent/process/worktree；确认执行者结束或不存在后记录恢复理由再转 open，保留修改。
 用户只改变当前分支约束时保留总体目标；任何门槛/范围改变写 ADR 并有用户依据。
 原生 goal 状态与磁盘状态冲突时报告差异，按工具真实状态更新；没有 native goal 的新会话按原目标创建，不假装旧 goal 被迁移。

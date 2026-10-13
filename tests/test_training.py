@@ -294,6 +294,8 @@ def test_asset_manifest_must_cover_exactly_indexed_shards(tmp_path):
     model_dir = tmp_path / revision
     model_dir.mkdir()
     contents = {
+        "tokenizer.json": "{}",
+        "tokenizer_config.json": "{}",
         "config.json": json.dumps(
             {"model_type": "gemma4", "architectures": ["Gemma4ForConditionalGeneration"]}
         ),

@@ -17,3 +17,6 @@ queue:
 	uv run python -m scripts.loop list
 dev:
 	uv run uvicorn serve.gateway.app:app --host 127.0.0.1 --port 8000
+.PHONY: training-check
+training-check:
+	uv run --extra training pytest tests/test_training.py

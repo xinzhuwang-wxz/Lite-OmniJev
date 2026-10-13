@@ -4,7 +4,7 @@ ID: p0:02
 Milestone: P0
 Category: enhancement
 Status: ready-for-agent
-Execution: blocked
+Execution: open
 Owner: none
 Worktree: none
 Blocked by: 01

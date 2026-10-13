@@ -1,0 +1,33 @@
+{
+  "status": "blocked",
+  "exit_code": 1,
+  "code_revision": "105b2ed70918790caf0929813171ffbb825a7a12",
+  "python": "3.11.14",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "config": {
+    "seed": 42,
+    "sample_count": 100,
+    "steps": 10,
+    "accumulation": 10,
+    "max_length": 2048,
+    "learning_rate": 0.0001,
+    "rank": 16,
+    "alpha": 32,
+    "dtype": "bfloat16",
+    "modality": "text"
+  },
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "scope": "text-only real-model plumbing smoke; not P0 completion or quality evidence",
+  "resume_supported": false,
+  "cost": null,
+  "steps_completed": 0,
+  "data_sha256": "5b54c93e5a76fd09e1e5c64df2c74f2f9c640ba69d573e71333da7dff426889f",
+  "examples": 100,
+  "max_prompt_tokens": 77,
+  "blockers": [
+    "asset_hashes: ValueError: Missing file: /Users/bamboo/Githubs/Lite-OmniJev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2/model.safetensors",
+    "versions: ValueError: CUDA is required for the real Gemma smoke; CPU/MPS is not P0"
+  ],
+  "error": "ValueError: training preflight has blockers",
+  "duration_seconds": 93.75520100002177
+}

@@ -4,7 +4,7 @@ ID: p0:04
 Milestone: P0
 Category: enhancement
 Status: ready-for-agent
-Execution: blocked
+Execution: open
 Owner: none
 Worktree: none
 Blocked by: 03
@@ -16,6 +16,7 @@ Blocked by: 03
 - [ ] 100样本通过schema；基座冻结、只有LoRA可训练，十步损失和梯度有限，保存safetensors。
 - [ ] 固定模板/token映射，重载后评测与HTTP推理真实返回答案；模型、校准和配置版本可追溯。
 - [ ] 浏览器走docs/02-project.md当前适用步骤；mock不可代过，GPU/HF/vLLM差异如实记录。
+- [ ] 验证checkpoint重载；长训练前补齐优化器/RNG断点恢复，不能把adapter warm start当完整resume。
 - [ ] 产物落持久存储，结束资源清单与关卡通知已发；P0报告明确后续S0尚未通过。
 
 ## Out of scope

@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "questions_checked": 400,
+  "samples": 100,
+  "single_token_boundaries": true,
+  "min_shared_prefix_tokens": 22,
+  "weights_loaded": false,
+  "scope": "Actual E4B tokenizer/template on generated program data; no inference/quality claim",
+  "tokenizer_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "exit_code": 0
+}
