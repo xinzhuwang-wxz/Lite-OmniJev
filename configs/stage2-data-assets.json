@@ -17,11 +17,45 @@
     "release_admission": "not_granted_by_this_file",
     "human_holdout_content_policy": "No internal holdout content was requested or staged. Public A-OKVQA JSONs were processed only for split, question_id, image_id, and COCO license joins; QA text was not inspected or exported.",
     "account_terms_policy": "No account-gated dataset terms were accepted automatically.",
-    "remote_download_budget_used_bytes_lower_bound": 2161862192,
+    "remote_download_budget_used_bytes_lower_bound": 5506080944,
     "remote_cgroup_limits": {
       "cpu_max": "50000 100000",
       "memory_max_bytes": "2147483648",
       "note": "Root confirmed memory.max=2GiB and cpu.max=50000/100000=0.5 CPU; host free/16CPU is misleading."
+    },
+    "stage2_selected_download_budget_status": {
+      "approved_budget_bytes": 10000000000,
+      "previous_verified_stage2_bytes": 2161862192,
+      "remaining_aokvqa_known_license_bytes": 3344218752,
+      "total_verified_selected_stage2_bytes": 5506080944,
+      "status": "within_10gb_stage2_budget"
+    },
+    "remaining_blocker_classification": {
+      "account_or_terms_requires_user": [
+        {
+          "source": "DocVQA / RRC official portal",
+          "required_user_action": "A registered user must log into the RRC challenge page, open the Download tab, read the listed terms and conditions, and agree personally before any original DocVQA raw download.",
+          "evidence_urls": [
+            "https://site.docvqa.org/datasets",
+            "https://site.docvqa.org/datasets/docvqa",
+            "https://iapr.org/archives/icdar2021/index.html%3Fp=29526.html"
+          ],
+          "agent_action": "Do not accept terms or mirror DocVQA original raw data automatically."
+        },
+        {
+          "source": "CommonVoice and HLE",
+          "status": "root_already_requested_authorization_once; not repeated by this slice"
+        }
+      ],
+      "license_or_capacity_decision_pending": [
+        "ScienceQA raw parquets are staged for research/source-audit only; NC/SA training and release use remains a decision.",
+        "ChartQA original zip is staged for research/source-audit only; GPL and underlying chart-source obligations remain a decision.",
+        "A-OKVQA/COCO CC BY/PD, CC BY-SA, CC BY-NC, CC BY-NC-SA, CC BY-NC-ND, and CC BY-ND pools are staged separately; NC/SA/ND obligations require downstream training/release decisions, and ND pools remain raw-unmodified research staging only."
+      ],
+      "network_only_autonomous": [
+        "Selected Stage2 ScienceQA, ChartQA, and A-OKVQA/COCO public sources are already staged and verified on the remote persistent disk within the approved budget.",
+        "Future public ungated metadata or small source-audit files can be staged by agents when they do not require account terms, new budget, or training/release admission."
+      ]
     }
   },
   "sources": [
@@ -277,9 +311,9 @@
     },
     {
       "id": "aokvqa_coco_media_provenance",
-      "status": "annotations_metadata_and_ccby_publicdomain_pixels_remote_complete_verified",
-      "source_audit_staging": "remote_complete_verified_filtered_image_subset",
-      "training_release_status": "research_source_audit_only_pending_per_image_attribution_and_training_decision",
+      "status": "annotations_metadata_and_all_known_license_aokvqa_coco_pixels_remote_complete_verified",
+      "source_audit_staging": "remote_complete_verified_selected_known_license_image_pools",
+      "training_release_status": "research_source_audit_only; no_training_or_release_admission_for_restricted_pools; downstream_attribution_nc_sa_nd_decisions_pending",
       "official_sources": [
         {
           "type": "github_repository",
@@ -332,6 +366,21 @@
           "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_license_summary.json",
           "bytes": 6592,
           "sha256": "e281d5ac71c089faaf568bebb7f300879dcf81213935366c55ebceef03309d7d"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_remaining_known_license_pool_summary.json",
+          "bytes": 4906,
+          "sha256": "ba43a6f622c07316f3b13925db3e2ee4608fe5cb2ff897d31455ed9a2e973c66"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_remaining_known_license_s3_size_report.json",
+          "bytes": 10772059,
+          "sha256": "684092d63a04d7181e7375aeb42d2add0cecd527b8f82c96d6717a308774bd3d"
+        },
+        {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_remaining_known_license_download_report.json",
+          "bytes": 17690975,
+          "sha256": "aab0cbb756fd3063b57d83810d0d74cb39054342c27e096954ddaa17c44be71d"
         }
       ],
       "coco_license_filter": {
@@ -348,6 +397,13 @@
           "2": "CC BY-NC",
           "3": "CC BY-NC-ND",
           "6": "CC BY-ND"
+        },
+        "remaining_known_license_obligation_pools": {
+          "1": "CC BY-NC-SA 2.0; attribution + noncommercial + sharealike; research raw staging only.",
+          "2": "CC BY-NC 2.0; attribution + noncommercial; research raw staging only.",
+          "3": "CC BY-NC-ND 2.0; attribution + noncommercial + no derivatives; raw unmodified research staging only.",
+          "5": "CC BY-SA 2.0; attribution + sharealike; research raw staging only.",
+          "6": "CC BY-ND 2.0; attribution + no derivatives; raw unmodified research staging only."
         }
       },
       "aokvqa_split_license_summary": [
@@ -432,7 +488,7 @@
           }
         }
       ],
-      "next_image_download_rule": "Already staged remotely for license IDs 4 and 7 from the generated manifests. Do not stage NC/ND or CC-BY-SA pixels unless their downstream obligations are accepted; preserve per-image attribution metadata from the download report.",
+      "next_image_download_rule": "All A-OKVQA-referenced COCO images with known COCO license IDs 1-7 are now staged in separated obligation pools. Do not download unknown-license images; current unknown/unhandled count is zero. Do not treat restricted pools as training/release admitted.",
       "remote_persistent_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources",
       "remote_ccby_publicdomain_image_subset": {
         "by_coco_split": {
@@ -456,6 +512,105 @@
         "training_release_status": "research_source_audit_only_pending_per_image_attribution_training_decision",
         "unique_images_downloaded": 3832,
         "unique_images_expected": 3832
+      },
+      "remote_remaining_known_license_image_pools": {
+        "staging_status": "remote_complete_verified_report",
+        "report": {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_remaining_known_license_download_report.json",
+          "bytes": 17690975,
+          "sha256": "aab0cbb756fd3063b57d83810d0d74cb39054342c27e096954ddaa17c44be71d"
+        },
+        "size_preflight_report": {
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_remaining_known_license_s3_size_report.json",
+          "bytes": 10772059,
+          "sha256": "684092d63a04d7181e7375aeb42d2add0cecd527b8f82c96d6717a308774bd3d"
+        },
+        "download_logs": [
+          {
+            "path": "artifacts/data/quarantine/stage2-sources/logs/aokvqa-coco-remaining-known-license-driver.log",
+            "bytes": 13223,
+            "sha256": "317e8d250d3fda24ba6ee5e49b4100c3a48d63e85d72d942fd03a4826f7338c8"
+          },
+          {
+            "path": "artifacts/data/quarantine/stage2-sources/logs/aokvqa-coco-remaining-persistent-driver-progress.log",
+            "bytes": 10715,
+            "sha256": "9403ad0a5dcfd016ab70dd34807cadb83e33adb8430cbde45ddde5964967c131"
+          }
+        ],
+        "bytes_total": 3344218752,
+        "unique_images_expected": 19860,
+        "unique_images_downloaded": 19860,
+        "missing_count": 0,
+        "bad_size_count": 0,
+        "unknown_or_unhandled_license_count": 0,
+        "by_pool": {
+          "ccbyncsa": {
+            "license_ids": [
+              1
+            ],
+            "unique_images": 6744,
+            "bytes_total": 1133013759,
+            "by_coco_split": {
+              "train": 4812,
+              "val": 318,
+              "test": 1614
+            },
+            "rule": "CC BY-NC-SA 2.0: attribution + noncommercial + sharealike obligation; research raw staging only."
+          },
+          "ccbync": {
+            "license_ids": [
+              2
+            ],
+            "unique_images": 3259,
+            "bytes_total": 544282032,
+            "by_coco_split": {
+              "train": 2220,
+              "val": 127,
+              "test": 912
+            },
+            "rule": "CC BY-NC 2.0: attribution + noncommercial obligation; research raw staging only."
+          },
+          "ccbyncnd": {
+            "license_ids": [
+              3
+            ],
+            "unique_images": 6280,
+            "bytes_total": 1055748732,
+            "by_coco_split": {
+              "train": 4300,
+              "val": 306,
+              "test": 1674
+            },
+            "rule": "CC BY-NC-ND 2.0: attribution + noncommercial + no-derivatives; raw unmodified research staging only."
+          },
+          "ccbysa": {
+            "license_ids": [
+              5
+            ],
+            "unique_images": 2358,
+            "bytes_total": 398879324,
+            "by_coco_split": {
+              "train": 1719,
+              "val": 104,
+              "test": 535
+            },
+            "rule": "CC BY-SA 2.0: attribution + sharealike obligation; research raw staging only."
+          },
+          "ccbynd": {
+            "license_ids": [
+              6
+            ],
+            "unique_images": 1219,
+            "bytes_total": 212294905,
+            "by_coco_split": {
+              "train": 845,
+              "val": 55,
+              "test": 319
+            },
+            "rule": "CC BY-ND 2.0: attribution + no-derivatives; raw unmodified research staging only."
+          }
+        },
+        "training_release_status": "research_source_audit_only; restricted pools are not training/release admitted by this report"
       }
     }
   ],
