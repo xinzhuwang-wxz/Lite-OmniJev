@@ -10,7 +10,7 @@
 
 ## 当前票
 - bootstrap:01–08、p0:01–07 done；证据 reports/p0-engineering-acceptance.md。
-- offline-prep:01 claimed：七项模型约121GB；PID1827 flock 队列仍运行，67文件约37.1GB校验，零报告失败。以实际进程和最新报告为准。
+- offline-prep:01 claimed：七项模型约121GB；PID1827 flock 队列仍运行，68文件约47.35GB校验，零报告失败。以实际进程和最新报告为准。
 - offline-prep:02 claimed：数据来源、原料与许可准备；Valen20文件约6.36GB全部哈希通过，仅来源隔离，不准入训练。
 - offline-prep:03 claimed：运行时准备；已有环境、FFmpeg及量化/端侧源码归档校验完成，CPU构建/剩余依赖仍需完成。
 - offline-prep:04 pending：依赖前三票；下载、校验、CPU准备与缺口审计全部完成才能通知开卡。
@@ -27,17 +27,21 @@
 - 文本来源17文件30,666,690B本地核对固定上游哈希，已同步远端并逐个SHA256复核；reports/stage1-text-source-verification.json。
 - JevEmbed 600k候选行/Open-Jev原料仅来源审计，未证明独立样本族或训练准入。
 - Clotho官方原料3.14GB；scripts.prepare_clotho实现许可白名单提取：1659 CC0/CCBY，排除332未知/NC/其他许可。
-- Clotho首次任务因辅助脚本导入路径错误退出；已修正PYTHONPATH；第二次遇HTTP IncompleteRead，改用curl有界重试，shell PID7933（后续以ps核实）。报告 clotho-aqa-source-download-001.json；最终音频报告 clotho-aqa-audio-preparation-001.json 尚待下载完成。
+- Clotho首次任务因辅助脚本导入路径错误退出；已修正PYTHONPATH；第二次遇HTTP IncompleteRead，改用curl有界重试，shell PID7933（后续以ps核实）。报告 clotho-aqa-source-download-001.json；最终音频报告 clotho-aqa-audio-preparation-001.json 尚待下载完成；官方小文件5项已校验，归档已开始传输。
 - Clotho未知来源/许可不准入；原始压缩包隔离，只有白名单音频提取至source-audit并保留归属。
 - reports/cpu-media-probe-offline-runtime.json：真实TF5.19 Gemma4Processor图像/截图/16kHz WAV/3帧视频输出与答案边界通过；无模型forward，不代表概率或质量验收。
 - 量化/端侧源码归档约389MB已校验：llm-compressor、llama.cpp、Ollama、LiteRT-LM；源码到位不等于构建完成。
 - teacher head四张量FP32隔离转换通过；父进程输出nofollow/nonblock/regular/size/timeout修复已合入并独立复核；完整教师模型仍待下载和GPU验证。
 
+- AndroidControl官方GCS22对象49.93GB已固定generation/MD5/CRC32C；研究专用原料下载PID9047已启动，商业训练/发布受官方NC条款约束，不混入商用池。
+- 新增configs/gui-source-assets.json及GUI原始权利审计；Mind2Web官方research-only声明已显式记录，不能从OpenRAIL标签推断商用许可；49文件13.58GB研究专用下载PID9369已启动。
+
 ## 并行所有权
 - offline_runtime_dependencies：/tmp/lite-omnijev-offline-runtime；CPU媒体切片已交付，root整合。
 - speech_assets：/tmp/lite-omnijev-speech-assets；TTS模型/语音许可及CPU canary，仍执行。
-- whole_project_datasets：/tmp/lite-omnijev-project-datasets；ScienceQA/ChartQA/DocVQA/A-OKVQA来源与媒体准备，仍执行。
+- whole_project_datasets：/tmp/lite-omnijev-project-datasets；ScienceQA/ChartQA/DocVQA/A-OKVQA来源与媒体准备；来源账本3e1f794已合入，局部失败不算完成，继续远端可用学术网络下载ScienceQA/ChartQA和许可白名单COCO像素。
 - teacher_head_conversion：/tmp/lite-omnijev-s0-teacher；下一片为Valen嵌套PT的官方规格与隔离转换，仍执行。
+- video_eval_sources：/tmp/lite-omnijev-video-eval；MMAU公开mini与MVBench/STAR来源准备，MMAU1.21GB研究评测下载已批准；原researcher角色因模型不支持未启动，已换原生默认代理。
 - root独占主目录、票据、STATUS与合入；子代理显式workdir，只写指定worktree，不改全局计划。
 
 ## 下一步

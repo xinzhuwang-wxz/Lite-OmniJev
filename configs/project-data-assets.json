@@ -354,52 +354,93 @@
       "asset_id": "multimodal-mind2web",
       "name": "Multimodal-Mind2Web",
       "category": "stage_2_training_source",
-      "modalities": ["screenshot", "gui", "text"],
-      "required_stages": [2],
+      "modalities": [
+        "screenshot",
+        "gui",
+        "text"
+      ],
+      "required_stages": [
+        2
+      ],
       "official_source": {
         "type": "huggingface_dataset",
         "repo_id": "osunlp/Multimodal-Mind2Web",
         "revision": "1b4c6a8cf9f77b7a5e0d641959935c80c4a05889",
         "url": "https://huggingface.co/datasets/osunlp/Multimodal-Mind2Web"
       },
-      "license": {"declared": "openrail"},
+      "license": {
+        "declared": "openrail",
+        "dataset_specific_evidence": "Pinned official dataset card disclaimer says released solely for research purposes; OpenRAIL metadata alone does not settle commercial use."
+      },
       "file_metadata": {
         "status": "official_api_metadata_verified_no_content_read",
         "file_count": 49,
         "total_bytes": 13577379722,
-        "splits": {"train": "present", "test_domain": 11, "other_test_splits": "present"},
+        "splits": {
+          "train": "present",
+          "test_domain": 11,
+          "other_test_splits": "present"
+        },
         "major_files": [
-          {"path": "data/test_domain-00000-of-00011-26c55c12cbbcdc8e.parquet", "bytes": 303924204}
+          {
+            "path": "data/test_domain-00000-of-00011-26c55c12cbbcdc8e.parquet",
+            "bytes": 303924204
+          }
         ]
       },
       "label_origin": "Original next-action demonstrations; project maps next step to Choice over elements.",
       "media_availability": "Screenshots in parquet mirror; large payload.",
       "public_sampling_plan": "Part of stage 2 10k GUI tranche; split by original task/site/sample family.",
       "admission_status": "license_blocked",
-      "next_commands": ["Review OpenRAIL terms and website screenshot rights before training admission."]
+      "next_commands": [
+        "Resolve official research-only declaration and exact OpenRAIL text before commercial training; do not infer unrestricted commercial use from generic license tag."
+      ],
+      "training_release_status": "commercial_admission_unresolved_research_only_source_declaration"
     },
     {
       "asset_id": "android-control",
       "name": "AndroidControl",
       "category": "stage_2_training_source",
-      "modalities": ["screenshot", "gui", "android"],
-      "required_stages": [2],
+      "modalities": [
+        "screenshot",
+        "gui",
+        "android"
+      ],
+      "required_stages": [
+        2
+      ],
       "official_source": {
         "type": "github_repository",
         "repo": "google-research/google-research/android_control",
         "revision": "0a1b0fe7298a58bca6dcb47112379d829bc0c0a5",
         "url": "https://github.com/google-research/google-research/blob/master/android_control/README.md"
       },
-      "license": {"declared": "Apache-2.0 repository; dataset terms must be checked at linked storage location"},
+      "license": {
+        "declared": "Apache-2.0 repository; dataset terms must be checked at linked storage location",
+        "dataset_specific_evidence": "Official paper supplementary datasheet1.1.6 states non-commercial use alongside Apache-2.0; unresolved scope conflict, not blanket code-license inference.",
+        "primary_datasheet_url": "https://papers.nips.cc/paper_files/paper/2024/file/a79f3ef3b445fd4659f44648f7ea8ffd-Supplemental-Datasets_and_Benchmarks_Track.pdf"
+      },
       "file_metadata": {
-        "status": "official_readme_verified_storage_not_mirrored",
-        "splits": {"demonstrations": 15283, "apps": 833, "format": "GZIP TFRecord plus split file"}
+        "status": "official_GCS_object_metadata_pinned_generations_md5_crc32c",
+        "splits": {
+          "demonstrations": 15283,
+          "apps": 833,
+          "format": "GZIP TFRecord plus split file"
+        },
+        "object_manifest": "configs/gui-source-assets.json",
+        "file_count": 22,
+        "total_bytes": 49930349992
       },
       "label_origin": "Human demonstration actions; next action is treated as truth.",
       "media_availability": "Screenshots and accessibility trees in TFRecord payload; storage URL must be mirrored with root coordination.",
       "public_sampling_plan": "Part of stage 2 GUI tranche; split by episode/app/task/category according to official split file.",
       "admission_status": "license_blocked",
-      "next_commands": ["Open official dataset location from README, record exact object names/bytes/checksums, and verify dataset-specific terms before download."]
+      "next_commands": [
+        "Resolve datasheet non-commercial condition before commercial training; preserve exact GCS generation/MD5/CRC32C and split-by-episode rule.",
+        "Research-only raw staging underway with pinned GCS generations, MD5/size and local SHA256; do not parse or train until family and label admission."
+      ],
+      "physical_staging_status": "research_only_raw_download_running",
+      "training_release_status": "commercial_admission_blocked_by_explicit_official_noncommercial_condition"
     },
     {
       "asset_id": "gui-odyssey",
