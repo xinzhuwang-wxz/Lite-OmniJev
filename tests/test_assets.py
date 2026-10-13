@@ -32,6 +32,8 @@ def manifest():
                     for name, kind in [
                         ("tokenizer.json", "metadata"),
                         ("model.safetensors", "weights"),
+                        ("config.json", "metadata"),
+                        ("tokenizer_config.json", "metadata"),
                     ]
                 ],
             }
@@ -51,8 +53,12 @@ def test_metadata_only_never_downloads_weights(tmp_path, manifest):
     report = prepare_assets(manifest, tmp_path, metadata_only=True, download=download)
     assert report["status"] == "metadata_verified"
     assert report["weights_ready"] is False
-    assert download.call_count == 1
-    assert download.call_args.kwargs["filename"] == "tokenizer.json"
+    assert download.call_count == 3
+    assert {call.kwargs["filename"] for call in download.call_args_list} == {
+        "tokenizer.json",
+        "config.json",
+        "tokenizer_config.json",
+    }
     assert download.call_args.kwargs["revision"] == "a" * 40
     assert manifest["models"][0]["files"][0]["actual_sha256"]
 
@@ -62,8 +68,8 @@ def test_verified_download_is_reusable_offline(tmp_path, manifest):
     prepare_assets(manifest, tmp_path, metadata_only=False, download=download)
     report = prepare_assets(manifest, tmp_path, metadata_only=False)
     assert report["weights_ready"] is True
-    assert report["files_verified"] == 2
-    assert download.call_count == 2
+    assert report["files_verified"] == 4
+    assert download.call_count == 4
 
 
 def test_low_disk_does_not_start_download(tmp_path, manifest, monkeypatch):
@@ -220,3 +226,30 @@ def test_unknown_token_cannot_count_as_single_answer_token(tmp_path):
     report = json.loads(output.read_text())
     assert report["status"] == "failed"
     assert any("unknown" in failure for failure in report["failures"])
+
+
+def test_full_verify_cannot_claim_ready_for_metadata_only_inventory(tmp_path, manifest):
+    manifest["models"][0]["files"] = [manifest["models"][0]["files"][0]]
+    with pytest.raises(ValueError, match="incomplete"):
+        prepare_assets(manifest, tmp_path, metadata_only=False, download=fake_download)
+
+
+def test_missing_safetensors_shard_is_rejected_before_download(tmp_path, manifest):
+    manifest["models"][0]["files"][1]["path"] = "model-00001-of-00002.safetensors"
+    with pytest.raises(ValueError, match="incomplete"):
+        prepare_assets(manifest, tmp_path, metadata_only=False, download=fake_download)
+
+
+def test_onejev_teacher_name_is_not_confused_with_prohibited_jev_weights():
+    api = Mock()
+    api.model_info.side_effect = RuntimeError("network-reached")
+    with pytest.raises(RuntimeError, match="network-reached"):
+        plan_assets({"models": {"teacher": {"repo_id": "OmniJev/OneJev-27B"}}}, ["teacher"], api)
+
+
+@pytest.mark.parametrize("repo", ["autotrust/JEV-27B", "fork/JEV-27B-VL"])
+def test_prohibited_jev_names_still_block_without_network(repo):
+    api = Mock()
+    with pytest.raises(ValueError, match="prohibited"):
+        plan_assets({"models": {"teacher": {"repo_id": repo}}}, ["teacher"], api)
+    api.model_info.assert_not_called()

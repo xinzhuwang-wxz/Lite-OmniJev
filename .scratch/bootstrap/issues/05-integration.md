@@ -7,7 +7,7 @@ Status: ready-for-agent
 Execution: open
 Owner: none
 Worktree: none
-Blocked by: 01, 02, 03, 04, 06
+Blocked by: 01, 02, 03, 04, 06, 07, 08
 
 ## What to build
 本地环境、命令与可恢复队列集成验收。改动所有权：pyproject/lock/Makefile/循环 CLI/集成验证。

@@ -170,7 +170,7 @@ def test_metrics_exact_definitions_and_confidence_boundaries():
     assert result["accuracy"] == 0.5
     assert result["ece15"] == pytest.approx(0.3)
     assert result["brier"] == pytest.approx(0.68)
-    assert result["coverage_at_error"] == 0.5
+    assert result["coverage_at_error"] == 0.0
     assert evaluate([[1.0, 0.0]], [0])["ece15"] == 0
     # The longest acceptable prefix can appear after a shorter prefix fails.
     rows = [[1.0, 0.0]] * 20
@@ -272,3 +272,9 @@ def test_colliding_answer_ids_fail_preflight():
 
 def test_gate_rejects_integer_overflow_as_nonfinite():
     assert not evaluate_gate({"value": 10**1000}, {"value": {"min": 0.0}})["passed"]
+
+
+def test_coverage_cannot_split_identical_confidence_by_input_order():
+    rows = [[0.8, 0.2], [0.8, 0.2]]
+    assert evaluate(rows, [0, 1])["coverage_at_error"] == 0
+    assert evaluate(rows, [1, 0])["coverage_at_error"] == 0

@@ -55,13 +55,15 @@ def response_for(request: httpx.Request, bad: str | None = None) -> httpx.Respon
         logits.pop(f"token_id:{ids[-1]}")
     if bad == "clipped":
         logits[f"token_id:{ids[0]}"] = -9999.0
+    if bad == "positive":
+        logits[f"token_id:{ids[0]}"] = 1.0
     if bad == "timeout":
         raise httpx.ReadTimeout("fixture")
     return httpx.Response(
         200,
         json={
             "choices": [{"logprobs": {"top_logprobs": [logits]}}],
-            "usage": {"prompt_tokens": 12},
+            "usage": {"prompt_tokens": 12, "completion_tokens": 1},
         },
     )
 
@@ -99,6 +101,7 @@ async def test_three_primitives_map_complete_token_probabilities() -> None:
         assert response.status_code == 200
         body = response.json()
         assert body["usage"] == {"input_tokens": 36, "output_tokens": 0}
+        assert body["backend_usage"] == {"input_tokens": 36, "output_tokens": 3}
         assert body["answers"]["shipped"]["choice"] == "sent"
         for answer in body["answers"].values():
             assert sum(answer["probabilities"].values()) == pytest.approx(1)
@@ -108,7 +111,9 @@ async def test_three_primitives_map_complete_token_probabilities() -> None:
         assert body["answers"]["yesno"]["noul"] > 0.5
 
 
-@pytest.mark.parametrize("bad,status", [("missing", 502), ("clipped", 502), ("timeout", 504)])
+@pytest.mark.parametrize(
+    "bad,status", [("missing", 502), ("clipped", 502), ("positive", 502), ("timeout", 504)]
+)
 async def test_backend_failures_do_not_fabricate_answer(bad: str, status: int) -> None:
     async with client_for(bad) as client:
         response = await client.post("/v1/systemone", json=REQUEST)
@@ -129,5 +134,25 @@ async def test_bad_requests_are_rejected_before_model_call(question: dict[str, A
     async with client_for() as client:
         response = await client.post(
             "/v1/systemone", json={"state": "example", "questions": {"q": question}}
+        )
+        assert response.status_code == 422
+
+
+async def test_score_legend_preserves_sdk_criteria_values() -> None:
+    async with client_for() as client:
+        response = await client.post("/v1/systemone", json=REQUEST)
+        assert response.json()["answers"]["score"]["legend"] == {"0": "Not sent", "1": "Sent"}
+
+
+async def test_whitespace_equivalent_options_return_422() -> None:
+    async with client_for() as client:
+        response = await client.post(
+            "/v1/systemone",
+            json={
+                "state": "example",
+                "questions": {
+                    "q": {"type": "choice", "instructions": "?", "criteria": {"a": " A", "b": "A"}}
+                },
+            },
         )
         assert response.status_code == 422

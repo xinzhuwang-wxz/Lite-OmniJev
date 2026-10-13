@@ -45,7 +45,9 @@ class InputQuestion(BaseModel):
             values = (
                 list(self.criteria.values()) if isinstance(self.criteria, dict) else self.criteria
             )
-            if any(not text.strip() for text in values) or len(set(values)) != len(values):
+            if any(not text.strip() for text in values) or len(
+                {text.strip() for text in values}
+            ) != len(values):
                 raise ValueError("criteria descriptions must be nonempty and distinct")
             if isinstance(self.criteria, dict) and any(not key.strip() for key in self.criteria):
                 raise ValueError("option IDs must be nonempty")
@@ -146,7 +148,7 @@ def create_app(
 
     async def decide(
         qid: str, item: InputQuestion, prefix: Prefix, client: httpx.AsyncClient
-    ) -> tuple[str, dict[str, Any], int]:
+    ) -> tuple[str, dict[str, Any], int, int]:
         assert runtime_tokenizer is not None and settings.upstream_url is not None
         question, labels = core_question(qid, item)
         try:
@@ -173,12 +175,18 @@ def create_app(
             logits: dict[str, float] = {}
             for token, token_id in token_ids.items():
                 value = raw[f"token_id:{token_id}"]
-                if type(value) not in (int, float) or not math.isfinite(value) or value <= -9999:
+                if (
+                    type(value) not in (int, float)
+                    or not math.isfinite(value)
+                    or value <= -9999
+                    or value > 0
+                ):
                     raise ValueError("non-finite or clipped raw logprob")
                 logits[token] = float(value)
             count = body["usage"]["prompt_tokens"]
-            if type(count) is not int or count < 0:
-                raise ValueError("invalid upstream input token accounting")
+            generated = body["usage"]["completion_tokens"]
+            if type(count) is not int or count < 0 or type(generated) is not int or generated < 0:
+                raise ValueError("invalid upstream token accounting")
         except httpx.TimeoutException as error:
             raise HTTPException(504, "Model backend timed out; retry when it is ready") from error
         except (httpx.HTTPError, ValueError, TypeError, KeyError, IndexError) as error:
@@ -203,11 +211,8 @@ def create_app(
         else:
             assert isinstance(item.criteria, list)
             result["score"] = sum(index * probability for index, probability in enumerate(values))
-            result["legend"] = {
-                str(i): {"description": description, "value": i}
-                for i, description in enumerate(item.criteria)
-            }
-        return qid, result, count
+            result["legend"] = {str(i): description for i, description in enumerate(item.criteria)}
+        return qid, result, count, generated
 
     @application.post("/v1/systemone")
     async def systemone(request: DecisionRequest) -> dict[str, Any]:
@@ -237,8 +242,12 @@ def create_app(
         )
         return {
             "model": settings.model_version,
-            "answers": {qid: answer for qid, answer, _ in results},
-            "usage": {"input_tokens": sum(count for _, _, count in results), "output_tokens": 0},
+            "answers": {qid: answer for qid, answer, _, _ in results},
+            "usage": {"input_tokens": sum(count for _, _, count, _ in results), "output_tokens": 0},
+            "backend_usage": {
+                "input_tokens": sum(count for _, _, count, _ in results),
+                "output_tokens": sum(generated for _, _, _, generated in results),
+            },
             "validation_status": "GPU parity and calibration pending",
         }
 

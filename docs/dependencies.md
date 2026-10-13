@@ -10,3 +10,6 @@
 
 Transformers/PEFT/torch/vLLM/MLflow/Data-Juicer 等在对应票中于 Linux 环境精确锁定和 smoke 验证；macOS 的 uv.lock 不证明 CUDA 组合有效。
 不复制无许可代码；新库/源码复用在对应票记来源、license、用途。
+
+## 可选训练环境
+`uv sync --frozen --extra training --group dev` 安装torch、Transformers、PEFT、Accelerate、safetensors；具体版本在uv.lock。它是本地CPU损失/入口验证环境，不代表Linux CUDA兼容性已通过。safetensors用于权重与adapter，PEFT复用LoRA实现，不自建训练框架。

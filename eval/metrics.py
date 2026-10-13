@@ -13,9 +13,9 @@ def evaluate(
 ) -> dict[str, float | int]:
     """Top-label ECE15, multiclass sum Brier and longest-prefix coverage.
 
-    Confidence for coverage is (p_max - 1/K)/(1 - 1/K). Sorting is stable, so ties
-    retain input order. Coverage is an offline diagnostic; it must not be used to
-    select a production threshold on held-out test labels.
+    Confidence for coverage is (p_max - 1/K)/(1 - 1/K). A confidence threshold
+    cannot split equal-confidence samples: only whole tie groups are considered.
+    This offline diagnostic cannot select a production threshold on test labels.
     """
     if not probabilities or len(probabilities) != len(targets):
         raise ValueError("nonempty predictions and targets must have equal length")
@@ -53,10 +53,12 @@ def evaluate(
         abs(math.fsum(correct[i] - maxima[i] for i in bucket)) / count for bucket in bins if bucket
     )
     errors, covered = 0, 0
-    for rank, index in enumerate(sorted(range(count), key=lambda i: -confidence[i]), 1):
+    order = sorted(range(count), key=lambda i: -confidence[i])
+    for rank, index in enumerate(order, 1):
         errors += 1 - correct[index]
-        # Do not stop at first violation: a longer prefix may satisfy the bound.
-        if errors / rank <= max_error:
+        group_end = rank == count or confidence[order[rank]] != confidence[index]
+        # A longer complete group prefix may recover after an earlier violation.
+        if group_end and errors / rank <= max_error:
             covered = rank
     return {
         "count": count,

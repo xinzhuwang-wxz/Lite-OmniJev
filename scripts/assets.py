@@ -51,7 +51,7 @@ def plan_assets(config: dict[str, Any], names: list[str], api: Any) -> dict[str,
     for name in names:
         entry = config["models"][name]
         repo = entry["repo_id"]
-        if not repo or "JEV-27B" in repo.upper():
+        if not repo or repo.rsplit("/", 1)[-1].upper() in {"JEV-27B", "JEV-27B-VL"}:
             raise ValueError(f"Unresolved or prohibited model: {name}")
         info = api.model_info(
             repo, revision=entry.get("revision", "main"), files_metadata=True, timeout=30
@@ -127,6 +127,27 @@ def selected_files(
                 raise ValueError("Incorrect file kind in manifest")
             if not metadata_only or not is_weight:
                 selected.append((model, file))
+        paths = {file["path"] for file in model["files"]}
+        required = {"config.json", "tokenizer.json", "tokenizer_config.json"}
+        weights = {path for path in paths if path.endswith(".safetensors")}
+        if len(paths) != len(model["files"]) or not required <= paths or not weights:
+            raise ValueError(
+                "Model inventory incomplete: required metadata and weights missing/duplicated"
+            )
+        if weights != {"model.safetensors"}:
+            shards = [re.fullmatch(r"model-(\d+)-of-(\d+)\.safetensors", path) for path in weights]
+            if any(match is None for match in shards):
+                raise ValueError("Model inventory incomplete: ambiguous weights")
+            parts = [(int(match[1]), int(match[2])) for match in shards if match is not None]
+            totals = {total for _, total in parts}
+            total = max(totals)
+            if (
+                len(totals) != 1
+                or len(parts) != total
+                or {index for index, _ in parts} != set(range(1, total + 1))
+                or "model.safetensors.index.json" not in paths
+            ):
+                raise ValueError("Model inventory incomplete: missing safetensors shard/index")
     if not selected:
         raise ValueError("No files selected")
     return selected
@@ -201,6 +222,23 @@ def prepare_assets(
 
         with ThreadPoolExecutor(max_workers=workers) as pool:
             list(pool.map(fetch, remaining))
+    if not metadata_only:
+        for model in manifest["models"]:
+            directory = model_directory(root, model)
+            index_path = directory / "model.safetensors.index.json"
+            if index_path.exists():
+                index = json.loads(index_path.read_text())
+                weight_map = index.get("weight_map") if isinstance(index, dict) else None
+                weights = {file["path"] for file in model["files"] if file["kind"] == "weights"}
+                if (
+                    not isinstance(weight_map, dict)
+                    or not weight_map
+                    or any(not isinstance(value, str) for value in weight_map.values())
+                    or set(weight_map.values()) != weights
+                ):
+                    raise ValueError(
+                        "Model inventory incomplete: weight index does not match shards"
+                    )
     manifest["status"] = "metadata_verified" if metadata_only else "all_files_verified"
     manifest["verified_at"] = datetime.now(UTC).isoformat()
     return {
