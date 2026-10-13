@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-14T00:00:00+08:00",
+  "scope": "offline-prep:03 runtime and build dependencies",
+  "claim": "Runtime dependency evidence for pre-GPU preparation only. GPU execution, model quality, future trained adapters, calibration artifacts, quantized weights, and production deployment remain pending.",
+  "source_documents": [
+    {
+      "path": ".scratch/offline-prep/spec.md",
+      "sha256": "071d339c5ef83a1860cc96f9c91ae14700236734ffce9da50eae5e77eef189d1",
+      "purpose": "Full-project offline preparation scope"
+    },
+    {
+      "path": ".scratch/offline-prep/issues/03-dependencies.md",
+      "sha256": "3e715ba09b6d6a61de2f0728988d04b0d0df753fcc3021bdfdf42e83f5bcebeb",
+      "purpose": "Runtime dependency ticket acceptance criteria"
+    },
+    {
+      "path": "docs/Lite-OmniJev设计方案-最终版.html",
+      "sha256": "e23d7537c676cb5ead8f64e5de0d518c04f06d2901ac527c553519facdeb4957",
+      "purpose": "Original S6/runtime requirements extracted with HTMLParser"
+    }
+  ],
+  "lockfiles": [
+    {
+      "path": "uv.lock",
+      "sha256": "65eeed6e0b0db033dcc6f25bebbbd7c392fac629fc904cc16bcd9fd6b0781c60",
+      "platform": "macos-arm64 local, linux-x86_64 remote root environment",
+      "status": "installed_remote_root_venv",
+      "purpose": "Training, gateway, tokenizer, browser, and optional monitoring lock"
+    },
+    {
+      "path": "infra/data/uv.lock",
+      "sha256": "81ce12213cfc69b30d210faed6267275d860f371ea349543e8c9ff404929aa4b",
+      "platform": "linux-x86_64",
+      "status": "installed_remote_data_env",
+      "purpose": "Data-preparation PyArrow environment"
+    },
+    {
+      "path": "infra/serve/uv.lock",
+      "sha256": "673de0eeb90c4117424868de331874d606106192abc844d07e1d4f2aa969ef39",
+      "platform": "linux-x86_64 CUDA",
+      "status": "installed_remote_service_env",
+      "purpose": "Primary vLLM service environment"
+    },
+    {
+      "path": "infra/serve-next/uv.lock",
+      "sha256": "df2242e7620d0c85202c0bcffcc31d8e3a077280fc0579ec472c36559bac02ab",
+      "platform": "linux-x86_64 CUDA",
+      "status": "installed_remote_service_next_env",
+      "purpose": "Heterogeneous vLLM candidate service environment"
+    }
+  ],
+  "official_source_checks": [
+    {
+      "id": "llm-compressor",
+      "checked_at": "2026-10-14",
+      "source_url": "https://github.com/vllm-project/llm-compressor/releases",
+      "observed_current": "v0.14.0 latest release on GitHub releases page",
+      "observed_commit": "6e4b96e",
+      "status": "cached_source_archive"
+    },
+    {
+      "id": "llama.cpp",
+      "checked_at": "2026-10-14",
+      "source_url": "https://github.com/ggml-org/llama.cpp/releases",
+      "observed_current": "b11583 latest GitHub release entry; v0.6.0 latest semantic tag observed by git ls-remote",
+      "observed_commit": "9880157 for b11583; 69ecae922d2b60c1fa8c590279f4e2099af75111 for v0.6.0",
+      "status": "cached_source_archive"
+    },
+    {
+      "id": "ollama",
+      "checked_at": "2026-10-14",
+      "source_url": "https://github.com/ollama/ollama/releases",
+      "observed_current": "v0.35.0 latest release on GitHub releases page",
+      "observed_commit": "cc40693",
+      "status": "cached_source_archive; local_client_0.24.0_installed"
+    },
+    {
+      "id": "litert-lm",
+      "checked_at": "2026-10-14",
+      "source_url": "https://github.com/google-ai-edge/LiteRT-LM",
+      "observed_current": "official repository says build from source should check out a stable tag; git ls-remote observed stable tag v0.9.0 and pre-release tags v0.9.0-alpha through v0.9.0-rc",
+      "observed_commit": "e515431480b60a92a9a841d613a9c5404d059675 for v0.9.0",
+      "status": "cached_source_archive"
+    }
+  ],
+  "remote_runtime_source_cache": {
+    "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources",
+    "manifest": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/runtime-source-manifest.json",
+    "total_size": "389M",
+    "items": [
+      {
+        "id": "llm-compressor",
+        "version": "0.14.0",
+        "path": "artifacts/runtime-sources/llm-compressor-0.14.0.tar.gz",
+        "bytes": 3044870,
+        "sha256": "232c24db6a488b3bbeaed9dd8935941c4063c81e6ebc7cb8cba856e4f60cbefb",
+        "source_url": "https://github.com/vllm-project/llm-compressor/archive/refs/tags/0.14.0.tar.gz",
+        "status": "cached_source_archive",
+        "support_evidence": "Archive contains docs/key-models/gemma4 and examples for gemma4 FP8/NVFP4/W4A16-style quantization paths."
+      },
+      {
+        "id": "llama.cpp",
+        "version": "v0.6.0",
+        "path": "artifacts/runtime-sources/llama.cpp-v0.6.0.tar.gz",
+        "bytes": 37874349,
+        "sha256": "09b36dba235fcac180efff18514da7038e65d8e5b9e4aefa59238468abfdec12",
+        "source_url": "https://github.com/ggml-org/llama.cpp/archive/refs/tags/v0.6.0.tar.gz",
+        "status": "cached_source_archive"
+      },
+      {
+        "id": "ollama",
+        "version": "v0.35.0",
+        "path": "artifacts/runtime-sources/ollama-v0.35.0.tar.gz",
+        "bytes": 26420689,
+        "sha256": "2d24c59fe4aec09fa68994816cd24e233dff4d57cbc31ee9b46973fb0b3f55e7",
+        "source_url": "https://github.com/ollama/ollama/archive/refs/tags/v0.35.0.tar.gz",
+        "status": "cached_source_archive"
+      },
+      {
+        "id": "litert-lm",
+        "version": "v0.9.0",
+        "path": "artifacts/runtime-sources/litert-lm-v0.9.0.tar.gz",
+        "bytes": 339861017,
+        "sha256": "bda82d61677965daa3b839cb70073f1ce9b0e151057ede54031df841a5d6c97f",
+        "source_url": "https://codeload.github.com/google-ai-edge/LiteRT-LM/tar.gz/refs/tags/v0.9.0",
+        "status": "cached_source_archive"
+      }
+    ]
+  },
+  "environments": [
+    {
+      "id": "remote-root-training",
+      "host": "root@region-42.seetacloud.com:48926",
+      "path": "/root/autodl-tmp/lite-omnijev/.venv",
+      "platform": "linux-x86_64",
+      "status": "installed",
+      "python": "CPython 3.11.17",
+      "packages": {
+        "torch": "2.14.1",
+        "transformers": "5.19.0",
+        "peft": "0.21.2",
+        "accelerate": "1.15.0",
+        "safetensors": "0.8.0",
+        "fastapi": "0.143.0",
+        "uvicorn": "0.54.0",
+        "httpx": "0.28.1",
+        "pydantic": "2.14.1",
+        "huggingface-hub": "1.33.0",
+        "tokenizers": "0.23.3",
+        "playwright": "1.63.0",
+        "swanlab": "0.10.2"
+      },
+      "missing_packages": [
+        "vllm",
+        "pyarrow"
+      ],
+      "license_basis": "package metadata and upstream project licenses; transitive CUDA/NVIDIA packages retain their own licenses",
+      "verification": "Read-only importlib.metadata probe over SSH; no package install or GPU command"
+    },
+    {
+      "id": "remote-data",
+      "host": "root@region-42.seetacloud.com:48926",
+      "path": "/root/autodl-tmp/envs/data",
+      "platform": "linux-x86_64",
+      "status": "installed",
+      "packages": {
+        "pyarrow": "26.0.0"
+      },
+      "missing_packages": [],
+      "verification": "Read-only importlib.metadata probe against /root/autodl-tmp/envs/data/bin/python showed pyarrow==26.0.0"
+    },
+    {
+      "id": "remote-service-next",
+      "host": "root@region-42.seetacloud.com:48926",
+      "path": "/root/autodl-tmp/envs/serve-next",
+      "platform": "linux-x86_64 CUDA",
+      "status": "installed",
+      "packages": {
+        "fastapi": "0.136.3",
+        "httpx": "0.28.1",
+        "huggingface-hub": "1.33.0",
+        "ninja": "1.13.2",
+        "pydantic": "2.14.1",
+        "safetensors": "0.8.0",
+        "tokenizers": "0.23.3",
+        "torch": "2.13.0",
+        "torchaudio": "2.11.0",
+        "torchvision": "0.28.0",
+        "transformers": "5.17.0",
+        "triton": "3.7.1",
+        "uvicorn": "0.54.0",
+        "vllm": "0.31.0",
+        "pyarrow": null
+      },
+      "verification": "Read-only importlib.metadata probe against /root/autodl-tmp/envs/serve-next/bin/python. GPU execution remains pending."
+    },
+    {
+      "id": "remote-service-primary",
+      "host": "root@region-42.seetacloud.com:48926",
+      "path": "/root/autodl-tmp/envs/serve",
+      "platform": "linux-x86_64 CUDA",
+      "status": "installed",
+      "packages": {
+        "fastapi": "0.136.3",
+        "httpx": "0.28.1",
+        "huggingface-hub": "1.33.0",
+        "ninja": "1.13.2",
+        "pydantic": "2.14.1",
+        "safetensors": "0.8.0",
+        "tokenizers": "0.22.2",
+        "torch": "2.11.0",
+        "torchaudio": "2.11.0",
+        "torchvision": "0.26.0",
+        "transformers": "5.13.0",
+        "triton": "3.6.0",
+        "uvicorn": "0.54.0",
+        "vllm": "0.26.0",
+        "pyarrow": null
+      },
+      "verification": "Read-only importlib.metadata probe against /root/autodl-tmp/envs/serve/bin/python. GPU execution remains pending."
+    },
+    {
+      "id": "remote-media-tools",
+      "host": "root@region-42.seetacloud.com:48926",
+      "platform": "linux-x86_64",
+      "status": "installed",
+      "tools": {
+        "ffmpeg": "4.4.2-0ubuntu0.22.04.1",
+        "ffprobe": "4.4.2-0ubuntu0.22.04.1"
+      },
+      "license_basis": "Ubuntu ffmpeg package from configured Ubuntu jammy repositories; FFmpeg LGPL/GPL depending on enabled codecs",
+      "verification": "Remote ffmpeg generated a 1s H.264/AAC probe and ffprobe read video plus 16 kHz audio streams."
+    },
+    {
+      "id": "local-browser-media",
+      "host": "local macOS",
+      "platform": "macos-arm64",
+      "status": "installed",
+      "packages": {
+        "playwright": "1.63.0"
+      },
+      "tools": {
+        "ffmpeg": "8.0.1",
+        "ffprobe": "8.0.1"
+      },
+      "cached_artifacts": [
+        "chromium-1148",
+        "chromium-1234",
+        "chromium-1243",
+        "ffmpeg-1010",
+        "ffmpeg-1011"
+      ],
+      "verification": "playwright --version and cache listing; ffmpeg generated a 1s H.264/AAC probe and ffprobe read video+audio streams"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "training-runtime",
+      "category": "training",
+      "source": "root pyproject.toml training extra and uv.lock",
+      "status": "installed_remote_root_venv",
+      "platform": "linux-x86_64, CPU import only",
+      "versions": {
+        "torch": "2.14.1",
+        "transformers": "5.19.0",
+        "peft": "0.21.2",
+        "accelerate": "1.15.0",
+        "safetensors": "0.8.0"
+      },
+      "license": "mixed upstream licenses; torch BSD-style, Hugging Face packages Apache-2.0 unless upstream metadata says otherwise",
+      "hash": "uv.lock sha256:65eeed6e0b0db033dcc6f25bebbbd7c392fac629fc904cc16bcd9fd6b0781c60",
+      "offline_rebuild": "Use the locked root environment; do not overwrite it. Fresh rebuild requires wheel cache or network approval.",
+      "verification": "Remote importlib.metadata probe passed for package presence. CUDA/GPU computation is pending."
+    },
+    {
+      "id": "teacher-candidate-runtime",
+      "category": "teacher",
+      "source": "serve-next candidate lock and Jev-Omni research note",
+      "status": "installed_remote_service_next_env",
+      "platform": "linux-x86_64 CUDA",
+      "versions": {
+        "transformers": "5.17.0",
+        "torch": "2.13.0",
+        "vllm": "0.31.0"
+      },
+      "license": "mixed upstream; exact teacher model license/provenance is handled by offline-prep:01",
+      "hash": "infra/serve-next/uv.lock sha256:df2242e7620d0c85202c0bcffcc31d8e3a077280fc0579ec472c36559bac02ab",
+      "offline_rebuild": "Reuse isolated /root/autodl-tmp/envs/serve-next; do not overwrite the student training root environment.",
+      "verification": "Remote /root/autodl-tmp/envs/serve-next/bin/python reports vllm==0.31.0, transformers==5.17.0, torch==2.13.0. No teacher weights or head files were touched."
+    },
+    {
+      "id": "valen-runtime-conversion",
+      "category": "teacher_or_baseline_conversion",
+      "source": "Valen-Team/Valen-Preview-0923 quarantined model asset",
+      "status": "asset_download_in_progress_conversion_missing",
+      "platform": "linux-x86_64 CPU/GPU pending",
+      "versions": {
+        "asset": "checkpoint.pt",
+        "frozen_sha256_prefix": "30096aaa",
+        "base_model": "Qwen3.5-2B tracked separately by offline-prep:01"
+      },
+      "license": "handled by offline-prep:01 model asset ledger",
+      "hash": "quarantined asset hash tracked by root model-assets lane",
+      "offline_rebuild": "Audit tensor-only conversion and nested checkpoint mapping before use. Do not load the raw .pt checkpoint in normal inference or service paths.",
+      "verification": "Root coordination message reports quarantine download; this runtime ticket did not execute or inspect the raw checkpoint."
+    },
+    {
+      "id": "vllm-service-runtime",
+      "category": "service",
+      "source": "infra/serve and infra/serve-next locks; vLLM Gemma 4 runbooks",
+      "status": "installed_remote_service_envs",
+      "platform": "linux-x86_64 CUDA",
+      "versions": {
+        "primary_vllm": "0.26.0",
+        "primary_transformers": "5.13.0",
+        "candidate_vllm": "0.31.0",
+        "candidate_transformers": "5.17.0"
+      },
+      "license": "Apache-2.0 vLLM plus mixed CUDA/NVIDIA wheel licenses",
+      "hash": "infra/serve/uv.lock sha256:673de0eeb90c4117424868de331874d606106192abc844d07e1d4f2aa969ef39; infra/serve-next/uv.lock sha256:df2242e7620d0c85202c0bcffcc31d8e3a077280fc0579ec472c36559bac02ab",
+      "offline_rebuild": "Reuse /root/autodl-tmp/envs/serve and /root/autodl-tmp/envs/serve-next. GPU collect_env and vLLM server startup remain pending.",
+      "verification": "Remote metadata probes confirmed envs/serve has vLLM 0.26.0 + Transformers 5.13.0 and envs/serve-next has vLLM 0.31.0 + Transformers 5.17.0."
+    },
+    {
+      "id": "fastapi-gateway-runtime",
+      "category": "service",
+      "source": "root pyproject.toml and uv.lock",
+      "status": "installed_remote_root_venv",
+      "platform": "linux-x86_64 and macos-arm64",
+      "versions": {
+        "fastapi": "0.143.0",
+        "uvicorn": "0.54.0",
+        "httpx": "0.28.1",
+        "pydantic": "2.14.1"
+      },
+      "license": "MIT/BSD-style upstream licenses per docs/dependencies.md and package metadata",
+      "hash": "uv.lock sha256:65eeed6e0b0db033dcc6f25bebbbd7c392fac629fc904cc16bcd9fd6b0781c60",
+      "offline_rebuild": "Root lockfile is sufficient for CPU gateway imports; upstream model runtime is separate.",
+      "verification": "Remote importlib.metadata probe passed."
+    },
+    {
+      "id": "browser-runtime",
+      "category": "browser",
+      "source": "root dev dependency lock",
+      "status": "cached_local_not_verified_remote",
+      "platform": "macos-arm64 local; linux-x86_64 remote pending",
+      "versions": {
+        "playwright": "1.63.0"
+      },
+      "license": "Apache-2.0",
+      "hash": "uv.lock sha256:65eeed6e0b0db033dcc6f25bebbbd7c392fac629fc904cc16bcd9fd6b0781c60",
+      "offline_rebuild": "Reuse cached browser binaries when available; browser download on remote requires coordination if over 100 MB.",
+      "verification": "Local Playwright CLI works and browser cache contains Chromium entries. Remote browser binaries were not checked."
+    },
+    {
+      "id": "media-tools",
+      "category": "media",
+      "source": "original plan requires ffmpeg/decord/PySceneDetect/torchaudio for media preparation",
+      "status": "installed_local_and_remote",
+      "platform": "macos-arm64 local; linux-x86_64 remote",
+      "versions": {
+        "local_ffmpeg": "8.0.1",
+        "local_ffprobe": "8.0.1",
+        "remote_ffmpeg": "4.4.2-0ubuntu0.22.04.1",
+        "remote_ffprobe": "4.4.2-0ubuntu0.22.04.1"
+      },
+      "license": "FFmpeg LGPL/GPL build depending on enabled codecs; current Homebrew and Ubuntu builds may enable GPL codecs",
+      "hash": "not_applicable_system_tool",
+      "offline_rebuild": "Remote ffmpeg/ffprobe are installed from Ubuntu packages; preserve package list in run evidence.",
+      "verification": "Local and remote synthetic H.264/AAC probes passed. Remote ffprobe verified one video stream and one 16 kHz audio stream."
+    },
+    {
+      "id": "data-runtime",
+      "category": "data",
+      "source": "infra/data lock",
+      "status": "installed_remote_data_env",
+      "platform": "linux-x86_64",
+      "versions": {
+        "pyarrow": "26.0.0"
+      },
+      "license": "Apache-2.0",
+      "hash": "infra/data/uv.lock sha256:81ce12213cfc69b30d210faed6267275d860f371ea349543e8c9ff404929aa4b",
+      "offline_rebuild": "Reuse isolated /root/autodl-tmp/envs/data; do not overwrite root or service environments.",
+      "verification": "Remote /root/autodl-tmp/envs/data/bin/python reports pyarrow==26.0.0."
+    },
+    {
+      "id": "quantization-fp8-w4a16",
+      "category": "quantization",
+      "source": "original plan S6 names llm-compressor FP8/W4A16 and vLLM FP8",
+      "status": "source_cached_env_pending",
+      "platform": "linux-x86_64 CUDA",
+      "versions": {
+        "llm-compressor": "0.14.0 source archive cached",
+        "observed_upstream_latest": "v0.14.0"
+      },
+      "license": "Apache-2.0 upstream project expected; final wheel/transitive license review pending for independent quantization env",
+      "hash": "source sha256:232c24db6a488b3bbeaed9dd8935941c4063c81e6ebc7cb8cba856e4f60cbefb",
+      "offline_rebuild": "Build/install only in an independent quantization environment. No quantized artifacts exist before trained checkpoints.",
+      "verification": "Remote cached llm-compressor 0.14.0 source archive is tar-valid and contains Gemma4 docs/examples including FP8 and NVFP4/W4A16-style paths."
+    },
+    {
+      "id": "gguf-llama-cpp",
+      "category": "edge_runtime",
+      "source": "original plan S6 and section 7.2 require GGUF and llama.cpp logits/n_probs checks",
+      "status": "source_cached_build_pending",
+      "platform": "macos-arm64, linux-x86_64, Android, iOS",
+      "versions": {
+        "llama.cpp": "v0.6.0 source archive cached",
+        "observed_upstream_latest_release": "b11583",
+        "observed_upstream_latest_semver_tag": "v0.6.0"
+      },
+      "license": "MIT upstream, not yet vendored or pinned here",
+      "hash": "source sha256:09b36dba235fcac180efff18514da7038e65d8e5b9e4aefa59238468abfdec12",
+      "offline_rebuild": "Build per platform after model artifacts exist; source archive is already cached remotely.",
+      "verification": "Remote llama.cpp v0.6.0 source archive is cached and tar-valid. Runtime build/logit checks remain pending."
+    },
+    {
+      "id": "ollama-runtime",
+      "category": "edge_runtime",
+      "source": "original plan single-card delivery",
+      "status": "source_cached_local_client_installed_remote_binary_pending",
+      "platform": "macos-arm64 local, linux-x86_64 remote pending",
+      "versions": {
+        "local_client": "0.24.0",
+        "observed_upstream_latest": "v0.35.0"
+      },
+      "license": "MIT upstream, not yet pinned here",
+      "hash": "source sha256:2d24c59fe4aec09fa68994816cd24e233dff4d57cbc31ee9b46973fb0b3f55e7",
+      "offline_rebuild": "Remote binary/install remains pending; source archive is cached remotely.",
+      "verification": "Local ollama client reports 0.24.0 but no daemon. Remote binary is absent. Ollama v0.35.0 source archive is cached and tar-valid."
+    },
+    {
+      "id": "litert-lm",
+      "category": "edge_runtime",
+      "source": "original plan S6 names LiteRT-LM and requires logits/audio support verification",
+      "status": "source_cached_build_pending",
+      "platform": "Android, iOS, Web pending",
+      "versions": {
+        "litert-lm": "v0.9.0 source archive cached",
+        "observed_upstream_stable_tag": "v0.9.0"
+      },
+      "license": "unverified; source cached only, Android SDK terms not accepted",
+      "hash": "source sha256:bda82d61677965daa3b839cb70073f1ce9b0e151057ede54031df841a5d6c97f",
+      "offline_rebuild": "Build only after platform terms/toolchains are resolved; verify logits access before claiming endpoint support.",
+      "verification": "Remote LiteRT-LM v0.9.0 source archive is cached and tar-valid. Build/logit/audio support checks remain pending."
+    },
+    {
+      "id": "ios-build-prerequisites",
+      "category": "platform_build",
+      "source": "local Apple SDK read-only probe",
+      "status": "installed_local",
+      "platform": "macos-arm64",
+      "versions": {
+        "xcode": "26.5",
+        "iphoneos_sdk": "26.5",
+        "cmake": "4.1.1"
+      },
+      "license": "Apple developer tools license outside project repository",
+      "hash": "not_applicable_system_tool",
+      "offline_rebuild": "Document local build host requirement; do not copy Apple SDK into repository.",
+      "verification": "xcodebuild, xcrun, and cmake read-only probes passed locally."
+    },
+    {
+      "id": "android-build-prerequisites",
+      "category": "platform_build",
+      "source": "local and remote command lookup",
+      "status": "missing",
+      "platform": "macos-arm64 local, linux-x86_64 remote",
+      "versions": {
+        "java": null,
+        "android_sdk": null,
+        "gradle": null
+      },
+      "license": "Android SDK terms require explicit install outside this ticket",
+      "hash": "not_installed",
+      "offline_rebuild": "Install JDK and Android SDK command-line tools under an approved SDK directory, then record versions and licenses.",
+      "verification": "java lookup failed locally and remotely; Android SDK paths were absent."
+    }
+  ],
+  "blocked_or_pending": [
+    "GPU-compiled validation: nvidia-smi, torch CUDA availability, vLLM collect_env, vLLM server startup, FP8/W4A16 kernels, and model logprob parity remain pending until a GPU host is intentionally enabled.",
+    "Valen-Team/Valen-Preview-0923 checkpoint.pt is a quarantined model asset and requires audited tensor-only conversion plus nested checkpoint mapping before any runtime use; raw .pt loading in normal inference is not allowed.",
+    "Android Java/SDK prerequisites are missing. iOS SDK exists locally but mobile runtime builds are not yet pinned.",
+    "llm-compressor, llama.cpp, Ollama, and LiteRT-LM source archives are cached remotely; independent quantization/runtime build environments and release binaries remain pending.",
+    "Future trained LoRA, calibration, distilled E2B, FP8/W4A16/GGUF, and mobile package artifacts are generated outputs, not downloadable prerequisites."
+  ],
+  "probes": {
+    "local": [
+      "uv run python lockfile parser for uv.lock and infra locks",
+      "command lookups and version probes for ffmpeg, ffprobe, cmake, Xcode, iPhoneOS SDK, Java, Ollama, git",
+      "Playwright CLI and local browser-cache listing",
+      "FFmpeg generated a 1s H.264/AAC media file and ffprobe verified one video stream and one 16 kHz audio stream"
+    ],
+    "remote": [
+      "SSH read-only probe at /root/autodl-tmp/lite-omnijev",
+      "df -h showed /root/autodl-tmp on an 800G disk with 725G available after runtime source staging",
+      "importlib.metadata package probe for /root/autodl-tmp/envs/{data,serve,serve-next}",
+      "sourced infra/bootstrap/autodl-env.sh before PATH checks; uv resolves to /root/miniconda3/bin/uv and service envs include ninja",
+      "installed Ubuntu ffmpeg/ffprobe and verified a remote synthetic H.264/AAC media probe",
+      "cached tar-valid runtime source archives for llm-compressor, llama.cpp, Ollama, and LiteRT-LM under artifacts/runtime-sources"
+    ]
+  }
+}
