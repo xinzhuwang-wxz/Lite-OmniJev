@@ -1,28 +1,40 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-14T03:59:24+08:00",
-  "status": "runtime_assets_cached_with_quant_env_cpu_imports_partial_standalone_gap",
+  "generated_at": "2026-10-14T04:45:55+08:00",
+  "status": "runtime_cpu_builds_and_quant_wheelhouse_prepared_gpu_pending",
   "remote_evidence": [
     {
       "id": "llama.cpp-cpu",
-      "status": "paused_build_in_progress",
-      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/build/llama.cpp-v0.6.0-cpu-lowmem",
+      "status": "built_hash_version_checked",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/bin/llama.cpp-v0.6.0-cpu",
+      "build_dir": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/build/llama.cpp-v0.6.0-cpu-lowmem",
       "target_binaries": [
         "llama-cli",
         "llama-quantize",
         "llama-gguf",
         "llama-gguf-split"
       ],
-      "configure_flags": [
-        "LLAMA_BUILD_IS_DEV=OFF",
-        "LLAMA_BUILD_TESTS=OFF",
-        "LLAMA_CURL=OFF",
-        "GGML_NATIVE=OFF",
-        "GGML_CUDA=OFF",
-        "GGML_BLAS=OFF",
-        "GGML_OPENMP=ON"
+      "version_output": [
+        "version: 0.6.0 (build 24, commit 45ebe32)",
+        "built with GNU 11.4.0 for Linux x86_64"
       ],
-      "evidence": "Initial -j8 build hit cgroup pressure; low-memory -j1 build reached llama-common/json.cpp and was SIGSTOPed on root request. PIDs recorded in reports/runtime-cpu-builds.json. Not marked ready until resumed and binaries are hashed."
+      "sha256": {
+        "llama-cli": "833919853b892b8722cbe857f3cfe5f32de8d5a106ba38b55d6ee56b276ae0cf",
+        "llama-quantize": "726f662687544c25c8fc73c46f808a5688bcd6da594925ff823a8f385ed73961",
+        "llama-gguf": "0c427b4e721fd5b9e327ea9e80f61058afd9ba35bb234bd15254062e4327b56d",
+        "llama-gguf-split": "5021422a789560fa95648ff42c821283566a8782bab7202a91b02c6ec4665d9d"
+      },
+      "evidence_files": [
+        "sha256sums.txt",
+        "llama-cli.version.retry.txt",
+        "llama-cli.help.txt",
+        "llama-quantize.help.txt",
+        "llama-gguf.help.txt",
+        "logs/llama-cpu-resume-20261013T202634Z.log"
+      ],
+      "notes": [
+        "Resumed preserved cmake tree under flock /tmp/omnijev-cpu-heavy.lock; resume wrapper observed parent exit rc=0. No GPU or model forward pass was run."
+      ]
     },
     {
       "id": "llmcompressor-direct-wheel-cache",
@@ -32,7 +44,7 @@
       "items": 13,
       "notes": [
         "Direct wheels cached for cp311 manylinux or py3-none-any without installing into existing envs.",
-        "torch is intentionally not duplicated; llmcompressor release requires torch<=2.14.0 and service-next already has torch==2.13.0+cu130 while root train env torch==2.14.1 is outside release bounds.",
+        "Superseded for offline readiness by llmcompressor-0.14.0-full; retained as direct-wheel evidence.",
         "Configured PyPI mirror served the artifacts; hashes are recorded for offline verification."
       ]
     },
@@ -124,7 +136,7 @@
       ],
       "import_summary": "2026-10-14T03:57:11.4202 | get_main_device | WARNING - No accelerator available! Compressing model on CPU instead\n{\n  \"packages\": {\n    \"PIL\": \"12.0.0\",\n    \"accelerate\": \"1.15.0\",\n    \"auto_round\": \"0.15.1\",\n    \"compressed_tensors\": \"0.19.0\",\n    \"datasets\": \"5.0.1\",\n    \"llmcompressor\": \"0.14.0\",\n    \"multiprocess\": \"0.70.19\",\n    \"numpy\": \"2.2.6\",\n    \"pandas\": \"3.0.6\",\n    \"pyarrow\": \"26.0.0\",\n    \"torch\": \"2.13.0\",\n    \"transformers\": \"5.17.0\"\n  },\n  \"python\": \"/root/autodl-tmp/envs/quant/bin/python\",\n  \"sys_path_contains_serve_next\": true,\n  \"torch_cuda\": \"13.0\",\n  \"torch_cuda_available\": false\n}\n",
       "limitations": [
-        "Not a standalone torch wheelhouse closure. The env contains direct llm-compressor wheels plus missing transitive wheels, and reads torch/CUDA/serve-next dependencies through a quant-env .pth link to /root/autodl-tmp/envs/serve-next/lib/python3.11/site-packages. Existing serve-next was not modified. GPU/runtime quant validation remains pending."
+        "This env still uses a .pth link to serve-next and is retained only as the original CPU import probe. The standalone wheelhouse and offline install check are recorded separately under llmcompressor-quant-wheelhouse-full."
       ]
     },
     {
@@ -132,8 +144,73 @@
       "status": "blocked_toolchain",
       "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-sources/litert-lm-v0.9.0.tar.gz",
       "notes": [
-        "Source cached and support paths verified. Build not attempted because remote toolchain violates upstream minimums and Android terms/JDK acceptance cannot be automated. Local macOS has Xcode 26.5/CMake 4.1.1/Rust but no Java/Bazel/Android SDK."
+        "Source cached and support paths verified. Host/mobile build not attempted in this no-GPU/no-license slice. Non-Android prerequisites are cached; GCC13 packages are cache-only .deb files; Android NDK download remains blocked on Android SDK License acceptance."
       ]
+    },
+    {
+      "id": "llmcompressor-quant-wheelhouse-full",
+      "status": "closure_cached_offline_install_import_checked",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/llmcompressor-0.14.0-full",
+      "items": 85,
+      "size": "2.7G",
+      "requirements": "quant-closure.requirements.txt",
+      "files_manifest": "quant-closure.files.txt",
+      "sha256_manifest": "quant-closure.sha256sums.txt",
+      "torch_wheel": {
+        "name": "torch-2.13.0-cp311-cp311-manylinux_2_28_x86_64.whl",
+        "source": "https://files.pythonhosted.org/packages/01/79/1f2d34ad7034ee1c7ffc1cf8bf0f8213af2a81df6ecdb3997ecec107c09d/torch-2.13.0-cp311-cp311-manylinux_2_28_x86_64.whl",
+        "bytes": 526574961,
+        "sha256": "60fcdcb2f3876e21146cb4524ef06397d727ca9ad5f020818547e25075fe3cb7"
+      },
+      "download_evidence": [
+        "torch-2.13.0.download.report",
+        "quant-closure.official-pypi.download.report"
+      ],
+      "offline_install_check": {
+        "status": "passed",
+        "env": "/root/autodl-tmp/envs/quant-offline-check",
+        "report": "quant-offline-install-check.json",
+        "summary": {
+          "python": "/root/autodl-tmp/envs/quant-offline-check/bin/python",
+          "torch": "2.13.0+cu130",
+          "torch_cuda": "13.0",
+          "torch_cuda_available": false,
+          "sys_path_has_serve_next": false,
+          "packages": {
+            "llmcompressor": "0.14.0",
+            "compressed_tensors": "0.19.0",
+            "auto_round": "0.15.1",
+            "datasets": "5.0.1",
+            "transformers": "5.17.0",
+            "torch": "2.13.0+cu130"
+          }
+        }
+      },
+      "notes": [
+        "Closure was downloaded from official PyPI after the configured mirror proved slow. Offline check used --no-index --find-links only and did not reuse serve-next through sys.path."
+      ]
+    },
+    {
+      "id": "litert-gcc13-noble-deb-cache",
+      "status": "cached_not_installed",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/toolchains/gcc13-noble-cache",
+      "source": "Ubuntu Noble official archive: http://archive.ubuntu.com/ubuntu noble/noble-updates main universe",
+      "packages_requested": [
+        "gcc-13",
+        "g++-13"
+      ],
+      "items": 44,
+      "size": "111M",
+      "evidence": "report.txt contains apt update/download-only log and SHA-256 for all .deb files",
+      "notes": [
+        "Cache-only preparation for future LiteRT host builds; no Ubuntu 22.04 host package was installed or replaced. Cross-release .deb installation should be done only in a controlled Ubuntu 24.04/container/toolchain prefix."
+      ]
+    },
+    {
+      "id": "android-ndk",
+      "status": "blocked_license_acceptance",
+      "evidence": "Official Android NDK download page requires accepting the Android SDK License before download; no NDK archive was fetched automatically.",
+      "required_action": "Accept Android SDK License through the official NDK download page or Android command-line tools license flow, then cache the selected NDK archive."
     }
   ],
   "support_summary": {
@@ -161,16 +238,15 @@
       "examples/quantization_w4a16_fp4/nvfp4/gemma4_example.py"
     ]
   },
-  "paused_processes": [
-    8791,
-    8962,
-    8963,
-    8965,
-    8968,
-    12081,
-    14088,
-    14089,
-    14090
+  "next_safe_action": "No more no-GPU runtime preparation is blocked locally for this slice. Next validation requires GPU quant/runtime smoke or Android SDK License acceptance for NDK/mobile build preparation.",
+  "pending": [
+    "GPU quantization/runtime validation",
+    "LiteRT Android/mobile build after Android SDK License acceptance and selected NDK cache",
+    "No model forward pass or generated quantized weights in this no-GPU slice"
   ],
-  "next_safe_action": "If root permits CPU heavy work, resume paused llama.cpp build under flock /tmp/omnijev-cpu-heavy.lock or keep using official prebuilt paths; quant env CPU imports are ready but standalone torch wheelhouse remains a documented gap."
+  "next_actions": [
+    "GPU quant/import smoke after GPU is available; no GPU validation was run in this slice",
+    "LiteRT Android/mobile build after Android SDK License acceptance and selected NDK cache",
+    "Use cached Ubuntu Noble GCC/G++ 13 packages only in a controlled Ubuntu 24.04/container/toolchain prefix; do not install them into the current Ubuntu 22.04 host"
+  ]
 }
