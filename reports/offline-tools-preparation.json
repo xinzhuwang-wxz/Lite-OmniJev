@@ -1,4 +1,14 @@
 {
+  "android_tools": {
+    "litert_lm_android_report": "reports/litert-lm-android-runtime-cache.json",
+    "ndk_report": "reports/android-tools-preparation.json",
+    "not_claimed": [
+      "No Android AAR was present in LiteRT-LM v0.9.0 release assets",
+      "No Android device/emulator execution",
+      "No LiteRT-LM model forward"
+    ],
+    "status": "ndk_r28b_cached_cross_compile_probe_passed_litert_android_cli_cached_abi_verified"
+  },
   "frontend_seed": {
     "lockfile": "infra/offline-tools/frontend/pnpm-lock.yaml",
     "node": {
@@ -8,12 +18,26 @@
       "remote_sha_source": "artifacts/runtime-builds/offline-tools/node/SHASUMS256.txt",
       "version": "v24.21.0"
     },
+    "offline_cache_proof": {
+      "canary_versions": {
+        "framer-motion": "14.1.0",
+        "lucide-react": "1.55.0",
+        "react": "19.3.0",
+        "vite": "8.3.4"
+      },
+      "fetch_result": "pnpm 12.11.2 fetch completed; lockfile passed supply-chain policies; 322 packages downloaded into store",
+      "node_modules_du": "2.4M",
+      "offline_install_result": "pnpm install --offline --frozen-lockfile --ignore-scripts completed with 322 reused, 0 downloaded",
+      "remote_store": "artifacts/runtime-builds/offline-tools/frontend/pnpm-store",
+      "scripts_policy": "--ignore-scripts used; no product app or trusted build script was required for this lock/cache canary",
+      "store_du": "202M"
+    },
     "packages": {
       "@vitejs/plugin-react": "6.1.2",
       "class-variance-authority": "0.7.1",
       "clsx": "2.1.1",
-      "framer-motion": "14.2.0",
-      "lucide-react": "1.56.0",
+      "framer-motion": "14.1.0",
+      "lucide-react": "1.55.0",
       "react": "19.3.0",
       "react-dom": "19.3.0",
       "shadcn": "4.21.4",
@@ -30,15 +54,19 @@
       "version": "12.11.2"
     }
   },
-  "generated_at_utc": "2026-10-13T21:23:37Z",
+  "generated_at_utc": "2026-10-13T22:06:33Z",
   "local_artifacts": {
+    "docs/runbooks/offline-tools.md": {
+      "bytes": 6158,
+      "sha256": "f6607e2dac03a823d2d2b0603bee7492ea3790d255295e423b0346b70f37cd75"
+    },
     "infra/offline-tools/frontend/package.json": {
       "bytes": 695,
-      "sha256": "a66d1c5a42739164a0d3dd6723cc601ea69af882609c4eed4c5ca2ff9d8c53b5"
+      "sha256": "d4dbc04c508b88a8972e76ca1683b1db37052742f0ad3aa890ae2e133b413396"
     },
     "infra/offline-tools/frontend/pnpm-lock.yaml": {
-      "bytes": 102534,
-      "sha256": "35653f373ed16b1c8037c82b17cd25ca7a201690f9f5001d48016eb6d9c222e4"
+      "bytes": 106876,
+      "sha256": "0eecddf2b8c4c7d20081e4bee49805ee7e1376a4489bf51f40f62eb4897d3bca"
     },
     "infra/offline-tools/pyproject.toml": {
       "bytes": 468,
@@ -47,6 +75,18 @@
     "infra/offline-tools/uv.lock": {
       "bytes": 369920,
       "sha256": "f980d8b88874c69abfd6aa4421785aa5a844afebbc2f87cfe51d323e403b88bf"
+    },
+    "reports/android-tools-preparation.json": {
+      "bytes": 3973,
+      "sha256": "679d3043dd3b90148789621182e7a14e831a81d9434408cde65f19484b8bddb7"
+    },
+    "reports/litert-lm-android-runtime-cache.json": {
+      "bytes": 4803,
+      "sha256": "1e1001b5cedd370029d668bc291b3a0dad3fe971e1c43cc84f8c4ca0b0090e34"
+    },
+    "reports/offline-tools-canary-full.json": {
+      "bytes": 549,
+      "sha256": "9981762469ecb91511e90b14d372316fc9ed1c277ebb5bc4a0a73887634db77f"
     },
     "reports/offline-tools-light-requirements-summary.json": {
       "bytes": 833,
@@ -60,6 +100,22 @@
       "bytes": 102786,
       "sha256": "c388948ade7c299f7f087e21125889af886322353f64c0734dad19fb8b2a6836"
     }
+  },
+  "pending_checks": [
+    "Root training/dev/monitoring wheelhouse terminal exit, hash manifest, and no-index canary after PID 25391/29601 finish.",
+    "Playwright Chromium browser binary cache and real headless HTML screenshot proof.",
+    "Current serve-next vLLM 0.31 cache closure proof; old vLLM 0.26 is rollback-only unless explicitly needed.",
+    "LiteRT-LM Android AAR/API packaging requires Bazel/Android SDK dependency fetch/build if required; official v0.9.0 release only provided Android arm64 CLI binary."
+  ],
+  "python_light_wheelhouse_proof": {
+    "canary_report": "reports/offline-tools-canary-full.json",
+    "du": "578M",
+    "file_count": 176,
+    "files_txt_sha256": "138f225cbcd2fbbfcbc0898d33e22dc0c2f41e5ef0ea0b8e7b04c7440cd85380",
+    "remote_path": "artifacts/runtime-builds/python-wheels/offline-tools-light",
+    "requirements_sha256": "559e25e205414ecb8cff169c9469f2af5556add6aeb700ff38b99c3d22e22b9a",
+    "sha256sums_txt_sha256": "f25edfabb26fd915edfbacbb1c26cbe11b45493faf699fc709e579fa8a5a3fd7",
+    "status": "cached_hashed_no_index_import_canary_passed"
   },
   "python_not_selected": [
     {
@@ -145,6 +201,18 @@
       "pid": "25391",
       "status": "running at last poll; no-index canary pending until process exits"
     }
+  },
+  "root_training_dev_monitoring_wheelhouse_status": {
+    "current_bottleneck": "Both live pip downloads were on torch==2.14.1; temp files showed partial progress but no terminal wheelhouse manifest yet.",
+    "last_observed": "2026-10-14T06:06:04+08:00",
+    "last_observed_du": "664M",
+    "last_observed_files": 40,
+    "pids": [
+      25391,
+      29601
+    ],
+    "remote_path": "artifacts/runtime-builds/python-wheels/root-training-dev-monitoring",
+    "status": "download_running"
   },
   "serve_next_audio_probe": {
     "correction_status": "No existing env was changed. PyPI official metadata currently exposes torchaudio 2.11.0 as latest, so no torchaudio 2.13.0 replacement was installed; this lock combination is documented as CPU-import-valid but semver-skewed.",

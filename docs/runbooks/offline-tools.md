@@ -28,6 +28,8 @@ node --version -> v24.21.0
 npm --version -> 11.19.0
 corepack --version -> 0.36.0
 pnpm-12.11.2.tgz sha256 -> eb57341b8b54fddaeededb15dbb77cc30a11750cecca301bfda02478fdff3a00
+pnpm fetch -> 322 packages, supply-chain policy passed
+pnpm offline install -> 322 reused, 0 downloaded, React 19.3.0 / framer-motion 14.1.0 / lucide-react 1.55.0 / Vite 8.3.4
 ```
 
 ## Serve-next audio compatibility
@@ -43,6 +45,16 @@ The isolated correction is to document the current lock as semver-skewed but CPU
 - pnpm archive: `/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/pnpm-12.11.2.tgz`.
 - Root training/dev/monitoring wheelhouse, owned by the coordinating root task: `/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/root-training-dev-monitoring`.
 
+## Offline install canaries
+
+The light Python wheelhouse has a full no-index canary in `/root/autodl-tmp/envs/offline-tools-canary-full`. The canary installed from `/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/offline-tools-light` and reused the existing `serve-next` torch path for CPU imports instead of copying another Torch/CUDA stack. The recorded imports are Data-Juicer, datasketch, imagededup, lmms-eval, PySceneDetect, and torchmetrics; the CPU torch probe returned `2.0` with CUDA unavailable. Local evidence is `reports/offline-tools-canary-full.json`.
+
+## Android NDK and LiteRT-LM Android cache
+
+The user approved the Android SDK License path through the root session for NDK r28b `28.1.13356709`. The official archive `android-ndk-r28b-linux.zip` is cached under `/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/android-tools`, and its SHA1 matches the official value `f574d3165405bd59ffc5edaadac02689075a729f`. The extracted NDK is 2.2G. A tiny `hello.c` aarch64 API24 compile probe proves the NDK toolchain is usable and produced an AArch64 ELF, but it is not a LiteRT-LM runtime claim. Local evidence is `reports/android-tools-preparation.json`.
+
+LiteRT-LM v0.9.0 has an official Android arm64 CLI release asset, `litert_lm_main.android_arm64`. It is cached under `/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/bin/litert-lm-v0.9.0-android_arm64`, with SHA256 `606a933f3971b7c3c23a00e016cbf020ccd6d35f04a1ee8d1072387f361bb629`; `file` and `llvm-readelf` identify it as an AArch64 Android PIE executable. The v0.9.0 release metadata has platform CLI binaries and no Android AAR asset. Kotlin/JNI packaging targets exist in source (`//kotlin/java/com/google/ai/edge/litertlm:litertlm-android` and `//kotlin/java/com/google/ai/edge/litertlm/jni:litertlm_jni`), so an AAR/API artifact still requires Bazel/Android SDK dependency fetch and build work if that packaging path becomes required. Local evidence is `reports/litert-lm-android-runtime-cache.json`.
+
 ## Pending checks
 
-The light Python wheelhouse and the root training/dev/monitoring wheelhouse are background downloads on the constrained 2 GiB / 0.5 CPU remote. Hash manifests and no-index canaries must be generated after those processes exit. The report JSON records their PIDs and last observed status.
+The frontend pnpm store is cached and has an offline install canary. The light Python wheelhouse is cached, hashed, and import-checked. The root training/dev/monitoring wheelhouse is still downloading on the constrained 2 GiB / 0.5 CPU remote; PID 25391 and supplemental shard PID 29601 were last observed on the same `torch==2.14.1` transfer. Hash manifests and root no-index canaries must be generated after those processes exit. Playwright Chromium browser binaries and current serve-next vLLM cache closure still need final proof; Python package imports alone are not counted as browser/runtime closure.

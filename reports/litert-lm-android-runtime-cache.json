@@ -1,0 +1,81 @@
+{
+  "captured_at": "2026-10-14T06:05:29+08:00",
+  "not_claimed": [
+    "No Android AAR was present as an official v0.9.0 release asset.",
+    "The tiny NDK hello probe only proves NDK/toolchain viability; it is not LiteRT-LM runtime readiness.",
+    "No Android device/emulator execution and no LiteRT-LM model forward were run.",
+    "Bazel Android dependency fetch for Kotlin/JNI packaging remains pending if an AAR/API artifact is required."
+  ],
+  "official_prebuilt_aar": {
+    "note": "v0.9.0 GitHub release metadata contains platform CLI binaries, not an Android AAR asset. Kotlin/JNI AAR-style packaging requires Bazel/Android SDK build work from source.",
+    "present_in_release_assets": false
+  },
+  "official_prebuilt_android_cli": {
+    "elf_header": {
+      "output": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00\n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Shared object file)\n  Machine:                           AArch64\n  Version:                           0x1\n  Entry point address:               0x486050\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          37278008 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         11\n  Size of section headers:           64 (bytes)\n  Number of section headers:         44\n  Section header string table index: 42",
+      "returncode": 0
+    },
+    "file": {
+      "output": "artifacts/runtime-builds/bin/litert-lm-v0.9.0-android_arm64/litert_lm_main.android_arm64: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /system/bin/linker64, BuildID[md5/uuid]=e76cc3302f8f98cbb9117f8d81423549, with debug_info, not stripped",
+      "returncode": 0
+    },
+    "name": "litert_lm_main.android_arm64",
+    "path": "artifacts/runtime-builds/bin/litert-lm-v0.9.0-android_arm64/litert_lm_main.android_arm64",
+    "sha256": "606a933f3971b7c3c23a00e016cbf020ccd6d35f04a1ee8d1072387f361bb629",
+    "size_bytes": 37280824,
+    "url": "https://github.com/google-ai-edge/LiteRT-LM/releases/download/v0.9.0/litert_lm_main.android_arm64"
+  },
+  "release_assets": [
+    {
+      "name": "litert_lm_main.android_arm64",
+      "size": 37280824,
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/releases/download/v0.9.0/litert_lm_main.android_arm64"
+    },
+    {
+      "name": "litert_lm_main.ios_sim_arm64",
+      "size": 19454704,
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/releases/download/v0.9.0/litert_lm_main.ios_sim_arm64"
+    },
+    {
+      "name": "litert_lm_main.linux_x86_64",
+      "size": 28710976,
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/releases/download/v0.9.0/litert_lm_main.linux_x86_64"
+    },
+    {
+      "name": "litert_lm_main.macos_arm64",
+      "size": 19479856,
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/releases/download/v0.9.0/litert_lm_main.macos_arm64"
+    },
+    {
+      "name": "litert_lm_main.windows_x86_64.exe",
+      "size": 17718784,
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/releases/download/v0.9.0/litert_lm_main.windows_x86_64.exe"
+    }
+  ],
+  "release_url": "https://github.com/google-ai-edge/LiteRT-LM/releases/tag/v0.9.0",
+  "schema": "lite-omnijev.litert-lm-android-runtime-cache.v1",
+  "source_android_targets": {
+    "android_ndk_env_mentions": [
+      "\"\"\"A workaround to check if ANDROID_NDK_HOME is set.\"\"\"",
+      "    ndk_home = ctx.getenv(\"ANDROID_NDK_HOME\")",
+      "    # .bzl file contains ANDROID_NDK_HOME_IS_SET = True if ANDROID_NDK_HOME is set.",
+      "    content += \"ANDROID_NDK_HOME_IS_SET = \"",
+      "    environ = [\"ANDROID_NDK_HOME\"],"
+    ],
+    "jni_build": "kotlin/java/com/google/ai/edge/litertlm/jni:litertlm_jni",
+    "kotlin_api_build": "kotlin/java/com/google/ai/edge/litertlm:litertlm-android",
+    "kotlin_deps_mentions": [
+      "        \"@maven//:com_google_code_gson_gson\",",
+      "        \"@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm\"",
+      "        \"@maven//:com_google_code_gson_gson\",",
+      "        \"@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_android\""
+    ],
+    "source_paths": [
+      "kotlin/java/com/google/ai/edge/litertlm/BUILD",
+      "kotlin/java/com/google/ai/edge/litertlm/jni/BUILD",
+      "android_ndk_env.bzl"
+    ]
+  },
+  "status": "official_android_arm64_cli_cached_and_abi_verified_aar_build_pending",
+  "version": "v0.9.0"
+}

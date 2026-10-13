@@ -1,0 +1,25 @@
+{
+  "cv2_version": "5.0.0",
+  "imports": {
+    "data_juicer": "ok",
+    "datasketch": "ok",
+    "imagededup": "ok",
+    "lmms_eval": "ok",
+    "scenedetect": "ok",
+    "torchmetrics": "ok"
+  },
+  "python": "3.11.14 (main, Feb 12 2026, 00:42:50) [Clang 21.1.4 ]",
+  "torch": {
+    "cpu_sum": 2.0,
+    "cuda_available": false,
+    "version": "2.13.0+cu130"
+  },
+  "versions": {
+    "data_juicer": "1.6.0",
+    "datasketch": "2.0.0",
+    "imagededup": "0.3.3-post2",
+    "lmms_eval": null,
+    "scenedetect": "0.7.2",
+    "torchmetrics": "1.9.0"
+  }
+}
