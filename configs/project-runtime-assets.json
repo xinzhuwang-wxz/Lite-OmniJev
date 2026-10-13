@@ -233,6 +233,33 @@
       "verification": "Remote ffmpeg generated a 1s H.264/AAC probe and ffprobe read video plus 16 kHz audio streams."
     },
     {
+      "id": "remote-media-cpu-processor",
+      "host": "root@region-42.seetacloud.com:48926",
+      "path": "/root/autodl-tmp/envs/media-cpu",
+      "platform": "linux-x86_64 CPU",
+      "status": "installed_and_probe_passed",
+      "packages": {
+        "transformers": "5.19.0",
+        "torch": "2.14.1",
+        "torchvision": "0.29.0",
+        "pillow": "11.3.0",
+        "soundfile": "0.14.0"
+      },
+      "cached_wheels": {
+        "torchvision": {
+          "path": "/root/autodl-tmp/cache/media-wheels/torchvision-0.29.0-cp311-cp311-manylinux_2_28_x86_64.whl",
+          "sha256": "85fa54bec1f7d9227b5e4e201ed4bac92247ee10fb19148d92f9836e3e91d5c3"
+        }
+      },
+      "report": {
+        "remote_path": "/root/autodl-tmp/lite-omnijev/reports/cpu-media-probe-offline-runtime.json",
+        "local_path": "reports/cpu-media-probe-offline-runtime.json",
+        "sha256": "76e697e375e8717e32f208a2773f8a48b6097cf89230fe390b77baf087d29701",
+        "status": "passed"
+      },
+      "verification": "Real Transformers 5.19 Gemma4Processor CPU execution over generated image, screenshot, 16 kHz sine audio, and 3-frame ffmpeg MP4-derived frames; no model weights loaded as a model and no GPU/logits claim."
+    },
+    {
       "id": "local-browser-media",
       "host": "local macOS",
       "platform": "macos-arm64",

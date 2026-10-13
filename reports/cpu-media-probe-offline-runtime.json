@@ -1,0 +1,304 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "CPU AutoProcessor/tokenizer media canary only; no model weights loaded, no logits, no GPU, no S0 parity pass",
+  "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "work_dir": "/root/autodl-tmp/lite-omnijev/artifacts/cpu-media-probe-canary",
+  "source": {
+    "script_sha256": "3fcb1b187ec08a24fc774cc6f9bf5a901a0a329cb3d4b1e3f0a7c6fecfc91418",
+    "transformers_version": "5.19.0",
+    "processor_class": "Gemma4Processor",
+    "processor_module": "transformers.models.gemma4.processing_gemma4"
+  },
+  "model_files": {
+    ".gitattributes": {
+      "bytes": 1570,
+      "sha256": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930"
+    },
+    "README.md": {
+      "bytes": 27956,
+      "sha256": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c"
+    },
+    "chat_template.jinja": {
+      "bytes": 18569,
+      "sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5"
+    },
+    "config.json": {
+      "bytes": 5145,
+      "sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4"
+    },
+    "generation_config.json": {
+      "bytes": 208,
+      "sha256": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de"
+    },
+    "model.safetensors": {
+      "bytes": 15992595884,
+      "sha256": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503"
+    },
+    "processor_config.json": {
+      "bytes": 1689,
+      "sha256": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c"
+    },
+    "tokenizer.json": {
+      "bytes": 32169626,
+      "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f"
+    },
+    "tokenizer_config.json": {
+      "bytes": 3082,
+      "sha256": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+    }
+  },
+  "media": {
+    "image": {
+      "path": "artifacts/cpu-media-probe-canary/canary-image.png",
+      "bytes": 503,
+      "sha256": "98db208b1591e13e525babc5c24ff65ccd41a8c8ef9969594f893e4e10307422"
+    },
+    "screenshot": {
+      "path": "artifacts/cpu-media-probe-canary/canary-screenshot.png",
+      "bytes": 625,
+      "sha256": "b9559f4826f0933ed222437cf962fc7ef741013c95160c7e9f3308f21c0c98d0"
+    },
+    "audio_wav": {
+      "path": "artifacts/cpu-media-probe-canary/canary-sine-16khz.wav",
+      "bytes": 16044,
+      "sha256": "cbe2e5fc3cd8c418318e2e3f17b9ff3cf8c9d6e58c1300e48d1d7f48dae44900"
+    },
+    "video_mp4": {
+      "path": "artifacts/cpu-media-probe-canary/canary-video-3frames.mp4",
+      "bytes": 2242,
+      "sha256": "4aa707ebf90a5a6e2386678af0848717da786eabb85137d45ebd7e1971fb507f"
+    },
+    "video_frame_0": {
+      "path": "artifacts/cpu-media-probe-canary/video-frames/frame-01.png",
+      "bytes": 1317,
+      "sha256": "e2f344ef33954d53e113cb9838fe827d6654d3ccc9391113154c440b44c4793d"
+    },
+    "video_frame_1": {
+      "path": "artifacts/cpu-media-probe-canary/video-frames/frame-02.png",
+      "bytes": 1477,
+      "sha256": "3c4395deffa7362ba3704352afe26452a5ac159e555c78008020d2cc90b9cbf4"
+    },
+    "video_frame_2": {
+      "path": "artifacts/cpu-media-probe-canary/video-frames/frame-03.png",
+      "bytes": 1354,
+      "sha256": "ce5b9947425a8a65ffdff57e3ec87044c84397dad8f2f1df2a37e222a7090cd4"
+    }
+  },
+  "audio_sample_rate": 16000,
+  "template": {
+    "sha256": "c04f2b5bb2e0a07288cda2d9f08ab12647857bac52514b002bad42560f61be84",
+    "placeholder_counts": {
+      "<|image|>": 2,
+      "<|audio|>": 1,
+      "<|video|>": 1,
+      "<|think|>": 0
+    },
+    "prompt_tokens": 47,
+    "preview": "<bos><|turn>user\n<|image|><|image|><|audio|><|video|>Development canary only. State contains an image, a screenshot, a 16 kHz sine wave, and a 3-frame video. Return exactly one answer token.<turn|>\n<|turn>model\n"
+  },
+  "processor_inputs": {
+    "kwargs": {
+      "text": "one rendered prompt",
+      "images": "two PIL images",
+      "audio": "one float32 16 kHz sine array",
+      "videos": "three PIL frames extracted from ffmpeg MP4",
+      "num_frames": 3,
+      "return_tensors": "pt",
+      "return_mm_token_type_ids": true
+    }
+  },
+  "processor_outputs": {
+    "input_ids": {
+      "type": "Tensor",
+      "dtype": "torch.int64",
+      "shape": [
+        1,
+        806
+      ],
+      "sha256": "56b0b29aabb048ddd2bdafd3e3271120623e20cfaf53f41d79bbc4884647307f"
+    },
+    "attention_mask": {
+      "type": "Tensor",
+      "dtype": "torch.int64",
+      "shape": [
+        1,
+        806
+      ],
+      "sha256": "2b8ab3d57c8a86575e78d78f075f343ee52cb88cd0d4b6e4a77ea119b7db2aef"
+    },
+    "mm_token_type_ids": {
+      "type": "Tensor",
+      "dtype": "torch.int64",
+      "shape": [
+        1,
+        806
+      ],
+      "sha256": "97fe0a21c3daf05d796f73552befcc93525d919b466f7c73806715fdcc8e2094"
+    },
+    "pixel_values": {
+      "type": "Tensor",
+      "dtype": "torch.float32",
+      "shape": [
+        2,
+        2520,
+        768
+      ],
+      "sha256": "e8fb4450a745d15717dca6bf99839ef1d3a1402c26a2a01487b9f9b07484ce7e"
+    },
+    "image_position_ids": {
+      "type": "Tensor",
+      "dtype": "torch.int64",
+      "shape": [
+        2,
+        2520,
+        2
+      ],
+      "sha256": "66da52378c7f284f712d7105233c281f3988e316f0e14fefa4681757494de7bc"
+    },
+    "pixel_values_videos": {
+      "type": "Tensor",
+      "dtype": "torch.float32",
+      "shape": [
+        3,
+        630,
+        768
+      ],
+      "sha256": "14fff19bde8b0c616a2f029cc9961336d6d8d6247319dc9c23cfb65df873d3f0"
+    },
+    "video_position_ids": {
+      "type": "Tensor",
+      "dtype": "torch.int64",
+      "shape": [
+        3,
+        630,
+        2
+      ],
+      "sha256": "af8a15f5cda4aa189fbf1216a781f0eb37ee5c1d78dc5610ff82dcddd9f2681e"
+    },
+    "num_frames_per_video": {
+      "type": "Tensor",
+      "dtype": "torch.int64",
+      "shape": [
+        1
+      ],
+      "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+    },
+    "input_features": {
+      "type": "Tensor",
+      "dtype": "torch.float32",
+      "shape": [
+        1,
+        50,
+        128
+      ],
+      "sha256": "a1b643c6b3cb3411aa5a3c94787c11c4ca8785b88affd0baf80cfa528c94d3b5"
+    },
+    "input_features_mask": {
+      "type": "Tensor",
+      "dtype": "torch.bool",
+      "shape": [
+        1,
+        50
+      ],
+      "sha256": "ee79214ed555b94d8297accb7389cab7944bb077a4089e55036756eda366e53d"
+    }
+  },
+  "answer_boundary_bindings": {
+    "choice": {
+      "answer_tokens": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U"
+      ],
+      "answer_token_ids": {
+        "A": 236776,
+        "B": 236799,
+        "C": 236780,
+        "D": 236796,
+        "E": 236788,
+        "F": 236811,
+        "G": 236823,
+        "H": 236814,
+        "I": 236777,
+        "J": 236863,
+        "K": 236855,
+        "L": 236798,
+        "M": 236792,
+        "N": 236797,
+        "O": 236806,
+        "P": 236791,
+        "Q": 236935,
+        "R": 236794,
+        "S": 236773,
+        "T": 236774,
+        "U": 236836
+      },
+      "answer_count_including_u": 21,
+      "failures": []
+    },
+    "score": {
+      "answer_tokens": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "U"
+      ],
+      "answer_token_ids": {
+        "0": 236771,
+        "1": 236770,
+        "2": 236778,
+        "3": 236800,
+        "4": 236812,
+        "5": 236810,
+        "6": 236825,
+        "7": 236832,
+        "8": 236828,
+        "9": 236819,
+        "U": 236836
+      },
+      "answer_count_including_u": 11,
+      "failures": []
+    },
+    "noul": {
+      "answer_tokens": [
+        "yes",
+        "no",
+        "U"
+      ],
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      },
+      "answer_count_including_u": 3,
+      "failures": []
+    }
+  },
+  "failures": []
+}
