@@ -21,19 +21,19 @@
 - reports/p0-confirmation-review.md解释尾部；确认批不再用于选阈值。configs/gates.json未改，D004未应用。
 - reports/clinc-admission.json：CLINC train 15,250条转换为合法Choice样本，原始人工intent保留；oos不是U，输出SHA256 5aace71f0c9af2b30630e2b2b379881e1ebf946221c59355e733fe496e5971d8。
 - reports/s0-sealed-canary-001.json：封存gate canary路径通过，输出只含汇总；真实隔离身份和真实人工κ仍未通过。
-- a9ec4ae前置175tests/Ruff/mypy/build通过；身份及源码hash见报告。
+- e73f6d0当前验证：`uv run pytest tests/test_sealed_gate.py tests/test_admit_clinc.py tests/test_core.py tests/test_assets.py` 79 passed；相关ruff通过；`uv run mypy eval scripts tests/test_sealed_gate.py tests/test_admit_clinc.py` 通过。
 
 ## 下一步与加速
-1. 认领s0:01教师来源/环境/head准入，同时独立推进s0-data:01 CLINC准入。
-2. 固定教师14文件约24GB已启动只读来源/权重隔离下载，远端PID10893，reports/s0-teacher-quarantine-download.json；不等同admitted。教师与学生媒体GPU探针由root串行协调。
+1. 继续s0:01教师来源/环境/head准入；已到小文件先做head安全转换/隔离探针，等待权重完成后再GPU小样本。
+2. 固定教师14文件约24GB隔离下载中，远端PID11060，当前直接流式下载会断开，正在验证Range分块恢复路线；不等同admitted。教师与学生媒体GPU探针由root串行协调。
 3. s0:03只验证新的可检验原因，不重复已失败配置；正式改门槛需证据+ADR+用户决定。
 4. 全S0通过才进入S1，不为利用率跑无验收价值训练。
 
 ## 实例与资源
-- 用户明确保持GPU开启；SSH root@region-42.seetacloud.com:48926。
+- 用户此前明确保持GPU开启；SSH root@region-42.seetacloud.com:48926。当前若需省卡，可转无卡继续下载/CPU准备，待权重完整和GPU探针准备好再开卡。
 - ControlPath=/tmp/omnijev-ssh-%C；项目/root/autodl-tmp/lite-omnijev。
 - H20 97871MiB、16CPU/150GB RAM；盘800GiB（750GiB付费），约741GiB空余。
-- 快照vLLM9031/网关10404、GPU占29493MiB、无训练；操作前核实PID。
+- 2026-10-14最新快照：GPU显存0MiB、利用率0%；vLLM/网关已不在进程列表，仅教师下载PID11060和Range探针PID11381在跑。
 - serve-next隔离vLLM0.31/TF5.17/torch2.13，FP16/TRITON独立LoRA；训练.venv独立。
 - E4B revision ee0ef6023621cff504d758262d4e04895a5af4a2；adapter SHA 97db02cd2bb3a4990fb68ceb3c3e863b9a2cb72669406926745a9e4c052b1b42。
 - SwanLab https://swanlab.cn/@maxen/Lite-OmniJev/runs/1mia2y76；密钥仅远程私有配置。
