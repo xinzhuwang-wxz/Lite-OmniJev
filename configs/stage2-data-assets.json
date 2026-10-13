@@ -16,14 +16,20 @@
     "training_admission": "not_granted_by_this_file",
     "release_admission": "not_granted_by_this_file",
     "human_holdout_content_policy": "No internal holdout content was requested or staged. Public A-OKVQA JSONs were processed only for split, question_id, image_id, and COCO license joins; QA text was not inspected or exported.",
-    "account_terms_policy": "No account-gated dataset terms were accepted automatically."
+    "account_terms_policy": "No account-gated dataset terms were accepted automatically.",
+    "remote_download_budget_used_bytes_lower_bound": 2161862192,
+    "remote_cgroup_limits": {
+      "cpu_max": "50000 100000",
+      "memory_max_bytes": "2147483648",
+      "note": "Root confirmed memory.max=2GiB and cpu.max=50000/100000=0.5 CPU; host free/16CPU is misleading."
+    }
   },
   "sources": [
     {
       "id": "scienceqa",
-      "status": "metadata_staged_raw_parquet_partial_due_network_failure",
-      "source_audit_staging": "partially_ready",
-      "training_release_status": "blocked_pending_noncommercial_sharealike_decision_and_complete_raw_mirror",
+      "status": "remote_raw_parquets_complete_verified_research_only",
+      "source_audit_staging": "remote_complete_verified",
+      "training_release_status": "research_source_audit_only_not_training_or_release_admitted_due_noncommercial_sharealike_decision_pending",
       "official_sources": [
         {
           "type": "github_repository",
@@ -95,16 +101,67 @@
         }
       ],
       "resume_commands": [
-        "huggingface-cli download derek-thomas/ScienceQA --repo-type dataset --revision f18b0a70359ebfb41f658fd564208d0355b013f4 --local-dir artifacts/data/quarantine/stage2-sources/scienceqa/hf",
-        "curl -L --fail --retry 5 --retry-delay 3 -C - -o artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/test-00000-of-00001-f0e719df791966ff.parquet https://huggingface.co/datasets/derek-thomas/ScienceQA/resolve/f18b0a70359ebfb41f658fd564208d0355b013f4/data/test-00000-of-00001-f0e719df791966ff.parquet"
+        "ssh root@region-42.seetacloud.com -p 48926 'cd /root/autodl-tmp/lite-omnijev && source /etc/network_turbo >/dev/null 2>&1 || true; aria2c --file-allocation=none -c -x 8 -s 8 --dir artifacts/data/quarantine/stage2-sources/scienceqa/hf/data --out <file> <resolve-url>; flock /tmp/omnijev-cpu-heavy.lock sha256sum artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/<file>'"
       ],
-      "attempt_log": "artifacts/data/quarantine/stage2-sources/logs/scienceqa-download.log"
+      "attempt_log": "artifacts/data/quarantine/stage2-sources/logs/scienceqa-download.log",
+      "remote_staged_artifacts": [
+        {
+          "bytes": 122386007,
+          "expected_bytes": 122386007,
+          "expected_sha256": "235e92d1f30155266df76bc9f28fc6e4fcb6bec2c6a8c7d67f9086ea6b392a84",
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/test-00000-of-00001-f0e719df791966ff.parquet",
+          "sha256": "235e92d1f30155266df76bc9f28fc6e4fcb6bec2c6a8c7d67f9086ea6b392a84",
+          "split": "test",
+          "verified": true
+        },
+        {
+          "bytes": 377460993,
+          "expected_bytes": 377460993,
+          "expected_sha256": "62c90a28e3fb1bc0ad7bbcab1ac62b483ae6758291a655944d8f494bf6445745",
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/train-00000-of-00001-1028f23e353fbe3e.parquet",
+          "sha256": "62c90a28e3fb1bc0ad7bbcab1ac62b483ae6758291a655944d8f494bf6445745",
+          "split": "train",
+          "verified": true
+        },
+        {
+          "bytes": 126235086,
+          "expected_bytes": 126235086,
+          "expected_sha256": "e66b5215ce71e748ade4ee629bc14fbf86762071d355a4fcd831581cc04d72d8",
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/validation-00000-of-00001-6c7328ff6c84284c.parquet",
+          "sha256": "e66b5215ce71e748ade4ee629bc14fbf86762071d355a4fcd831581cc04d72d8",
+          "split": "validation",
+          "verified": true
+        }
+      ],
+      "remote_bytes_total": 626082086,
+      "remote_persistent_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources",
+      "preserved_partial_or_diagnostic_artifacts": [
+        {
+          "bytes": 10485760,
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/test-00000-of-00001-f0e719df791966ff.parquet.partial",
+          "sha256": "c705e75a6c54c48f6e6a4884f251e3934c56a8cfc1936a1c90a67e7a1192d0c6"
+        },
+        {
+          "bytes": 377460993,
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/train-00000-of-00001-1028f23e353fbe3e.parquet.partial.badsha.20261013T182801Z",
+          "sha256": "62c90a28e3fb1bc0ad7bbcab1ac62b483ae6758291a655944d8f494bf6445745"
+        },
+        {
+          "bytes": 377460993,
+          "path": "artifacts/data/quarantine/stage2-sources/scienceqa/hf/data/train-00000-of-00001-1028f23e353fbe3e.parquet.partial.badsha.known-46ee0be6-20261013T182646Z",
+          "sha256": "46ee0be6f2ed62b1cecacffbb69cdb98a05a7d02b30ddd36de4f5e45930ae006"
+        }
+      ],
+      "attempt_logs": [
+        "artifacts/data/quarantine/stage2-sources/logs/scienceqa-train-aria2-noalloc.log",
+        "artifacts/data/quarantine/stage2-sources/logs/scienceqa-validation.log"
+      ]
     },
     {
       "id": "chartqa",
-      "status": "metadata_staged_raw_release_not_started_after_scienceqa_transfer_failure",
-      "source_audit_staging": "remote_ready_exact_hashes_local_readme_only",
-      "training_release_status": "blocked_pending_gpl_and_original_chart_source_review",
+      "status": "remote_original_zip_complete_verified_research_only",
+      "source_audit_staging": "remote_complete_verified_original_zip",
+      "training_release_status": "research_source_audit_only_pending_gpl_and_original_chart_source_obligations",
       "official_sources": [
         {
           "type": "github_repository",
@@ -170,7 +227,21 @@
         "huggingface-cli download ahmed-masry/ChartQA --repo-type dataset --revision af8b6f5c08c95085271561c2a3f9d15f2b5a9031 --include 'README.md' 'ChartQA Dataset.zip' --local-dir artifacts/data/quarantine/stage2-sources/chartqa/hf",
         "huggingface-cli download ahmed-masry/ChartQA --repo-type dataset --revision af8b6f5c08c95085271561c2a3f9d15f2b5a9031 --include 'data/*.parquet' --local-dir artifacts/data/quarantine/stage2-sources/chartqa/hf-parquet"
       ],
-      "attempt_log": "artifacts/data/quarantine/stage2-sources/logs/chartqa-download.log"
+      "attempt_log": "artifacts/data/quarantine/stage2-sources/logs/chartqa-download.log",
+      "remote_staged_artifacts": [
+        {
+          "bytes": 875370872,
+          "expected_bytes": 875370872,
+          "expected_sha256": "1bf310e5a51101681495c4a24f4f29d22c4f70b52df24e2e4feb0d79cae3c160",
+          "path": "artifacts/data/quarantine/stage2-sources/chartqa/hf/ChartQA Dataset.zip",
+          "sha256": "1bf310e5a51101681495c4a24f4f29d22c4f70b52df24e2e4feb0d79cae3c160",
+          "verified": true
+        }
+      ],
+      "remote_persistent_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources",
+      "attempt_logs": [
+        "artifacts/data/quarantine/stage2-sources/logs/chartqa-original-zip.log"
+      ]
     },
     {
       "id": "docvqa",
@@ -206,9 +277,9 @@
     },
     {
       "id": "aokvqa_coco_media_provenance",
-      "status": "annotations_and_coco_license_metadata_staged",
-      "source_audit_staging": "ready_for_metadata_filtering_not_image_pixels",
-      "training_release_status": "blocked_pending_image_download_selection_and_per_image_attribution",
+      "status": "annotations_metadata_and_ccby_publicdomain_pixels_remote_complete_verified",
+      "source_audit_staging": "remote_complete_verified_filtered_image_subset",
+      "training_release_status": "research_source_audit_only_pending_per_image_attribution_and_training_decision",
       "official_sources": [
         {
           "type": "github_repository",
@@ -361,7 +432,43 @@
           }
         }
       ],
-      "next_image_download_rule": "Download COCO image pixels only from the generated per-image manifests, preserving image_id, license_id, flickr_url, coco_url, and attribution metadata. Do not treat A-OKVQA code license as an image license."
+      "next_image_download_rule": "Already staged remotely for license IDs 4 and 7 from the generated manifests. Do not stage NC/ND or CC-BY-SA pixels unless their downstream obligations are accepted; preserve per-image attribution metadata from the download report.",
+      "remote_persistent_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources",
+      "remote_ccby_publicdomain_image_subset": {
+        "by_coco_split": {
+          "test": 976,
+          "train": 2644,
+          "val": 212
+        },
+        "by_license_id": {
+          "4": 3820,
+          "7": 12
+        },
+        "bytes_total": 660409234,
+        "manifest_rows": 4039,
+        "missing_count": 0,
+        "report": {
+          "bytes": 2191415,
+          "path": "artifacts/data/quarantine/stage2-sources/aokvqa/aokvqa_coco_ccby_publicdomain_image_download_report.json",
+          "sha256": "42522ce63453844027cf4520e1e453c3b327a7b3297220199ae6a4444c9699d8"
+        },
+        "staging_status": "remote_complete_verified_report",
+        "training_release_status": "research_source_audit_only_pending_per_image_attribution_training_decision",
+        "unique_images_downloaded": 3832,
+        "unique_images_expected": 3832
+      }
     }
-  ]
+  ],
+  "remote_completion_report": {
+    "path": "artifacts/data/quarantine/stage2-sources/stage2_remote_completion_report.json",
+    "bytes": 6167,
+    "sha256": "24d52b682ae7530d90abd3a2d285a4b46b075473539b6481e2a0c4f383d2723a",
+    "remote_host_path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources",
+    "cgroup_limits": {
+      "cpu_max": "50000 100000",
+      "memory_max_bytes": "2147483648",
+      "note": "Root confirmed memory.max=2GiB and cpu.max=50000/100000=0.5 CPU; host free/16CPU is misleading."
+    },
+    "note": "Remote report is copied locally as an ignored audit artifact; raw ScienceQA/ChartQA/AOKVQA media bytes remain on the remote persistent disk to avoid copying large files back into the worktree."
+  }
 }
