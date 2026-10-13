@@ -2,7 +2,10 @@ import pathlib
 import zipfile
 
 from scripts.gui_odyssey_media import (
+    EntryTask,
     EpisodePlan,
+    build_entry_batches,
+    compressed_from_local_blob,
     parse_central_directory,
     part_ranges,
     select_under_budget,
@@ -43,3 +46,34 @@ def test_select_under_budget_keeps_whole_episodes_in_lexical_order():
     selected = select_under_budget(plans, 12)
     assert [item.episode_id for item in selected] == ["001", "003"]
     assert sum(item.compressed_bytes for item in selected) == 11
+
+
+def test_build_entry_batches_groups_adjacent_members_under_cap(tmp_path):
+    zip_path = _make_zip(tmp_path)
+    entries = parse_central_directory(_central_directory_bytes(zip_path))
+    task_a = EntryTask(entry=entries[0], out_path=tmp_path / "a.png")
+    task_b = EntryTask(entry=entries[1], out_path=tmp_path / "b.png")
+    batches = build_entry_batches([task_b, task_a], max_batch_bytes=1_000_000)
+    assert len(batches) == 1
+    assert [task.entry.name for task in batches[0].tasks] == [
+        "screenshots/111_0.png",
+        "screenshots/111_1.png",
+    ]
+
+
+def _make_zip(tmp_path: pathlib.Path) -> pathlib.Path:
+    path = tmp_path / "sample-batch.zip"
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("screenshots/111_0.png", b"fake-png-0")
+        archive.writestr("screenshots/111_1.png", b"fake-png-1")
+    return path
+
+
+def test_compressed_from_local_blob_extracts_payload_from_combined_range(tmp_path):
+    zip_path = _make_zip(tmp_path)
+    data = zip_path.read_bytes()
+    entries = parse_central_directory(_central_directory_bytes(zip_path))
+    first = entries[0]
+    blob = data[first.local_header_offset : first.local_header_offset + 512]
+    compressed = compressed_from_local_blob(first, blob, first.local_header_offset)
+    assert compressed

@@ -57,6 +57,20 @@ class EpisodePlan:
     archive_member_count: int
 
 
+@dataclass(frozen=True)
+class EntryTask:
+    entry: ZipEntry
+    out_path: pathlib.Path
+
+
+@dataclass(frozen=True)
+class EntryBatch:
+    disk: int
+    start: int
+    end_exclusive: int
+    tasks: tuple[EntryTask, ...]
+
+
 def resolve_url(repo_id: str, revision: str, path: str) -> str:
     return f"https://huggingface.co/datasets/{repo_id}/resolve/{revision}/{path}"
 
@@ -370,13 +384,32 @@ def read_entry_compressed(readers: list[HTTPRangeReader], entry: ZipEntry) -> by
     return read_split_bytes(readers, entry.disk_start, data_offset, entry.compressed_size)
 
 
-def extract_entry(
-    readers: list[HTTPRangeReader],
+def compressed_from_local_blob(entry: ZipEntry, blob: bytes, blob_start: int) -> bytes:
+    rel = entry.local_header_offset - blob_start
+    if rel < 0 or rel + 30 > len(blob):
+        raise RuntimeError(f"batch blob does not include local header for {entry.name}")
+    if blob[rel : rel + 4] != b"PK\x03\x04":
+        raise RuntimeError(f"bad local header signature for {entry.name}")
+    local_name_len = _read_u16(blob, rel + 26)
+    local_extra_len = _read_u16(blob, rel + 28)
+    name_start = rel + 30
+    name_end = name_start + local_name_len
+    local_name = blob[name_start:name_end].decode("utf-8")
+    if local_name != entry.name:
+        raise RuntimeError(f"local header name mismatch: {local_name} != {entry.name}")
+    data_start = name_end + local_extra_len
+    data_end = data_start + entry.compressed_size
+    if data_end > len(blob):
+        raise RuntimeError(f"batch blob does not include payload for {entry.name}")
+    return blob[data_start:data_end]
+
+
+def materialize_entry(
+    compressed: bytes,
     entry: ZipEntry,
     out_path: pathlib.Path,
     decompress_lock_path: str | None = None,
 ) -> dict[str, Any]:
-    compressed = read_entry_compressed(readers, entry)
     with optional_flock(decompress_lock_path):
         if entry.method == 8:
             payload = zlib.decompress(compressed, -15)
@@ -403,6 +436,99 @@ def extract_entry(
         "crc32": f"{entry.crc32:08x}",
         "sha256": hashlib.sha256(payload).hexdigest(),
     }
+
+
+def build_entry_batches(
+    tasks: list[EntryTask],
+    max_batch_bytes: int,
+    header_extra_slop: int = 65_535,
+    part_sizes: list[int] | None = None,
+) -> list[EntryBatch]:
+    if max_batch_bytes <= 0:
+        return [
+            EntryBatch(
+                disk=task.entry.disk_start,
+                start=task.entry.local_header_offset,
+                end_exclusive=task.entry.local_header_offset
+                + 30
+                + len(task.entry.name.encode("utf-8"))
+                + header_extra_slop
+                + task.entry.compressed_size,
+                tasks=(task,),
+            )
+            for task in tasks
+        ]
+    sizes = part_sizes or PART_SIZES
+    batches: list[EntryBatch] = []
+    current: list[EntryTask] = []
+    current_disk: int | None = None
+    current_start = 0
+    current_end = 0
+
+    for task in sorted(
+        tasks, key=lambda item: (item.entry.disk_start, item.entry.local_header_offset)
+    ):
+        entry = task.entry
+        name_len = len(entry.name.encode("utf-8"))
+        entry_start = entry.local_header_offset
+        entry_end = entry_start + 30 + name_len + header_extra_slop + entry.compressed_size
+        disk_end = sizes[entry.disk_start]
+        if entry_end > disk_end:
+            if current:
+                batches.append(
+                    EntryBatch(current_disk or 0, current_start, current_end, tuple(current))
+                )
+                current = []
+                current_disk = None
+            batches.append(
+                EntryBatch(entry.disk_start, entry_start, min(entry_end, disk_end), (task,))
+            )
+            continue
+        candidate_start = current_start if current else entry_start
+        candidate_end = max(current_end, entry_end) if current else entry_end
+        starts_new_batch = (
+            not current
+            or current_disk != entry.disk_start
+            or candidate_end - candidate_start > max_batch_bytes
+        )
+        if starts_new_batch:
+            if current:
+                batches.append(
+                    EntryBatch(current_disk or 0, current_start, current_end, tuple(current))
+                )
+            current = [task]
+            current_disk = entry.disk_start
+            current_start = entry_start
+            current_end = entry_end
+        else:
+            current.append(task)
+            current_end = candidate_end
+    if current:
+        batches.append(EntryBatch(current_disk or 0, current_start, current_end, tuple(current)))
+    return batches
+
+
+def extract_entry(
+    readers: list[HTTPRangeReader],
+    entry: ZipEntry,
+    out_path: pathlib.Path,
+    decompress_lock_path: str | None = None,
+) -> dict[str, Any]:
+    compressed = read_entry_compressed(readers, entry)
+    return materialize_entry(compressed, entry, out_path, decompress_lock_path)
+
+
+def extract_batch(
+    readers: list[HTTPRangeReader],
+    batch: EntryBatch,
+    decompress_lock_path: str | None = None,
+) -> list[dict[str, Any]]:
+    blob = read_split_bytes(readers, batch.disk, batch.start, batch.end_exclusive - batch.start)
+    rows: list[dict[str, Any]] = []
+    for task in batch.tasks:
+        compressed = compressed_from_local_blob(task.entry, blob, batch.start)
+        rows.append(materialize_entry(compressed, task.entry, task.out_path, decompress_lock_path))
+    return rows
 
 
 def command_probe(args: argparse.Namespace) -> None:
@@ -479,7 +605,7 @@ def command_fetch(args: argparse.Namespace) -> None:
     ]
     out_root = pathlib.Path(args.output_root)
     started = time.time()
-    tasks: list[tuple[ZipEntry, pathlib.Path]] = []
+    tasks: list[EntryTask] = []
     for episode_id in selected_ids:
         for entry in by_episode[episode_id]:
             match = SCREENSHOT_RE.match(entry.name)
@@ -487,36 +613,73 @@ def command_fetch(args: argparse.Namespace) -> None:
                 raise RuntimeError(f"non-screenshot entry selected: {entry.name}")
             step = match.group("step")
             out = out_root / "screenshots" / f"{episode_id}_{step}.png"
-            tasks.append((entry, out))
+            tasks.append(EntryTask(entry, out))
 
-    def one(task: tuple[ZipEntry, pathlib.Path]) -> dict[str, Any]:
-        entry, out = task
-        if out.exists() and not args.force:
-            payload = out.read_bytes()
-            return {
-                "name": entry.name,
-                "path": str(out),
-                "compressed_bytes": entry.compressed_size,
-                "bytes": len(payload),
-                "crc32": f"{entry.crc32:08x}",
-                "sha256": hashlib.sha256(payload).hexdigest(),
-                "reused": True,
-            }
-        row = extract_entry(readers, entry, out, args.decompress_lock_path)
-        row["reused"] = False
-        return row
+    def reused_row(task: EntryTask) -> dict[str, Any]:
+        payload = task.out_path.read_bytes()
+        return {
+            "name": task.entry.name,
+            "path": str(task.out_path),
+            "compressed_bytes": task.entry.compressed_size,
+            "bytes": len(payload),
+            "crc32": f"{task.entry.crc32:08x}",
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "reused": True,
+        }
 
     results: list[dict[str, Any]] = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as pool:
-        for row in pool.map(one, tasks):
-            results.append(row)
-            if len(results) % args.progress_every == 0:
-                progress = {
-                    "phase": "fetch",
-                    "done": len(results),
-                    "elapsed_sec": round(time.time() - started, 1),
+    missing: list[EntryTask] = []
+    for task in tasks:
+        if task.out_path.exists() and not args.force:
+            results.append(reused_row(task))
+        else:
+            missing.append(task)
+
+    def note_progress() -> None:
+        if len(results) % args.progress_every == 0:
+            progress = {
+                "phase": "fetch",
+                "done": len(results),
+                "elapsed_sec": round(time.time() - started, 1),
+            }
+            print(json.dumps(progress), flush=True)
+
+    if args.batch_bytes > 0:
+        batches = build_entry_batches(missing, args.batch_bytes)
+        print(
+            json.dumps(
+                {
+                    "phase": "batch_plan",
+                    "missing_files": len(missing),
+                    "batch_count": len(batches),
+                    "batch_bytes": args.batch_bytes,
+                    "reused_count": len(results),
                 }
-                print(json.dumps(progress), flush=True)
+            ),
+            flush=True,
+        )
+
+        def batch_one(batch: EntryBatch) -> list[dict[str, Any]]:
+            rows = extract_batch(readers, batch, args.decompress_lock_path)
+            for row in rows:
+                row["reused"] = False
+            return rows
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as pool:
+            for rows in pool.map(batch_one, batches):
+                results.extend(rows)
+                note_progress()
+    else:
+
+        def one(task: EntryTask) -> dict[str, Any]:
+            row = extract_entry(readers, task.entry, task.out_path, args.decompress_lock_path)
+            row["reused"] = False
+            return row
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as pool:
+            for row in pool.map(one, missing):
+                results.append(row)
+                note_progress()
     report = {
         "repo_id": args.repo_id,
         "revision": args.revision,
@@ -527,6 +690,8 @@ def command_fetch(args: argparse.Namespace) -> None:
         "compressed_bytes": sum(item["compressed_bytes"] for item in results),
         "bytes": sum(item["bytes"] for item in results),
         "reused_count": sum(1 for item in results if item.get("reused")),
+        "batch_bytes": args.batch_bytes,
+        "max_workers": args.max_workers,
         "elapsed_sec": round(time.time() - started, 3),
         "files": results,
     }
@@ -567,6 +732,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--report", required=True)
     p.add_argument("--progress-every", type=int, default=250)
     p.add_argument("--max-workers", type=int, default=2)
+    p.add_argument("--batch-bytes", type=int, default=0)
     p.add_argument("--decompress-lock-path")
     p.add_argument("--force", action="store_true")
     p.set_defaults(func=command_fetch)
