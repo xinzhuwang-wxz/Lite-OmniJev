@@ -26,7 +26,7 @@
 - 模型全部完成，最终退出0/零失败；reports/project-model-download-001.json。
 - AndroidControl官方22对象49,930,349,992B与Mind2Web49文件13,577,379,722B均完成哈希，最终报告002；仅研究隔离，不准入商业训练。
 - Clotho003外部6次续传已耗尽，379,707,764B partial保留；新004先验证1MiB Range返回206及精确Content-Range，再启动4并发8MiB有界片段，每片3次/180秒，拼接后必须官方MD5才提升。reports/clotho-range-recovery-004.json，目前running；完成后锁内1659 CC0/CCBY音频提取仍待办，不能算就绪。
-- MMAU/STAR/STA/FunQA已哈希。Perception11,199,611,859B下载exit0；整包安全成员/CRC、4任务各200引用、15代表视频全流解码通过；video代理继续同锁FunQA/STA集成验收。最终证据待整合，不拿抽样解码冒称全视频解码。
+- MMAU/STAR/STA/FunQA已哈希。Perception11,199,611,859B下载exit0；整包安全成员/CRC、4任务各200引用、15代表视频全流解码通过；video代理继续同锁FunQA/STA集成验收。reports/public-eval-archives-validation-002.json已整合：三包1200/1200公开引用、全CRC及27代表全流解码通过；不拿抽样解码冒称全视频解码。
 - Valen来源20文件约6.36GB全部哈希通过，隔离原料不准入训练；reports/valen-source-download-001.json。
 - 文本来源17文件30,666,690B本地上游/远端SHA通过；JevEmbed600k/Open-Jev113k仍是候选原料，不是样本族隔离/训练准入证据。
 - ScienceQA3parquet626MB、ChartQA875MB、AOKVQA已知可商用COCO3832图约660MB完成；reports/stage2-remote-completion-001.json。剩余已知许可研究专用图继续准备，未知许可不进池。
@@ -57,10 +57,12 @@
 - 门槛改动、付费/开关卡、生产、删数据、方向/预算改变仍用户决定；真实隔离身份/人工资源后续需安排。其余下载继续。
 
 ## 下一步与验证
-1. 完成在途数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。最近汇总 reports/offline-prep-progress-20261014.json（03:54本地），ready_to_open_gpu=false，不能替代各最终报告。
+1. 完成在途数据、失败项续传和完整CPU运行时依赖；逐文件哈希和退出报告入账。最近汇总 reports/offline-prep-progress-20261014-latest.json（工具实际时间见报告），ready_to_open_gpu=false，不能替代各最终报告。
 2. MDC/HLE授权下载均已真实完成并哈希核验；reports/mdc-commonvoice-download-002.json、reports/hle-source-download-001.json。凭据只放私密文件，API请求用官方curl流程；不公开签名URL/密钥、不准入训练。
 3. CLEVRER/GUI原未知状态已由官方证据解除，执行新批准的限定镜像；LLaVA全量1.28TB仍禁止，5k所选原媒体权利需逐项确认；AudioCaps原音频需官方表单。
 4. 完成全项目offline-prep:04审计，未来LoRA/量化/校准产物仅列待生成；全齐备前不开GPU。
 - 最新主树pytest9.1.1下282测试全部通过（27.49秒，专用媒体runtime）；此前273测试无skip、Ruff/format167文件、mypy44源文件、wheel/sdist通过（显式专用媒体runtime）；MDC独立安全32测试通过/1 torch测试按范围排除；新增STAR恢复20定向测试、169文件格式、mypy45/build通过。
 - 不push、不建远端issue/PR、不轮询gh；只本地提交/SSH同步，保留缓存与约561MiB P0备份。
 - 循环见plan/LOOP.md；native goal当前工具返回blocked（旧状态），用户已重新要求继续无卡准备，仍按原终局推进；工具不提供agent恢复接口，不能虚称active/complete。
+
+- 补漏核查：原方案ScreenSpot尚无显式资产证据，授权代理已认领审计/合法公开限定下载；运行时代理继续全阶段依赖闭包补漏，GUI代理检验multipart选择性读取，CommonVoice CPU代理与CLEVRER队列继续。Clotho004已排队完成后自动锁内提取，无需开GPU等待网络。

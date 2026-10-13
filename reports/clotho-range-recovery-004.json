@@ -1,0 +1,23 @@
+{
+  "status": "running",
+  "gpu_used": false,
+  "source_url": "https://zenodo.org/records/6473207/files/audio_files.zip?download=1",
+  "expected_bytes": 3140677494,
+  "workers": 4,
+  "chunk_bytes": 8388608,
+  "started_utc": "2026-10-13T20:59:04Z",
+  "completed_chunks": 95,
+  "failures": [],
+  "exit_code": null,
+  "preserved_partial_bytes": 379707764,
+  "driver_sha256": "5860dd5e8da20243f86fcf834131142fb9d27b5e7129954a56570f5841b0c220",
+  "driver_remote_path": "artifacts/ops/clotho-range-recovery.py",
+  "extract_after_transfer_remote_path": "artifacts/ops/clotho-after-range-004.sh",
+  "range_probe": {
+    "http_status": 206,
+    "bytes": 1048576,
+    "content_range": "bytes 379707764-380756339/3140677494",
+    "success": true
+  },
+  "interpretation": "Snapshot only; task still running. Completed chunks are not final official MD5 proof. Original partial retained, automatic lock-serialized extraction queued."
+}

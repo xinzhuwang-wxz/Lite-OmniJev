@@ -1,0 +1,9 @@
+CPU/local validation after runtime host and video integration
+pytest: 282 passed in 27.49s (prior to video receipt-only integration)
+ruff: All checks passed!
+format: 173 files already formatted
+mypy: Success: no issues found in 45 source files
+uv build: sdist and wheel successful
+scripts.loop validate: valid=true tickets=30
+GPU used: false
+Whole-project readiness: pending remaining assets, dependency closure, authorization and CPU preparation.

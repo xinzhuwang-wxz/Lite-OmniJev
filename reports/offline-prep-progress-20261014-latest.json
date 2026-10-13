@@ -1,0 +1,75 @@
+{
+  "observed_utc": "2026-10-13T21:07:39.520026+00:00",
+  "gpu_used": false,
+  "ready_to_open_gpu": false,
+  "scope": "Verified completed slices and remaining gaps; not readiness",
+  "reports": [
+    {
+      "report": "project-model-download-001.json",
+      "status": "all_required_files_hash_verified_not_admitted",
+      "exit_code": 0,
+      "verified_file_count": 70,
+      "verified_bytes": 121094724397,
+      "interpretation": "Use referenced report for exact proof and limits; zero top-level totals do not mean no progress."
+    },
+    {
+      "report": "android-control-source-download-002.json",
+      "status": "all_files_hash_verified_research_only",
+      "exit_code": 0,
+      "verified_file_count": 22,
+      "verified_bytes": 49930349992,
+      "interpretation": "Use referenced report for exact proof and limits; zero top-level totals do not mean no progress."
+    },
+    {
+      "report": "mind2web-source-download-002.json",
+      "status": "all_files_hash_verified_research_only",
+      "exit_code": 0,
+      "verified_file_count": 49,
+      "verified_bytes": 13577379722,
+      "interpretation": "Use referenced report for exact proof and limits; zero top-level totals do not mean no progress."
+    },
+    {
+      "report": "public-eval-archives-validation-002.json",
+      "status": null,
+      "exit_code": 0,
+      "verified_file_count": 0,
+      "verified_bytes": 0,
+      "interpretation": "Use referenced report for exact proof and limits; zero top-level totals do not mean no progress."
+    },
+    {
+      "report": "clotho-range-recovery-004.json",
+      "status": "running",
+      "exit_code": null,
+      "verified_file_count": 0,
+      "verified_bytes": 0,
+      "interpretation": "Use referenced report for exact proof and limits; zero top-level totals do not mean no progress."
+    },
+    {
+      "report": "runtime-cpu-builds.json",
+      "status": "runtime_cpu_builds_litert_host_prebuilt_and_quant_wheelhouse_prepared_gpu_pending",
+      "exit_code": null,
+      "verified_file_count": 0,
+      "verified_bytes": 0,
+      "interpretation": "Use referenced report for exact proof and limits; zero top-level totals do not mean no progress."
+    },
+    {
+      "report": "ragtruth-source-recovery-001.json",
+      "status": "download_hash_verified",
+      "exit_code": null,
+      "verified_file_count": 0,
+      "verified_bytes": 0,
+      "interpretation": "Use referenced report for exact proof and limits; zero top-level totals do not mean no progress."
+    }
+  ],
+  "remaining": [
+    "Clotho final MD5/hash and license-filtered CPU extraction",
+    "CLEVRER final queue and CRC",
+    "GUI media subset or full-disk plan",
+    "ScreenSpot explicit source coverage audit",
+    "Android SDK/NDK actual agreement and mobile dependencies",
+    "DocVQA and AudioCaps actual applicant information/approval",
+    "Remaining raw-media rights and exact MVBench protocol",
+    "CommonVoice CPU preparation",
+    "Whole-project offline dependency closure and integration acceptance"
+  ]
+}
