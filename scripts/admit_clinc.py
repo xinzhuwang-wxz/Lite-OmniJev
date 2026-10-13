@@ -8,6 +8,7 @@ import importlib
 import json
 import platform
 import subprocess
+import sys
 from collections import Counter
 from collections.abc import Iterable
 from datetime import UTC, datetime
@@ -16,6 +17,7 @@ from typing import Any
 
 from data.schema import Pool, Sample, validate_pool_isolation
 from scripts.assets import write_json
+from scripts.check_tokens import probe as probe_answer_tokens
 
 REPO_ID = "clinc/clinc_oos"
 REVISION = "155b9c710419136e17307b80d0a13e68cd46b4ec"
@@ -24,6 +26,22 @@ EXPECTED_ROWS = 15_250
 EXPECTED_LABELS = 151
 EXPECTED_TRAIN_SHA256 = "30188119cf9f86fc9db27e1c22442d091cb5cb0913c9496f945fe11e7a02a28f"
 DATA_VERSION = "clinc-oos-plus-train-v1"
+DATA_CARD = {
+    "dataset": REPO_ID,
+    "config": "plus",
+    "split": "train",
+    "revision": REVISION,
+    "license": LICENSE,
+    "license_url": f"https://huggingface.co/datasets/{REPO_ID}/blob/{REVISION}/LICENSE",
+    "attribution": (
+        "Stefan Larson et al., An Evaluation Dataset for Intent Classification "
+        "and Out-of-Scope Prediction, EMNLP 2019."
+    ),
+    "source_url": f"https://huggingface.co/datasets/{REPO_ID}/tree/{REVISION}",
+    "provenance_note": (
+        "Public CLINC train parquet only; validation/test/holdout splits are not accessed."
+    ),
+}
 
 
 def sha256_file(path: Path) -> str:
@@ -85,23 +103,33 @@ def build_samples(
     pool: Pool = "train",
 ) -> tuple[list[Sample], dict[str, Any]]:
     samples: list[Sample] = []
-    seen_texts: set[str] = set()
+    seen_texts: dict[str, int] = {}
     duplicate_texts = 0
+    input_rows = 0
     label_counts: Counter[str] = Counter()
     group_sizes: Counter[int] = Counter()
 
     for index, row in enumerate(rows):
+        input_rows += 1
         text = row.get("text")
         intent = row.get("intent")
         if not isinstance(text, str) or not text.strip():
             raise ValueError(f"row {index} has empty text")
         if type(intent) is not int:
             raise ValueError(f"row {index} has non-integer intent")
+        if not 0 <= intent < len(labels):
+            raise ValueError(f"row {index} intent id out of range: {intent}")
         normalized_text = " ".join(text.split()).casefold()
-        if normalized_text in seen_texts:
+        previous_intent = seen_texts.get(normalized_text)
+        if previous_intent is not None:
+            if previous_intent != intent:
+                raise ValueError(
+                    "conflicting intents for normalized utterance "
+                    f"at row {index}: {previous_intent} != {intent}"
+                )
             duplicate_texts += 1
             continue
-        seen_texts.add(normalized_text)
+        seen_texts[normalized_text] = intent
 
         raw_options = option_group(intent, labels)
         options = list(raw_options)
@@ -149,17 +177,33 @@ def build_samples(
     validate_pool_isolation(samples)
     oos_index = labels.index("oos")
     report = {
-        "input_rows": len(list(rows)) if not isinstance(rows, list) else len(rows),
+        "input_rows": input_rows,
         "samples_written": len(samples),
         "duplicate_exact_texts_dropped": duplicate_texts,
         "labels": len(labels),
         "label_counts": dict(sorted(label_counts.items())),
+        "raw_labels_original": labels,
         "option_group_sizes": dict(sorted(group_sizes.items())),
-        "candidate_rule": "original ClassLabel order, contiguous chunks of 20 labels",
+        "candidate_rule": {
+            "source": "original HuggingFace ClassLabel order",
+            "construction": "contiguous chunks of up to 20 labels",
+            "display_normalization": "replace underscores with spaces and strip whitespace",
+            "answer_tokens": (
+                "A through T by option position; U remains separate insufficient token"
+            ),
+        },
         "oos_treatment": {
             "label_id": oos_index,
-            "mapped_to": "ordinary choice option",
+            "original_label": labels[oos_index],
+            "mapped_to": "ordinary out-of-scope intent choice option",
             "not_mapped_to": "U",
+        },
+        "semantic_review": {
+            "human_semantic_review_performed": False,
+            "note": (
+                "No claim of human semantic review; this script preserves CLINC "
+                "human labels mechanically."
+            ),
         },
     }
     return samples, report
@@ -172,8 +216,35 @@ def write_jsonl(path: Path, samples: list[Sample]) -> str:
     return hashlib.sha256(corpus.encode()).hexdigest()
 
 
-def run(input_path: Path, output: Path, report_path: Path) -> int:
+def script_sha256() -> str:
+    return sha256_file(Path(__file__))
+
+
+def require_token_probe(model_dir: Path | None) -> dict[str, Any]:
+    if model_dir is None:
+        raise ValueError("Missing required --model-dir for official tokenizer answer-token probe")
+    token_report = probe_answer_tokens(model_dir)
+    if token_report.get("status") != "passed" or token_report.get("exit_code") != 0:
+        failures = token_report.get("failures") or token_report.get("blocker") or "unknown failure"
+        raise ValueError(f"official tokenizer answer-token probe failed: {failures}")
+    return token_report
+
+
+def run(
+    input_path: Path,
+    output: Path,
+    report_path: Path,
+    *,
+    model_dir: Path | None,
+    command: list[str] | None = None,
+) -> int:
     started = datetime.now(UTC)
+    actual_sha = None
+    labels: list[str] = []
+    dataset_sha = None
+    details: dict[str, Any] = {}
+    token_report: dict[str, Any] | None = None
+    blocker = None
     try:
         if not input_path.is_file():
             raise FileNotFoundError(f"Missing CLINC train parquet: {input_path}")
@@ -182,19 +253,15 @@ def run(input_path: Path, output: Path, report_path: Path) -> int:
             raise ValueError(f"CLINC train SHA mismatch: {actual_sha}")
         rows, labels = read_clinc_parquet(input_path)
         samples, details = build_samples(rows, labels, source_sha256=actual_sha)
+        token_report = require_token_probe(model_dir)
         dataset_sha = write_jsonl(output, samples)
         status = "training_admitted"
         exit_code = 0
-        blocker = None
     except Exception as exc:
-        actual_sha = None
-        labels = []
-        samples = []
-        dataset_sha = None
-        details = {}
         status = "blocked"
         exit_code = 1
         blocker = str(exc)
+    finished = datetime.now(UTC)
 
     report = {
         "status": status,
@@ -202,19 +269,43 @@ def run(input_path: Path, output: Path, report_path: Path) -> int:
         "repo_id": REPO_ID,
         "revision": REVISION,
         "license": LICENSE,
+        "data_card": DATA_CARD,
         "input": str(input_path),
         "input_sha256": actual_sha,
         "expected_input_sha256": EXPECTED_TRAIN_SHA256,
         "output": str(output) if status == "training_admitted" else None,
         "output_sha256": dataset_sha,
+        "model_dir": str(model_dir) if model_dir is not None else None,
+        "token_probe": {
+            "required": True,
+            "status": token_report.get("status") if token_report else None,
+            "model_dir": token_report.get("model_dir") if token_report else None,
+            "template_sha256": token_report.get("template_sha256") if token_report else None,
+            "tokenizer_sha256": token_report.get("tokenizer_sha256") if token_report else None,
+            "answer_count": token_report.get("answer_count") if token_report else None,
+            "scope": token_report.get("scope") if token_report else None,
+        },
+        "source_provenance": {
+            "full_source": f"{REPO_ID}@{REVISION}:plus/train.parquet",
+            "source_url": DATA_CARD["source_url"],
+            "license_url": DATA_CARD["license_url"],
+            "attribution": DATA_CARD["attribution"],
+            "raw_label_source": "CLINC HuggingFace ClassLabel metadata",
+            "target_source": "clinc_human_label",
+        },
         "heldout_accessed": False,
         "validation_accessed": False,
         "test_accessed": False,
         "forbidden_teacher_labels_used": False,
         "started_at": started.isoformat(),
-        "finished_at": datetime.now(UTC).isoformat(),
+        "finished_at": finished.isoformat(),
+        "elapsed_seconds": (finished - started).total_seconds(),
         "python": platform.python_version(),
         "code_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "script": str(Path(__file__).resolve()),
+        "script_sha256": script_sha256(),
+        "command": command or [sys.executable, "-m", "scripts.admit_clinc"],
+        "exit_code": exit_code,
         "dirty_worktree": bool(
             subprocess.check_output(["git", "status", "--porcelain"], text=True)
         ),
@@ -244,8 +335,15 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=Path("reports/clinc-admission.json"),
     )
+    parser.add_argument(
+        "--model-dir",
+        type=Path,
+        default=None,
+        help="Path to the fixed E4B official tokenizer files used for answer-token probing.",
+    )
     args = parser.parse_args(argv)
-    return run(args.input, args.output, args.report)
+    command = [sys.executable, "-m", "scripts.admit_clinc", *(argv or sys.argv[1:])]
+    return run(args.input, args.output, args.report, model_dir=args.model_dir, command=command)
 
 
 if __name__ == "__main__":
