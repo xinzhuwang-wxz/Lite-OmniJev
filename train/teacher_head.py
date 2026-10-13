@@ -27,6 +27,7 @@ ALLOWED_SOURCE_REPO = "akhilaaa3/Jev-Omni"
 PINNED_SOURCE_REVISION = "5addda86ddee081a68fb067477ea100c221b8917"
 FORBIDDEN_SOURCE_NAMES = {"JEV-27B", "JEV-27B-VL"}
 SAFETENSORS_HEADER_RESERVE_BYTES = 64 * 1024
+ISOLATED_CONVERSION_TIMEOUT_SECONDS = 120
 
 
 def tensor_bytes_sha256(tensor: Any) -> str:
@@ -362,7 +363,12 @@ def _assert_socket_denied() -> bool:
 
 
 def _copy_regular_nofollow(source: Path, destination: Path, *, max_bytes: int) -> None:
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
     try:
         fd = os.open(source, flags)
     except OSError as exc:
@@ -495,15 +501,19 @@ def isolated_convert(args: list[str]) -> dict[str, Any]:
             *jail_args,
         ]
         try:
-            completed = subprocess.run(
-                command,
-                check=False,
-                text=True,
-                capture_output=True,
-                stdin=subprocess.DEVNULL,
-                close_fds=True,
-                env=_scrubbed_env(),
-            )
+            try:
+                completed = subprocess.run(
+                    command,
+                    check=False,
+                    text=True,
+                    capture_output=True,
+                    stdin=subprocess.DEVNULL,
+                    close_fds=True,
+                    env=_scrubbed_env(),
+                    timeout=ISOLATED_CONVERSION_TIMEOUT_SECONDS,
+                )
+            except subprocess.TimeoutExpired as exc:
+                raise IsolationError("isolated conversion child timed out") from exc
             if completed.returncode != 0:
                 raise IsolationError("isolated conversion child failed")
             report = dict(json.loads(completed.stdout))

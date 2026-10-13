@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "converted",
-  "converted_at": "2026-10-13T17:28:04.491517+00:00",
+  "converted_at": "2026-10-13T17:33:44.191492+00:00",
   "source_repo": "akhilaaa3/Jev-Omni",
   "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
   "source_path": "/input/head.pt",
@@ -9,7 +9,7 @@
   "source_sha256": "8c81edecd733f7db327604803c14cf9ecbee53d2af055eeb09f78b64bcbf2638",
   "output_path": "artifacts/teacher/jev-omni/5addda86ddee081a68fb067477ea100c221b8917/head.safetensors",
   "output_size": 3964424,
-  "output_sha256": "d9f707420295eb3a4a4ee7d7a713808ced5636c816d29ce6e796ad89f238d918",
+  "output_sha256": "e1e3e2b65281f5694c345613a278d561bc0d9faf389a5c81b95dd60f66cdf9a3",
   "tensor_count": 4,
   "tensors": {
     "linear.bias": {

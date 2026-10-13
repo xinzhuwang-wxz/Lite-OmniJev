@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+import train.teacher_head as teacher_head
 from scripts.teacher_head import main
 from train.checkpoint import file_sha256
 from train.teacher_head import (
@@ -204,6 +205,108 @@ def test_parent_copy_refuses_child_symlink_to_host_secret(tmp_path):
         _copy_regular_nofollow(child_output, destination, max_bytes=1024)
 
     assert destination.read_text() == "previous-good-output"
+
+
+def test_isolated_cli_refuses_child_fifo_without_overwriting_output(tmp_path, monkeypatch):
+    if not hasattr(os, "mkfifo"):
+        pytest.skip("fifo unavailable")
+    source = tmp_path / "head.pt"
+    source.write_bytes(b"fixture")
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps({"schema_version": 1, "tensors": {"x": {"shape": [1], "dtype": "torch.uint8"}}})
+    )
+    destination = tmp_path / "head.safetensors"
+    destination.write_text("previous-good-output")
+    report = tmp_path / "report.json"
+
+    monkeypatch.setattr(teacher_head.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(teacher_head.os, "geteuid", lambda: 0)
+
+    def fake_run(command, **_kwargs):
+        jail = Path(command[command.index("--jail-root") + 1])
+        os.mkfifo(jail / "output" / "head.safetensors")
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=json.dumps(
+                {
+                    "schema_version": 1,
+                    "status": "converted",
+                    "output_sha256": "0" * 64,
+                    "exit_code": 0,
+                }
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(teacher_head.subprocess, "run", fake_run)
+    code = main(
+        [
+            "convert",
+            "--isolate",
+            "--source",
+            str(source),
+            "--output",
+            str(destination),
+            "--expected-sha256",
+            hashlib.sha256(source.read_bytes()).hexdigest(),
+            "--expected-spec",
+            str(spec),
+            "--report",
+            str(report),
+        ]
+    )
+
+    payload = json.loads(report.read_text())
+    assert code == 1
+    assert payload["status"] == "blocked"
+    assert payload["blocker"] == "isolation_unavailable"
+    assert destination.read_text() == "previous-good-output"
+    assert "previous-good-output" not in json.dumps(payload)
+
+
+def test_isolated_cli_timeout_is_redacted_and_preserves_output(tmp_path, monkeypatch):
+    source = tmp_path / "head.pt"
+    source.write_bytes(b"fixture")
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps({"schema_version": 1, "tensors": {"x": {"shape": [1], "dtype": "torch.uint8"}}})
+    )
+    destination = tmp_path / "head.safetensors"
+    destination.write_text("previous-good-output")
+    report = tmp_path / "report.json"
+
+    monkeypatch.setattr(teacher_head.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(teacher_head.os, "geteuid", lambda: 0)
+
+    def fake_run(command, **_kwargs):
+        raise subprocess.TimeoutExpired(command, teacher_head.ISOLATED_CONVERSION_TIMEOUT_SECONDS)
+
+    monkeypatch.setattr(teacher_head.subprocess, "run", fake_run)
+    code = main(
+        [
+            "convert",
+            "--isolate",
+            "--source",
+            str(source),
+            "--output",
+            str(destination),
+            "--expected-sha256",
+            hashlib.sha256(source.read_bytes()).hexdigest(),
+            "--expected-spec",
+            str(spec),
+            "--report",
+            str(report),
+        ]
+    )
+
+    payload = json.loads(report.read_text())
+    assert code == 1
+    assert payload["status"] == "blocked"
+    assert payload["blocker"] == "isolation_unavailable"
+    assert destination.read_text() == "previous-good-output"
+    assert "TimeoutExpired" not in json.dumps(payload)
 
 
 def test_cli_direct_conversion_report_marks_nonisolated_mode(tmp_path):
