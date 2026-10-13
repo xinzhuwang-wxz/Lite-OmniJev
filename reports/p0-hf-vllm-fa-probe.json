@@ -1,0 +1,170 @@
+{
+  "scope": "DIAGNOSTIC ONLY: HF registered vLLM FA3/FA4; not acceptance and not a replacement reference",
+  "indices": [
+    3,
+    79,
+    90
+  ],
+  "status": "diagnostic-complete",
+  "dtype": "bfloat16",
+  "registration_sha256": "a6eb140ce6a3946e8551d52add4a11df53154e4949f7637707ae631e3d033a0d",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "vllm": "0.31.0",
+    "triton": "3.7.1"
+  },
+  "cuda": "13.0",
+  "gpu": "NVIDIA H20",
+  "free_bytes_before_model": 101742936064,
+  "rows": [
+    {
+      "id_sha256": "3b399359c8a9e4a497e127d7ff090d7e42daf5b1fbae1e5e2f020bf2ac3ada98",
+      "input_sha256": "33d77b13fe63c06487c78c21a2c00d08e1ab65206e022f7d4369f0c569237b43",
+      "token_ids": [
+        4443,
+        1904,
+        236836
+      ],
+      "raw_logprobs": [
+        -16.2509765625,
+        -14.8134765625,
+        -0.000976800569333136
+      ],
+      "raw_probabilities": [
+        8.755693561050993e-08,
+        3.686284677863179e-07,
+        0.999023676345047
+      ],
+      "conditional": [
+        0.19193278644723683,
+        0.8080672135527632
+      ],
+      "p_U": 0.9999995433689852
+    },
+    {
+      "id_sha256": "189267bee2139babd9bc10ecda7e203e88a42d7d0094cd693631c1b2b873648d",
+      "input_sha256": "3433ed1a98e7b5b68066cc5f9213b697bc516946c00de0349996027a4d6d92e9",
+      "token_ids": [
+        4443,
+        1904,
+        236836
+      ],
+      "raw_logprobs": [
+        -16.626205444335938,
+        -15.251204490661621,
+        -0.0012045992771163583
+      ],
+      "raw_probabilities": [
+        6.016317129579185e-08,
+        2.3795018529594187e-07,
+        0.9987961259613564
+      ],
+      "conditional": [
+        0.20181306863813325,
+        0.7981869313618667
+      ],
+      "p_U": 0.9999997015274089
+    },
+    {
+      "id_sha256": "db00ebebf1839d828109a0470517f6ec17e20910d5fc378ff231768bd9f5e9aa",
+      "input_sha256": "d32244e2a1bd60e5fbe8e8235a70314a17d996cd3294ad538273ab8593a1f626",
+      "token_ids": [
+        236771,
+        236770,
+        236778,
+        236836
+      ],
+      "raw_logprobs": [
+        -10.219887733459473,
+        -2.0323874950408936,
+        -4.532387733459473,
+        -8.407387733459473
+      ],
+      "raw_probabilities": [
+        3.6438387642671284e-05,
+        0.13102233226028479,
+        0.010754965399101613,
+        0.00022321218571290486
+      ],
+      "conditional": [
+        0.00025694540358620397,
+        0.9239043826955833,
+        0.07583867190083046
+      ],
+      "p_U": 0.001571507896291527
+    }
+  ],
+  "attention_parameters": [
+    {
+      "head_dim": 256,
+      "fa_version": 3,
+      "window_size": [
+        511,
+        0
+      ],
+      "scale": 1.0,
+      "causal": true,
+      "dropout": 0.0,
+      "softcap": 0.0,
+      "num_splits": 0
+    },
+    {
+      "head_dim": 512,
+      "fa_version": 4,
+      "window_size": [
+        -1,
+        -1
+      ],
+      "scale": 1.0,
+      "causal": true,
+      "dropout": 0.0,
+      "softcap": 0.0,
+      "num_splits": 0
+    }
+  ],
+  "comparisons": {
+    "hf_sdpa_bf16": [
+      {
+        "index": 3,
+        "conditional_U_max": 0.018644580517910264,
+        "raw_max": 6.663138640550237e-05,
+        "logprob_max": 0.43743324279785156
+      },
+      {
+        "index": 79,
+        "conditional_U_max": 0.009880430100582038,
+        "raw_max": 5.5302002956447716e-05,
+        "logprob_max": 0.18755531311035156
+      },
+      {
+        "index": 90,
+        "conditional_U_max": 0.019486809994484475,
+        "raw_max": 0.013606450316722016,
+        "logprob_max": 0.3596458435058594
+      }
+    ],
+    "vllm_031_bf16": [
+      {
+        "index": 3,
+        "conditional_U_max": 0.0852421016090353,
+        "raw_max": 0.0013010973700217088,
+        "logprob_max": 1.001302719116211
+      },
+      {
+        "index": 79,
+        "conditional_U_max": 0.12145552933922676,
+        "raw_max": 0.000894446360876433,
+        "logprob_max": 0.7508945465087891
+      },
+      {
+        "index": 90,
+        "conditional_U_max": 0.05723538679417706,
+        "raw_max": 0.3776861595639752,
+        "logprob_max": 1.9815075397491455
+      }
+    ]
+  },
+  "exit_code": 0,
+  "duration_seconds": 18.93646945990622
+}

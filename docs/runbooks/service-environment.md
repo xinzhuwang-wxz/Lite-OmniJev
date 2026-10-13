@@ -7,7 +7,7 @@
 ## 固定选择与官方证据
 
 - `vllm==0.26.0`（Apache-2.0）：官方 [Gemma 4 配方](https://recipes.vllm.ai/Google/gemma-4-E4B-it) 给出 E4B 基座支持；但配方最低 0.19.1 不足以满足本项目接口。已直接核对 [0.26.0 CompletionRequest](https://github.com/vllm-project/vllm/blob/v0.26.0/vllm/entrypoints/openai/completion/protocol.py) 的 `logprob_token_ids`、[Gemma4 多模态包装类](https://github.com/vllm-project/vllm/blob/v0.26.0/vllm/model_executor/models/gemma4_mm.py) 的 `SupportsLoRA`，以及 [raw_logprobs 配置](https://github.com/vllm-project/vllm/blob/v0.26.0/vllm/config/model.py)。检查的 0.25.0 CompletionRequest 尚无指定答案 token 接口，不能直接复用。
-- `torch==2.11.0`、`torchaudio==2.11.0`、`torchvision==0.26.0`：沿用该版 [CUDA 依赖](https://github.com/vllm-project/vllm/blob/v0.26.0/requirements/cuda.txt)，BSD-style 上游许可随 wheel 保留。Transformers `5.19.0`（Apache-2.0）与当前训练锁相同，复用既有官方模板/tokenizer。
+- `torch==2.11.0`、`torchaudio==2.11.0`、`torchvision==0.26.0`：沿用该版 [CUDA 依赖](https://github.com/vllm-project/vllm/blob/v0.26.0/requirements/cuda.txt)，BSD-style 上游许可随 wheel 保留。Transformers服务环境固定 `5.13.0`（Apache-2.0），训练仍为5.19.0；共享固定的模型/tokenizer/template文件，实际输入须探针对齐。
 - CUDA 采用该发行版默认构建；[tagged Dockerfile](https://github.com/vllm-project/vllm/blob/v0.26.0/docker/Dockerfile) 默认 `13.0.2`，CUDA 依赖包含 `cu13`。该版安装网页仍有默认 12.9 的旧文字，不能据此混装 cu129 Torch。以锁定 wheel、安装后 `torch.version.cuda` 和 `vllm.collect_env` 实测为准。
 - [NVIDIA 兼容表](https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html) 给出 CUDA 13.x 最低驱动分支 580；580.82.07 满足分支条件。这仅是兼容性候选依据，PTX/JIT、vLLM ABI、H20 内核启动仍须开卡验证。
 - 只引入 P0 文本服务及 vLLM 必需依赖；未安装 `vllm[audio]`，音频扩展/多模态验收留到对应票。传递依赖的确切版本、下载地址和哈希见 `infra/serve/uv.lock`。NVIDIA 组件适用 NVIDIA 自身许可，不能把整个依赖栈统称 Apache-2.0。
@@ -81,6 +81,7 @@ PY
 export MODEL_DIR="$DATA_ROOT/models/gemma-4-E4B-it"
 export ADAPTER_DIR="$DATA_ROOT/runs/p0/adapter"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+export PATH="$UV_PROJECT_ENVIRONMENT/bin:$PATH"  # FlashInfer JIT needs the environment ninja executable
 "$UV_PROJECT_ENVIRONMENT/bin/vllm" serve "$MODEL_DIR" \
   --served-model-name google/gemma-4-E4B-it \
   --host 127.0.0.1 --port 8001 \
@@ -113,3 +114,11 @@ export LITE_RAW_LOGPROBS_CONFIRMED=1
 ## 验证状态
 
 本地 macOS 上 uv 0.9.27 已完成 197 包锁解析、离线 `uv lock --check`，并将锁导出后按 Python 3.11 / manylinux_2_35 x86_64 / only-binary 重新核验（196 个第三方包，exit 0）；未下载完整 wheel 或安装模型。Linux 安装、导入、CUDA BF16、模型加载、LoRA 加载、100 题概率一致性、API 集成全部待目标机实测。锁解析成功不能替代上述任一项。
+
+## 2026-10-13 GPU启动兼容性修正
+实际启动vLLM0.26.0+Transformers5.19.0，在Gemma4 config.head_dim读取时抛AmbiguousGlobalPerLayerAttributeError；无卡时只import不能发现此错误。最小复现为AutoConfig.from_pretrained(...).text_config.head_dim。
+按[vLLM0.26.0官方release](https://github.com/vllm-project/vllm/releases/tag/v0.26.0)所用Transformers5.13.0固定服务栈，同时锁定其兼容tokenizers0.22.2/huggingface-hub1.33.0；训练栈、模型文件不变。上游同类问题见[issue52768](https://github.com/vllm-project/vllm/issues/52768)。
+`infra/serve/check_model_config.py MODEL_DIR`现于目标环境通过（head_dim=256）；uv pip check通过。必须继续真实服务启动和100题概率对照，不能将配置读取通过当作模型正确性通过。
+P0文本启动增加三模态limit=0和skip-mm-profiling，避免为不输入的媒体分配显存；多模态阶段必须恢复相应预算并独立验证。
+
+第二个GPU启动问题为FlashInfer JIT找不到ninja：ninja已安装在服务venv/bin，但绝对路径执行vllm不会自动激活该PATH。将服务bin加入PATH后继续验证；无需修改引擎或重新下载模型。

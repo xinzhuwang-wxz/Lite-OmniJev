@@ -1,12 +1,12 @@
 # P0 HF / vLLM 100 题概率对照
 
-入口 `python -m scripts.p0_parity --help` 已在 CPU 实跑；CPU 行为测试只验证协议和拒绝路径。以下真实模型命令尚未执行，开卡由用户决定。必须分别保存 **base 与 adapter** 两组 HF reference / vLLM report；任何一组缺失或失败都不能宣称 P0 parity 通过，parity 本身也不等于 P0 集成完成。
+入口 `python -m scripts.p0_parity --help` 已在 CPU 实跑；CPU 行为测试只验证协议和拒绝路径。真实BF16 reference与vLLM对照已执行，当前失败证据见 reports/p0-gpu-progress.md；以下为可复现操作流程，开关卡由用户决定。必须分别保存 **base 与 adapter** 两组 HF reference / vLLM report；任何一组缺失或失败都不能宣称 P0 parity 通过，parity 本身也不等于 P0 集成完成。
 
 ## 顺序与准备
 
 使用根训练环境的 Python 执行本入口；vLLM 使用独立服务环境，见 [service-environment.md](service-environment.md)。全部资产必须已由 manifest 校验，`MODEL_DIR` 的最后一级目录必须是固定 40 位 revision。`P0_DATA` 指向训练使用的真实 100 行程序真值 `data.jsonl`，每个样本只保留一题。拒绝媒体、holdout、重复 ID、截断、缺答案 token。
 
-顺序：停止 vLLM → HF base reference → HF 进程退出 → vLLM base 对照 → 停止 vLLM → 十步训练并退出 → HF adapter reference → HF 进程退出 → vLLM adapter 对照。HF 与 vLLM 不同时驻留。脚本不启动或停止外部进程，操作员须确认已有 GPU 作业已退出。
+顺序：停止 vLLM → HF base reference → HF 进程退出 → vLLM base 对照 → 停止 vLLM → 十步训练并退出 → HF adapter reference → HF 进程退出 → vLLM adapter 对照。默认顺序驻留；确认显存余量时可共存但推理串行。vLLM初始化profiling期间禁止其它GPU进程分配或释放显存，避免显存快照不一致导致启动失败。脚本不启动或停止外部进程，操作员须确认已有 GPU 作业已退出。
 
 ```bash
 # TRAIN_PY 是持久数据盘上的根训练环境 Python；这些路径须按实际实例设置。
