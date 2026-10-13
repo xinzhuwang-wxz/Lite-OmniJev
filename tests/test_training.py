@@ -2,16 +2,26 @@
 
 import json
 import math
+import sys
+from types import SimpleNamespace
 
 import pytest
 from pydantic import ValidationError
 
 from scripts.train_smoke import main
+from train.monitoring import (
+    MODE_ENV,
+    OFFICIAL_API_KEY_ENV,
+    SwanLabConfig,
+    SwanLabTelemetry,
+    start_swanlab,
+)
 from train.trainer import (
     SmokeConfig,
     attach_lora,
     data_bytes,
     decision_loss,
+    log_training_metrics,
     prepare_examples,
     run,
     runtime_requirements,
@@ -187,6 +197,126 @@ def test_missing_weights_preflight_is_structured_and_output_is_not_created(tmp_p
     assert report["status"] == "blocked" and report["exit_code"] == 1
     assert report["blockers"] and report["steps_completed"] == 0
     assert not output.exists()
+    assert report["monitoring"]["enabled"] is False
+    assert not any("monitoring:" in blocker for blocker in report["blockers"])
+
+
+def test_swanlab_online_requires_api_key(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "importlib.util.find_spec", lambda name: object() if name == "swanlab" else None
+    )
+    config = SwanLabConfig(mode="online", failure_policy="fail", logdir=tmp_path)
+    assert config.blockers(env={}) == [
+        f"monitoring: {OFFICIAL_API_KEY_ENV} is required for online mode"
+    ]
+    assert config.blockers(env={OFFICIAL_API_KEY_ENV: "present"}) == []
+
+
+def test_swanlab_disabled_mode_never_requires_sdk(monkeypatch, tmp_path):
+    monkeypatch.setattr("importlib.util.find_spec", lambda name: None)
+    config = SwanLabConfig.from_env({MODE_ENV: "disabled"})
+    assert config.enabled is False
+    assert config.blockers(env={}) == []
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "missing.json",
+        tmp_path / "out",
+        execute=False,
+        monitoring=config,
+    )
+    assert report["monitoring"]["mode"] == "disabled"
+    assert not any("SwanLab" in blocker for blocker in report["blockers"])
+
+
+def test_swanlab_env_opt_in_defaults_to_offline():
+    config = SwanLabConfig.from_env({"LITE_OMNIJEV_SWANLAB": "1"})
+    assert config.enabled is True
+    assert config.mode == "offline"
+    assert config.describe()["project"] == "Lite-OmniJev"
+    assert config.describe()["workspace"] == "maxen"
+
+
+def test_training_metric_wiring_uses_real_loop_values():
+    records = []
+
+    class Recorder:
+        def log(self, metrics, step=None):
+            records.append((step, metrics))
+
+        def finish(self, report):
+            del report
+
+    report = {"steps_completed": 7}
+    config = SmokeConfig(learning_rate=0.0002)
+    log_training_metrics(Recorder(), config, report, mean_loss=1.25, grad_norm=0.75)
+    assert records == [
+        (
+            7,
+            {
+                "train/loss": 1.25,
+                "train/learning_rate": 0.0002,
+                "train/grad_norm": 0.75,
+                "train/steps_completed": 7.0,
+            },
+        )
+    ]
+
+
+def test_swanlab_failure_policy_warn_records_error(monkeypatch, tmp_path):
+    class BrokenRun:
+        def log(self, metrics, step=None):
+            del metrics, step
+            raise RuntimeError("network down")
+
+    config = SwanLabConfig(mode="offline", failure_policy="warn", logdir=tmp_path)
+    telemetry = SwanLabTelemetry(config, BrokenRun())
+    telemetry.log({"train/loss": 1.0}, step=1)
+    report = {}
+    monkeypatch.setitem(
+        sys.modules,
+        "swanlab",
+        SimpleNamespace(finish=lambda: None),
+    )
+    telemetry.finish(report)
+    assert report["monitoring_error"] == "RuntimeError: network down"
+
+
+def test_swanlab_failure_policy_fail_raises(tmp_path):
+    class BrokenRun:
+        def log(self, metrics, step=None):
+            del metrics, step
+            raise RuntimeError("sdk refused metric")
+
+    config = SwanLabConfig(mode="offline", failure_policy="fail", logdir=tmp_path)
+    telemetry = SwanLabTelemetry(config, BrokenRun())
+    with pytest.raises(RuntimeError, match="sdk refused metric"):
+        telemetry.log({"train/loss": 1.0}, step=1)
+
+
+def test_start_swanlab_passes_project_workspace_and_mode(monkeypatch, tmp_path):
+    calls = []
+
+    class Run:
+        def log(self, metrics, step=None):
+            del metrics, step
+
+    fake = SimpleNamespace(init=lambda **kwargs: calls.append(kwargs) or Run())
+    monkeypatch.setitem(sys.modules, "swanlab", fake)
+    report = {
+        "code_revision": "abcdef1234567890",
+        "scope": "real smoke",
+        "model_revision": "f" * 40,
+        "config": SmokeConfig().model_dump(),
+        "resume_supported": False,
+    }
+    config = SwanLabConfig(mode="offline", failure_policy="fail", logdir=tmp_path)
+    telemetry = start_swanlab(config, report)
+    telemetry.log({"train/loss": 1.0}, step=1)
+    assert calls[0]["project"] == "Lite-OmniJev"
+    assert calls[0]["workspace"] == "maxen"
+    assert calls[0]["mode"] == "offline"
+    assert calls[0]["public"] is False
 
 
 def test_run_refuses_existing_output_without_overwriting(tmp_path):

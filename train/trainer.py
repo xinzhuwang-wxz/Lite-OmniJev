@@ -31,6 +31,7 @@ from data.schema import (
 from data.synth import generate_samples
 from scripts.assets import selected_files, verify_file, write_json
 from scripts.check_tokens import OfficialTokenizerAdapter
+from train.monitoring import SwanLabConfig, Telemetry, start_swanlab
 from train.template import check_answer_tokens, render_prompt
 
 
@@ -219,12 +220,32 @@ def attach_lora(model: Any, config: SmokeConfig) -> Any:
     return adapted
 
 
+def log_training_metrics(
+    telemetry: Telemetry,
+    config: SmokeConfig,
+    report: dict[str, Any],
+    *,
+    mean_loss: float,
+    grad_norm: float,
+) -> None:
+    telemetry.log(
+        {
+            "train/loss": mean_loss,
+            "train/learning_rate": config.learning_rate,
+            "train/grad_norm": grad_norm,
+            "train/steps_completed": float(report["steps_completed"]),
+        },
+        step=int(report["steps_completed"]),
+    )
+
+
 def train_smoke(
     config: SmokeConfig,
     model_dir: Path,
     examples: list[dict[str, Any]],
     output_dir: Path,
     report: dict[str, Any],
+    telemetry: Telemetry,
 ) -> None:
     """Execute 10 optimizer steps, each accumulating 10 single-sequence examples."""
     torch = importlib.import_module("torch")
@@ -258,6 +279,14 @@ def train_smoke(
     report["cuda_version"] = torch.version.cuda
     report["steps_completed"] = 0
     report["losses"] = []
+    telemetry.log(
+        {
+            "validation/examples": float(report["examples"]),
+            "validation/max_prompt_tokens": float(report["max_prompt_tokens"]),
+            "train/learning_rate": config.learning_rate,
+        },
+        step=0,
+    )
     order = list(range(len(examples)))
     random.Random(config.seed).shuffle(order)
     for step in range(config.steps):
@@ -283,7 +312,9 @@ def train_smoke(
             raise ValueError("no LoRA gradient reached the decision loss")
         optimizer.step()
         report["steps_completed"] = step + 1
-        report["losses"].append(math.fsum(losses) / len(losses))
+        mean_loss = math.fsum(losses) / len(losses)
+        report["losses"].append(mean_loss)
+        log_training_metrics(telemetry, config, report, mean_loss=mean_loss, grad_norm=float(norm))
         write_json(output_dir / "run.json", report)
     model.save_pretrained(
         str(output_dir / "adapter"), safe_serialization=True, save_embedding_layers=False
@@ -310,6 +341,7 @@ def run(
     *,
     execute: bool,
     data_path: Path | None = None,
+    monitoring: SwanLabConfig | None = None,
 ) -> dict[str, Any]:
     start = time.monotonic()
     report: dict[str, Any] = {
@@ -325,7 +357,10 @@ def run(
         "cost": None,
         "steps_completed": 0,
     }
+    monitoring_config = monitoring or SwanLabConfig.from_env()
+    report["monitoring"] = monitoring_config.describe()
     created = False
+    telemetry: Telemetry | None = None
     try:
         if execute:
             output_dir.mkdir(parents=True, exist_ok=False)
@@ -350,6 +385,7 @@ def run(
             report["max_prompt_tokens"] = max(len(e["input_ids"]) for e in examples)
         except Exception as exc:
             blockers.append(f"examples: {type(exc).__name__}: {exc}")
+        blockers.extend(monitoring_config.blockers())
         report["blockers"] = blockers
         if blockers:
             raise ValueError("training preflight has blockers")
@@ -357,7 +393,11 @@ def run(
             (output_dir / "data.jsonl").write_bytes(data_bytes(samples))
             report["status"] = "running"
             write_json(output_dir / "run.json", report)
-            train_smoke(config, model_dir, examples, output_dir, report)
+            telemetry = start_swanlab(monitoring_config, report)
+            try:
+                train_smoke(config, model_dir, examples, output_dir, report, telemetry)
+            finally:
+                telemetry.finish(report)
         report.update(status="completed" if execute else "ready", exit_code=0)
     except (Exception, KeyboardInterrupt) as exc:
         report.update(
