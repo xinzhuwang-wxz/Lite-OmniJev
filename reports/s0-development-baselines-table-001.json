@@ -353,6 +353,20 @@
       "brier": 0.41483029281624334,
       "coverage_at_error": 0.26,
       "max_error": 0.05
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-4b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-onejev-4b-v2-001.json",
+      "runtime_profile": "Official FLA0.5.2 explicit overlay; shared H20 quality measurement only",
+      "count": 500,
+      "accuracy": 0.662,
+      "ece15": 0.19843591175822403,
+      "brier": 0.5492247294877142,
+      "coverage_at_error": 0.14,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -398,16 +412,11 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 27,
+  "verified_supported_pairs": 28,
   "pending_supported_pairs": [
     {
       "cohort": "screenshot",
       "model": "gemma4-e2b-it",
-      "reason": "corrected GUI v2 baseline required"
-    },
-    {
-      "cohort": "screenshot",
-      "model": "onejev-4b",
       "reason": "corrected GUI v2 baseline required"
     },
     {

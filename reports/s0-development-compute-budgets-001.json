@@ -1,18 +1,13 @@
 {
   "status": "partial",
-  "matrix_sha256": "45adfcbe0a1c768b3eda88e9c798ca2ccd2216488ef48ccc5be398150dbd0f06",
+  "matrix_sha256": "03342e3df6b62c722f8aba20a16fbde4bf50ddfb69781ee78f29d8f546ea57c6",
   "summarizer_sha256": "bb705388486cf7c28c1c3740130680b06b18fadb8d70188e9d3e14c831e56e36",
-  "verified_supported_pairs": 27,
+  "verified_supported_pairs": 28,
   "expected_supported_pairs": 30,
   "pending": [
     {
       "cohort": "screenshot",
       "model": "gemma4-e2b-it",
-      "reason": "corrected GUI v2 baseline required"
-    },
-    {
-      "cohort": "screenshot",
-      "model": "onejev-4b",
       "reason": "corrected GUI v2 baseline required"
     },
     {
@@ -1051,6 +1046,46 @@
       },
       "warm_prepare_seconds": null,
       "job_elapsed_seconds": 570.597691,
+      "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-4b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-onejev-4b-v2-001.json",
+      "runtime_profile": "Official FLA0.5.2 explicit overlay; shared H20 quality measurement only",
+      "count": 500,
+      "accuracy": 0.662,
+      "ece15": 0.19843591175822403,
+      "brier": 0.5492247294877142,
+      "coverage_at_error": 0.14,
+      "max_error": 0.05,
+      "report_sha256": "a0406926e1c2119b9db791948c9e75ad2346df03b4e68707fd0c03654d20afeb",
+      "records": "artifacts/s0-screenshot-v2-gpu-001/onejev-4b.json.records.jsonl",
+      "records_sha256": "19ea45226a626b9e037c5e6dddefc7ae1a206b14734fa3f46434a9b6d020a4e3",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 1077,
+        "p50": 4205,
+        "p95": 4621,
+        "max": 4645
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.126528,
+        "p50": 1.057192,
+        "p95": 1.532279,
+        "max": 1.678773
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.030423,
+        "p50": 0.205971,
+        "p95": 0.259957,
+        "max": 0.545661
+      },
+      "job_elapsed_seconds": 1222.074671,
       "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
     }
   ],

@@ -1,0 +1,208 @@
+{
+  "schema": "lite-omnijev.s0_development_baselines.report.v1",
+  "version": "s0-development-baselines-v1",
+  "action": "run",
+  "started_at": "2026-10-14T15:21:46+00:00",
+  "finished_at": "2026-10-14T15:42:08+00:00",
+  "elapsed_seconds": 1222.074671,
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "executable": "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+    "pid": 344069,
+    "cwd": "/root/autodl-tmp/s0-screenshot-v2-final-001",
+    "packages": {
+      "torch": "2.11.0",
+      "transformers": "5.13.0",
+      "safetensors": "0.8.0",
+      "pydantic": "2.14.1"
+    },
+    "cuda": {
+      "torch_importable": true,
+      "torch_version": "2.11.0+cu130",
+      "cuda_version": "13.0",
+      "available": true,
+      "current_device": 0,
+      "device_name": "NVIDIA H20",
+      "capability": [
+        9,
+        0
+      ],
+      "total_memory_bytes": 102085623808
+    }
+  },
+  "source": {
+    "repo_root": "/root/autodl-tmp/s0-screenshot-v2-final-001",
+    "git": {
+      "commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f",
+      "branch": "HEAD",
+      "dirty": "?? configs/s0-screenshot-v2-only.json\n?? measured27b-deadline-supervisor.log\n?? parallel-handoff-supervisor.log\n?? parallel27b-supervisor.log\n?? retain-27b-measured-deadline-001.py\n?? s0-screenshot-v2-27b-parallel-001.py\n?? s0-screenshot-v2-students-001.py\n?? s0-screenshot-v2-teacher-001.sh\n?? s0-screenshot-v2-valen-001.py\n?? stop-original-before-27b.py\n?? students-supervisor.log\n?? teacher-valen-supervisor.log"
+    },
+    "code_hashes": {
+      "scripts/s0_development_baselines.py": "5958de8822629a5675ab6bec00bd735fdaa53d9bb8175749571c023f86091939",
+      "scripts/s0_public_baselines.py": "deaa36b5a311b8a14294081f0de942ca1abc439207181dc73969b81d3f6a1679",
+      "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+      "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+      "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+      "eval/metrics.py": "a7e4f0412add2106094e50c2cf9e78ff4d4d9732085ff23b7186d881151ecda8",
+      "data/schema.py": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6"
+    }
+  },
+  "cost": {
+    "new_paid_resources": null,
+    "gpu_started_by_this_cli": false
+  },
+  "status": "passed",
+  "exit_code": 0,
+  "acceptance": {
+    "real_cuda_forward": true,
+    "fake_forward_control_only": false,
+    "release_or_stage_acceptance": true,
+    "full_denominator_500": true,
+    "two_pass_exact_raw_conditional_pu_prediction": true,
+    "weights_verified_before_load": true,
+    "trust_remote_code": false,
+    "local_files_only": true,
+    "use_safetensors": true,
+    "official_chat_template_enable_thinking_false": true,
+    "truncation": false
+  },
+  "cohort": "screenshot",
+  "build_report": {
+    "path": "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/report.json",
+    "sha256": "ad2e71d45ce4cdea0c526a2f137724f6da23cce6584aa8eec5a5548999b71e17",
+    "outputs_dev_jsonl_sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2",
+    "bound_dev_jsonl_sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2"
+  },
+  "dev_jsonl": {
+    "path": "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/dev.jsonl",
+    "sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2"
+  },
+  "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+  "dataset": {
+    "rows": 500,
+    "unique_ids": 500,
+    "unique_families": 500,
+    "question_types": {
+      "choice": 500
+    },
+    "option_sizes": {
+      "4": 500
+    },
+    "media_counts": {
+      "image": 500,
+      "audio": 0,
+      "video": 0
+    }
+  },
+  "model": {
+    "model_id": "onejev-4b",
+    "repo_id": "OmniJev/OneJev-4B",
+    "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+    "license": "apache-2.0",
+    "manifest_path": "configs/project-model-assets.json",
+    "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+    "manifest_metadata_sha256": "61c2c6149b906f13e4e1af67c13dfea648515e4ca19115abd550262c394a6a24",
+    "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588",
+    "metadata_hashes": {
+      ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+      "README.md": "1853cf34474e8587fb709bc73134201558fe7d6af39d1a69ed81c9e30a340636",
+      "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+      "config.json": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+      "generation_config.json": "62153eb6c69f2e1f426beaa8002b7186437e949c7588167085df14e10e9c0a73",
+      "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+      "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+      "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+    },
+    "weights_hashes": {
+      "model.safetensors": "c725978346bb87ff598b04b6ffe7ea89461368e9b20a0081a3c6a85d377c8f91"
+    },
+    "architecture": {
+      "config_sha256": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+      "model_type": "qwen3_5",
+      "architectures": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "auto_map_absent": true,
+      "transformers_class": "Qwen3_5ForConditionalGeneration"
+    },
+    "trust_remote_code": false,
+    "local_files_only": true
+  },
+  "precision": {
+    "dtype": "bfloat16",
+    "seed": 42,
+    "tf32_allowed": false
+  },
+  "metrics_pass_1": {
+    "count": 500,
+    "accuracy": 0.662,
+    "ece15": 0.19843591175822403,
+    "brier": 0.5492247294877142,
+    "coverage_at_error": 0.14,
+    "max_error": 0.05
+  },
+  "metrics_pass_2": {
+    "count": 500,
+    "accuracy": 0.662,
+    "ece15": 0.19843591175822403,
+    "brier": 0.5492247294877142,
+    "coverage_at_error": 0.14,
+    "max_error": 0.05
+  },
+  "repeatability": {
+    "passed": true,
+    "records_compared": 500,
+    "mismatch_count": 0,
+    "first_mismatches": []
+  },
+  "p_U_summary": {
+    "min": 0.00014230016938037733,
+    "max": 0.8166126258077026,
+    "mean": 0.029558072019129064
+  },
+  "resume": {
+    "supported": false,
+    "records_sidecar": {
+      "path": "/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/screenshot-baselines-v2-001/onejev-4b.json.records.jsonl",
+      "exists": true,
+      "records": 1000,
+      "sha256": "19ea45226a626b9e037c5e6dddefc7ae1a206b14734fa3f46434a9b6d020a4e3"
+    },
+    "records_saved": 500
+  },
+  "records_pass_2_sha256": "b945ce26c7aeb0b561b36783fd2b8d4015687ffa392527ca99e9cb82786283db",
+  "records_sidecar": {
+    "path": "/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/screenshot-baselines-v2-001/onejev-4b.json.records.jsonl",
+    "exists": true,
+    "records": 1000,
+    "sha256": "19ea45226a626b9e037c5e6dddefc7ae1a206b14734fa3f46434a9b6d020a4e3"
+  },
+  "command": {
+    "argv": [
+      "/root/autodl-tmp/s0-screenshot-v2-final-001/scripts/s0_development_baselines.py",
+      "--build-report",
+      "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/report.json",
+      "--dev-jsonl",
+      "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/dev.jsonl",
+      "--media-root",
+      "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+      "--cohort",
+      "screenshot",
+      "--model-root",
+      "/root/autodl-tmp/lite-omnijev/artifacts/models",
+      "--model-id",
+      "onejev-4b",
+      "--report",
+      "/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/screenshot-baselines-v2-001/onejev-4b.json"
+    ],
+    "cwd": "/root/autodl-tmp/s0-screenshot-v2-final-001"
+  },
+  "raw_report": {
+    "path": "artifacts/s0-screenshot-v2-gpu-001/onejev-4b.json",
+    "sha256": "b3a4004d9c47b61fac50ae0a9e0c73376d633c7058396c34b50f0af29522fcc5"
+  },
+  "verified_sidecar_sha256": "19ea45226a626b9e037c5e6dddefc7ae1a206b14734fa3f46434a9b6d020a4e3",
+  "verified_exact_pairs": 500,
+  "runtime_profile": "Official FLA0.5.2 explicit overlay; shared H20 quality measurement only"
+}
