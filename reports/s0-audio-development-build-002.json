@@ -1,0 +1,97 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "blocker": null,
+  "command": [
+    "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+    "-m",
+    "scripts.s0_audio_dev",
+    "--train-csv",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/clotho_aqa_train.csv",
+    "--metadata-csv",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/clotho_aqa_metadata.csv",
+    "--audio-root",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+    "--license-plan",
+    "reports/clotho-aqa-license-plan.json",
+    "--audio-preparation-report",
+    "reports/clotho-aqa-audio-preparation-002.json",
+    "--dev-out",
+    "artifacts/audio-dev-001-b/dev.jsonl",
+    "--dev-ledger-out",
+    "artifacts/audio-dev-001-b/development-ledger.jsonl",
+    "--exclusion-ledger-out",
+    "artifacts/audio-dev-001-b/exclusion-ledger.jsonl",
+    "--media-manifest-out",
+    "artifacts/audio-dev-001-b/media-manifest.jsonl",
+    "--report",
+    "artifacts/audio-dev-001-b/report.json"
+  ],
+  "protocol": "s0-audio-dev-v1",
+  "config": {
+    "protocol": "s0-audio-dev-v1",
+    "seed": 42,
+    "dev_count": 500,
+    "max_seconds": 30.0,
+    "expected_train_sha256": "237c692e21e015a3e9b4391edd716b1387d7eb2d068d7ecdb5a6d6ead7e7a992",
+    "expected_metadata_sha256": "7505ba93c291d344b31e5c33e872b95d84255852cff93278bbdf549402acc1f5",
+    "dataset": "Clotho-AQA",
+    "revision": "zenodo-6473207",
+    "data_version": "clotho-aqa-train-noul-dev-v1",
+    "config_sha256": "ca0f5ee4e9fccc1565d1901e4753184e008e960cfee6476a95ef1fffc9ce52d7"
+  },
+  "primitive_scope": {
+    "noul_only": true,
+    "choice_covered": false,
+    "score_covered": false
+  },
+  "training_admitted": false,
+  "quality_gate": "not_run",
+  "gpu_used": false,
+  "holdout_accessed": false,
+  "cost": null,
+  "real_human_kappa_verified": false,
+  "source": {
+    "train_csv_sha256": "237c692e21e015a3e9b4391edd716b1387d7eb2d068d7ecdb5a6d6ead7e7a992",
+    "metadata_csv_sha256": "7505ba93c291d344b31e5c33e872b95d84255852cff93278bbdf549402acc1f5",
+    "license_plan": "clotho-aqa-license-plan.json",
+    "audio_preparation_report": "clotho-aqa-audio-preparation-002.json",
+    "approved_audio_count": 1659,
+    "header_checked_train_audio_count": 973,
+    "fixed_alias_count": 2,
+    "dataset": "Clotho-AQA",
+    "revision": "zenodo-6473207",
+    "qa_license": "MIT"
+  },
+  "split": {
+    "dev_items": 500,
+    "candidate_qa": 2267,
+    "candidate_sound_families": 947,
+    "excluded_group_counts": {
+      "non_unanimous_answer": 1623,
+      "non_yes_no_answer": 1946,
+      "six_row_group_excluded": 1,
+      "unapproved_media_license": 1206
+    },
+    "selected_sound_families": 500,
+    "all_train_sound_families": 973,
+    "duration_filter_seconds": 30.0
+  },
+  "outputs": {
+    "dev_jsonl_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+    "development_ledger_sha256": "4b8c03a3d316efc40d1854265e3008389d6937b614d6d062753db703e19a218d",
+    "exclusion_ledger_sha256": "640c15d670a359b374597d5f45cedd6d2bcdfae52f01c0c430e2b745b08b5433",
+    "media_manifest_sha256": "08c8cc0eae1e0fc14c0cf28dd2bf1735a1383a0f0c369230b1377f8b0812f9ed"
+  },
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "git_head": "5842217828b722d17d9a042b80fe5de8fa8bcbc0",
+    "script_sha256": "db6fa93e25ae60db95f4d30f532b1aa2fab34a9c0f718f47c420ab55e561052d"
+  },
+  "timing": {
+    "started_at": 1791980109.5983386,
+    "finished_at": 1791980112.9136937,
+    "duration_seconds": 3.315355062484741
+  }
+}

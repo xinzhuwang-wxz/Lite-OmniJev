@@ -1,0 +1,31 @@
+{
+  "status": "passed_public_audio_development_only",
+  "exit_code": 0,
+  "dev_items": 500,
+  "distinct_sound_families": 500,
+  "all_train_sound_families": 973,
+  "dev_excluded_families": 500,
+  "remaining_train_available_families": 473,
+  "decoded_media": 500,
+  "maximum_audio_seconds": 29.967959183673468,
+  "answers": {
+    "yes": 314,
+    "no": 186
+  },
+  "repeat_bytes_identical": true,
+  "outputs_sha256": {
+    "dev.jsonl": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+    "development-ledger.jsonl": "4b8c03a3d316efc40d1854265e3008389d6937b614d6d062753db703e19a218d",
+    "exclusion-ledger.jsonl": "640c15d670a359b374597d5f45cedd6d2bcdfae52f01c0c430e2b745b08b5433",
+    "media-manifest.jsonl": "08c8cc0eae1e0fc14c0cf28dd2bf1735a1383a0f0c369230b1377f8b0812f9ed"
+  },
+  "source_root": "/root/autodl-tmp/s0-audio-dev-001",
+  "code_revision": "5842217",
+  "gpu_used": false,
+  "holdout_accessed": false,
+  "real_human_kappa_verified": false,
+  "training_admitted": false,
+  "quality_gate": "not_run",
+  "scope": "Original Clotho TRAIN three-answer unanimous Noul only; not the full audio task distribution.",
+  "cost_usd": null
+}

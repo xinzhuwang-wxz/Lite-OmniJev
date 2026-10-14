@@ -1,131 +1,44 @@
 # STATUS
 
-## 当前会话接续（2026-10-14，有卡；本节优先于历史资源记录）
-- 用户已开卡并授权按原方案自主技术决策/调度，减少GPU时间；不换基座/引擎、不降低阈值，不代开关卡/付费/生产部署/push。5b/探索关闭。
-- H20/97871MiB、driver580.65.06、CUDA13.0；cgroup150GiB/16CPU，盘余约420GB。SSH socket `/tmp/omnijev-ssh-root-final`；凭据不入仓库。
-- 冻结执行树 `/root/autodl-tmp/gpu-reference-fp32-complete-001` HEADdfdfd935；网关验收runner树 `/root/autodl-tmp/gpu-gateway-contract-001` HEAD0ca8ff1。原用户树/764ee500树保留。不要从目录名推断版本。
-- s0:03 done；正式FP32/IEEE HF100两遍精确/162.734秒、native100两遍精确/176.527秒；raw/joint/conditional/pU最大差分别0.0000322938/0.0000322830/0.0000167780/0.0000322830，全部严格<0.001。新汇总 `reports/s0-full100-gpu-acceptance-001.json`，独立verifier通过；25定向回归通过。
-- 网关正式100两遍精确/123.138秒，conditional及pU与native最大差0；真实Chromium153六类×三primitive/坏媒体422通过/31.353秒，artifacts/browser/s0-live-fp32-ieee-001含截图trace。置信度validator已按既定chance-adjusted公式修复，API未改；14回归通过。
-- primary026/TF5.13/Torch2.11，audio extra已完整锁定/pip check0。视频官方归一化参数及同Linuxprocessor/HF100逐字节输入等价已通过。FP32仅数值参考；BF16训练不变，最终服务精度/性能另验。
-- 原BF16两遍raw漂移0.091862、HF/native差0.136941失败仍留；FP32仅官方config副本四个dtype字段，TRITON_F32_DEFAULT=ieee和TF32关闭解决参考误差，不更改原权重/模板/阈值。
-- 验收native PID94918/18001与gateway PID130178/18000已发送TERM；本机转发55174→18000暂保留，服务不再保证可用。实时/proc+health绑定在artifacts/s0-parity-full100-20261014/live-process-binding-001.json，无签名remote attestation，不伪称独立签名证明。两服务仅开发数值验收，非生产。
-- 教师公开text/audio/video两遍真实forward通过/44.564秒；原tensor格式→safehead的GPU功能参考47.418秒exit0：四tensorhash、5counts边界及三类两遍logits/probs精确；31回归通过，s0:01原README声明/安全GPU链已获独立verifier PASS，已关闭；s0:02主会话认领效果复现。严禁正常进程加载pickle或执行上游module。
-- 教师benchmark原pilot900秒退出124，保留1397条；MMAU首遍1000题620正确/62.0%，在63.1±2pp内；MVBench首遍397题仅部分，不作完整baseline。两遍完整质量门槛仍pending。
-- 教师resume004安全停于3812/5600条/exit1；MMAU两遍1000对预测/概率精确一致、均62.0%，单benchmark通过（reports/teacher-mmau-two-pass-complete-001.json），教师整体未准入。异步短测结束后启动resume005：监督169821/timeout169822/教师169823，实时Rl，reports/teacher-benchmark-progress-005.json快照4236/5600、GPU仅教师24794MiB，最多3600秒；同DF冻结源码和records显式续跑，无自有服务占卡。
-- 原生子代理：parity_verifier/teacher_reference均完成，临时树已清理；cache_protocol_review已交只读建议；cache_assessment已整合显式新policy（7949365）；34pass/1显式livefixture skip、ruff/mypy通过，架构只读review CLEAR。父会话统一票/STATUS/整合。
-- 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
+更新：2026-10-14；用户要求先完成S0并写无缝新session交接，规划和验证保持粗粒度。完整目标仍active，S1未启动，S0未全部通过。
 
-下一步（本轮优先）：
-- s0:02独立review PASS并done：完整5600、2800对预测/概率精确，MMAU两次62%、MVBench两次54.222独立baseline，真实exit0且双端报告/records hash匹配。统一reports/s0-teacher-complete-acceptance-001.json给实际远端旧pilot名→本地copy路径映射；005耗时3280.63秒只本次续跑，cost实际未知null，历史raw0占位不当免费账单，未来runner已修null。禁止无谓重跑。
-- s0:10 done：Linux004六主体全declared类别实际32.917秒exit0，支持边界见.scratch/s0/baseline-support-matrix.md；OneJev audio metadata不一致/Qwen audio未声明均不伪passed，不代教师head/Valenforward/质量基线。
-- TF32x3候选off/API171528 health200、实际cmdline与六precision/cache env逐项绑定；完整100 parity正在主会话handle94452运行（330秒外层，报告/日志/exit在远端candidate目录），900秒总deadline不变。先数值，再决定on冷比，不能重叠另GPU作业。
+## 当前执行方式
+- 路线唯一入口：plan/DELIVERY-PLAN.md。剩余数据与基线统一s0:07；性能s0:04；外部封存资源s0:05；最终S0出口s0:08。
+- 原06合并05、原12合并07，历史在.scratch/s0/archive，所有未完要求保留；14已完成，后续不按来源/模型/探针另拆票。
+- 普通修复只跑相关行为测试；一批合并后必要静态/构建；独立review集中里程碑，复用代码/输入未变的有效证据。当前不再增加流程/反复全检。
+- 不换基座/引擎、不暗降门槛；5b/探索关闭，不push/付费/自动开关卡/生产部署。
 
-- 教师005已终止exit0，5600条完整，最终reports/teacher-benchmark-two-pass-complete-001.json：MMAU620/1000=.62、MVBench976/1800=.542222，两个benchmark逐题预测/概率完全一致；独立review在/tmp/lite-teacher-final-review-001进行，02尚未关闭。005实际elapsed3280.63秒，runtime.cost_usd=0.0是runner输入非账单测量，真实费用未知null，不宣称免费。
-- 教师释放GPU已核无compute进程后，TF32x3唯一候选cache-off正式启动：timeout171527/API171528，900秒总deadline写远端s0-scheduled-gpu-001/artifacts/s0-cache-tf32x3-001/candidate-budget.json。先完整100数值门槛，尚未性能准入；on/off CPU预检exit0，reports/s0-cache-tf32x3-preparation-001.json。不能再启动重叠GPU作业。
-- baseline CPU004代码aa94581在/root/autodl-tmp/s0-baseline-cpu-004执行实际全声明类别媒体probe，仍运行，主会话exec handle22499；CUDA_VISIBLE_DEVICES空，不读权重。
-- s0:14已冻结并认领原Clotho TRAIN一致Noul500与整sound family排除，独立树/tmp/lite-audio-dev-001，scripts/s0_audio_dev.py/tests/test_s0_audio_dev.py切片实现中；不新下载/不GPU/不读其他split，已加08硬依赖。
+## 已通过（复用证据，不重跑）
+| 闭环 | 结果与证据 |
+|---|---|
+| P0与离线准备 | 真模型10步/P0工程闭环、7模型70文件121.09GB、29来源与offline runtime已准备；reports/p0-engineering-acceptance.md及project-*-offline-acceptance-001.json。资产不是质量准入。 |
+| s0:01 教师技术 | 安全head转换、原tensor GPU功能等价与公开text/audio/video两遍；reports/teacher-technical-admission-gpu-001.json。 |
+| s0:02 教师效果 | 5600记录/2800对完全一致，MMAU两次620/1000=62%，MVBench九任务两次976/1800=54.222%独立baseline；独立PASS，reports/s0-teacher-complete-acceptance-001.json。005终止exit0，不重启。 |
+| s0:03 数值/网关/浏览器 | FP32 IEEE HF/native100与gateway100严格<.001、重复精确；Chromium153六类×三primitive通过；reports/s0-full100-gpu-acceptance-001.json。仅数值参考，不当最终服务性能。 |
+| s0:10 官方CPU能力 | Linux004六主体全部declared类别通过32.917秒；OneJev audio metadata_inconsistent、Qwen audio未声明不伪passed；reports/s0-baseline-cpu-linux-004.json及.scratch/s0/baseline-support-matrix.md。 |
+| s0:11 JevBench | 固定231公开题、可逆标签/官方计分、两遍构建hash相同；教师195口径未证实，oracle不是模型成绩；reports/jevbench-adapter-*.json。 |
+| s0:13 文本开发首批 | 原CLINC500dev/14750余train，family交集0、两遍字节相同，dev144intent；reports/s0-text-development-acceptance-001.json。仅intent Choice，旧15250全train已superseded。 |
+| s0:14 音频开发首批 | 原Clotho一致Noul500/500sound families，500WAV完整PCM验证、最长29.968秒，yes314/no186；973train family中500排除/473余；两遍字节相同。reports/s0-audio-development-acceptance-001.json。仅Noul，非真人κ。 |
+| 六cohort gate工程 | ADR0009，dev3000合法gold/program truth、holdout6000×两人=12000判断，κ≥.7仅holdout；同item跨池漏洞已修复，合成CLI及独立CLEAR。真实资源未取得。 |
 
-- 教师005最新真实快照5422/5600、PID169823 Rl/48:27，未有exit，继续同作业。全5600后先最终报告/逐项门槛与独立review；活作业不重启。
-- s0:10剩余官方全类别CPU探针已交/tmp/lite-baseline-cpu-fix-15ea9ab两文件切片：image/screenshot/audio/video按固定metadata声明区分passed/blocked/unprobed/metadata_inconsistent，不能直接把Gemma专属tensor校验强套Qwen；父待整合后Linux004。text/image/token/thinking六主体003已通过。
-- 缓存下一必要候选协议已冻结.scratch/s0/cache-tf32x3-spec.md：教师完成后才单独GPU，隔离编译缓存，完整100精度/重复先于冷缓存比；一个候选900秒预算，失败不扩gateway/off或重复。尚未启动，旧性能fail不变。
+## 正在做与下一动作
+- s0:07 claimed：整合剩余image/screenshot/video/crossmodal开发500与必需同条件基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
+- 子切片/tmp/lite-media-dev-001：executor只写scripts/s0_media_dev.py、tests/test_s0_media_dev.py，准备原AOK TRAIN Choice500与CLEVRER TRAIN exist Noul500、媒体decode/整family排除；父负责真实Linux批构建。无GPU/新下载/封存读取。
+- 子切片/tmp/lite-public-baselines-001：只写scripts/s0_public_baselines.py、tests/test_s0_public_baselines.py，复用固定JevBench231/core_question完整rubric/官方readout，准备E4B/E2B真实HF两遍基线；父才调度GPU。不得把Qwen base当Valen或通用tokenizer当教师head。
+- s0:04 claimed/failed：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，GPU查询无自有作业。reports/s0-tf32x3-cache-result-001.json。
+- 停止FP32配置穷举，先用已留时序/profile定位具体瓶颈；有明确依据才启动下一候选。数值参考精度与实际服务性能分报，不能暗换阈值或混合claim。当前无需为失败配置重启GPU服务。
+- s0:08 ready但依赖未齐，不可认领。全部门槛通过后一次集成review、正式plan/handoff-日期-s0-complete.md及可复制启动词，再交新session进入S1。
 
-- s0:13已done：真实Linux两遍CLINC500dev/14750train，四输出字节相同，family交集0，全15250原数据除pool/version不变，dev144intent/train151；reports/s0-text-development-{build-001,build-002,acceptance-001}.json，10本票/54相关回归/83源mypy/302format/ruff/build通过。旧全train已superseded，未来训练必须绑定allocation和余train hash；仅intent Choice、非质量准入。接续s0-cohorts handoff已更新。
-- GUI local-002审计完成：真实TRAIN1episode16steps/16截图对齐，11CLICK有合法bbox、另1CLICK info字符串，TEXT/SCROLL开放参数/INCOMPLETE未明；没有全候选元素或500dev。001远端网络失败与002替代成功均保留。
+## 资源与精确路径
+- SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final；凭据不入仓库。H20 97871MiB/driver580.65.06，cgroup150GiB/16CPU，盘余约420GB（需按下次实际核）。开关卡由用户操作。
+- 原资产树/root/autodl-tmp/lite-omnijev，模型在artifacts/models；Valen在artifacts/quarantine/Valen-Team__Valen-Preview-0923/30096aaabb2689614c83a79f64f38c865c2ce1c1。
+- 冻结教师/IEEE参考树/root/autodl-tmp/gpu-reference-fp32-complete-001 HEADdfdfd935；教师完整records仍叫artifacts/teacher-benchmark-pilot-001.jsonl，本地copy artifacts/s0-teacher-complete-001/records.jsonl，双端SHA75a8b653…d14aa一致。不要改冻结树代码。
+- primary Python /root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python（vLLM.26/TF5.13/Torch2.11）；teacher env /root/autodl-tmp/envs/before-gpu-teacher-job-final-001（TF5.17/Torch2.13）。
+- 文本实际产物/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a；音频/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a；未来训练必须绑定对应allocation/exclusion ledger，不能继续旧全量train。
+- TF32x3失败原始证据/root/autodl-tmp/s0-scheduled-gpu-001/artifacts/s0-cache-tf32x3-001；API171528/193071已TERM、教师169823已自然exit0，旧PID不可凭文件判活。
+- 接续入口plan/handoff-2026-10-14-s0-cohorts.md。历史详细状态plan/archive/STATUS-before-consolidation-2026-10-14.md，不作为当前调度源。
 
-- 最新恢复入口plan/handoff-2026-10-14-s0-cohorts.md。教师005快照5275/5600、PID169823 Rl/43:10，唯一GPU作业。
-- baseline CPU003代码72e5e35实际27.967sec/exit0，六主体text/image/token/thinking全部通过；s0:10仍claimed待音视频支持/未探测矩阵与必需探针，不把此通用probe当教师head/Valenforward或质量准入。
-- GUI首个公开TRAIN step annotation已Mac官方HTTPS成功取得22471B，双端SHAf27cabe…3cef一致；远端初次无网络失败保留001，新的schema/动作/16截图对齐审计在/tmp/lite-dev-source-map-001进行。文本构建切片父review补输出路径/旧证据保护与真实intent统计，尚未Linux构建。
-
-- 五基线CPU002实际27.253sec：5passed/Valen-Qwen1partial，无blocked；显式quarantine路径及OneJev官方空thinking关闭分支已解决，剩余Qwen模板语法证明修复中。报告reports/s0-baseline-cpu-linux-002.json，代码c1bba83，未加载权重或GPU，教师专用读出/质量不凭通用probe准入。
-- s0:12公开TRAIN来源事实已写.scratch/s0/development-source-contract.md。GUI step annotation缺口开始最多3个/1MiB官方固定revision小审计；不重下媒体、不碰test/holdout。其余候选不当500dev已准入。
-
-- s0:13已冻结并认领CLINC真实公开train→500dev+14750train排除ledger，切片/tmp/lite-text-dev-001实现中；只覆盖intent Choice，不当完整文本primitive/质量准入。该票已加到08出口依赖。
-
-- 最新收口：s0:11 CPU适配/官方计分语义完成，231题两遍构建SHA11223d98…c75d一致，7回归、82源mypy/ruff/format/build通过；oracle只是计分测试非模型质量。见reports/jevbench-adapter-validation-001.json/build-001及002/oracle-001与plan/handoff-2026-10-14-jevbench-cpu.md。
-- 教师005最新只读快照4785/5600、PID169823仍Rl/27:45，不重启。基线CPU实际Linux3passed/OneJev两项thinking证明partial/Valen路径blocked：Valen已staged在quarantine而非models，正在独立树修复路径和官方关闭语法，不重下载/不改准入。
-- ADR0009已冻结六评测cohort、四物理输入：dev3000合法金标/程序真值；holdout6000×两真人=12000判断，κ≥.7只holdout。sealed_gate v2已整合，75相关回归/82源mypy/298format/ruff/build通过，六cohort合成CLI通过；独立review发现同item跨池逃逸，已修复并CLEAR。真实身份/人标仍blocked，历史四cohort不自动升级。
-
-- 01/03已关票；02教师resume005继续MVBench第二遍。MMAU两遍均620/1000且完全一致，MVBench第一遍976/1800；第二遍未完成，不关闭02。先核实际PID/exit，活作业不重启。
-- 04仍claimed/性能failed：旧顺序eager/graph失败保留；新scheduled eager冷比2.3469/2.3250，graph1024并发10为2.584/2.551、并发2为3.190/3.188、并发3为3.045/3.047。实际KV覆盖/并发与四概率均通过；未做失败配置gateway/off；两server已停、GPU交还教师。见reports/s0-scheduled-native-eager-canary-001.json及s0-scheduled-native-graph-canaries-001.json。
-- CPU候选已完成：Linux官方100题300次准备精确/40imagecache命中；失败CPUjob清理独立复核APPROVE。新网关并发adapter含实际ASGI wall/work分离、upstream输入/raw/API逐qid绑定、重复case拒绝及摘要JSON roundtrip；独立review APPROVE（reports/s0-scheduled-gateway-review-001.json）；48相关pass、78源mypy/lint/282format/build/32票validate通过，仅CPU准入。
-- async eager官方候选已测：冷比2.3164/2.3335仍fail、四概率max2.36e-7、并发9/KV288，启用日志/真实cmdline与env绑定；已停止server169427、不扩展gateway/off，见reports/s0-scheduled-native-async-canary-001.json。下一TF32x3仅官方安装源评估可用、尚未GPU准备（reports/s0-tf32x3-source-assessment-001.json含实际源码hash）；会改变部分数值实现，不能当IEEE相同，若做必须隔离编译缓存并重验完整100概率/重复，收益假设偏弱，先保持教师占卡。
-- s0:07已认领剩余基线/开发数据规格：移除02/04对纯CPU规划的人工串行依赖（08硬门槛不变），01/03实测充分。模型/协议事实已收集；10的CPU CLI切片已修复metadata expectedhash/缺文件、partial非零退出码、Valen实际adapter元数据及解码前预算等边界，11回归/ruff/mypy通过，已整合待官方Linux实跑；published teacher readout不凭通用tokenprobe准入；OneJev4/27、E2B和额外Valen仍缺基线forward，JevBench231/literal含null148（147非空groups）与教师195口径未证实，dev500不由100 parity fixture替代；规划见.scratch/s0/baseline-expansion-spec.md。
-- 历史展开时s0:10/11/12已认领（11现done）；12已完成原文图6与四模态gate口径独立审查（保持物理输入4、评测六类别500/1k及κ；拟将原文仅封存κ与旧dev双标额外条件分离，不自动改变门槛）。36票validate通过。JevBench实际八文件/231行审计已完成，纠正easy group为JSON null而非easy字符串；官方36original对只用于paraphrase consistency，不能当195场景准确率；139Choice/18离散Score/74Noul都可适配，gold发布方声明非Jev API，但hard模型作者不充真人双标。见reports/jevbench-public-protocol-audit-001.json，下一实现合法adapter/官方计分语义。
-- 用户新要求：S0全绿后产出完整 `plan/handoff-日期-s0-complete.md` 及可复制的新session启动词；已加入s0:08验收，不把中途handoff当作S0完成。
-- 补充真实Linux官方processor+ASGI网关回放联调：已发现并修复测量器写死q0..q9的阻断，现保留真实cache-probe-*及顺序绑定；15回归先红后绿/mypy/ruff通过。官方CPU回放9.896秒exit0、8测量/44题/50回放调用、JSON摘要重载通过，reports/s0-scheduled-gateway-official-cpu-replay-001.json，明确无GPUforward/性能/真实KV证据。
-- 接续：plan/handoff-2026-10-14-scheduled-cache.md。05/06独立gate/真人资源仍外部条件；S0全绿前不启动S1，终局goal active。
-
-## 当前目标与决策
-- 用户已完成开卡，原无卡准备收口；现在复用现有模型、数据、环境及P0产物推进真实GPU闭环，不代开关卡或改租赁。
-- 第十一节逐项阶段检查点见plan/optimization-checkpoints.md：到建议阶段评审收益/预算并记录决定，探索/5b仍默认关闭；当前未启动可选实验。
-- 原方案、阶段顺序和门槛不变；5b/探索关闭，不换基座、不改引擎、不放宽阈值。
-- ADR-0004：AudioCaps首发省略，以Clotho/TTS补题量；ADR-0005：12k视频QA用CC0 CLEVRER，5k图题由允许教师在CC0/BY媒体生成，DocVQA仅研究隔离；NextQA/VGGSound/受限LLaVA仅候选，不下载1.28TB全量LLaVA。
-- ADR-0006用户已批准：仅将S0 MVBench发布53.10±2复现替换为固定9任务1800行独立baseline；MMAU63.10±2、S3≥90%、S4≥97%及其他门槛不变。
-- DocVQA、NDK r28b SDK协议已具体批准，CommonVoice/HLE/模型访问已解决，不重复索要凭据/条款。
-- 用户要求当前会话直接推进，heartbeat已删除，禁止重建。不push/远端issue/PR/自动租卡开关卡/付费/生产部署。
-
-## 资源与版本
-- 远端 `root@region-42.seetacloud.com:48926`，原树 `/root/autodl-tmp/lite-omnijev`；用户已恢复SSH，主会话mux `/tmp/omnijev-ssh-root-final`，凭据不保存。
-- 最新带完整Git历史的隔离源码快照：`/root/autodl-tmp/before-gpu-release-4366197`，目录名是初始快照名，新隔离源码 `/root/autodl-tmp/before-gpu-release-32fb559` 此前冻结HEAD36e51f8（执行代码655a838）；旧目录HEAD3dbbe0d；后续每次核对真实HEAD，不推定目录名=版本。
-- 最终CPU检查点bundle `artifacts/before-gpu-checkpoint-final.bundle`：冻结HEAD36e51f8、完整Git历史，已同步隔离源码32fb559目录并远端37报告hash/32票validate通过；`reports/before-gpu-source-sync-001.json`。本地后续仅此receipt/调度元数据，不覆盖原树或改远端分支。
-- 无卡cgroup2GiB RAM/0.5CPU，重作业锁 `/tmp/omnijev-cpu-heavy.lock`、数值线程1；不得按宿主机free调度。最新远端只读核查剩余420,558,426,112B；保留150GB checkpoint及18.16GB模型临时空间。
-- vLLM0.26仍primary，0.31仅准备/诊断环境，不静默切换。026/031两套完整wheelhouse/fresh安装已实际通过CPU导入。
-- Mac24GiB内存，仅小型公开fixture/metadata，不搬大模型/原始包。只清理自己创建且无用的资源，不删权重缓存/用户容器。
-
-## 票据状态
-- bootstrap:01–08、p0:01–07 done，仅工程闭环，见 `reports/p0-engineering-acceptance.md`。
-- offline-prep:01 done：7模型70文件121,094,724,397B，固定revision/许可/逐文件哈希通过；`reports/project-model-offline-acceptance-001.json`。
-- offline-prep:02 done：29来源/批准排除/未来生成/外部gate汇总；`reports/project-data-offline-acceptance-001.json`。原料准备不等于训练准入。
-- offline-prep:03 done：必需运行时外部依赖统一通过，`reports/project-runtime-offline-acceptance-001.json`；新版teacher/job入口空env fresh no-index重建224.9秒，mandatory imports/probes与pip check退出0。
-- offline-prep:04 done：当前无卡可自主完成准备已验收，`reports/project-before-gpu-readiness-002.json` ready_to_switch_to_gpu_mode=true；资源受限CPU检查显式列为切换后首批前置，失败证据不改写，S0门槛未通过。
-- offline-prep:05/06 done：pytest锁修复、真实Linux教师音频CPU适配。
-- s0:09 done：官方HF100题×2输入相同；4原始family变体不是100独立质量样本。`reports/s0-prepare-integrated-acceptance-002.json`，仅CPU输入。
-- s0:01 done：13文件23,955,723,321B/原README声明/隔离转换/真实GPU原值功能参考/安全拒绝回归/独立复核全部通过，仅技术准入。s0:02 claimed：完整效果复现待两遍5600条，当前2610条checkpoint/resume004运行。
-- s0:03 done：真实FP32/IEEE正式100、网关100和模型浏览器及独立复核通过；历史BF16失败保留，门槛不变。
-- s0:05/06 blocked：独立封存gate身份及两真人6000题/12000判断、κ≥.7资源缺口。不得agent自标/合成κ。
-- S0全绿前禁止S1；delivery:01未完成，原生goal不complete。
-
-## 已完成外部准备
-- GUI1679train episodes/25809 PNG/19,499,790,993B全量下载/CRC/SHA/decode通过exit0；4652.928秒，作业已结束，不重复78分钟解码。逐文件manifest在远端，摘要 `reports/gui-odyssey-full-decode-cpu-001.json`。
-- 固定公开视频1606媒体/1800行/27997唯一PNG/28800帧引用全部SHA/尺寸/头部检查通过；`reports/public-video-protocol-freeze-001.json`，GPU教师质量pending。
-- DocVQA完整tar EOF/12767成员/引用缺失0、32图decode；MMAU1000音频全decode；CommonVoice、Clotho、CLEVRER、STAR补齐、Perception/FunQA/STA、ScreenSpot、阶段2图表/图像原料均有CPU证据。来源/许可/研究隔离及确切检查边界统一见29来源汇总，不将代表decode称全量。
-- RouterBench与Valen/Jev-Omni head安全转换/隔离/独立审查已完成；真实恶意pickle主机读取与网络拒绝证据已重验。禁止Jev API/JEV-27B权重或标签；封存内容不读。
-- SwanLab仅真实训练指标；Kokoro CPU4 WAV、llama.cpp CPU build、Ollama官方版本、quant独立no-index安装、LiteRT私有loader/Androidarm64 CLI/NDK交叉编译均已有证据，见runtime汇总。
-- Android端侧首发以既定CLI/E2B离线运行交付为当前依赖范围；AAR仅未来API集成缓存，Gradle transitive/App build没有完成且不标done；依据 `reports/litert-android-delivery-scope-audit-20261014.json`，真机/模型运行仍S6门槛。
-
-## 本轮代码与验证
-- 共享helper：HLS/间接引用拒绝、SHA/路径边界、max8媒体/累计40MP先header后decode；取消请求仍占用执行槽直到CPU线程结束，关机drain。
-- 原生chat：完整requested IDs+U、精确expanded IDs/usage、raw概率校验；计入集合外sampled token，集合内重复logprob须相同，唯一token原始质量不得>1。
-- TF5.17视频422已定位并修复：官方仅输出pixel_values_videos/video_position_ids，5.19额外framecount不强制/不伪造；native检查仍从冻结帧indices严格核对video_frame_counts和timestamps，未降低等价门槛。
-- 教师runner固定MMAU1000/九任务1800分母、两遍/断点/源码与模型hash绑定；真实Mac官方3音频+1视频processor通过，TF5.17与5.19教师样本摘要一致。CPU/fake-forward不证明教师分数。
-- prefix cache已真实CPU冻结协议/媒体前缀，native/gateway runner已整合；mock ratio失败照留，不冒充≤2性能通过。
-- 最新主树实际全量：560 passed/1 skipped，44.24秒；skip仅Linux root隔离，远端正确reader单项1pass/2.30秒。Ruff/format263文件/mypy73+infra2/build/32票validate均通过；`reports/before-gpu-cpu-validation-005.json`；004历史证据保留。
-- 实际Chromium153官方CPU处理器+网关+明确fake backend：文本/图像/截图/音频/8/16视频×3primitive、坏路径422隐私、未配置503通过；`reports/browser-s0-cpu-004.json`及截图/trace。不当作真实模型或时延通过。
-- 独立只读复核概率/版本/帧数三个delta：11pass/无新增可证问题；前述取消/资源预算复核9pass。
-- SSH恢复后前端399包fresh offline install downloaded0/build exit0；组件LICENSE文本/hash已缓存（Animate为MIT+Commons Clause），`reports/offline-runtime-remote-recovery-20261014.json`。
-- teacher/job环境真实PEFT0.21.2/accelerate1.15/pytest9.1.1/pip check0，新增统一入口按manifest校验exact overlay wheels/--no-deps防Torch被升级。新fresh作业见下项。
-
-## 已证实缺口与活跃作业
-- Linux全suite退出137，不能称通过；轻量52pass/1未配reader skip，正确隔离reader补验1pass。初始错路径exit4及错data reader失败保留，不伪装产品问题。
-- Linux官方视频修复前422根因已解决；修复后有效8/16batch仍137/零completed，memory.events oom/oom_kill=0，未知killer，不称kernel OOM/CPU不支持。`reports/linux-video-processor-compat-001.json`。
-- native vLLM CPU正常ModelConfig子进程SIGKILL；同官方类进程内诊断到creating_processor后137，零cases；没有修改生产引擎。`reports/s0-native-vllm-processor-summary-001.json`。
-- Docker辅助CPU尝试与恢复SSH后的官方下载中转均下载截断/TLS/OCI503，未完整SHA、不安装/不开engine/零processor；`reports/s0-docker-processor-001.json`及relay002。已停止同路径重试，无自建活跃container，不动用户container/daemon。
-- 新版teacher/job fresh作业已退出0，env `/root/autodl-tmp/envs/before-gpu-teacher-job-final-001`，报告 `reports/before-gpu-teacher-job-fresh-001.json`；无活跃fresh安装作业，不重复启动。
-- primary026对应TF5.13/tokenizers0.22.2已在独立Mac target完成100题两遍；HTTP/media kwargs/答案映射/input IDs均相同。20video缺可选count且video tensor多前导batch维，字节SHA相同但shape差异明确记录；`reports/primary-transformers513-cpu-full100-comparison-001.json`。不称完整跨版本tensor等价/GPU通过。
-- 新官方CPU通路已下载并双端核验完整ARM vLLM0.31 CPUwheel68,640,121B/SHA8a9f…f9cb；官方GHCR ARM base拉取180秒超时，未形成image，无container/install/processor，已停止；`reports/s0-official-arm-cpu-alternate-003.json`。
-- primary026 LinuxHF完整100题首次通过exit0/94.092秒；第二遍到90/100后137，未通过Linux重跑；native官方类诊断creating_processor137/零cases。`reports/primary026-linux-cpu-acceptance-001.json`，Mac/Linux60case有编码/张量摘要差异照留，不冒充跨机器模型等价。
-- 原生网关向HTTP后端发包前释放已完成摘要的大HF媒体Tensor，保留精确input IDs/canonical bytes/summary绑定；真实weakref先红后绿、94网关/client测试与独立review通过。此改进不解决2GiB全部资源门槛；新两视频batch137，无完成标记。
-- FFmpeg stdin消费真实复现并修复：probe/decode子进程DEVNULL，实时q输入视频先红后绿，26媒体测试通过；不让SSH管线下一行命令被吞。
-- 无卡收尾时作业均结束；当前有卡活跃作业以顶部接续节为准，禁止重复启动。
-
-## 待用户/外部条件
-- 用户已完成切换；2GiB历史资源阻塞已按首批补验通过，不再要求切换或重跑无卡路径。独立gate/真人标注仍需外部条件。
-- 真实gate身份、双人标注、S6真机及后续运营观测须安排；对应阶段门槛仍blocked，不伪造终局证据。
-- 数据许可/来源训练准入逐源执行，研究隔离照留；未来LoRA/校准/量化/阶段派生训练集待生成，S4放量预算届时按实测重估。
-
-## 无卡阶段收尾与下一步
-1. 已审核32票无frontier/claim，三个离线总账及子回执逐SHA验证、远端7个必要路径存在/源码干净/无作业，资源与失败边界写入readiness002。当前无卡可自主执行剩余工作为空；不重复原始下载/环境安装/同2GiB失败配置。
-2. 专用接续文档 `plan/handoff-2026-10-14-gpu-transition.md`：精确环境/缓存/fixture、首批CPU资源补验、GPU小smoke、S0门槛、预算/断点/失败恢复与关卡通知；可复制新session启动词已写好。
-3. 最新源码同步用 `reports/before-gpu-transition-sync-001.json` 与远端同名侧车核对HEAD/完整Git bundle；此前source-sync001仅历史CPU检查点。后加receipt仅元数据，执行代码仍655a838。
-4. 用户切换后按交接先读资源，补同Linux HF100两遍/native正常六case与full100/网关视频8/16，再真实模型与S0。历史maxTV失败及D004未批准不变，S0全绿前禁止S1。
-5. 无卡交接时goal曾blocked；当前用户已恢复，工具确认active。完整目标未完成，不重建heartbeat。
+## 真正外部缺口
+- s0:05 blocked：真实外部gate身份、两人原始双标与六类κ汇总未取得，agent不能代签/合成。原门槛仍在S0；若要变更阶段位置/数量/阈值须用户明确决定，当前没有自动豁免。
+- 跨机重跑/S6真机/额外放量预算/生产运营到其实际节点再处理，不提前制造细票或默认采购。当前仍有可独立执行工作，goal不blocked、不complete。
+- 原005 runtime cost=0.0只是历史硬编码占位，真实费用未知null；未来runner已修null，3280.63秒仅最后一次resume外层时间，不冒称全项目GPU时间/账单。
