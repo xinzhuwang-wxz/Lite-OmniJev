@@ -23,3 +23,7 @@ Transformers/PEFT/torch/vLLM/SwanLab/Data-Juicer 等在对应票中于 Linux 环
 
 ## 无卡数据来源检查
 `infra/data` 独立锁定PyArrow（Apache-2.0），用于读取下载的Parquet schema/行数，复用[官方Parquet接口](https://arrow.apache.org/docs/python/parquet.html)，不手写二进制解析器，不改变训练/服务环境。实际CLINC检查仅公开train文件。
+
+## S0可选Qwen官方快速内核（隔离候选）
+
+OneJev27B的公开231双轮实测647秒，日志确认Torch gated-delta fallback。仅准备一个fla-core==0.5.2候选（MIT，wheel SHA5e830c85bad3d0d34677f98ac7074d08687a3756f0f0499d95ceb96eb6920761），提供官方FLA/Triton gated-delta kernel，复用现有Torch2.11/Triton3.6，不引入causal-conv编译或升级模型/引擎。文件系统PYTHONPATH overlay隔离启用，primary环境未安装/改变，默认关闭。H20小tensor kernel已实测可用，非模型质量/性能证明；只有一次限额真实模型比较后才决定后续启用，并记录backend/version变化，旧分数不冒称同一数值实现。报告reports/s0-qwen-fla-preparation-001.json，官方来源与SHA在报告内。

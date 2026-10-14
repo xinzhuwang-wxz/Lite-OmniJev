@@ -1,0 +1,4437 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "real fixed metadata/safe weights plus official processor/compiler only; no backbone/CUDA quality",
+  "base": {
+    "id": "qwen3.5-2b-for-valen",
+    "repo_id": "Qwen/Qwen3.5-2B",
+    "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/Qwen__Qwen3.5-2B/15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "asset_manifest": {
+      "path": "configs/project-model-assets.json",
+      "sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac"
+    },
+    "metadata_hashes": {
+      ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+      "LICENSE": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "README.md": "c0e83a849c776e6fa843d011f023132d942a0f0140d903205bf1c363adad2275",
+      "chat_template.jinja": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+      "config.json": "ed1c1723241f23f7f4e23430759cbd7dcfb4103cbdfe052bfe7626b57c2615b4",
+      "merges.txt": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d",
+      "model.safetensors.index.json": "aca8afed9da75b0f050b408d270766fd77627f1af401e240f61c3b47d0db02f9",
+      "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+      "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+      "tokenizer_config.json": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c",
+      "vocab.json": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003"
+    },
+    "weight_hashes": {
+      "model.safetensors-00001-of-00001.safetensors": "aa33250c4fc64891ddfaba3a314fd9542ea371843c387178b425fbcc5ed680b1"
+    },
+    "architecture": {
+      "model_type": "qwen3_5",
+      "architectures": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "auto_map_absent": true
+    }
+  },
+  "delta": {
+    "spec_sha256": "8dfbbda6c98fe6da0bf546d2e18faa76e2cb3ca6f21b9b927d53feb4faacf8f4",
+    "conversion_report_sha256": "6adc9a5b9e04f8a5c8e06e52649274755a5bf783fd5787d9d1164aaa346551b2",
+    "weights_sha256": "27b8f6cd4874a356af8a5d6a3676d2a9a03e4b3301d066d13645f673f72f4468",
+    "tensor_count": 428,
+    "groups": {
+      "lora": {
+        "count": 372,
+        "numel": 33638400,
+        "dtypes": {
+          "torch.float32": 372
+        }
+      },
+      "vision": {
+        "count": 48,
+        "numel": 50384896,
+        "dtypes": {
+          "torch.bfloat16": 48
+        }
+      },
+      "merger": {
+        "count": 6,
+        "numel": 25174016,
+        "dtypes": {
+          "torch.bfloat16": 6
+        }
+      },
+      "head": {
+        "count": 2,
+        "numel": 1048576,
+        "dtypes": {
+          "torch.float32": 2
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "original-policy-01-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 131,
+      "compute_tokens": 131,
+      "positions": [
+        [
+          [
+            113,
+            127
+          ],
+          130
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-01-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 134,
+      "compute_tokens": 134,
+      "positions": [
+        [
+          [
+            116,
+            130
+          ],
+          133
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-02-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 120,
+      "compute_tokens": 120,
+      "positions": [
+        [
+          [
+            102,
+            116
+          ],
+          119
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-02-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 119,
+      "compute_tokens": 119,
+      "positions": [
+        [
+          [
+            101,
+            115
+          ],
+          118
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-03-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 122,
+      "compute_tokens": 122,
+      "positions": [
+        [
+          [
+            104,
+            118
+          ],
+          121
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-03-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 121,
+      "compute_tokens": 121,
+      "positions": [
+        [
+          [
+            103,
+            117
+          ],
+          120
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-04-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 128,
+      "compute_tokens": 128,
+      "positions": [
+        [
+          [
+            110,
+            124
+          ],
+          127
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-04-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 125,
+      "compute_tokens": 125,
+      "positions": [
+        [
+          [
+            107,
+            121
+          ],
+          124
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-05-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 132,
+      "compute_tokens": 132,
+      "positions": [
+        [
+          [
+            114,
+            128
+          ],
+          131
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-05-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 124,
+      "compute_tokens": 124,
+      "positions": [
+        [
+          [
+            106,
+            120
+          ],
+          123
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-06-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 134,
+      "compute_tokens": 134,
+      "positions": [
+        [
+          [
+            116,
+            130
+          ],
+          133
+        ]
+      ]
+    },
+    {
+      "id": "original-policy-06-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 124,
+      "compute_tokens": 124,
+      "positions": [
+        [
+          [
+            106,
+            120
+          ],
+          123
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-01-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 84,
+      "compute_tokens": 84,
+      "positions": [
+        [
+          [
+            51,
+            58,
+            64,
+            71,
+            80
+          ],
+          83
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-01-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 85,
+      "compute_tokens": 85,
+      "positions": [
+        [
+          [
+            52,
+            59,
+            65,
+            72,
+            81
+          ],
+          84
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-02-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 85,
+      "compute_tokens": 85,
+      "positions": [
+        [
+          [
+            52,
+            59,
+            65,
+            72,
+            81
+          ],
+          84
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-02-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 84,
+      "compute_tokens": 84,
+      "positions": [
+        [
+          [
+            51,
+            58,
+            64,
+            71,
+            80
+          ],
+          83
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-03-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 86,
+      "compute_tokens": 86,
+      "positions": [
+        [
+          [
+            53,
+            60,
+            66,
+            73,
+            82
+          ],
+          85
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-03-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 84,
+      "compute_tokens": 84,
+      "positions": [
+        [
+          [
+            51,
+            58,
+            64,
+            71,
+            80
+          ],
+          83
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-04-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 89,
+      "compute_tokens": 89,
+      "positions": [
+        [
+          [
+            56,
+            63,
+            69,
+            76,
+            85
+          ],
+          88
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-04-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 84,
+      "compute_tokens": 84,
+      "positions": [
+        [
+          [
+            51,
+            58,
+            64,
+            71,
+            80
+          ],
+          83
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-05-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 84,
+      "compute_tokens": 84,
+      "positions": [
+        [
+          [
+            51,
+            58,
+            64,
+            71,
+            80
+          ],
+          83
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-05-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 83,
+      "compute_tokens": 83,
+      "positions": [
+        [
+          [
+            50,
+            57,
+            63,
+            70,
+            79
+          ],
+          82
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-06-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 82,
+      "compute_tokens": 82,
+      "positions": [
+        [
+          [
+            49,
+            56,
+            62,
+            69,
+            78
+          ],
+          81
+        ]
+      ]
+    },
+    {
+      "id": "original-intent-06-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 87,
+      "compute_tokens": 87,
+      "positions": [
+        [
+          [
+            54,
+            61,
+            67,
+            74,
+            83
+          ],
+          86
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-01-0",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 175,
+      "compute_tokens": 220,
+      "positions": [
+        [
+          [
+            48
+          ],
+          51
+        ],
+        [
+          [
+            54
+          ],
+          57
+        ],
+        [
+          [
+            53
+          ],
+          56
+        ],
+        [
+          [
+            49
+          ],
+          52
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-01-1",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 176,
+      "compute_tokens": 224,
+      "positions": [
+        [
+          [
+            49
+          ],
+          52
+        ],
+        [
+          [
+            55
+          ],
+          58
+        ],
+        [
+          [
+            54
+          ],
+          57
+        ],
+        [
+          [
+            50
+          ],
+          53
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-02-0",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 179,
+      "compute_tokens": 236,
+      "positions": [
+        [
+          [
+            52
+          ],
+          55
+        ],
+        [
+          [
+            58
+          ],
+          61
+        ],
+        [
+          [
+            57
+          ],
+          60
+        ],
+        [
+          [
+            53
+          ],
+          56
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-02-1",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 180,
+      "compute_tokens": 240,
+      "positions": [
+        [
+          [
+            53
+          ],
+          56
+        ],
+        [
+          [
+            59
+          ],
+          62
+        ],
+        [
+          [
+            58
+          ],
+          61
+        ],
+        [
+          [
+            54
+          ],
+          57
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-03-0",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 176,
+      "compute_tokens": 224,
+      "positions": [
+        [
+          [
+            49
+          ],
+          52
+        ],
+        [
+          [
+            55
+          ],
+          58
+        ],
+        [
+          [
+            54
+          ],
+          57
+        ],
+        [
+          [
+            50
+          ],
+          53
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-03-1",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 178,
+      "compute_tokens": 232,
+      "positions": [
+        [
+          [
+            51
+          ],
+          54
+        ],
+        [
+          [
+            57
+          ],
+          60
+        ],
+        [
+          [
+            56
+          ],
+          59
+        ],
+        [
+          [
+            52
+          ],
+          55
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-04-0",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 178,
+      "compute_tokens": 232,
+      "positions": [
+        [
+          [
+            51
+          ],
+          54
+        ],
+        [
+          [
+            57
+          ],
+          60
+        ],
+        [
+          [
+            56
+          ],
+          59
+        ],
+        [
+          [
+            52
+          ],
+          55
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-04-1",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 177,
+      "compute_tokens": 228,
+      "positions": [
+        [
+          [
+            50
+          ],
+          53
+        ],
+        [
+          [
+            56
+          ],
+          59
+        ],
+        [
+          [
+            55
+          ],
+          58
+        ],
+        [
+          [
+            51
+          ],
+          54
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-05-0",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 181,
+      "compute_tokens": 244,
+      "positions": [
+        [
+          [
+            54
+          ],
+          57
+        ],
+        [
+          [
+            60
+          ],
+          63
+        ],
+        [
+          [
+            59
+          ],
+          62
+        ],
+        [
+          [
+            55
+          ],
+          58
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-05-1",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 180,
+      "compute_tokens": 240,
+      "positions": [
+        [
+          [
+            53
+          ],
+          56
+        ],
+        [
+          [
+            59
+          ],
+          62
+        ],
+        [
+          [
+            58
+          ],
+          61
+        ],
+        [
+          [
+            54
+          ],
+          57
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-06-0",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 181,
+      "compute_tokens": 244,
+      "positions": [
+        [
+          [
+            54
+          ],
+          57
+        ],
+        [
+          [
+            60
+          ],
+          63
+        ],
+        [
+          [
+            59
+          ],
+          62
+        ],
+        [
+          [
+            55
+          ],
+          58
+        ]
+      ]
+    },
+    {
+      "id": "original-ordinal-06-1",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 188,
+      "compute_tokens": 272,
+      "positions": [
+        [
+          [
+            61
+          ],
+          64
+        ],
+        [
+          [
+            67
+          ],
+          70
+        ],
+        [
+          [
+            66
+          ],
+          69
+        ],
+        [
+          [
+            62
+          ],
+          65
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-01-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 76,
+      "compute_tokens": 76,
+      "positions": [
+        [
+          [
+            55,
+            60,
+            65,
+            72
+          ],
+          75
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-01-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 78,
+      "compute_tokens": 78,
+      "positions": [
+        [
+          [
+            57,
+            62,
+            67,
+            74
+          ],
+          77
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-02-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 79,
+      "compute_tokens": 79,
+      "positions": [
+        [
+          [
+            58,
+            63,
+            68,
+            75
+          ],
+          78
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-02-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 78,
+      "compute_tokens": 78,
+      "positions": [
+        [
+          [
+            57,
+            62,
+            67,
+            74
+          ],
+          77
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-03-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 82,
+      "compute_tokens": 82,
+      "positions": [
+        [
+          [
+            61,
+            66,
+            71,
+            78
+          ],
+          81
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-03-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 81,
+      "compute_tokens": 81,
+      "positions": [
+        [
+          [
+            60,
+            65,
+            70,
+            77
+          ],
+          80
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-04-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 79,
+      "compute_tokens": 79,
+      "positions": [
+        [
+          [
+            58,
+            63,
+            68,
+            75
+          ],
+          78
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-04-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 76,
+      "compute_tokens": 76,
+      "positions": [
+        [
+          [
+            55,
+            60,
+            65,
+            72
+          ],
+          75
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-05-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 79,
+      "compute_tokens": 79,
+      "positions": [
+        [
+          [
+            58,
+            63,
+            68,
+            75
+          ],
+          78
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-05-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 75,
+      "compute_tokens": 75,
+      "positions": [
+        [
+          [
+            54,
+            59,
+            64,
+            71
+          ],
+          74
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-06-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 79,
+      "compute_tokens": 79,
+      "positions": [
+        [
+          [
+            58,
+            63,
+            68,
+            75
+          ],
+          78
+        ]
+      ]
+    },
+    {
+      "id": "original-extraction-06-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 78,
+      "compute_tokens": 78,
+      "positions": [
+        [
+          [
+            57,
+            62,
+            67,
+            74
+          ],
+          77
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-01-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 114,
+      "compute_tokens": 114,
+      "positions": [
+        [
+          [
+            96,
+            110
+          ],
+          113
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-01-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 110,
+      "compute_tokens": 110,
+      "positions": [
+        [
+          [
+            92,
+            106
+          ],
+          109
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-02-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 111,
+      "compute_tokens": 111,
+      "positions": [
+        [
+          [
+            93,
+            107
+          ],
+          110
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-02-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 112,
+      "compute_tokens": 112,
+      "positions": [
+        [
+          [
+            94,
+            108
+          ],
+          111
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-03-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 114,
+      "compute_tokens": 114,
+      "positions": [
+        [
+          [
+            96,
+            110
+          ],
+          113
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-03-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 118,
+      "compute_tokens": 118,
+      "positions": [
+        [
+          [
+            100,
+            114
+          ],
+          117
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-04-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 118,
+      "compute_tokens": 118,
+      "positions": [
+        [
+          [
+            100,
+            114
+          ],
+          117
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-04-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 115,
+      "compute_tokens": 115,
+      "positions": [
+        [
+          [
+            97,
+            111
+          ],
+          114
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-05-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 107,
+      "compute_tokens": 107,
+      "positions": [
+        [
+          [
+            89,
+            103
+          ],
+          106
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-05-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 108,
+      "compute_tokens": 108,
+      "positions": [
+        [
+          [
+            90,
+            104
+          ],
+          107
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-06-0",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 123,
+      "compute_tokens": 123,
+      "positions": [
+        [
+          [
+            105,
+            119
+          ],
+          122
+        ]
+      ]
+    },
+    {
+      "id": "original-adequacy-06-1",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 125,
+      "compute_tokens": 125,
+      "positions": [
+        [
+          [
+            107,
+            121
+          ],
+          124
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-01-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 112,
+      "compute_tokens": 112,
+      "positions": [
+        [
+          [
+            60,
+            72,
+            83,
+            91,
+            100,
+            108
+          ],
+          111
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-01-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 108,
+      "compute_tokens": 108,
+      "positions": [
+        [
+          [
+            56,
+            68,
+            79,
+            87,
+            96,
+            104
+          ],
+          107
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-02-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 113,
+      "compute_tokens": 113,
+      "positions": [
+        [
+          [
+            61,
+            73,
+            84,
+            92,
+            101,
+            109
+          ],
+          112
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-02-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 107,
+      "compute_tokens": 107,
+      "positions": [
+        [
+          [
+            55,
+            67,
+            78,
+            86,
+            95,
+            103
+          ],
+          106
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-03-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 112,
+      "compute_tokens": 112,
+      "positions": [
+        [
+          [
+            60,
+            72,
+            83,
+            91,
+            100,
+            108
+          ],
+          111
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-03-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 114,
+      "compute_tokens": 114,
+      "positions": [
+        [
+          [
+            62,
+            74,
+            85,
+            93,
+            102,
+            110
+          ],
+          113
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-04-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 108,
+      "compute_tokens": 108,
+      "positions": [
+        [
+          [
+            56,
+            68,
+            79,
+            87,
+            96,
+            104
+          ],
+          107
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-04-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 107,
+      "compute_tokens": 107,
+      "positions": [
+        [
+          [
+            55,
+            67,
+            78,
+            86,
+            95,
+            103
+          ],
+          106
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-05-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 109,
+      "compute_tokens": 109,
+      "positions": [
+        [
+          [
+            57,
+            69,
+            80,
+            88,
+            97,
+            105
+          ],
+          108
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-05-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 109,
+      "compute_tokens": 109,
+      "positions": [
+        [
+          [
+            57,
+            69,
+            80,
+            88,
+            97,
+            105
+          ],
+          108
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-06-0",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 108,
+      "compute_tokens": 108,
+      "positions": [
+        [
+          [
+            56,
+            68,
+            79,
+            87,
+            96,
+            104
+          ],
+          107
+        ]
+      ]
+    },
+    {
+      "id": "original-routing-06-1",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 107,
+      "compute_tokens": 107,
+      "positions": [
+        [
+          [
+            55,
+            67,
+            78,
+            86,
+            95,
+            103
+          ],
+          106
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-00",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 100,
+      "compute_tokens": 100,
+      "positions": [
+        [
+          [
+            56,
+            64,
+            73,
+            84,
+            96
+          ],
+          99
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 100,
+      "compute_tokens": 100,
+      "positions": [
+        [
+          [
+            56,
+            64,
+            73,
+            84,
+            96
+          ],
+          99
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 103,
+      "compute_tokens": 103,
+      "positions": [
+        [
+          [
+            59,
+            67,
+            76,
+            87,
+            99
+          ],
+          102
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 92,
+      "compute_tokens": 92,
+      "positions": [
+        [
+          [
+            48,
+            56,
+            65,
+            76,
+            88
+          ],
+          91
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 97,
+      "compute_tokens": 97,
+      "positions": [
+        [
+          [
+            53,
+            61,
+            70,
+            81,
+            93
+          ],
+          96
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-05",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 96,
+      "compute_tokens": 96,
+      "positions": [
+        [
+          [
+            52,
+            60,
+            69,
+            80,
+            92
+          ],
+          95
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-06",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 87,
+      "compute_tokens": 87,
+      "positions": [
+        [
+          [
+            47,
+            59,
+            68,
+            77,
+            83
+          ],
+          86
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 80,
+      "compute_tokens": 80,
+      "positions": [
+        [
+          [
+            40,
+            52,
+            61,
+            70,
+            76
+          ],
+          79
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-08",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 82,
+      "compute_tokens": 82,
+      "positions": [
+        [
+          [
+            42,
+            54,
+            63,
+            72,
+            78
+          ],
+          81
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 85,
+      "compute_tokens": 85,
+      "positions": [
+        [
+          [
+            45,
+            57,
+            66,
+            75,
+            81
+          ],
+          84
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-10",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 83,
+      "compute_tokens": 83,
+      "positions": [
+        [
+          [
+            43,
+            55,
+            64,
+            73,
+            79
+          ],
+          82
+        ]
+      ]
+    },
+    {
+      "id": "easy-intent-11",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 83,
+      "compute_tokens": 83,
+      "positions": [
+        [
+          [
+            43,
+            55,
+            64,
+            73,
+            79
+          ],
+          82
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-00",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 112,
+      "compute_tokens": 112,
+      "positions": [
+        [
+          [
+            94,
+            108
+          ],
+          111
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-01",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 110,
+      "compute_tokens": 110,
+      "positions": [
+        [
+          [
+            92,
+            106
+          ],
+          109
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-02",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 118,
+      "compute_tokens": 118,
+      "positions": [
+        [
+          [
+            100,
+            114
+          ],
+          117
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-03",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 121,
+      "compute_tokens": 121,
+      "positions": [
+        [
+          [
+            103,
+            117
+          ],
+          120
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-04",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 110,
+      "compute_tokens": 110,
+      "positions": [
+        [
+          [
+            92,
+            106
+          ],
+          109
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-05",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 111,
+      "compute_tokens": 111,
+      "positions": [
+        [
+          [
+            93,
+            107
+          ],
+          110
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-06",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 131,
+      "compute_tokens": 131,
+      "positions": [
+        [
+          [
+            113,
+            127
+          ],
+          130
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-07",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 106,
+      "compute_tokens": 106,
+      "positions": [
+        [
+          [
+            88,
+            102
+          ],
+          105
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-08",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 102,
+      "compute_tokens": 102,
+      "positions": [
+        [
+          [
+            84,
+            98
+          ],
+          101
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-09",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 102,
+      "compute_tokens": 102,
+      "positions": [
+        [
+          [
+            84,
+            98
+          ],
+          101
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-10",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 111,
+      "compute_tokens": 111,
+      "positions": [
+        [
+          [
+            93,
+            107
+          ],
+          110
+        ]
+      ]
+    },
+    {
+      "id": "easy-fact-11",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 112,
+      "compute_tokens": 112,
+      "positions": [
+        [
+          [
+            94,
+            108
+          ],
+          111
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-00",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 61,
+      "compute_tokens": 61,
+      "positions": [
+        [
+          [
+            42,
+            46,
+            53,
+            57
+          ],
+          60
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 63,
+      "compute_tokens": 63,
+      "positions": [
+        [
+          [
+            44,
+            48,
+            55,
+            59
+          ],
+          62
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 64,
+      "compute_tokens": 64,
+      "positions": [
+        [
+          [
+            45,
+            49,
+            56,
+            60
+          ],
+          63
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 67,
+      "compute_tokens": 67,
+      "positions": [
+        [
+          [
+            46,
+            51,
+            56,
+            63
+          ],
+          66
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 65,
+      "compute_tokens": 65,
+      "positions": [
+        [
+          [
+            44,
+            49,
+            54,
+            61
+          ],
+          64
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-05",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 65,
+      "compute_tokens": 65,
+      "positions": [
+        [
+          [
+            44,
+            49,
+            54,
+            61
+          ],
+          64
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-06",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 58,
+      "compute_tokens": 58,
+      "positions": [
+        [
+          [
+            41,
+            45,
+            49,
+            54
+          ],
+          57
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 56,
+      "compute_tokens": 56,
+      "positions": [
+        [
+          [
+            39,
+            43,
+            47,
+            52
+          ],
+          55
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-08",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 60,
+      "compute_tokens": 60,
+      "positions": [
+        [
+          [
+            40,
+            44,
+            48,
+            52,
+            56
+          ],
+          59
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 62,
+      "compute_tokens": 62,
+      "positions": [
+        [
+          [
+            42,
+            46,
+            50,
+            54,
+            58
+          ],
+          61
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-10",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 58,
+      "compute_tokens": 58,
+      "positions": [
+        [
+          [
+            38,
+            42,
+            46,
+            50,
+            54
+          ],
+          57
+        ]
+      ]
+    },
+    {
+      "id": "easy-extraction-11",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 67,
+      "compute_tokens": 67,
+      "positions": [
+        [
+          [
+            48,
+            52,
+            59,
+            63
+          ],
+          66
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-00",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 90,
+      "compute_tokens": 90,
+      "positions": [
+        [
+          [
+            47,
+            56,
+            67,
+            78,
+            86
+          ],
+          89
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 91,
+      "compute_tokens": 91,
+      "positions": [
+        [
+          [
+            48,
+            57,
+            68,
+            79,
+            87
+          ],
+          90
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 94,
+      "compute_tokens": 94,
+      "positions": [
+        [
+          [
+            51,
+            60,
+            71,
+            82,
+            90
+          ],
+          93
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 92,
+      "compute_tokens": 92,
+      "positions": [
+        [
+          [
+            49,
+            58,
+            69,
+            80,
+            88
+          ],
+          91
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 88,
+      "compute_tokens": 88,
+      "positions": [
+        [
+          [
+            45,
+            54,
+            65,
+            76,
+            84
+          ],
+          87
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-05",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 94,
+      "compute_tokens": 94,
+      "positions": [
+        [
+          [
+            51,
+            60,
+            71,
+            82,
+            90
+          ],
+          93
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-06",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 94,
+      "compute_tokens": 94,
+      "positions": [
+        [
+          [
+            48,
+            57,
+            70,
+            81,
+            90
+          ],
+          93
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 94,
+      "compute_tokens": 94,
+      "positions": [
+        [
+          [
+            48,
+            57,
+            70,
+            81,
+            90
+          ],
+          93
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-08",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 93,
+      "compute_tokens": 93,
+      "positions": [
+        [
+          [
+            47,
+            56,
+            69,
+            80,
+            89
+          ],
+          92
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 90,
+      "compute_tokens": 90,
+      "positions": [
+        [
+          [
+            44,
+            53,
+            66,
+            77,
+            86
+          ],
+          89
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-10",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 90,
+      "compute_tokens": 90,
+      "positions": [
+        [
+          [
+            44,
+            53,
+            66,
+            77,
+            86
+          ],
+          89
+        ]
+      ]
+    },
+    {
+      "id": "easy-tool_selection-11",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 93,
+      "compute_tokens": 93,
+      "positions": [
+        [
+          [
+            47,
+            56,
+            69,
+            80,
+            89
+          ],
+          92
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 3872,
+      "compute_tokens": 3872,
+      "positions": [
+        [
+          [
+            3759,
+            3787,
+            3813,
+            3839,
+            3868
+          ],
+          3871
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2589,
+      "compute_tokens": 2589,
+      "positions": [
+        [
+          [
+            2463,
+            2495,
+            2528,
+            2562,
+            2585
+          ],
+          2588
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-08",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2358,
+      "compute_tokens": 2358,
+      "positions": [
+        [
+          [
+            2291,
+            2317,
+            2338,
+            2354
+          ],
+          2357
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2496,
+      "compute_tokens": 2496,
+      "positions": [
+        [
+          [
+            2433,
+            2454,
+            2471,
+            2492
+          ],
+          2495
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-11",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 2355,
+      "compute_tokens": 2355,
+      "positions": [
+        [
+          [
+            2337,
+            2351
+          ],
+          2354
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-13",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 2447,
+      "compute_tokens": 2447,
+      "positions": [
+        [
+          [
+            2429,
+            2443
+          ],
+          2446
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-17",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2323,
+      "compute_tokens": 2323,
+      "positions": [
+        [
+          [
+            2260,
+            2281,
+            2291,
+            2307,
+            2319
+          ],
+          2322
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-long_policy-19",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 2346,
+      "compute_tokens": 2346,
+      "positions": [
+        [
+          [
+            2328,
+            2342
+          ],
+          2345
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-probability-03",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 450,
+      "compute_tokens": 450,
+      "positions": [
+        [
+          [
+            432,
+            446
+          ],
+          449
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-probability-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 1082,
+      "compute_tokens": 1082,
+      "positions": [
+        [
+          [
+            1058,
+            1068,
+            1078
+          ],
+          1081
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-probability-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 1195,
+      "compute_tokens": 1195,
+      "positions": [
+        [
+          [
+            1171,
+            1180,
+            1191
+          ],
+          1194
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-probability-08",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 412,
+      "compute_tokens": 412,
+      "positions": [
+        [
+          [
+            394,
+            408
+          ],
+          411
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-temporal_numeric-03",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 508,
+      "compute_tokens": 508,
+      "positions": [
+        [
+          [
+            490,
+            504
+          ],
+          507
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-temporal_numeric-06",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 543,
+      "compute_tokens": 543,
+      "positions": [
+        [
+          [
+            525,
+            539
+          ],
+          542
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-temporal_numeric-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 1265,
+      "compute_tokens": 1265,
+      "positions": [
+        [
+          [
+            1213,
+            1225,
+            1237,
+            1249,
+            1261
+          ],
+          1264
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-temporal_numeric-09",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 540,
+      "compute_tokens": 540,
+      "positions": [
+        [
+          [
+            522,
+            536
+          ],
+          539
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-a-temporal_numeric-12",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 712,
+      "compute_tokens": 2200,
+      "positions": [
+        [
+          [
+            545
+          ],
+          548
+        ],
+        [
+          [
+            546
+          ],
+          549
+        ],
+        [
+          [
+            546
+          ],
+          549
+        ],
+        [
+          [
+            547
+          ],
+          550
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-ambiguous-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 514,
+      "compute_tokens": 514,
+      "positions": [
+        [
+          [
+            478,
+            492,
+            510
+          ],
+          513
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-ambiguous-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 468,
+      "compute_tokens": 468,
+      "positions": [
+        [
+          [
+            418,
+            447,
+            464
+          ],
+          467
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-ambiguous-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 473,
+      "compute_tokens": 473,
+      "positions": [
+        [
+          [
+            440,
+            451,
+            469
+          ],
+          472
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-ambiguous-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 613,
+      "compute_tokens": 613,
+      "positions": [
+        [
+          [
+            575,
+            595,
+            609
+          ],
+          612
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-ambiguous-10",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 365,
+      "compute_tokens": 365,
+      "positions": [
+        [
+          [
+            341,
+            351,
+            361
+          ],
+          364
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-ambiguous-11",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 436,
+      "compute_tokens": 436,
+      "positions": [
+        [
+          [
+            398,
+            412,
+            432
+          ],
+          435
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-ambiguous-13",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 567,
+      "compute_tokens": 567,
+      "positions": [
+        [
+          [
+            515,
+            530,
+            545,
+            563
+          ],
+          566
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-multi_hop-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2931,
+      "compute_tokens": 2931,
+      "positions": [
+        [
+          [
+            2890,
+            2902,
+            2914,
+            2927
+          ],
+          2930
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-multi_hop-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2315,
+      "compute_tokens": 2315,
+      "positions": [
+        [
+          [
+            2278,
+            2284,
+            2291,
+            2297,
+            2304,
+            2311
+          ],
+          2314
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-multi_hop-05",
+      "kind": "score",
+      "branches": 5,
+      "logical_tokens": 2733,
+      "compute_tokens": 12553,
+      "positions": [
+        [
+          [
+            2503
+          ],
+          2506
+        ],
+        [
+          [
+            2506
+          ],
+          2509
+        ],
+        [
+          [
+            2508
+          ],
+          2511
+        ],
+        [
+          [
+            2508
+          ],
+          2511
+        ],
+        [
+          [
+            2508
+          ],
+          2511
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-multi_hop-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2598,
+      "compute_tokens": 2598,
+      "positions": [
+        [
+          [
+            2533,
+            2545,
+            2557,
+            2569,
+            2581,
+            2594
+          ],
+          2597
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-multi_hop-08",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 2334,
+      "compute_tokens": 2334,
+      "positions": [
+        [
+          [
+            2316,
+            2330
+          ],
+          2333
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-probability-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 1891,
+      "compute_tokens": 1891,
+      "positions": [
+        [
+          [
+            1858,
+            1873,
+            1887
+          ],
+          1890
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-probability-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 475,
+      "compute_tokens": 475,
+      "positions": [
+        [
+          [
+            449,
+            461,
+            471
+          ],
+          474
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-probability-03",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 1234,
+      "compute_tokens": 1234,
+      "positions": [
+        [
+          [
+            1216,
+            1230
+          ],
+          1233
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-probability-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 577,
+      "compute_tokens": 577,
+      "positions": [
+        [
+          [
+            547,
+            564,
+            573
+          ],
+          576
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-probability-06",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 998,
+      "compute_tokens": 998,
+      "positions": [
+        [
+          [
+            971,
+            987,
+            994
+          ],
+          997
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-tradeoff-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 806,
+      "compute_tokens": 806,
+      "positions": [
+        [
+          [
+            733,
+            748,
+            772,
+            794,
+            802
+          ],
+          805
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-tradeoff-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 733,
+      "compute_tokens": 733,
+      "positions": [
+        [
+          [
+            683,
+            701,
+            716,
+            729
+          ],
+          732
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-tradeoff-06",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 811,
+      "compute_tokens": 811,
+      "positions": [
+        [
+          [
+            793,
+            807
+          ],
+          810
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-tradeoff-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 673,
+      "compute_tokens": 673,
+      "positions": [
+        [
+          [
+            600,
+            610,
+            624,
+            646,
+            669
+          ],
+          672
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-tradeoff-08",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 623,
+      "compute_tokens": 623,
+      "positions": [
+        [
+          [
+            605,
+            619
+          ],
+          622
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-b-tradeoff-12",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 558,
+      "compute_tokens": 558,
+      "positions": [
+        [
+          [
+            506,
+            522,
+            535,
+            546,
+            554
+          ],
+          557
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-long_policy-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 3544,
+      "compute_tokens": 3544,
+      "positions": [
+        [
+          [
+            3453,
+            3477,
+            3506,
+            3526,
+            3540
+          ],
+          3543
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-long_policy-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 3461,
+      "compute_tokens": 3461,
+      "positions": [
+        [
+          [
+            3392,
+            3405,
+            3418,
+            3431,
+            3444,
+            3457
+          ],
+          3460
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-long_policy-04",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 3334,
+      "compute_tokens": 3334,
+      "positions": [
+        [
+          [
+            3316,
+            3330
+          ],
+          3333
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-long_policy-05",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 3361,
+      "compute_tokens": 12706,
+      "positions": [
+        [
+          [
+            3176
+          ],
+          3179
+        ],
+        [
+          [
+            3171
+          ],
+          3174
+        ],
+        [
+          [
+            3172
+          ],
+          3175
+        ],
+        [
+          [
+            3171
+          ],
+          3174
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-long_policy-08",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 3446,
+      "compute_tokens": 12794,
+      "positions": [
+        [
+          [
+            3196
+          ],
+          3199
+        ],
+        [
+          [
+            3193
+          ],
+          3196
+        ],
+        [
+          [
+            3193
+          ],
+          3196
+        ],
+        [
+          [
+            3196
+          ],
+          3199
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-long_policy-10",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 3602,
+      "compute_tokens": 3602,
+      "positions": [
+        [
+          [
+            3546,
+            3569,
+            3584,
+            3598
+          ],
+          3601
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-long_policy-11",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 3420,
+      "compute_tokens": 3420,
+      "positions": [
+        [
+          [
+            3402,
+            3416
+          ],
+          3419
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-probability-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 516,
+      "compute_tokens": 516,
+      "positions": [
+        [
+          [
+            484,
+            498,
+            512
+          ],
+          515
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-temporal_numeric-02",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 957,
+      "compute_tokens": 957,
+      "positions": [
+        [
+          [
+            939,
+            953
+          ],
+          956
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-temporal_numeric-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 811,
+      "compute_tokens": 811,
+      "positions": [
+        [
+          [
+            747,
+            762,
+            777,
+            792,
+            807
+          ],
+          810
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-temporal_numeric-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 716,
+      "compute_tokens": 716,
+      "positions": [
+        [
+          [
+            628,
+            649,
+            670,
+            691,
+            712
+          ],
+          715
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-temporal_numeric-06",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 933,
+      "compute_tokens": 933,
+      "positions": [
+        [
+          [
+            826,
+            842,
+            866,
+            892,
+            918,
+            929
+          ],
+          932
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-temporal_numeric-08",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 930,
+      "compute_tokens": 930,
+      "positions": [
+        [
+          [
+            854,
+            872,
+            890,
+            908,
+            926
+          ],
+          929
+        ]
+      ]
+    },
+    {
+      "id": "hard-opus-c-temporal_numeric-12",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 793,
+      "compute_tokens": 793,
+      "positions": [
+        [
+          [
+            732,
+            757,
+            789
+          ],
+          792
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-adversarial-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 254,
+      "compute_tokens": 254,
+      "positions": [
+        [
+          [
+            220,
+            230,
+            239,
+            250
+          ],
+          253
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-adversarial-06",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 262,
+      "compute_tokens": 262,
+      "positions": [
+        [
+          [
+            244,
+            258
+          ],
+          261
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-adversarial-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 265,
+      "compute_tokens": 265,
+      "positions": [
+        [
+          [
+            227,
+            244,
+            252,
+            261
+          ],
+          264
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-adversarial-08",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 241,
+      "compute_tokens": 241,
+      "positions": [
+        [
+          [
+            223,
+            237
+          ],
+          240
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-adversarial-09",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 268,
+      "compute_tokens": 748,
+      "positions": [
+        [
+          [
+            183
+          ],
+          186
+        ],
+        [
+          [
+            182
+          ],
+          185
+        ],
+        [
+          [
+            185
+          ],
+          188
+        ],
+        [
+          [
+            182
+          ],
+          185
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-adversarial-11",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 276,
+      "compute_tokens": 276,
+      "positions": [
+        [
+          [
+            236,
+            245,
+            260,
+            272
+          ],
+          275
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2133,
+      "compute_tokens": 2133,
+      "positions": [
+        [
+          [
+            2095,
+            2106,
+            2115,
+            2129
+          ],
+          2132
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2151,
+      "compute_tokens": 2151,
+      "positions": [
+        [
+          [
+            2121,
+            2131,
+            2139,
+            2147
+          ],
+          2150
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-05",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2078,
+      "compute_tokens": 2078,
+      "positions": [
+        [
+          [
+            2048,
+            2057,
+            2065,
+            2074
+          ],
+          2077
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2077,
+      "compute_tokens": 2077,
+      "positions": [
+        [
+          [
+            2043,
+            2053,
+            2062,
+            2073
+          ],
+          2076
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-08",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2052,
+      "compute_tokens": 2052,
+      "positions": [
+        [
+          [
+            2012,
+            2025,
+            2034,
+            2048
+          ],
+          2051
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2046,
+      "compute_tokens": 2046,
+      "positions": [
+        [
+          [
+            2007,
+            2021,
+            2033,
+            2042
+          ],
+          2045
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-10",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2088,
+      "compute_tokens": 2088,
+      "positions": [
+        [
+          [
+            2055,
+            2065,
+            2073,
+            2084
+          ],
+          2087
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-multi_hop-12",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2057,
+      "compute_tokens": 2057,
+      "positions": [
+        [
+          [
+            2017,
+            2029,
+            2041,
+            2053
+          ],
+          2056
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-02",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 313,
+      "compute_tokens": 313,
+      "positions": [
+        [
+          [
+            295,
+            309
+          ],
+          312
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-04",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 219,
+      "compute_tokens": 219,
+      "positions": [
+        [
+          [
+            201,
+            215
+          ],
+          218
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-05",
+      "kind": "score",
+      "branches": 4,
+      "logical_tokens": 381,
+      "compute_tokens": 1179,
+      "positions": [
+        [
+          [
+            290
+          ],
+          293
+        ],
+        [
+          [
+            291
+          ],
+          294
+        ],
+        [
+          [
+            291
+          ],
+          294
+        ],
+        [
+          [
+            291
+          ],
+          294
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-06",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 320,
+      "compute_tokens": 320,
+      "positions": [
+        [
+          [
+            276,
+            288,
+            303,
+            316
+          ],
+          319
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-08",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 254,
+      "compute_tokens": 254,
+      "positions": [
+        [
+          [
+            214,
+            230,
+            241,
+            250
+          ],
+          253
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-10",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 175,
+      "compute_tokens": 175,
+      "positions": [
+        [
+          [
+            137,
+            147,
+            160,
+            171
+          ],
+          174
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-13",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 227,
+      "compute_tokens": 227,
+      "positions": [
+        [
+          [
+            209,
+            223
+          ],
+          226
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-a-trap-15",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 329,
+      "compute_tokens": 329,
+      "positions": [
+        [
+          [
+            311,
+            325
+          ],
+          328
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-01",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 306,
+      "compute_tokens": 306,
+      "positions": [
+        [
+          [
+            288,
+            302
+          ],
+          305
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-02",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 230,
+      "compute_tokens": 230,
+      "positions": [
+        [
+          [
+            212,
+            226
+          ],
+          229
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-05",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 249,
+      "compute_tokens": 249,
+      "positions": [
+        [
+          [
+            231,
+            245
+          ],
+          248
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-08",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 232,
+      "compute_tokens": 232,
+      "positions": [
+        [
+          [
+            214,
+            228
+          ],
+          231
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-10",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 251,
+      "compute_tokens": 251,
+      "positions": [
+        [
+          [
+            233,
+            247
+          ],
+          250
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-14",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 268,
+      "compute_tokens": 268,
+      "positions": [
+        [
+          [
+            250,
+            264
+          ],
+          267
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-15",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 224,
+      "compute_tokens": 224,
+      "positions": [
+        [
+          [
+            206,
+            220
+          ],
+          223
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-judge_hard-18",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 191,
+      "compute_tokens": 191,
+      "positions": [
+        [
+          [
+            173,
+            187
+          ],
+          190
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-long_policy-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2708,
+      "compute_tokens": 2708,
+      "positions": [
+        [
+          [
+            2659,
+            2674,
+            2689,
+            2704
+          ],
+          2707
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-long_policy-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2563,
+      "compute_tokens": 2563,
+      "positions": [
+        [
+          [
+            2515,
+            2529,
+            2544,
+            2559
+          ],
+          2562
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-long_policy-05",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2518,
+      "compute_tokens": 2518,
+      "positions": [
+        [
+          [
+            2466,
+            2485,
+            2500,
+            2514
+          ],
+          2517
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-long_policy-06",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2607,
+      "compute_tokens": 2607,
+      "positions": [
+        [
+          [
+            2561,
+            2575,
+            2589,
+            2603
+          ],
+          2606
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-routing_hard-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 271,
+      "compute_tokens": 271,
+      "positions": [
+        [
+          [
+            196,
+            225,
+            239,
+            256,
+            267
+          ],
+          270
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-routing_hard-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 253,
+      "compute_tokens": 253,
+      "positions": [
+        [
+          [
+            187,
+            207,
+            223,
+            237,
+            249
+          ],
+          252
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-routing_hard-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 253,
+      "compute_tokens": 253,
+      "positions": [
+        [
+          [
+            185,
+            209,
+            223,
+            236,
+            249
+          ],
+          252
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-routing_hard-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 232,
+      "compute_tokens": 232,
+      "positions": [
+        [
+          [
+            173,
+            192,
+            203,
+            215,
+            228
+          ],
+          231
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-routing_hard-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 243,
+      "compute_tokens": 243,
+      "positions": [
+        [
+          [
+            177,
+            196,
+            211,
+            226,
+            239
+          ],
+          242
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-temporal_numeric-01",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 252,
+      "compute_tokens": 252,
+      "positions": [
+        [
+          [
+            207,
+            221,
+            236,
+            248
+          ],
+          251
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-temporal_numeric-02",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 263,
+      "compute_tokens": 263,
+      "positions": [
+        [
+          [
+            219,
+            238,
+            248,
+            259
+          ],
+          262
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-temporal_numeric-03",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 203,
+      "compute_tokens": 203,
+      "positions": [
+        [
+          [
+            161,
+            173,
+            186,
+            199
+          ],
+          202
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-b-temporal_numeric-04",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 227,
+      "compute_tokens": 227,
+      "positions": [
+        [
+          [
+            201,
+            212,
+            223
+          ],
+          226
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-03",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 413,
+      "compute_tokens": 413,
+      "positions": [
+        [
+          [
+            395,
+            409
+          ],
+          412
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-05",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 375,
+      "compute_tokens": 375,
+      "positions": [
+        [
+          [
+            357,
+            371
+          ],
+          374
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-07",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 339,
+      "compute_tokens": 339,
+      "positions": [
+        [
+          [
+            321,
+            335
+          ],
+          338
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-08",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 333,
+      "compute_tokens": 333,
+      "positions": [
+        [
+          [
+            315,
+            329
+          ],
+          332
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-09",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 364,
+      "compute_tokens": 364,
+      "positions": [
+        [
+          [
+            346,
+            360
+          ],
+          363
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-10",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 393,
+      "compute_tokens": 393,
+      "positions": [
+        [
+          [
+            375,
+            389
+          ],
+          392
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-11",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 364,
+      "compute_tokens": 364,
+      "positions": [
+        [
+          [
+            346,
+            360
+          ],
+          363
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-13",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 354,
+      "compute_tokens": 354,
+      "positions": [
+        [
+          [
+            336,
+            350
+          ],
+          353
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-judge_hard-15",
+      "kind": "noul",
+      "branches": 1,
+      "logical_tokens": 308,
+      "compute_tokens": 308,
+      "positions": [
+        [
+          [
+            290,
+            304
+          ],
+          307
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-multi_hop-07",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2504,
+      "compute_tokens": 2504,
+      "positions": [
+        [
+          [
+            2470,
+            2480,
+            2490,
+            2500
+          ],
+          2503
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-multi_hop-09",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2516,
+      "compute_tokens": 2516,
+      "positions": [
+        [
+          [
+            2478,
+            2489,
+            2500,
+            2512
+          ],
+          2515
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-multi_hop-11",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2597,
+      "compute_tokens": 2597,
+      "positions": [
+        [
+          [
+            2562,
+            2572,
+            2582,
+            2593
+          ],
+          2596
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-multi_hop-12",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 519,
+      "compute_tokens": 519,
+      "positions": [
+        [
+          [
+            483,
+            493,
+            504,
+            515
+          ],
+          518
+        ]
+      ]
+    },
+    {
+      "id": "hard-sol-c-multi_hop-13",
+      "kind": "choice",
+      "branches": 1,
+      "logical_tokens": 2572,
+      "compute_tokens": 2572,
+      "positions": [
+        [
+          [
+            2538,
+            2548,
+            2558,
+            2568
+          ],
+          2571
+        ]
+      ]
+    }
+  ],
+  "decisions": 231,
+  "elapsed_seconds": 32.50553123280406,
+  "script_sha256": "5d163931aa227637567b537ff9337bd1774199abd35e48e2347583fd9888bc40"
+}

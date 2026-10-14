@@ -1,0 +1,4796 @@
+{
+  "schema": "lite-omnijev.s0_public_baselines.report.v1",
+  "version": "s0-public-baselines-v1",
+  "action": "valen-public",
+  "started_at": "2026-10-14T13:12:38Z",
+  "finished_at": "2026-10-14T13:14:06+00:00",
+  "elapsed_seconds": 88.279172,
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "executable": "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "pid": 393066,
+    "cwd": "/root/autodl-tmp/s0-valen-baseline-002",
+    "packages": {
+      "torch": "2.13.0",
+      "transformers": "5.17.0",
+      "safetensors": "0.8.0",
+      "pydantic": "2.14.1"
+    },
+    "cuda": {
+      "torch_importable": true,
+      "torch_version": "2.13.0+cu130",
+      "cuda_version": "13.0",
+      "available": true,
+      "current_device": 0,
+      "device_name": "NVIDIA H20",
+      "capability": [
+        9,
+        0
+      ],
+      "total_memory_bytes": 102085623808
+    }
+  },
+  "source": {
+    "repo_root": "/root/autodl-tmp/s0-valen-baseline-002",
+    "git": {
+      "commit": "b0a18aa0f4fc07d1cb344e0c3869c4875ba2ed91",
+      "branch": "HEAD",
+      "dirty": "?? cpu-preflight.py\n?? run-valen-001.sh"
+    },
+    "code_hashes": {
+      "scripts/s0_public_baselines.py": "deaa36b5a311b8a14294081f0de942ca1abc439207181dc73969b81d3f6a1679",
+      "data/jevbench.py": "2a2b0c039fdcf21b44e213e6d6b63a6ef3d2011f880887ad4cd36da34c7e5ad7",
+      "eval/jevbench.py": "4cb09e07d6356fff3d0f0847d7bb7ca00bbab78e4db8338366345c0f990063f1",
+      "serve/gateway/app.py": "86ec45dc9c5f31e33aca368ac3d2ce38a9eb92a1c8b938f44e6b3a8f130cb223",
+      "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+      "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+      "scripts/assets.py": "245ac6e6a93e7c4d4f750793b872c6e3fe01afe0fdbe903c10f9977e7976d5a5",
+      "scripts/s0_parity.py": "51a6564ef906f94f542ce39110e8a3b56eba7af1ba7f80b5c53bfd4584b5a8e2"
+    }
+  },
+  "cost": {
+    "new_paid_resources": null,
+    "gpu_started_by_this_cli": false
+  },
+  "status": "passed",
+  "exit_code": 0,
+  "acceptance": {
+    "real_cuda_forward": true,
+    "release_or_stage_acceptance": true,
+    "full_denominator": true,
+    "two_pass_exact_probabilities_and_predictions": true,
+    "u_supported": false,
+    "local_files_only": true,
+    "trust_remote_code": false,
+    "raw_pickle_loaded": false,
+    "no_holdout": true
+  },
+  "model": {
+    "id": "valen-preview-0923-qwen3.5-2b",
+    "source_repo": "Valen-Team/Valen-Preview-0923",
+    "source_revision": "30096aaabb2689614c83a79f64f38c865c2ce1c1",
+    "base_repo": "Qwen/Qwen3.5-2B",
+    "base_revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "attention": "eager",
+    "backbone_dtype": "bfloat16",
+    "head_dtype": "float32"
+  },
+  "evidence": {
+    "spec_sha256": "8dfbbda6c98fe6da0bf546d2e18faa76e2cb3ca6f21b9b927d53feb4faacf8f4",
+    "conversion_report_sha256": "6adc9a5b9e04f8a5c8e06e52649274755a5bf783fd5787d9d1164aaa346551b2",
+    "weights_sha256": "27b8f6cd4874a356af8a5d6a3676d2a9a03e4b3301d066d13645f673f72f4468",
+    "tensor_count": 428,
+    "groups": {
+      "lora": {
+        "count": 372,
+        "numel": 33638400,
+        "dtypes": {
+          "torch.float32": 372
+        }
+      },
+      "vision": {
+        "count": 48,
+        "numel": 50384896,
+        "dtypes": {
+          "torch.bfloat16": 48
+        }
+      },
+      "merger": {
+        "count": 6,
+        "numel": 25174016,
+        "dtypes": {
+          "torch.bfloat16": 6
+        }
+      },
+      "head": {
+        "count": 2,
+        "numel": 1048576,
+        "dtypes": {
+          "torch.float32": 2
+        }
+      }
+    }
+  },
+  "base_evidence": {
+    "id": "qwen3.5-2b-for-valen",
+    "repo_id": "Qwen/Qwen3.5-2B",
+    "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/Qwen__Qwen3.5-2B/15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "asset_manifest": {
+      "path": "configs/project-model-assets.json",
+      "sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac"
+    },
+    "metadata_hashes": {
+      ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+      "LICENSE": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "README.md": "c0e83a849c776e6fa843d011f023132d942a0f0140d903205bf1c363adad2275",
+      "chat_template.jinja": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+      "config.json": "ed1c1723241f23f7f4e23430759cbd7dcfb4103cbdfe052bfe7626b57c2615b4",
+      "merges.txt": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d",
+      "model.safetensors.index.json": "aca8afed9da75b0f050b408d270766fd77627f1af401e240f61c3b47d0db02f9",
+      "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+      "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+      "tokenizer_config.json": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c",
+      "vocab.json": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003"
+    },
+    "weight_hashes": {
+      "model.safetensors-00001-of-00001.safetensors": "aa33250c4fc64891ddfaba3a314fd9542ea371843c387178b425fbcc5ed680b1"
+    },
+    "architecture": {
+      "model_type": "qwen3_5",
+      "architectures": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "auto_map_absent": true
+    }
+  },
+  "valen_code_hashes": {
+    "train/valen_inference.py": "7ff6a6e897ad51ab38b611ae6ef5e62fad41711b872070a3d26f48ed5ac2f47b",
+    "scripts/s0_valen_public.py": "e7a6336263a277fbf4d9f60fbee75557c3f10bb0d39aa2d9074c93e89cffff70",
+    "tests/test_valen_inference.py": "59aa288c9e4475e1d16a95ab144b234ff65555a9555bcf2ab7481c3e38589223"
+  },
+  "jevbench": {
+    "public_decisions": 231,
+    "per_split": {
+      "original": {
+        "rows": 72,
+        "primitive_counts": {
+          "choice": 36,
+          "score": 12,
+          "noul": 24
+        }
+      },
+      "easy": {
+        "rows": 48,
+        "primitive_counts": {
+          "choice": 36,
+          "score": 0,
+          "noul": 12
+        }
+      },
+      "hard": {
+        "rows": 111,
+        "primitive_counts": {
+          "choice": 67,
+          "score": 6,
+          "noul": 38
+        }
+      }
+    },
+    "primitive_counts": {
+      "choice": 139,
+      "score": 18,
+      "noul": 74
+    },
+    "literal_group_values_including_null": 148,
+    "nonempty_group_values": 147,
+    "null_group_rows": 48,
+    "official_paraphrase_pair_groups": 36,
+    "teacher_matched_protocol_verified": false,
+    "training_admitted": false,
+    "gpu_used": false
+  },
+  "source_config": {
+    "path": "configs/jevbench-public-assets.json",
+    "sha256": "21189ba272afd3274a5806922b717c08818a12002af0e4a47c35f95bb7e29869"
+  },
+  "source_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/research-eval/jevbench/7625ecb1b075cfe4d09d34141d353325825eea1d",
+  "repeatability": {
+    "passed": true,
+    "records_compared": 231,
+    "mismatch_count": 0,
+    "first_mismatches": []
+  },
+  "score_pass_1": {
+    "schema_version": 1,
+    "status": "passed",
+    "public_decisions": 231,
+    "accuracy": 0.47186147186147187,
+    "macro_accuracy": 0.4842763226148159,
+    "per_family": {
+      "adequacy": {
+        "n_scorable": 12,
+        "correct": 6,
+        "accuracy": 0.5
+      },
+      "adversarial": {
+        "n_scorable": 6,
+        "correct": 1,
+        "accuracy": 0.16666666666666666
+      },
+      "ambiguous": {
+        "n_scorable": 7,
+        "correct": 4,
+        "accuracy": 0.5714285714285714
+      },
+      "extraction": {
+        "n_scorable": 24,
+        "correct": 13,
+        "accuracy": 0.5416666666666666
+      },
+      "fact": {
+        "n_scorable": 12,
+        "correct": 6,
+        "accuracy": 0.5
+      },
+      "intent": {
+        "n_scorable": 24,
+        "correct": 13,
+        "accuracy": 0.5416666666666666
+      },
+      "judge_hard": {
+        "n_scorable": 17,
+        "correct": 10,
+        "accuracy": 0.5882352941176471
+      },
+      "long_policy": {
+        "n_scorable": 19,
+        "correct": 7,
+        "accuracy": 0.3684210526315789
+      },
+      "multi_hop": {
+        "n_scorable": 18,
+        "correct": 4,
+        "accuracy": 0.2222222222222222
+      },
+      "ordinal": {
+        "n_scorable": 12,
+        "correct": 4,
+        "accuracy": 0.3333333333333333
+      },
+      "policy": {
+        "n_scorable": 12,
+        "correct": 6,
+        "accuracy": 0.5
+      },
+      "probability": {
+        "n_scorable": 10,
+        "correct": 5,
+        "accuracy": 0.5
+      },
+      "routing": {
+        "n_scorable": 12,
+        "correct": 2,
+        "accuracy": 0.16666666666666666
+      },
+      "routing_hard": {
+        "n_scorable": 5,
+        "correct": 4,
+        "accuracy": 0.8
+      },
+      "temporal_numeric": {
+        "n_scorable": 15,
+        "correct": 5,
+        "accuracy": 0.3333333333333333
+      },
+      "tool_selection": {
+        "n_scorable": 12,
+        "correct": 9,
+        "accuracy": 0.75
+      },
+      "tradeoff": {
+        "n_scorable": 6,
+        "correct": 2,
+        "accuracy": 0.3333333333333333
+      },
+      "trap": {
+        "n_scorable": 8,
+        "correct": 8,
+        "accuracy": 1.0
+      }
+    },
+    "invalid_distributions": 0,
+    "strict_invalid_renormalized": 0,
+    "brier": 0.7418208005959401,
+    "ece": {
+      "ece": 0.21845544189911947,
+      "n": 231,
+      "bins": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "mean_confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "mean_confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.3,
+          "n": 0,
+          "mean_confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.4,
+          "n": 16,
+          "mean_confidence": 0.3569693717932259,
+          "accuracy": 0.375
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 23,
+          "mean_confidence": 0.4493041598130042,
+          "accuracy": 0.391304347826087
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6,
+          "n": 42,
+          "mean_confidence": 0.5454215539145446,
+          "accuracy": 0.38095238095238093
+        },
+        {
+          "lo": 0.6,
+          "hi": 0.7,
+          "n": 35,
+          "mean_confidence": 0.6450209621414783,
+          "accuracy": 0.42857142857142855
+        },
+        {
+          "lo": 0.7,
+          "hi": 0.8,
+          "n": 41,
+          "mean_confidence": 0.755918055576176,
+          "accuracy": 0.5853658536585366
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 35,
+          "mean_confidence": 0.8489708276063526,
+          "accuracy": 0.4857142857142857
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 39,
+          "mean_confidence": 0.9397605940379729,
+          "accuracy": 0.5641025641025641
+        }
+      ]
+    },
+    "ordinal_mae": 0.8929470510310001,
+    "paraphrase_consistency": {
+      "pairs": 36,
+      "both_answered_valid": 36,
+      "both_correct": 14,
+      "unscorable_expected_none": 0,
+      "consistency": 0.3888888888888889
+    },
+    "results": {
+      "original-policy-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-ordinal-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8549361065566299
+      },
+      "original-ordinal-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.84338408983076
+      },
+      "original-ordinal-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.940417579229805
+      },
+      "original-ordinal-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.894867431708815
+      },
+      "original-ordinal-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8997568911783733
+      },
+      "original-ordinal-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.7761793532338337
+      },
+      "original-ordinal-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.9249005739083718
+      },
+      "original-ordinal-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8949063185691577
+      },
+      "original-ordinal-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.778001266745221
+      },
+      "original-ordinal-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.9324967402088102
+      },
+      "original-ordinal-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8829164970652659
+      },
+      "original-ordinal-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8780125240550056
+      },
+      "original-extraction-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "pickup",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "post",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "post",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cancel_order",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_alarm",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "play_music",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "weather",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "send_message",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "turn_off_lights",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_alarm",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "high",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "medium",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "high",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "M",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "L",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "thursday",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "monday",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "friday",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "get_weather",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "send_email",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "create_calendar_event",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "convert_currency",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "translate_text",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "create_calendar_event",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "book_restaurant",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "pay_subject_to_10000_sublimit",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "department_head",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "not_covered",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no_license_required",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "yes",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-17": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "vendor_support",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-19": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "on_time",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "escalated",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "yes",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "sep_25",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "3",
+        "error": null,
+        "ordinal_ev": 1.6596898219565417
+      },
+      "hard-opus-b-ambiguous-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "real_incident",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "insufficient_information",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "over_limit",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "inconclusive",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "ask_user_which_alex",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cannot_determine",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cannot_determine",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "tier2_department_head",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "dmitri",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "1",
+        "error": null,
+        "ordinal_ev": 1.7936996388538018
+      },
+      "hard-opus-b-multi_hop-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "credit_25_percent",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "customer_wins",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "bad_push",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "attended",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "upheld",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "escalate_to_engineering",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "order_b",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "p2_fix_30d",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "deny_refund",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "erase_but_retain_transaction_records",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "eur_0",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "0",
+        "error": null,
+        "ordinal_ev": 0.752942138169178
+      },
+      "hard-opus-c-long_policy-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "3",
+        "error": null,
+        "ordinal_ev": 1.7557478008359637
+      },
+      "hard-opus-c-long_policy-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "credit_minus_restocking_fee",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-probability-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "ortega_seal_works",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "yes",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "eur_692_00",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "usd_2303_01",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "none_declined",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "eur_506_06",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "covered",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "grant_owner_exception",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "retain_indefinitely",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "0",
+        "error": null,
+        "ordinal_ev": 0.3481299423990343
+      },
+      "hard-sol-a-adversarial-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "major_grants",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "reject_cutoff",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "security_primary",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "require_finance_board",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "deny_score",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "insufficient_log",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "reject_capacity",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "needs_field_review",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "covered_recurrence",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "0",
+        "error": null,
+        "ordinal_ev": 0.5649499589174773
+      },
+      "hard-sol-a-trap-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "keep_open_unresolved",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "late",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "blocked_second_review",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-15": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-14": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-15": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-18": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "approve_lodging_only",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "deny_current_export",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "delete_only_profile",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "east_ward",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "spreadsheet_formula",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "ledger_reconciliation",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "network_dns",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "release_notarization",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "source_access",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "within_window",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "over_limit",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "9_credits",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "narrow_fail",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-15": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "programme_review",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "pass_fen_cross",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "adjuster_referral",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "deny_request",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "normal_release",
+        "error": null,
+        "ordinal_ev": null
+      }
+    },
+    "official_semantics": {
+      "headline": "argmax source label; ties lexicographic; score uses argmax",
+      "macro": "unweighted source family mean",
+      "sum_tol": 0.001,
+      "renorm_tol": 0.02,
+      "brier": "one-hot expected over source labels",
+      "ece": "top-label confidence, 10 equal-width bins"
+    },
+    "p_insufficient_in_official_scorer": false,
+    "teacher_matched_protocol_verified": false,
+    "gpu_used": false
+  },
+  "score_pass_2": {
+    "schema_version": 1,
+    "status": "passed",
+    "public_decisions": 231,
+    "accuracy": 0.47186147186147187,
+    "macro_accuracy": 0.4842763226148159,
+    "per_family": {
+      "adequacy": {
+        "n_scorable": 12,
+        "correct": 6,
+        "accuracy": 0.5
+      },
+      "adversarial": {
+        "n_scorable": 6,
+        "correct": 1,
+        "accuracy": 0.16666666666666666
+      },
+      "ambiguous": {
+        "n_scorable": 7,
+        "correct": 4,
+        "accuracy": 0.5714285714285714
+      },
+      "extraction": {
+        "n_scorable": 24,
+        "correct": 13,
+        "accuracy": 0.5416666666666666
+      },
+      "fact": {
+        "n_scorable": 12,
+        "correct": 6,
+        "accuracy": 0.5
+      },
+      "intent": {
+        "n_scorable": 24,
+        "correct": 13,
+        "accuracy": 0.5416666666666666
+      },
+      "judge_hard": {
+        "n_scorable": 17,
+        "correct": 10,
+        "accuracy": 0.5882352941176471
+      },
+      "long_policy": {
+        "n_scorable": 19,
+        "correct": 7,
+        "accuracy": 0.3684210526315789
+      },
+      "multi_hop": {
+        "n_scorable": 18,
+        "correct": 4,
+        "accuracy": 0.2222222222222222
+      },
+      "ordinal": {
+        "n_scorable": 12,
+        "correct": 4,
+        "accuracy": 0.3333333333333333
+      },
+      "policy": {
+        "n_scorable": 12,
+        "correct": 6,
+        "accuracy": 0.5
+      },
+      "probability": {
+        "n_scorable": 10,
+        "correct": 5,
+        "accuracy": 0.5
+      },
+      "routing": {
+        "n_scorable": 12,
+        "correct": 2,
+        "accuracy": 0.16666666666666666
+      },
+      "routing_hard": {
+        "n_scorable": 5,
+        "correct": 4,
+        "accuracy": 0.8
+      },
+      "temporal_numeric": {
+        "n_scorable": 15,
+        "correct": 5,
+        "accuracy": 0.3333333333333333
+      },
+      "tool_selection": {
+        "n_scorable": 12,
+        "correct": 9,
+        "accuracy": 0.75
+      },
+      "tradeoff": {
+        "n_scorable": 6,
+        "correct": 2,
+        "accuracy": 0.3333333333333333
+      },
+      "trap": {
+        "n_scorable": 8,
+        "correct": 8,
+        "accuracy": 1.0
+      }
+    },
+    "invalid_distributions": 0,
+    "strict_invalid_renormalized": 0,
+    "brier": 0.7418208005959401,
+    "ece": {
+      "ece": 0.21845544189911947,
+      "n": 231,
+      "bins": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "mean_confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "mean_confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.3,
+          "n": 0,
+          "mean_confidence": null,
+          "accuracy": null
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.4,
+          "n": 16,
+          "mean_confidence": 0.3569693717932259,
+          "accuracy": 0.375
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 23,
+          "mean_confidence": 0.4493041598130042,
+          "accuracy": 0.391304347826087
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6,
+          "n": 42,
+          "mean_confidence": 0.5454215539145446,
+          "accuracy": 0.38095238095238093
+        },
+        {
+          "lo": 0.6,
+          "hi": 0.7,
+          "n": 35,
+          "mean_confidence": 0.6450209621414783,
+          "accuracy": 0.42857142857142855
+        },
+        {
+          "lo": 0.7,
+          "hi": 0.8,
+          "n": 41,
+          "mean_confidence": 0.755918055576176,
+          "accuracy": 0.5853658536585366
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 35,
+          "mean_confidence": 0.8489708276063526,
+          "accuracy": 0.4857142857142857
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 39,
+          "mean_confidence": 0.9397605940379729,
+          "accuracy": 0.5641025641025641
+        }
+      ]
+    },
+    "ordinal_mae": 0.8929470510310001,
+    "paraphrase_consistency": {
+      "pairs": 36,
+      "both_answered_valid": 36,
+      "both_correct": 14,
+      "unscorable_expected_none": 0,
+      "consistency": 0.3888888888888889
+    },
+    "results": {
+      "original-policy-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-policy-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-intent-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "other",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-ordinal-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8549361065566299
+      },
+      "original-ordinal-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.84338408983076
+      },
+      "original-ordinal-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.940417579229805
+      },
+      "original-ordinal-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.894867431708815
+      },
+      "original-ordinal-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8997568911783733
+      },
+      "original-ordinal-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.7761793532338337
+      },
+      "original-ordinal-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.9249005739083718
+      },
+      "original-ordinal-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8949063185691577
+      },
+      "original-ordinal-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.778001266745221
+      },
+      "original-ordinal-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.9324967402088102
+      },
+      "original-ordinal-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8829164970652659
+      },
+      "original-ordinal-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "2",
+        "error": null,
+        "ordinal_ev": 1.8780125240550056
+      },
+      "original-extraction-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "pickup",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "post",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "post",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-extraction-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "courier",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-adequacy-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-01-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-01-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-02-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-02-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-03-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-03-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-04-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-04-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-05-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-05-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-06-0": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "original-routing-06-1": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "document",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cancel_order",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "change_address",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "report_damage",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_alarm",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "play_music",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "weather",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "send_message",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "turn_off_lights",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-intent-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_alarm",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-fact-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "high",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "medium",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "high",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "M",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "L",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "thursday",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "monday",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "friday",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-extraction-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "cash",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-00": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "get_weather",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "send_email",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "create_calendar_event",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "convert_currency",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "translate_text",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "create_calendar_event",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "book_restaurant",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "easy-tool_selection-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "set_reminder",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "pay_subject_to_10000_sublimit",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "department_head",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "not_covered",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no_license_required",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "yes",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-17": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "vendor_support",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-long_policy-19": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "on_time",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "escalated",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-probability-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "yes",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "sep_25",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-a-temporal_numeric-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "3",
+        "error": null,
+        "ordinal_ev": 1.6596898219565417
+      },
+      "hard-opus-b-ambiguous-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "real_incident",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "insufficient_information",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "over_limit",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "inconclusive",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "ask_user_which_alex",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cannot_determine",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-ambiguous-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "cannot_determine",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "tier2_department_head",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "dmitri",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "1",
+        "error": null,
+        "ordinal_ev": 1.7936996388538018
+      },
+      "hard-opus-b-multi_hop-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "credit_25_percent",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-multi_hop-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "customer_wins",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "bad_push",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "attended",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-probability-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "upheld",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "escalate_to_engineering",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "order_b",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "p2_fix_30d",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-b-tradeoff-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "deny_refund",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "erase_but_retain_transaction_records",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "eur_0",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "0",
+        "error": null,
+        "ordinal_ev": 0.752942138169178
+      },
+      "hard-opus-c-long_policy-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "3",
+        "error": null,
+        "ordinal_ev": 1.7557478008359637
+      },
+      "hard-opus-c-long_policy-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "credit_minus_restocking_fee",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-long_policy-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-probability-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "ortega_seal_works",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "yes",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "eur_692_00",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "usd_2303_01",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "none_declined",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "eur_506_06",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-opus-c-temporal_numeric-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "covered",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "grant_owner_exception",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "retain_indefinitely",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-adversarial-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "0",
+        "error": null,
+        "ordinal_ev": 0.3481299423990343
+      },
+      "hard-sol-a-adversarial-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "major_grants",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "reject_cutoff",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "security_primary",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "require_finance_board",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "deny_score",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "insufficient_log",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "reject_capacity",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "needs_field_review",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-multi_hop-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "covered_recurrence",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "0",
+        "error": null,
+        "ordinal_ev": 0.5649499589174773
+      },
+      "hard-sol-a-trap-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "keep_open_unresolved",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "late",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "blocked_second_review",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-a-trap-15": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-14": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-15": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-judge_hard-18": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "approve_lodging_only",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "deny_current_export",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "delete_only_profile",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-long_policy-06": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "east_ward",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "spreadsheet_formula",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "ledger_reconciliation",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "network_dns",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "release_notarization",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-routing_hard-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "source_access",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-01": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "within_window",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-02": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "over_limit",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "9_credits",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-b-temporal_numeric-04": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "narrow_fail",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-03": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-05": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-08": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-10": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-judge_hard-15": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "no",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-07": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "programme_review",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-09": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "pass_fen_cross",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-11": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "adjuster_referral",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-12": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": false,
+        "predicted": "deny_request",
+        "error": null,
+        "ordinal_ev": null
+      },
+      "hard-sol-c-multi_hop-13": {
+        "valid": true,
+        "strict_valid": true,
+        "renormalized": false,
+        "correct": true,
+        "predicted": "normal_release",
+        "error": null,
+        "ordinal_ev": null
+      }
+    },
+    "official_semantics": {
+      "headline": "argmax source label; ties lexicographic; score uses argmax",
+      "macro": "unweighted source family mean",
+      "sum_tol": 0.001,
+      "renorm_tol": 0.02,
+      "brier": "one-hot expected over source labels",
+      "ece": "top-label confidence, 10 equal-width bins"
+    },
+    "p_insufficient_in_official_scorer": false,
+    "teacher_matched_protocol_verified": false,
+    "gpu_used": false
+  },
+  "records_pass_2_sha256": "67a3fd40932d8c3623980c763ca55eb4d915aec2717140cb99b496d8d1ce8b08",
+  "records_sidecar": {
+    "path": "artifacts/valen-public-001/report.json.records.jsonl",
+    "exists": true,
+    "records": 462,
+    "sha256": "aadadd18839d8118cceef21c48540b958d552b39a0336da9f55b3caae2740850"
+  },
+  "command": {
+    "argv": [
+      "/root/autodl-tmp/s0-valen-baseline-002/scripts/s0_valen_public.py",
+      "--source-root",
+      "/root/autodl-tmp/lite-omnijev/artifacts/data/research-eval/jevbench/7625ecb1b075cfe4d09d34141d353325825eea1d",
+      "--base-model-dir",
+      "/root/autodl-tmp/lite-omnijev/artifacts/models/Qwen__Qwen3.5-2B/15852e8c16360a2fea060d615a32b45270f8a8fc",
+      "--weights",
+      "/root/autodl-tmp/lite-omnijev/artifacts/valen/Valen-Preview-0923/30096aaabb2689614c83a79f64f38c865c2ce1c1/weights.safetensors",
+      "--report",
+      "artifacts/valen-public-001/report.json"
+    ],
+    "cwd": "/root/autodl-tmp/s0-valen-baseline-002"
+  },
+  "raw_report": {
+    "path": "artifacts/s0-valen-public-gpu-001/report.json",
+    "sha256": "493310f7252e17fd33b0e0e982bad363e0a83138ff731a8b8a4c9bf4a1651998"
+  },
+  "resource_context": {
+    "scope": "shared GPU quality run only; wall times are diagnostic, not comparable isolated performance",
+    "free_bytes_before": 46217101312,
+    "total_bytes": 102085623808,
+    "minimum_free_bytes": 25769803776,
+    "started_unix": 1791983557.7093651,
+    "active_gpu_processes_before": "392823, 52948 MiB\n392995, 318 MiB\n",
+    "primary_env_changed": false
+  },
+  "scope": "public JevBench231 genuine Valen; shared GPU, no isolated release latency claim"
+}

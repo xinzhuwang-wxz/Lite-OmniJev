@@ -1,0 +1,166 @@
+{
+  "annotation_rationale": "Initial bounded 600 TRAIN annotation files yielded 497 eligible GUI Choice4 items after real geometry filtering; the next 30 seed42 TRAIN annotations were downloaded to reach 500. Final runs used max_annotation_downloads=630 and report annotation_receipts present=630.",
+  "byte_identical": {
+    "dev-ledger.jsonl": {
+      "bytes": 204000,
+      "matches_repeat": true,
+      "sha256": "e167baeed4305f38ab28b7f963e424d546d0d6b75bf8be17fd52c0afa8d4a5e5"
+    },
+    "dev.jsonl": {
+      "bytes": 579140,
+      "matches_repeat": true,
+      "sha256": "b926acd3043c7e21aa03c2251430e8a52592caea91f9980cafc13b78b212ec27"
+    },
+    "exclusion.jsonl": {
+      "bytes": 550647,
+      "matches_repeat": true,
+      "sha256": "8419d9ee63882279f13d5668fa7de74fefde2e54dd07e1453d0179caabd58a78"
+    },
+    "media.jsonl": {
+      "bytes": 268295,
+      "matches_repeat": true,
+      "sha256": "d385e4734c00d72487c1e2a42c3133a1cf9b4add8439dad7f306e29fbbb76d08"
+    },
+    "provenance.jsonl": {
+      "bytes": 221117,
+      "matches_repeat": true,
+      "sha256": "c1f39369ada53d70e273c333ef38fa347e1a0c6c363e24c63345a4a6bdda628b"
+    },
+    "receipts.json": {
+      "bytes": 241892,
+      "matches_repeat": true,
+      "sha256": "f6c2f761b4b7027f2407c6ec6a3a99cabc0d5ff9bd77e07deb0e91bd1ea575a3"
+    }
+  },
+  "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
+  "old_failure_runs_preserved": [
+    "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-a-slow-interrupted-001",
+    "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-c-actual-001",
+    "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-d-actual-001",
+    "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-f-actual-001",
+    "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-h-actual-487-001",
+    "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-i-actual-001"
+  ],
+  "pillow_version": "12.3.0",
+  "python": "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+  "runs": {
+    "k-actual-001": {
+      "annotation_receipts": {
+        "present": 630
+      },
+      "command": [
+        "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+        "-m",
+        "scripts.s0_gui_dev",
+        "--plan",
+        "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/app-split-train-media-plan-under-19_5gb.json",
+        "--annotation-root",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/annotations",
+        "--media-root",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
+        "--dev-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/dev.jsonl",
+        "--dev-ledger-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/dev-ledger.jsonl",
+        "--exclusion-ledger-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/exclusion.jsonl",
+        "--media-manifest-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/media.jsonl",
+        "--provenance-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/provenance.jsonl",
+        "--receipts-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/receipts.json",
+        "--report",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/report.json",
+        "--dev-count",
+        "500",
+        "--max-annotation-downloads",
+        "630"
+      ],
+      "dev_items": 500,
+      "environment_script_sha256": "93f5be8768117d4ca283253aaa653b8daeb0a0e1c75c686b644704441c993304",
+      "excluded_counts": {
+        "click_outside_bbox": 61,
+        "illegal_bbox": 84,
+        "insufficient_negative_boxes": 9,
+        "invalid bbox": 93,
+        "invalid click point": 10
+      },
+      "exit_code": 0,
+      "outputs": {
+        "dev_jsonl_sha256": "b926acd3043c7e21aa03c2251430e8a52592caea91f9980cafc13b78b212ec27",
+        "development_ledger_sha256": "e167baeed4305f38ab28b7f963e424d546d0d6b75bf8be17fd52c0afa8d4a5e5",
+        "download_receipts_sha256": "f6c2f761b4b7027f2407c6ec6a3a99cabc0d5ff9bd77e07deb0e91bd1ea575a3",
+        "exclusion_ledger_sha256": "8419d9ee63882279f13d5668fa7de74fefde2e54dd07e1453d0179caabd58a78",
+        "media_manifest_sha256": "d385e4734c00d72487c1e2a42c3133a1cf9b4add8439dad7f306e29fbbb76d08",
+        "provenance_jsonl_sha256": "c1f39369ada53d70e273c333ef38fa347e1a0c6c363e24c63345a4a6bdda628b"
+      },
+      "path": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001",
+      "report": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/report.json",
+      "selected_gui_families": 500,
+      "status": "passed"
+    },
+    "l-actual-001": {
+      "annotation_receipts": {
+        "present": 630
+      },
+      "command": [
+        "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+        "-m",
+        "scripts.s0_gui_dev",
+        "--plan",
+        "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/app-split-train-media-plan-under-19_5gb.json",
+        "--annotation-root",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/annotations",
+        "--media-root",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
+        "--dev-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/dev.jsonl",
+        "--dev-ledger-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/dev-ledger.jsonl",
+        "--exclusion-ledger-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/exclusion.jsonl",
+        "--media-manifest-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/media.jsonl",
+        "--provenance-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/provenance.jsonl",
+        "--receipts-out",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/receipts.json",
+        "--report",
+        "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/report.json",
+        "--dev-count",
+        "500",
+        "--max-annotation-downloads",
+        "630"
+      ],
+      "dev_items": 500,
+      "environment_script_sha256": "93f5be8768117d4ca283253aaa653b8daeb0a0e1c75c686b644704441c993304",
+      "excluded_counts": {
+        "click_outside_bbox": 61,
+        "illegal_bbox": 84,
+        "insufficient_negative_boxes": 9,
+        "invalid bbox": 93,
+        "invalid click point": 10
+      },
+      "exit_code": 0,
+      "outputs": {
+        "dev_jsonl_sha256": "b926acd3043c7e21aa03c2251430e8a52592caea91f9980cafc13b78b212ec27",
+        "development_ledger_sha256": "e167baeed4305f38ab28b7f963e424d546d0d6b75bf8be17fd52c0afa8d4a5e5",
+        "download_receipts_sha256": "f6c2f761b4b7027f2407c6ec6a3a99cabc0d5ff9bd77e07deb0e91bd1ea575a3",
+        "exclusion_ledger_sha256": "8419d9ee63882279f13d5668fa7de74fefde2e54dd07e1453d0179caabd58a78",
+        "media_manifest_sha256": "d385e4734c00d72487c1e2a42c3133a1cf9b4add8439dad7f306e29fbbb76d08",
+        "provenance_jsonl_sha256": "c1f39369ada53d70e273c333ef38fa347e1a0c6c363e24c63345a4a6bdda628b"
+      },
+      "path": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001",
+      "report": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-l-actual-001/report.json",
+      "selected_gui_families": 500,
+      "status": "passed"
+    }
+  },
+  "sample_uri_note": "Sample prefix media uri is screenshot basename; parent should bind cohort media root to media_root/screenshots.",
+  "script_path": "/root/autodl-tmp/s0-gui-dev-001/source/scripts/s0_gui_dev.py",
+  "script_sha256": "93f5be8768117d4ca283253aaa653b8daeb0a0e1c75c686b644704441c993304",
+  "staging_path": "/root/autodl-tmp/s0-gui-dev-001/source",
+  "status": "passed",
+  "scope": "original TRAIN GUI target-localization Choice4 only; real RGB decode500 and whole-episode exclusion; no model quality/human kappa"
+}

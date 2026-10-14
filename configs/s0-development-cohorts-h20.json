@@ -14,6 +14,12 @@
       "media_root": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/media"
     },
     {
+      "name": "screenshot",
+      "data": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/dev.jsonl",
+      "report": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/report.json",
+      "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots"
+    },
+    {
       "name": "audio",
       "data": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/dev.jsonl",
       "report": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/report.json",
@@ -32,7 +38,7 @@
       "media_root": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/media"
     }
   ],
-  "scope": "five completed cohorts; screenshot will be appended after actual admission, no false six-cohort acceptance",
+  "scope": "six actual dev cohorts500 each; first-primitive slices, quality pending actual model matrix",
   "seed": 42,
   "video_frames": 16,
   "max_prompt_tokens": 8192,

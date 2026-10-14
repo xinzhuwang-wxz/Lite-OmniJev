@@ -1,7 +1,7 @@
 {
-  "status": "five_core_public_baselines_complete",
+  "status": "six_public_baselines_complete",
   "protocol": "pinned JevBench231, project full-rubric input, model official template/head",
-  "scope": "public baseline only; six-cohort development scores and Valen remain pending",
+  "scope": "public JevBench231 only; development baselines separate",
   "no_holdout": true,
   "cost_usd": null,
   "rows": [
@@ -69,6 +69,19 @@
       "seconds": 125.71995688788593,
       "report": "reports/s0-public-baseline-jev-omni-12b-001.json",
       "p_U_supported": false
+    },
+    {
+      "model": "valen-preview-0923",
+      "decisions": 231,
+      "passes": 2,
+      "repeat_exact": true,
+      "seconds": 88.279172,
+      "report": "reports/s0-public-baseline-valen-001.json",
+      "p_U_supported": false,
+      "accuracy": 0.47186147186147187,
+      "macro_accuracy": 0.4842763226148159,
+      "brier": 0.7418208005959401,
+      "ece10": 0.21845544189911947
     }
   ]
 }

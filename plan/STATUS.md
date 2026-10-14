@@ -24,8 +24,8 @@
 | 六cohort gate工程 | ADR0009，dev3000合法gold/program truth、holdout6000×两人=12000判断，κ≥.7仅holdout；同item跨池漏洞已修复，合成CLI及独立CLEAR。真实资源未取得。 |
 
 ## 正在做与下一动作
-- s0:07 claimed：六cohort已有text/image/audio/video/crossmodal各500，剩余screenshot实际构建与必需同条件基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
-- 图像/视频实际Linux双遍已完成；crossmodal实际双遍也已完成，均每类500。/tmp/lite-gui-dev-001推进剩余截图目标定位Choice500，限600份原TRAIN小标注，无新媒体/GPU。
+- s0:07 claimed：六cohort各500已实际构建/双轮确定性通过；剩余必需同条件真实基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
+- 图像/视频实际Linux双遍已完成；crossmodal实际双遍也已完成，均每类500。截图Choice4也已实际双构建/500RGB decode/整episode排除；前600标注仅497合法，补30固定TRAIN小标注达到500，未按模型表现选题。
 - 新实现已合入d23dc39并同步/root/autodl-tmp/s0-development-next-001；E4B preflight-002真实CPU通过（001仅源目录笔误失败保留）。E4B GPU双轮231题exit0，78.944秒，accuracy176/231=76.1905%，231对raw/conditional完全一致，reports/s0-public-baseline-e4b-001.json；E2B也已exit0，97.030秒，147/231=63.6364%，两遍231对完全一致，reports/s0-public-baseline-e2b-001.json。E4B/E2B两作业均完成；新批OneJev/教师公开基线见下条；每条记录增量JSONL留存。artifacts/public-baselines-001/{e4b,e2b}-run-001.{json,jsonl,log,exit}，先核实际状态，不重复启动。
 - s0:04 done（ADR0010用户授权调整预估性能验收）：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，失败候选已停止。reports/s0-tf32x3-cache-result-001.json。
 - 原≤2未达到，现作为诊断目标；真实native/gateway on/off冷暖双测、KV命中及四概率<.001构成S0已通过基线，reports/s0-cache-measured-baseline-acceptance-001.json。停止S0性能调参，S6按实际产品候选校准性能标准；不宣称原目标或发布p95通过。
@@ -47,8 +47,16 @@
 
 ## 当前活跃作业（接手先核实际状态）
 - GPU公共基线batch002已全部exit0：OneJev4B75.7576%/142.934秒，27B83.1169%/647.003秒，Jev-Omni85.7143%/125.720秒，各231对概率精确一致；连同E4B/E2B五核心表reports/s0-public-baselines-table-001.json。旧supervisor287865已完成，不重启。
-- 当前开发GPU队列：/root/autodl-tmp/s0-development-baselines-002 HEAD731c3d2，scheduler391342；E4B text500×2已开始，其后按text→image→audio→video→crossmodal，各E4B/OneJev4/E2B/OneJev27（OneJev音频类别明确unsupported，不填零），每job1200秒，JSONL保留，artifacts/development-baselines-001。原生CPU真实首题16支持对全部通过（4音频不支持对明确列出），教师5类首题CPU官方processor通过6.677秒，见两份cpu-preflight001报告，非GPU质量验收。
+- 当前开发GPU队列：/root/autodl-tmp/s0-development-baselines-002 HEAD731c3d2，scheduler391342；文本E4B93.6%/ECE.04346、OneJev4B96.6%/ECE.06404、E2B88.4%/ECE.10150已各500×2通过实际输入/概率精确一致（reports/s0-development-baselines-table-001.json）；其后按text→image→audio→video→crossmodal，各E4B/OneJev4/E2B/OneJev27（OneJev音频类别明确unsupported，不填零），每job1200秒，JSONL保留，artifacts/development-baselines-001。原生CPU真实首题16支持对全部通过（4音频不支持对明确列出），教师5类首题CPU官方processor通过6.677秒，见两份cpu-preflight001报告，非GPU质量验收。
 - 开发runner已合入731c3d2，流式逐题处理适应150GiB上限，8192token拒截断，重复还绑定实际tensor输入hash；相关10测试通过。教师开发runner已合入05e29ec，同16帧端点与音频PCM16共同输入协议，待串行GPU调度。
 - /tmp/lite-public-baselines-001：Valen真实安全head/LoRA/visual组合adapter实现中。已找齐官方固定源码16小文件/59561B，四原固定SHA全匹配，artifacts/valen-source-audit-42a6-001/retrieval.json；安全转换权重原已存在，不重做转换、不执行上游pickle/module。
-- GUI子切片/tmp/lite-gui-dev-001继续；crossmodal子切片真实构建已完成，不重复执行。
+- GUI与crossmodal子切片都已完成，不重复执行。截图报告reports/s0-screenshot-development-acceptance-001.json；实际/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001与run-l-actual-001，source脚本SHA在报告，source实际执行SHA保留在报告及远端冻结树；主树随后仅ruff格式化，不能用新字节冒称原运行SHA。学生旧GPU队列仅捕获五cohort，截图需另外调度，不能误称已评测。
 - image首跑无path字段KeyError保留；修复6e9c467实际双遍已通过，remote /root/autodl-tmp/s0-media-development-002。跨模态remote /root/autodl-tmp/s0-crossmodal-development-001 HEADc4ce657。
+
+## 待我决策（已准备具体方案，尚未生效）
+- docs/adr/0011-human-holdout-stage-placement-proposal.md：是否保持6000封存/12000真人判断/逐类κ≥.7与隔离不变，仅将人工资源交付截止从S0移到S4放量前。当前没有自动豁免；未批准仍按S0硬门。技术独立工作继续。
+
+## 本批新增实测
+- 六公开模型基线齐全：Valen实际231×2/462记录精确，109/231=47.186%，88.279秒；保留真实较低成绩，不用Qwen裸基座冒充。reports/s0-public-baseline-valen-001.json。
+- 开发基线已核验9对：text四模型93.6/96.6/88.4/98.2%；image四模型74.4/83.6/69.8/87.4%；audio E4B63.4%；各500×2实际输入/概率精确一致。剩余旧队列继续，不重跑已完成对。
+- 官方FLA单候选完整231×2通过，准确率仍75.7576%，warm forward中位数诊断快2.505倍；可用于显式新profile，旧环境/当前队列保持冻结。共享GPU时延不当发布性能；reports/s0-qwen-fla-candidate-result-001.json。
