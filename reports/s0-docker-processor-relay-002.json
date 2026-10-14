@@ -2,8 +2,8 @@
   "schema": "lite-omnijev.s0_docker_processor.relay_report.v1",
   "status": "relay_download_transport_blocked",
   "exit_code": 2,
-  "started_utc": "2026-10-14T00:00:00Z",
-  "finished_utc": "2026-10-14T02:22:00+00:00",
+  "started_utc": null,
+  "finished_utc": null,
   "phase": "before_dependency_install",
   "scope": "Bounded evidence closeout only; no new network, SSH, Docker, GPU or heavy CPU operation was attempted in this slice.",
   "processor_cases": 0,
@@ -86,5 +86,7 @@
     "Docker package installation",
     "processor canary cases",
     "full100 native processor comparison"
-  ]
+  ],
+  "closeout_recorded_utc": "2026-10-14T02:22:00+00:00",
+  "timing_note": "Original attempt start/end were not captured in the retained logs. Closeout time is not attempt runtime; do not infer duration or a 30-minute elapsed proof."
 }
