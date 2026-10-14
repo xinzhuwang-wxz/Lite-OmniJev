@@ -1,7 +1,7 @@
 {
   "scope": "CPU boundary review; no GPU/model quality acceptance",
   "reviewer": "independent native teacher_adapter_review",
-  "status": "two_findings_fixed_pending_independent_rereview",
+  "status": "findings_closed_after_independent_rereview",
   "findings": [
     {
       "priority": "P1",
@@ -32,5 +32,12 @@
     "serve/vllm_chat.py": "407468b49cc9e4129cdb87b157567698bf2053d7e2f5b7aa73925bed120a8bc4",
     "tests/test_multimodal_prepare.py": "ee36e950e9d8f0df193df6956c263c756c5fae41b94ca3ad0ec27dcd69afa253",
     "tests/test_vllm_chat.py": "a3024422c94932af10db25d406d3d8285bf2e2bb7467102c0fd189346dca8cc2"
+  },
+  "independent_rereview": {
+    "result": "both fixes effective; no direct residual boundary finding",
+    "tests": "63 passed, 15 optional real-fixture skipped; primary actual-media 66 passed separately",
+    "original_playlist_samples": 16719,
+    "fixed_probe_exit_code": 1,
+    "temporary_assets_cleaned": true
   }
 }

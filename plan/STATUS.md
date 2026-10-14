@@ -22,7 +22,7 @@
 ## 票据与产品质量门槛
 - bootstrap:01–08、p0:01–07 done；reports/p0-engineering-acceptance.md仅工程冒烟。
 - offline-prep:01 done：7模型70必需文件121,094,724,397B固定revision/逐文件哈希相符；reports/project-model-offline-acceptance-001.json。
-- offline-prep:02 claimed（root-data-integration）：GUI 1679完整train episodes/25809 PNG下载、CRC/size/逐文件hash终态通过；DocVQA完整归档及32代表图CPU验收通过；GUI全量PNG解码作业在途，不能以partial关闭。
+- offline-prep:02 done：GUI 1679完整train episodes/25809 PNG下载、CRC/size/逐文件hash终态通过；DocVQA完整归档及32代表图CPU验收通过；GUI全量25,809 PNG/19,499,790,993B完整解码exit0；reports/project-data-offline-acceptance-001.json列全29来源/排除/未来派生/外部gate及报告SHA；仅外部原料闭环，不冒充训练准入或开卡就绪。
 - offline-prep:03 claimed：root/工具依赖闭包、NDK/Chromium在途；已有imports不代替离线fresh安装。
 - offline-prep:04 pending：依赖01/02/03及新增s0:09；全部必需外部准备和可做CPU主链代码/测试通过前，ready_to_open_gpu=false。GPU-only不能用来掩盖尚未写的适配代码。
 - offline-prep:05 done：锁pytest9.1.1修复；offline-prep:06 done：教师音频实际Linux CPU适配通过。
@@ -52,7 +52,7 @@
 
 ## 并行所有权与当前关键路径
 - root独占主树/票据/STATUS/整合；子代理各worktree，只交限定切片，不覆盖他人。
-- GUI：2082154已合入119c9d2，旧下载PID35376结束；最终25809文件/19,499,790,993B/1679train episodes、无无效复用。10,565,313B逐文件manifest在远端持久盘，SHA c025093e6fec56716f7efe8c26b42782fdf8f55e59141f8e0f2df9780804a66f；摘要reports/gui-odyssey-download-acceptance-001.json。root新增scripts.validate_gui_media，只读全量PNG decode监督作业PID42729/独立snapshot artifacts/gui-full-decode-cpu-001/，报告未落盘前pending。Linux公共CLI6 passed/0 skipped；本机无Pillow的两项skip不作decode证据。
+- GUI：2082154已合入119c9d2，旧下载PID35376结束；最终25809文件/19,499,790,993B/1679train episodes、无无效复用。10,565,313B逐文件manifest在远端持久盘，SHA c025093e6fec56716f7efe8c26b42782fdf8f55e59141f8e0f2df9780804a66f；摘要reports/gui-odyssey-download-acceptance-001.json。root新增scripts.validate_gui_media，只读全量PNG decode监督作业已退出0，reports/gui-odyssey-full-decode-cpu-001.json：25809图/19499790993B/4652.928秒；script SHA与主树一致。独立snapshot artifacts/gui-full-decode-cpu-001/保留证据，无活跃GUI作业。Linux公共CLI6 passed/0 skipped；本机无Pillow的两项skip不作decode证据。
 - offline_runtime_dependencies：`/tmp/lite-omnijev-offline-runtime`；d040acd已合入a61098e：工具独立no-index CPU canary、前端322包offline安装、NDKr28b官方SHA/交叉编译及LiteRT Android arm64 CLI hash/ELF已通过。cf821e8已整合root fresh完整training/dev/monitoring pytest9.1.1/torch2.14.1、99 CPU测试，031完整233轮子fresh no-index import、Chromium实际Linuxlaunch、前端offline build证据。026完整196依赖仍低RSS逐包下载，fresh canary待完成，031不替代026；reports/offline-runtime-slice-summary.json。
 - DocVQA：两源文件8,581,945,667B已下载/hash；完整tar/gzip读至EOF，12767安全成员、train/val引用缺失0、32代表图完整decode，exit0。test载荷未读，仍研究隔离、不训练准入；reports/docvqa-source-download-001.json。c232402已合入964014a补metadata边界报告。
 - mdc_transport_fix：`/tmp/lite-omnijev-routerbench-cpu`；RouterBench真实隔离转换、Linux恶意fixture及独立安全review全部完成，5347b2b合入be41a35。

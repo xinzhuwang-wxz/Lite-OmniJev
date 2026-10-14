@@ -20,4 +20,4 @@ OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 
 重CPU锁按每张图片获取/释放，不包住整个下载或整个验收，其他串行CPU验收可以交错运行；图片逐张处理，避免把19.5GB媒体放进2GiB内存。报告包含代码/方案/源manifest哈希、Pillow/Python/平台、解码数、字节数、顺序逐文件收据摘要、耗时和退出码；异常保存失败报告，退出1。输出已有时拒绝覆盖，旧失败证据保留。
 
-Linux独立快照 `artifacts/gui-full-decode-cpu-001/` 已实跑公共CLI测试，6 passed/0 skipped；覆盖完整解码、输入不变、拒绝覆盖既有报告及上述失败路径。本机无Pillow，解码相关两项明确skip，不能将本机测试视作媒体解码证据；Linux6项是实际Pillow验收。全25,809张实际结果须另看 `reports/gui-odyssey-full-decode-cpu-001.json` 与监督作业退出码，通过前保持pending。
+Linux独立快照 `artifacts/gui-full-decode-cpu-001/` 已实跑公共CLI测试，6 passed/0 skipped；覆盖完整解码、输入不变、拒绝覆盖既有报告及上述失败路径。本机无Pillow，解码相关两项明确skip，不能将本机测试视作媒体解码证据；Linux6项是实际Pillow验收。全25,809张已实际完整解码通过：`reports/gui-odyssey-full-decode-cpu-001.json`，监督退出码0，19,499,790,993B，4652.928秒。报告script SHA与主树入口一致；未读取test媒体、未进行训练准入。

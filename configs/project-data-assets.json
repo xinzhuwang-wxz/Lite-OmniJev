@@ -705,10 +705,11 @@
       "next_commands": [
         "Do not preserve obsolete account-blocked claim from earlier unauthorized response; verify exact fixed revision and public availability, preserve CC-BY attribution, split by episode/source family; training admission remains separate."
       ],
-      "physical_staging_status": "official_train1679_episode_25809_PNG_19_499_790_993byte_download_CRC_size_SHA_passed_full_PNG_decode_running",
+      "physical_staging_status": "official_train1679_episode_25809_PNG_19499790993byte_download_CRC_size_SHA_and_all_full_PNG_decode_passed",
       "offline_preparation_evidence": [
         "reports/gui-odyssey-download-acceptance-001.json",
-        "reports/gui-media-validator-linux-tests.json"
+        "reports/gui-media-validator-linux-tests.json",
+        "reports/gui-odyssey-full-decode-cpu-001.json"
       ]
     },
     {
@@ -1270,11 +1271,12 @@
       "next_commands": [
         "Freeze all1800 original row IDs/source hashes/clip16frame RGB hashes and validate CPU; fixed teacher real forward twice only after user opens GPU. Additional restricted task media not first-release prerequisites."
       ],
-      "physical_staging_status": "approved_nine_public_tasks_1800_references_sources_prepared_full_clip16frame_CPU_protocol_freeze_in_progress",
+      "physical_staging_status": "approved_nine_public_tasks_1800_rows_1606_media_27997_unique_canonical_frames_SHA_dimensions_and_RGB8_header_CPU_passed_teacher_forward_pending",
       "offline_preparation_evidence": [
         "reports/public-eval-archives-validation-002.json",
         "reports/star-missing-source-recovery-001.json",
-        "reports/jev-omni-mvbench-protocol.json"
+        "reports/jev-omni-mvbench-protocol.json",
+        "reports/public-video-protocol-freeze-001.json"
       ],
       "first_release_scope": "ADR-0006 fixed9tasks1800 real teacher baseline; original53.10±2 reproduction replaced only for MVBench, no other gate waiver",
       "scope_decision": "docs/adr/0006-reproducible-public-video-baseline.md"

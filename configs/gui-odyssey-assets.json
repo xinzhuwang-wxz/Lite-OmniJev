@@ -262,6 +262,8 @@
   },
   "physical_evidence": [
     "reports/gui-odyssey-download-acceptance-001.json",
-    "reports/gui-media-validator-linux-tests.json"
-  ]
+    "reports/gui-media-validator-linux-tests.json",
+    "reports/gui-odyssey-full-decode-cpu-001.json"
+  ],
+  "physical_staging_status": "selected_train_25809_PNG_download_hash_and_full_decode_passed"
 }
