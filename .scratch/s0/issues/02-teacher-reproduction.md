@@ -4,22 +4,23 @@ ID: s0:02
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: main-session-gpu-transition
-Worktree: /Users/bamboo/Githubs/Lite-OmniJev
+Execution: done
+Owner: none
+Worktree: none
 Blocked by: p0:04, 01
 
 ## What to build
 把固定教师、明确公开评测manifest、真实推理与评分报告打通；不把任意公开子集与模型卡分数比较。
 
 ## Acceptance criteria
-- [ ] MMAU锁定1000题test-mini的revision/ID/媒体hash/预处理；MVBench按用户批准ADR-0006冻结公开9任务/1800原行及16帧/窗口/macro/micro；逐行源/输入hash和CPU检查齐全，不按成绩筛题。
-- [ ] 以同revision教师完成两个完整评测；MMAU与0.631比较绝对差≤0.02；MVBench建立该冻结集真实独立baseline，记录每任务/macro/micro，发布0.531仅未复现引用、不作同集比较。缺媒体/失败题不能静默缩分母。
-- [ ] 相同模型/配置/种子重复两次，逐样本预测/规定概率输出完全一致并报告比对；不只检查总准确率相同。
-- [ ] 记录命令、退出码、权重/数据/代码/配置hash、硬件环境、耗时和实际成本；实跑超已授权预算则可恢复停止并blocked。
-- [ ] 复现失败不准入教师软标签；形成原因和替代候选/程序真值建议，保留原门槛与用户方向决策边界。
+- [x] MMAU锁定1000题test-mini的revision/ID/媒体hash/预处理；MVBench按用户批准ADR-0006冻结公开9任务/1800原行及16帧/窗口/macro/micro；逐行源/输入hash和CPU检查齐全，不按成绩筛题。
+- [x] 以同revision教师完成两个完整评测；MMAU与0.631比较绝对差≤0.02；MVBench建立该冻结集真实独立baseline，记录每任务/macro/micro，发布0.531仅未复现引用、不作同集比较。缺媒体/失败题不能静默缩分母。
+- [x] 相同模型/配置/种子重复两次，逐样本预测/规定概率输出完全一致并报告比对；不只检查总准确率相同。
+- [x] 记录命令、退出码、权重/数据/代码/配置hash、硬件环境、耗时和实际成本；实跑超已授权预算则可恢复停止并blocked。
+- [x] 复现失败不准入教师软标签；形成原因和替代候选/程序真值建议，保留原门槛与用户方向决策边界。
 
 ## Evidence
+Evidence: reports/s0-teacher-complete-acceptance-001.json; reports/teacher-benchmark-two-pass-complete-001.json
 尚未执行；本票仅冻结验收。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
 
 ## Out of scope
@@ -44,3 +45,5 @@ Blocked by: p0:04, 01
 2026-10-14第一遍完整2800题已完成：MMAU620/1000=62.0%在既定窗口内，固定九任务MVBench976/1800=54.222%（九组各200题，macro=micro），不与发布53.10异集比较。第二遍已有279对，预测与概率逐项精确一致；报告reports/teacher-first-pass-complete-001.json绑定完整前缀字节/hash、模型/数据binding、冻结DF源码。两遍仍未完成，质量不准入、不关票。
 
 2026-10-14 MMAU两遍完整验收通过：2000条、两次620/1000、1000对预测与概率完全相同，报告teacher-mmau-two-pass-complete-001.json；004安全停在3812/exit1以独占测async，随后005续跑MVBench第二遍，监督169821/timeout169822/教师169823已真实Rl推进，最多3600秒。整体两遍尚未完成，02仍claimed。
+
+2026-10-14正式完整5600条exit0，MMAU两次620/1000=.62在原窗口内、MVBench九任务两次976/1800=.542222，2800对逐题预测/规定概率精确一致。独立只读review直接stream全records后PASS；本地/远端最终报告与records SHA分别7c33fbfd…be38c/75a8b653…d14aa精确一致。旧pilot文件名是续跑完整记录实际路径，wrapper已列双端映射，原报告不覆盖。005实际3280.63秒仅最终续跑外层时间，总GPU账单未知null；原cost0只是历史占位，未来runner已修为null。不重跑昂贵模型，仅准入固定公开benchmark；其他六cohort开发/训练标签许可/整体S0门槛仍待各票。

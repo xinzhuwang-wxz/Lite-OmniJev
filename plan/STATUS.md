@@ -16,6 +16,15 @@
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
+- s0:02独立review PASS并done：完整5600、2800对预测/概率精确，MMAU两次62%、MVBench两次54.222独立baseline，真实exit0且双端报告/records hash匹配。统一reports/s0-teacher-complete-acceptance-001.json给实际远端旧pilot名→本地copy路径映射；005耗时3280.63秒只本次续跑，cost实际未知null，历史raw0占位不当免费账单，未来runner已修null。禁止无谓重跑。
+- s0:10 done：Linux004六主体全declared类别实际32.917秒exit0，支持边界见.scratch/s0/baseline-support-matrix.md；OneJev audio metadata不一致/Qwen audio未声明均不伪passed，不代教师head/Valenforward/质量基线。
+- TF32x3候选off/API171528 health200、实际cmdline与六precision/cache env逐项绑定；完整100 parity正在主会话handle94452运行（330秒外层，报告/日志/exit在远端candidate目录），900秒总deadline不变。先数值，再决定on冷比，不能重叠另GPU作业。
+
+- 教师005已终止exit0，5600条完整，最终reports/teacher-benchmark-two-pass-complete-001.json：MMAU620/1000=.62、MVBench976/1800=.542222，两个benchmark逐题预测/概率完全一致；独立review在/tmp/lite-teacher-final-review-001进行，02尚未关闭。005实际elapsed3280.63秒，runtime.cost_usd=0.0是runner输入非账单测量，真实费用未知null，不宣称免费。
+- 教师释放GPU已核无compute进程后，TF32x3唯一候选cache-off正式启动：timeout171527/API171528，900秒总deadline写远端s0-scheduled-gpu-001/artifacts/s0-cache-tf32x3-001/candidate-budget.json。先完整100数值门槛，尚未性能准入；on/off CPU预检exit0，reports/s0-cache-tf32x3-preparation-001.json。不能再启动重叠GPU作业。
+- baseline CPU004代码aa94581在/root/autodl-tmp/s0-baseline-cpu-004执行实际全声明类别媒体probe，仍运行，主会话exec handle22499；CUDA_VISIBLE_DEVICES空，不读权重。
+- s0:14已冻结并认领原Clotho TRAIN一致Noul500与整sound family排除，独立树/tmp/lite-audio-dev-001，scripts/s0_audio_dev.py/tests/test_s0_audio_dev.py切片实现中；不新下载/不GPU/不读其他split，已加08硬依赖。
+
 - 教师005最新真实快照5422/5600、PID169823 Rl/48:27，未有exit，继续同作业。全5600后先最终报告/逐项门槛与独立review；活作业不重启。
 - s0:10剩余官方全类别CPU探针已交/tmp/lite-baseline-cpu-fix-15ea9ab两文件切片：image/screenshot/audio/video按固定metadata声明区分passed/blocked/unprobed/metadata_inconsistent，不能直接把Gemma专属tensor校验强套Qwen；父待整合后Linux004。text/image/token/thinking六主体003已通过。
 - 缓存下一必要候选协议已冻结.scratch/s0/cache-tf32x3-spec.md：教师完成后才单独GPU，隔离编译缓存，完整100精度/重复先于冷缓存比；一个候选900秒预算，失败不扩gateway/off或重复。尚未启动，旧性能fail不变。

@@ -1,0 +1,59 @@
+{
+  "status": "cpu_prepared_not_started",
+  "s0_acceptance": false,
+  "gpu_forward": false,
+  "precision_env": {
+    "TRITON_F32_DEFAULT": "tf32x3",
+    "NVIDIA_TF32_OVERRIDE": "0",
+    "TRITON_CACHE_DIR": "/root/autodl-tmp/lite-omnijev/cache/s0-tf32x3-001/triton",
+    "VLLM_CACHE_ROOT": "/root/autodl-tmp/lite-omnijev/cache/s0-tf32x3-001/vllm",
+    "TORCHINDUCTOR_CACHE_DIR": "/root/autodl-tmp/lite-omnijev/cache/s0-tf32x3-001/torchinductor",
+    "TORCH_EXTENSIONS_DIR": "/root/autodl-tmp/lite-omnijev/cache/s0-tf32x3-001/extensions"
+  },
+  "files": {
+    "parity-server-template.json": "3217b4b7365b95635ab1479739e4b27ebef0c39f7f5545048763c3e2c4b78cf0",
+    "start-on.sh": "4620aa1e1c839a5dd498ecede8cd2110ba0773a7ae95e150dcc8d6243aee3cd1",
+    "start-off.sh": "123b4ef5840bda17389c44b5bb3db8ceeaa3fb369b1256261307af2d59dc8bf0",
+    "server-on.json": "b76be856460673b556c1503c3b320650625fb0485fa5a51aaf7d76e6d4fcad80",
+    "server-off.json": "05e0d617f07f684283ce58931fc05dc3f3dbb4c25c225cf0d51bda2104e8c4a3",
+    "validate-on.json": "1157e89de9ade9ff41f4373a70d355c024247814e9660783f0568e18347371c8",
+    "validate-off.json": "5fffc46e2ac6e35ac4ad537b55eb39c407d207f00b503294c40db5dc00bbb6a0"
+  },
+  "requires": "Teacher complete; real PID/cmdline/environment binding; attestation template remains false until checked.",
+  "cost_usd": null,
+  "cpu_launch_validation": {
+    "on": {
+      "action": "validate",
+      "status": "validated-no-network",
+      "exit_code": 0,
+      "cost_usd": null,
+      "s0_acceptance": false,
+      "python": "3.11.17",
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "mode": "bounded-scheduled-v1",
+      "code_revision": "3a9a63daab17e2a7340823a83b8e12b1ee2997ef",
+      "code_sha256": "f89d5e19e320ef643d859a4865fee5671943a15d480fa9b976709920c4395ed7",
+      "protocol_sha256": "8b874c32cc7c519fbf74c560a63a838b62db01c74c8fe37b8ed7377552d95fe3",
+      "server_record_sha256": "a5fb7dc1b4966b3eaed56667ee7c394146623f50925a83aeef7750f3c218cb59",
+      "concurrency_limit": 10,
+      "duration_seconds": 0.0069737620651721954
+    },
+    "off": {
+      "action": "validate",
+      "status": "validated-no-network",
+      "exit_code": 0,
+      "cost_usd": null,
+      "s0_acceptance": false,
+      "python": "3.11.17",
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "mode": "bounded-scheduled-v1",
+      "code_revision": "3a9a63daab17e2a7340823a83b8e12b1ee2997ef",
+      "code_sha256": "f89d5e19e320ef643d859a4865fee5671943a15d480fa9b976709920c4395ed7",
+      "protocol_sha256": "8b874c32cc7c519fbf74c560a63a838b62db01c74c8fe37b8ed7377552d95fe3",
+      "server_record_sha256": "8266b1341b856e18af8c58b9ad66e699d7b9b5770a7674a312c8ff450af6014d",
+      "concurrency_limit": 10,
+      "duration_seconds": 0.007069822400808334
+    }
+  },
+  "remote_artifact_root": "/root/autodl-tmp/s0-scheduled-gpu-001/artifacts/s0-cache-tf32x3-001"
+}

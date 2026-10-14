@@ -1,0 +1,110 @@
+{
+  "status": "passed_s0_02_only",
+  "s0_acceptance": false,
+  "teacher_quality_scope": "Fixed MMAU1000 and ADR0006 MVBench9task1800 only; not all six development cohorts or blanket soft-label permission.",
+  "independent_review": "PASS: 5600 records streamed, 2800 unique row IDs each exactly twice, identical predictions and prescribed probabilities, no nonfinite or failed records; nine MVBench groups each200/pass.",
+  "raw_report": {
+    "local_path": "reports/teacher-benchmark-two-pass-complete-001.json",
+    "remote_path": "/root/autodl-tmp/gpu-reference-fp32-complete-001/artifacts/teacher-benchmark-pilot-001.json",
+    "sha256": "7c33fbfd2daed4132e112ee08bd711f383acf60c00d6fefc45aa1759b02be38c"
+  },
+  "records": {
+    "local_path": "artifacts/s0-teacher-complete-001/records.jsonl",
+    "remote_path": "/root/autodl-tmp/gpu-reference-fp32-complete-001/artifacts/teacher-benchmark-pilot-001.jsonl",
+    "remote_report_relative_path": "artifacts/teacher-benchmark-pilot-001.jsonl",
+    "path_note": "Pilot is a retained filename; all explicit resumes append to this same complete frozen record file. Local copied filename differs, bytes match both remote SHA checks.",
+    "sha256": "75a8b653893080dd55ad0e3d6112c2772d7b68a8b18c79af2dff345d8a7d14aa",
+    "rows": 5600,
+    "complete_two_pass_pairs": 2800
+  },
+  "benchmarks": {
+    "mmau-test-mini": {
+      "benchmark": "mmau-test-mini",
+      "expected_rows": 1000,
+      "observed_rows": 1000,
+      "record_count": 2000,
+      "failures": [],
+      "two_pass_mismatches": [],
+      "two_pass_identical": true,
+      "micro_correct": 620,
+      "micro_total": 1000,
+      "micro_score": 0.62,
+      "macro_scores": {
+        "music": 0.6227544910179641,
+        "sound": 0.5615615615615616,
+        "speech": 0.6756756756756757
+      },
+      "macro_score": 0.6199972427517337,
+      "fixed_denominator_preserved": true,
+      "gate": {
+        "kind": "mmau_teacher_accuracy",
+        "target": 0.631,
+        "tolerance": 0.02,
+        "lower_bound": 0.611,
+        "upper_bound": 0.651,
+        "passed": true
+      }
+    },
+    "mvbench-public-9task": {
+      "benchmark": "mvbench-public-9task",
+      "expected_rows": 1800,
+      "observed_rows": 1800,
+      "record_count": 3600,
+      "failures": [],
+      "two_pass_mismatches": [],
+      "two_pass_identical": true,
+      "micro_correct": 976,
+      "micro_total": 1800,
+      "micro_score": 0.5422222222222223,
+      "macro_scores": {
+        "Action Count": 0.35,
+        "Action Localization": 0.445,
+        "Action Prediction": 0.465,
+        "Action Sequence": 0.575,
+        "Character Order": 0.66,
+        "Object Interaction": 0.685,
+        "Object Shuffle": 0.355,
+        "State Change": 0.5,
+        "Unexpected Action": 0.845
+      },
+      "macro_score": 0.5422222222222222,
+      "fixed_denominator_preserved": true,
+      "gate": {
+        "kind": "mvbench_recorded_real_baseline_only",
+        "accuracy_target": null,
+        "compared_to_adr_0006_0_531": false,
+        "passed": true
+      }
+    }
+  },
+  "runtime_scope": {
+    "resume005_started": "2026-10-14T10:59:22.228384+00:00",
+    "resume005_finished": "2026-10-14T11:54:03.177565+00:00",
+    "resume005_outer_elapsed_seconds": 3280.63,
+    "prior_pilot_and_resumes": "Historical separate runs preserved; 3280.63 seconds is not total campaign GPU time.",
+    "total_campaign_gpu_seconds": null,
+    "raw_runtime_cost_usd": 0.0,
+    "raw_cost_is_provider_bill": false,
+    "cost_usd": null,
+    "cost_note": "No provider billing evidence. Historical runtime zero was a hard-coded placeholder; main script now emits null for future runs, original frozen report remains immutable."
+  },
+  "actual_process": {
+    "teacher_pid": 169823,
+    "state": "absent after exit0",
+    "resume005_exit_code": 0,
+    "gpu_released_before_cache_candidate": true
+  },
+  "source_revision": "dfdfd935da5a968f497365f74c36989efebb1175",
+  "config_sha256": "06276c83040a68684db2275604049fc316adf489de0dc97670e21a847416f4b1",
+  "binding_sha256": "e5af7892656e496ef33456785a5221f7161b5515f402077e9572ba8309f404e7",
+  "source_code_hashes": {
+    "runner": "adc1168618cc3bc3469e599bf97fbb3d6b2240a0c417ae86ad100bd18ae58b5f",
+    "eval_teacher_benchmarks": "eb6a942c111879b34f725e1867aaec5b3589d21d8b3ec32453290c82cd4cfd32",
+    "train_teacher_inference": "7f31cd4ce683e082a27deb7918c079d1ab174e7a2f91207641be74ef2ed7c9f4",
+    "train_teacher_media": "5e06b6eed623baa15958d3351c3a0c29c07d245c50f83ef9f0ccc2c4998c8d3b",
+    "eval_public_video_protocol": "11c958caf4f195e4bc673390385942c446b200d15adaacc65cc1ec904e36222e"
+  },
+  "head_reference": "reports/teacher-head-reference-gpu-001.json",
+  "sealed_data_read": false,
+  "rerun_required": false
+}

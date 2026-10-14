@@ -163,7 +163,7 @@ def _runtime_metadata(started: float) -> dict[str, Any]:
         },
         "pid": os.getpid(),
         "elapsed_seconds": round(time.monotonic() - started, 3),
-        "cost_usd": 0.0,
+        "cost_usd": None,
     }
 
 
