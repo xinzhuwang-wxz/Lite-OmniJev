@@ -15,7 +15,12 @@
 - 原生子代理：parity_verifier/teacher_reference均完成，临时树已清理；cache_protocol_review已交只读建议；cache_assessment已整合显式新policy（7949365）；34pass/1显式livefixture skip、ruff/mypy通过，架构只读review CLEAR。父会话统一票/STATUS/整合。
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
-下一步：01/03已关票。02教师resume003继续；04 cache eager完整on/off/native/gateway失败，FULL CUDAgraph canary冷比仍3.802/3.808，已停止，不重复此配置。诊断在reports/s0-prefix-cache-gpu-diagnostics-001.json。ADR-0007显式新policy已整合/独立review通过（≤2及四概率严格<.001不变）；旧strict失败保留，新离线native/gateway报告仍仅cold ratio失败，未再消耗GPU。下一切片.scratch/s0/cache-product-scheduling-spec.md已实现候选（c95d3d6/f3daf3b），默认顺序/不复用，明确optin新模式。官方Linux CPU100×baseline/私有processor两遍共300次summary/messages/映射精确，40缓存命中/94.910秒，reports/s0-request-image-reuse-cpu-001.json；9网关调度与11缓存测试、14原生collector测试通过；独立review指出失败响应留下shielded CPU job，已新增先红后绿回归并修复：只取消未开始CPU的本请求任务，普通失败等待已开始任务结束，外部取消保持占槽/shutdown drain。39pass/38显式媒体fixture skip，4源mypy及ruff通过，独立复核APPROVE、HIGH/MEDIUM已收口；68相关pass/1显式fixture skip、76源mypy/279文件format/lint/build/32票validate通过（reports/s0-scheduled-cpu-review-001.json）。教师resume003已SIGINT安全停在2610条/exit1；scheduled eager native短测完成，冷比2.3469/2.3250仍fail，max四概率差2.36e-7、实际并发9/缓存288。独立review确认collector无意外串行，瓶颈为fanout2..9，停止该server未扩展网关/off。隔离树s0-scheduled-gpu-001 HEAD388ce87官方FULLgraph1024候选完成：并发10冷比2.584/2.551、并发2为3.190/3.188、并发3为3.045/3.047，均fail、四概率全部<.001。已TERM服务器167657并确认GPU进程清空，再启动教师resume004；未扩展gateway/off。报告s0-scheduled-native-eager-canary-001.json及s0-scheduled-native-graph-canaries-001.json。，不冒称串行或服务性能通过。
+下一步（本轮优先）：
+- 01/03已关票；02教师resume004持续运行，快照2645/5600，无完整质量准入。先核实时进程/exit，不重复启动；监督上限3600秒。
+- 04仍claimed/性能failed：旧顺序eager/graph失败保留；新scheduled eager冷比2.3469/2.3250，graph1024并发10为2.584/2.551、并发2为3.190/3.188、并发3为3.045/3.047。实际KV覆盖/并发与四概率均通过；未做失败配置gateway/off；两server已停、GPU交还教师。见reports/s0-scheduled-native-eager-canary-001.json及s0-scheduled-native-graph-canaries-001.json。
+- CPU候选已完成：Linux官方100题300次准备精确/40imagecache命中；失败CPUjob清理独立复核APPROVE。新网关并发adapter含实际ASGI wall/work分离、upstream输入/raw/API逐qid绑定、重复case拒绝及摘要JSON roundtrip；独立review APPROVE（reports/s0-scheduled-gateway-review-001.json）；48相关pass、78源mypy/lint/282format/build/32票validate通过，仅CPU准入。
+- 唯一下一GPU候选：eager仅启用官方async scheduling，保留FP32IEEE/maxseq10/mmcache1/chunked禁用；隔离树s0-scheduled-gpu-001/artifacts/async-eager-001中on/off启动文件与无网络validate均exit0，尚未启动。依据实际0.26源码，性能收益未证实，见reports/s0-next-async-candidate-preflight-001.json。保持教师占卡，待当前作业终态/稳定断点后安排独占native短测，有收益才扩展gateway/onoff，不盲扫配置。
+- 接续：plan/handoff-2026-10-14-scheduled-cache.md。05/06独立gate/真人资源仍外部条件；S0全绿前不启动S1，终局goal active。
 
 ## 当前目标与决策
 - 用户已完成开卡，原无卡准备收口；现在复用现有模型、数据、环境及P0产物推进真实GPU闭环，不代开关卡或改租赁。
