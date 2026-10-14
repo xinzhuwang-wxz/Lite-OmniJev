@@ -439,7 +439,19 @@ async def test_schema_error_does_not_echo_private_input() -> None:
 async def test_fixed_100_gateway_requests_match_canonical_reference(real_processor: Any) -> None:
     root = Path(__file__).parent.parent
     cases = read_manifest(root / "tests/fixtures/s0-prepare-public-001/manifest.json")
-    reference = json.loads((root / "reports/s0-canonical-http-cpu-003.json").read_text())
+    reference_path = Path(
+        os.environ.get(
+            "S0_CANONICAL_REFERENCE", str(root / "reports/s0-canonical-http-cpu-003.json")
+        )
+    )
+    reference = json.loads(reference_path.read_text())
+    assert reference["status"] == "passed" and reference["complete_100_cases"]
+    assert (
+        reference["manifest_sha256"]
+        == hashlib.sha256(
+            (root / "tests/fixtures/s0-prepare-public-001/manifest.json").read_bytes()
+        ).hexdigest()
+    )
     async with gateway(real_processor, Path(os.environ["S0_CANONICAL_MEDIA_ROOT"])) as (
         client,
         upstream,
