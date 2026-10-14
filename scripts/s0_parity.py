@@ -555,6 +555,8 @@ def _torch_dtype(torch: Any, dtype_name: str) -> Any:
         return torch.bfloat16
     if dtype_name == "float16":
         return torch.float16
+    if dtype_name == "float32":
+        return torch.float32
     raise S0ParityError(f"unsupported dtype: {dtype_name}")
 
 

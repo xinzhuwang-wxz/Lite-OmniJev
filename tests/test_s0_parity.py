@@ -257,6 +257,40 @@ def test_hf_pass_refuses_no_cuda_before_model_load(monkeypatch):
         )
 
 
+@pytest.mark.parametrize("dtype_name", sorted(s0_parity.ALLOWED_DTYPES))
+def test_every_admitted_dtype_reaches_official_loader(monkeypatch, tmp_path, dtype_name):
+    torch = pytest.importorskip("torch")
+    from types import SimpleNamespace
+
+    received = {}
+
+    class Loader:
+        @staticmethod
+        def from_pretrained(*args, **kwargs):
+            received.update(kwargs)
+            raise RuntimeError("official loader boundary reached")
+
+    original_import = s0_parity.importlib.import_module
+    monkeypatch.setattr(s0_parity, "ensure_cuda_available", lambda: torch)
+    monkeypatch.setattr(s0_parity, "configure_torch_runtime", lambda _torch: None)
+    monkeypatch.setattr(s0_parity, "runtime_requirements", lambda: {})
+    monkeypatch.setattr(
+        s0_parity.importlib,
+        "import_module",
+        lambda name: (
+            SimpleNamespace(Gemma4ForConditionalGeneration=Loader)
+            if name == "transformers"
+            else original_import(name)
+        ),
+    )
+    paths = s0_parity.ParityPaths(tmp_path, tmp_path, tmp_path, tmp_path, None)
+    with pytest.raises(RuntimeError, match="official loader boundary reached"):
+        s0_parity.run_hf_pass(cases=[], processor=None, paths=paths, dtype_name=dtype_name)
+    assert received["torch_dtype"] == getattr(torch, dtype_name)
+    assert received["local_files_only"] and received["use_safetensors"]
+    assert received["trust_remote_code"] is False
+
+
 def test_hf_reference_writes_blocked_report_for_cpu_gate(monkeypatch, tmp_path):
     report = tmp_path / "hf-blocked.json"
     monkeypatch.setattr(s0_parity, "build_provenance", lambda paths, dtype: {"dtype": dtype})

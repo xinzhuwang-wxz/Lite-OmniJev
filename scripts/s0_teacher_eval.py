@@ -395,6 +395,12 @@ def _teacher_binding(args: argparse.Namespace, *, report: dict[str, Any]) -> dic
 
 
 def _load_real_forward(args: argparse.Namespace) -> Any:
+    import torch
+
+    torch.manual_seed(0)
+    torch.cuda.manual_seed_all(0)
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
     kwargs = {
         key: value
         for key, value in {

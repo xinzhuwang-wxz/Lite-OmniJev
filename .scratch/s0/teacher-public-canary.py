@@ -37,6 +37,18 @@ def save():
 
 save()
 try:
+    import importlib.metadata
+
+    import torch
+
+    torch.manual_seed(0)
+    torch.cuda.manual_seed_all(0)
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
+    report["seed"] = 0
+    report["runtime"] = {
+        name: importlib.metadata.version(name) for name in ("torch", "transformers", "peft")
+    }
     cases = read_manifest(Path("tests/fixtures/s0-prepare-public-001/manifest.json"))
     selected = []
     for index in (0, 60, 80):
