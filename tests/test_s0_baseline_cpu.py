@@ -8,9 +8,22 @@ import pytest
 
 from scripts import s0_baseline_cpu as baseline
 
+TEST_FILE_BYTES = {
+    "config.json": json.dumps({"vision_config": {}, "audio_config": {}}).encode(),
+    "tokenizer.json": b"{}",
+    "tokenizer_config.json": json.dumps(
+        {"image_token": "<|image|>", "audio_token": "<|audio|>", "video_token": "<|video|>"}
+    ).encode(),
+    "chat_template.jinja": (
+        b"{% if item.type == 'image' %}<|image|>{% endif %}"
+        b"{% if item.type == 'audio' %}<|audio|>{% endif %}"
+        b"{% if item.type == 'video' %}<|video|>{% endif %}"
+    ),
+}
+
 
 def _content_for(path: str) -> bytes:
-    return path.encode()
+    return TEST_FILE_BYTES.get(path, path.encode())
 
 
 def _git_blob_sha1(data: bytes) -> str:
@@ -342,6 +355,36 @@ def test_unknown_explicit_asset_path_is_rejected(tmp_path: Path) -> None:
         baseline.validate_report(path, asset_paths={"unknown": tmp_path})
 
 
+def test_metadata_support_declares_template_backed_modalities(tmp_path: Path) -> None:
+    value = manifest()
+    root = tmp_path / "models"
+    make_model_dirs(root, value)
+    entry = value["models"][0]
+    directory = root / str(entry["repo_id"]).replace("/", "__") / str(entry["revision"])
+    matrix = baseline.modality_support_matrix(
+        directory, (directory / "chat_template.jinja").read_text()
+    )
+    assert {category: matrix[category]["status"] for category in baseline.PUBLIC_CATEGORIES} == {
+        "text": "declared",
+        "image": "declared",
+        "screenshot": "declared",
+        "audio": "declared",
+        "video": "declared",
+    }
+
+
+def test_audio_token_without_template_or_config_is_metadata_inconsistent(tmp_path: Path) -> None:
+    directory = tmp_path / "qwen-like"
+    directory.mkdir()
+    (directory / "config.json").write_text(json.dumps({"vision_config": {}}))
+    (directory / "tokenizer_config.json").write_text(json.dumps({"audio_token": "<|audio_pad|>"}))
+    template = "{% if item.type == 'image' %}<|image_pad|>{% endif %}"
+    (directory / "chat_template.jinja").write_text(template)
+    matrix = baseline.modality_support_matrix(directory, template)
+    assert matrix["audio"]["status"] == "metadata_inconsistent"
+    assert matrix["audio"]["probe_required"] is False
+
+
 def test_thinking_not_proved_is_partial_and_nonzero(tmp_path: Path) -> None:
     value = manifest()
     path = write_manifest(tmp_path, value)
@@ -488,6 +531,88 @@ def test_public_image_probe_uses_hash_checked_fixture_and_never_outputs_path(
     encoded = json.dumps(image)
     assert "image.png" not in encoded
     assert image_sha in encoded
+
+
+def test_all_declared_public_categories_must_pass_for_subject_passed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    value = manifest()
+    path = write_manifest(tmp_path, value)
+    root = tmp_path / "models"
+    make_model_dirs(root, value)
+    asset_root = tmp_path / "assets"
+    asset_root.mkdir()
+    media_path = asset_root / "media.bin"
+    media_path.write_bytes(b"fixture media")
+    media_sha = hashlib.sha256(media_path.read_bytes()).hexdigest()
+    base_meta = {
+        "source_dataset": "unit",
+        "source_revision": "r1",
+        "source_sha256": "1" * 64,
+        "license": "internal",
+        "usage": "research",
+        "pool": "dev",
+        "family_id": "f",
+        "data_version": "v1",
+    }
+
+    def row(category: str, media_type: str | None = None) -> dict[str, Any]:
+        item: dict[str, Any] = {
+            "id": f"{category}-1",
+            "category": category,
+            "prefix": {"state": "state", "media": []},
+            "question": {
+                "qid": "q",
+                "type": "choice",
+                "instruction": "pick",
+                "options": ["x", "y"],
+            },
+            "meta": {**base_meta, "family_id": f"f-{category}", "modality": [media_type or "text"]},
+            "video_frames": 8,
+        }
+        if media_type is not None:
+            item["prefix"]["media"] = [
+                {"type": media_type, "uri": "media.bin", "sha256": media_sha}
+            ]
+        return item
+
+    public = tmp_path / "public.json"
+    public.write_text(
+        json.dumps(
+            [
+                row("text"),
+                row("image", "image"),
+                row("screenshot", "image"),
+                row("audio", "audio"),
+                row("video", "video"),
+            ]
+        )
+    )
+    monkeypatch.setattr("scripts.s0_baseline_cpu.resolve_media", lambda *args, **kwargs: media_path)
+    monkeypatch.setattr(
+        "scripts.s0_baseline_cpu.load_media",
+        lambda _path, kind, **_kwargs: (
+            {"frames": [object()], "metadata": {"frames_indices": list(range(8)), "fps": 1.0}}
+            if kind == "video"
+            else object()
+        ),
+    )
+    report = baseline.run_report(
+        path,
+        root,
+        public_manifest=public,
+        public_asset_root=asset_root,
+        allow_partial_public_manifest=True,
+        tokenizer_factory=lambda _: FakeTokenizer(),
+        processor_factory=lambda _: FakeProcessor(),
+    )
+    assert report["status"] == "passed"
+    assert report["exit_code"] == 0
+    for subject in report["subjects"]:
+        assert {
+            category: subject["public_inputs"]["categories"][category]["status"]
+            for category in baseline.PUBLIC_CATEGORIES
+        } == dict.fromkeys(baseline.PUBLIC_CATEGORIES, "passed")
 
 
 def test_image_header_pixel_limit_rejects_before_load(

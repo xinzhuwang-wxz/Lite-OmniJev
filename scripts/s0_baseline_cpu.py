@@ -22,10 +22,11 @@ from typing import Any, Literal, cast
 from data.schema import Prefix, Question, answer_tokens
 from scripts.assets import verify_file, write_json
 from scripts.s0_prepare import read_manifest
-from train.multimodal import file_hash, resolve_media
+from train.multimodal import file_hash, load_media, resolve_media
 from train.template import render_payload
 
 ANSWER_COUNTS = (2, 3, 4, 20)
+PUBLIC_CATEGORIES = ("text", "image", "screenshot", "audio", "video")
 CORE_MODEL_IDS = {
     "gemma4-e4b-it",
     "gemma4-e2b-it",
@@ -303,6 +304,183 @@ def template_source(tokenizer: Any, directory: Path) -> str | None:
     return None
 
 
+def read_json_metadata(directory: Path, name: str) -> dict[str, Any]:
+    path = directory / name
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def metadata_file_sha256(directory: Path, name: str) -> str | None:
+    path = directory / name
+    return file_hash(path) if path.is_file() else None
+
+
+def evidence_item(directory: Path, file_name: str, fields: list[str]) -> dict[str, Any]:
+    return {
+        "file": file_name,
+        "sha256": metadata_file_sha256(directory, file_name),
+        "fields": sorted(fields),
+    }
+
+
+def template_has_media_branch(template: str | None, media_type: str) -> bool:
+    if not template:
+        return False
+    if media_type == "image":
+        return (
+            "item.type == 'image'" in template
+            or '"image" in item' in template
+            or "'image' in item" in template
+            or "image_url" in template
+            or "<|image" in template
+        )
+    if media_type == "audio":
+        return (
+            "item.type == 'audio'" in template
+            or '"audio" in item' in template
+            or "'audio' in item" in template
+            or "<|audio" in template
+        )
+    if media_type == "video":
+        return (
+            "item.type == 'video'" in template
+            or '"video" in item' in template
+            or "'video' in item" in template
+            or "<|video" in template
+        )
+    return False
+
+
+def _tokenizer_declares(tokenizer_config: dict[str, Any], token_name: str) -> bool:
+    if isinstance(tokenizer_config.get(token_name), str):
+        return True
+    special = tokenizer_config.get("model_specific_special_tokens")
+    return isinstance(special, dict) and isinstance(special.get(token_name), str)
+
+
+def modality_support_matrix(directory: Path, template: str | None) -> dict[str, Any]:
+    config = read_json_metadata(directory, "config.json")
+    processor_config = read_json_metadata(directory, "processor_config.json")
+    preprocessor_config = read_json_metadata(directory, "preprocessor_config.json")
+    video_preprocessor_config = read_json_metadata(directory, "video_preprocessor_config.json")
+    tokenizer_config = read_json_metadata(directory, "tokenizer_config.json")
+    image_branch = template_has_media_branch(template, "image")
+    audio_branch = template_has_media_branch(template, "audio")
+    video_branch = template_has_media_branch(template, "video")
+    image_config = (
+        isinstance(config.get("vision_config"), dict)
+        or bool(preprocessor_config)
+        or _tokenizer_declares(tokenizer_config, "image_token")
+    )
+    audio_config = (
+        isinstance(config.get("audio_config"), dict)
+        or "audio_seq_length" in processor_config
+        or _tokenizer_declares(tokenizer_config, "audio_token")
+    )
+    video_config = (
+        bool(video_preprocessor_config)
+        or _tokenizer_declares(tokenizer_config, "video_token")
+        or image_config
+    )
+
+    matrix: dict[str, Any] = {
+        "text": {
+            "status": "declared",
+            "probe_required": True,
+            "evidence": [evidence_item(directory, "chat_template.jinja", ["text_prompt"])],
+        }
+    }
+
+    def media_entry(
+        category: str, branch: bool, config_seen: bool, evidence: list[dict[str, Any]]
+    ) -> None:
+        if branch and config_seen:
+            status = "declared"
+            required = True
+        elif branch or config_seen:
+            status = "metadata_inconsistent"
+            required = False
+        else:
+            status = "unsupported_by_metadata"
+            required = False
+        matrix[category] = {
+            "status": status,
+            "probe_required": required,
+            "evidence": evidence,
+        }
+
+    image_evidence = [
+        evidence_item(directory, "chat_template.jinja", ["image_branch"] if image_branch else []),
+        evidence_item(
+            directory,
+            "config.json",
+            ["vision_config"] if "vision_config" in config else [],
+        ),
+        evidence_item(
+            directory,
+            "preprocessor_config.json",
+            sorted(preprocessor_config) if preprocessor_config else [],
+        ),
+        evidence_item(
+            directory,
+            "tokenizer_config.json",
+            ["image_token"] if _tokenizer_declares(tokenizer_config, "image_token") else [],
+        ),
+    ]
+    media_entry("image", image_branch, image_config, image_evidence)
+    matrix["screenshot"] = {
+        **matrix["image"],
+        "evidence": [
+            *image_evidence,
+            {"file": "category-rule", "sha256": None, "fields": ["screenshot_uses_image_media"]},
+        ],
+    }
+    audio_evidence = [
+        evidence_item(directory, "chat_template.jinja", ["audio_branch"] if audio_branch else []),
+        evidence_item(
+            directory,
+            "config.json",
+            ["audio_config"] if "audio_config" in config else [],
+        ),
+        evidence_item(
+            directory,
+            "processor_config.json",
+            ["audio_seq_length"] if "audio_seq_length" in processor_config else [],
+        ),
+        evidence_item(
+            directory,
+            "tokenizer_config.json",
+            ["audio_token"] if _tokenizer_declares(tokenizer_config, "audio_token") else [],
+        ),
+    ]
+    media_entry("audio", audio_branch, audio_config, audio_evidence)
+    video_evidence = [
+        evidence_item(directory, "chat_template.jinja", ["video_branch"] if video_branch else []),
+        evidence_item(
+            directory,
+            "video_preprocessor_config.json",
+            sorted(video_preprocessor_config) if video_preprocessor_config else [],
+        ),
+        evidence_item(
+            directory,
+            "tokenizer_config.json",
+            ["video_token"] if _tokenizer_declares(tokenizer_config, "video_token") else [],
+        ),
+        evidence_item(
+            directory,
+            "config.json",
+            ["vision_config"] if "vision_config" in config else [],
+        ),
+    ]
+    media_entry("video", video_branch, video_config, video_evidence)
+    return matrix
+
+
 def encode_literal(tokenizer: Any, token: str) -> list[int]:
     return list(tokenizer.encode(token, add_special_tokens=False))
 
@@ -531,18 +709,86 @@ def probe_image_case(processor: Any, case: Any, asset_root: Path) -> dict[str, A
     }
 
 
+def probe_media_case(processor: Any, case: Any, asset_root: Path) -> dict[str, Any]:
+    if case.category == "text":
+        raise ValueError("text cases require tokenizer probing")
+    if not case.prefix.media:
+        raise ValueError("media case has no media")
+    media_type = "image" if case.category == "screenshot" else str(case.category)
+    first = case.prefix.media[0]
+    if first.type != media_type:
+        raise ValueError("case category and media type mismatch")
+    path = resolve_media(asset_root, first.uri, first.sha256, max_bytes=64 * 1024 * 1024)
+    loaded = load_media(
+        path,
+        media_type,
+        num_frames=case.video_frames,
+        max_seconds=30 if media_type == "audio" else 60,
+    )
+    payload = render_payload(Prefix(state=case.prefix.state), case.question)
+    prompt = processor.apply_chat_template(
+        [
+            {
+                "role": "user",
+                "content": [{"type": media_type}, {"type": "text", "text": payload}],
+            }
+        ],
+        tokenize=False,
+        add_generation_prompt=True,
+        enable_thinking=False,
+    )
+    if not isinstance(prompt, str) or not prompt:
+        raise ValueError("official media template returned empty prompt")
+    kwargs: dict[str, Any] = {
+        "text": [prompt],
+        "return_tensors": "pt",
+        "truncation": False,
+    }
+    video_metadata: list[dict[str, Any]] = []
+    if media_type == "image":
+        kwargs["images"] = [[loaded]]
+    elif media_type == "audio":
+        kwargs["audio"] = [loaded]
+        kwargs["sampling_rate"] = 16000
+    elif media_type == "video":
+        video_metadata = [loaded["metadata"]]
+        kwargs.update(
+            videos=[loaded["frames"]],
+            video_metadata=video_metadata,
+            do_sample_frames=False,
+        )
+    else:
+        raise ValueError("unsupported media category")
+    inputs = processor(**kwargs)
+    summaries = {key: tensor_summary(value) for key, value in dict(inputs).items()}
+    if "input_ids" not in summaries:
+        raise ValueError("processor omitted input_ids")
+    return {
+        "status": "passed",
+        "category": case.category,
+        "case_id_sha256": sha256_bytes(case.id.encode()),
+        "payload_sha256": sha256_bytes(payload.encode()),
+        "prompt_sha256": sha256_bytes(prompt.encode()),
+        "media_sha256": [first.sha256],
+        "video_metadata": video_metadata,
+        "tensors": summaries,
+    }
+
+
 def select_public_cases(manifest_path: Path | None, *, allow_partial: bool) -> dict[str, Any]:
     if manifest_path is None:
         return {"status": "not_requested"}
     cases = read_manifest(manifest_path, allow_partial=allow_partial)
-    text = next((case for case in cases if case.category == "text"), None)
-    image = next((case for case in cases if case.category in {"image", "screenshot"}), None)
+    by_category = {
+        category: next((case for case in cases if case.category == category), None)
+        for category in PUBLIC_CATEGORIES
+    }
     return {
         "status": "selected",
         "manifest_sha256": file_hash(manifest_path),
         "case_count": len(cases),
-        "text": text,
-        "image": image,
+        **by_category,
+        "categories": by_category,
     }
 
 
@@ -611,6 +857,7 @@ def probe_subject(
     try:
         tokenizer = tokenizer_factory(directory)
         template = template_source(tokenizer, directory)
+        support_matrix = modality_support_matrix(directory, template)
         answer_readout = probe_answer_mapping(tokenizer)
         thinking = probe_thinking(tokenizer, template)
         token_report: dict[str, Any] = {
@@ -626,6 +873,7 @@ def probe_subject(
         elif not template or thinking["status"] != "proved_disabled":
             token_report["status"] = "partial"
         result["tokenizer"] = token_report
+        result["modality_support"] = support_matrix
     except Exception as exc:  # noqa: BLE001
         result["tokenizer"] = {"status": "blocked", "blocker": sanitize_blocker(exc)}
         result["blocker"] = "tokenizer_probe_blocked"
@@ -643,42 +891,59 @@ def probe_subject(
         )
         result["blocker"] = "processor_probe_blocked"
         return result
+    support_matrix = cast(dict[str, Any], result.get("modality_support", {}))
     public_report: dict[str, Any] = {"status": public_selection.get("status", "not_requested")}
     if public_selection.get("status") == "selected":
         public_report.update(
             {
                 "manifest_sha256": public_selection["manifest_sha256"],
                 "case_count": public_selection["case_count"],
-                "text": {"status": "not_probed"},
-                "image": {"status": "not_probed"},
+                "categories": {},
             }
         )
-        text_case = public_selection.get("text")
-        image_case = public_selection.get("image")
-        if text_case is not None:
-            try:
-                public_report["text"] = probe_text_case(
-                    tokenizer, text_case.question, text_case.prefix
-                )
-            except Exception as exc:  # noqa: BLE001
-                public_report["text"] = {"status": "blocked", "blocker": sanitize_blocker(exc)}
-        if image_case is not None and public_asset_root is not None:
-            try:
-                public_report["image"] = probe_image_case(processor, image_case, public_asset_root)
-            except Exception as exc:  # noqa: BLE001
-                public_report["image"] = {"status": "blocked", "blocker": sanitize_blocker(exc)}
+        for category in PUBLIC_CATEGORIES:
+            support = support_matrix.get(category, {"status": "unsupported_by_metadata"})
+            category_report: dict[str, Any] = {
+                "support_status": support.get("status"),
+                "probe_required": support.get("probe_required") is True,
+                "support_evidence": support.get("evidence", []),
+            }
+            case = public_selection.get(category)
+            if support.get("status") != "declared":
+                category_report["status"] = support.get("status", "unsupported_by_metadata")
+            elif case is None:
+                category_report["status"] = "unprobed"
+                category_report["reason"] = "public category case missing"
+            elif category != "text" and public_asset_root is None:
+                category_report["status"] = "unprobed"
+                category_report["reason"] = "public asset root required for media probe"
+            else:
+                try:
+                    if category == "text":
+                        category_report.update(
+                            probe_text_case(tokenizer, case.question, case.prefix)
+                        )
+                    else:
+                        assert public_asset_root is not None
+                        category_report.update(probe_media_case(processor, case, public_asset_root))
+                except Exception as exc:  # noqa: BLE001
+                    category_report.update(status="blocked", blocker=sanitize_blocker(exc))
+            public_report["categories"][category] = category_report
+            public_report[category] = category_report
     result["public_inputs"] = public_report
     public_blocked = False
     if public_selection.get("status") == "selected":
-        requested = [public_report.get("text"), public_report.get("image")]
-        public_blocked = any(
-            isinstance(item, dict) and item.get("status") != "passed" for item in requested
-        )
+        declared_reports = [
+            public_report["categories"][category]
+            for category, support in support_matrix.items()
+            if category in PUBLIC_CATEGORIES and support.get("status") == "declared"
+        ]
+        public_blocked = any(item.get("status") != "passed" for item in declared_reports)
     elif public_selection.get("status") == "not_requested":
         public_blocked = True
         result["public_inputs"] = {
             "status": "not_requested",
-            "reason": "public text/image probes are required for run acceptance",
+            "reason": "public declared-category probes are required for run acceptance",
         }
     token_status = result["tokenizer"]["status"]
     if token_status == "failed":
