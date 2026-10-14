@@ -4,8 +4,8 @@ ID: s0:01
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: root-teacher-integration
+Execution: blocked
+Owner: none
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04
 
@@ -34,3 +34,5 @@ Blocked by: p0:04
 2026-10-14恢复：已核查旧执行者不在原生agent列表；保留head转换证据。teacher-cpu-recovery在既有worktree补项目持有的教师输入/安全加载预检适配层，先做无卡processor与拒绝路径验收；真实forward仍待用户开卡。范围限定train/teacher_inference.py、scripts/teacher_preflight.py及对应测试/runbook/报告，不改上游loader快照。
 
 2026-10-14 CPU整合：94acfe7完整安全forward代码/13文件manifest绑定，真实Mac processor003通过、Linux完整23,955,723,321B SHA通过后CUDA gate阻塞（teacher-forward-cpu-005）。独立review两发现已关闭。完整GPU概率与原格式参考等价未做，本票仍claimed、不把CPU检查当教师效果准入。
+
+2026-10-14资源阻塞收口：真实教师大模型forward/规定概率/质量复现需获授权GPU；现有2GiB CPU处理器资源门槛仍待解决。当前无活跃本票作业，释放claim，保留所有代码与证据。

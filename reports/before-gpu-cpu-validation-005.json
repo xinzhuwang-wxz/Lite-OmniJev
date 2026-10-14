@@ -1,0 +1,97 @@
+{
+  "schema": "lite-omnijev.before-gpu-cpu-validation.v1",
+  "recorded_utc": "2026-10-14T05:03:56.044884+00:00",
+  "code_revision": "655a8385c6262c10e6ec4119e994c196e1e3a503",
+  "gpu_used": false,
+  "new_paid_resources": 0,
+  "cost_of_existing_rental_not_measured": true,
+  "ready_to_open_gpu": false,
+  "release_or_stage_acceptance": false,
+  "local_full_suite": {
+    "passed": 560,
+    "skipped": 1,
+    "elapsed_seconds": 44.24,
+    "exit_code": 0,
+    "skip": "Linux root isolation; independently passed on rented Linux with correct reader"
+  },
+  "static_checks": {
+    "ruff_check": 0,
+    "ruff_format_check": 0,
+    "formatted_files": 263,
+    "mypy_project_sources": 73,
+    "mypy_registry_sources": 2,
+    "uv_build": 0,
+    "loop_validate_tickets": 32
+  },
+  "changed_resource_boundaries": {
+    "stdin": "Actual FFmpeg realtime video with q on inherited stdin failed before fix; audio/video preserved caller input after DEVNULL. All26 helper tests passed.",
+    "gateway_tensor_release": "Actual official CPU pixel tensor weakref remained live at backend call before fix and was freed after worker returned lightweight dataclass; all94 gateway/client tests passed.",
+    "independent_review": "No residual evidenced protocol/binding/lifecycle issue in gateway trimming; HF/native helper retains all tensors."
+  },
+  "primary026_linux_gateway_after_trim": {
+    "exit_code": 137,
+    "observed_stdout_empty": true,
+    "native_or_gpu_pass": false,
+    "cause": "exit137; killer not established; memory.events snapshots retained",
+    "observed_completion_markers": 0,
+    "completed_case_count_not_attested": true
+  },
+  "environment_evidence": {},
+  "evidence": [
+    {
+      "path": "artifacts/primary026-linux-gateway-trim-002/exit.txt",
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    {
+      "path": "artifacts/primary026-linux-gateway-trim-002/memory-events-after.txt",
+      "bytes": 42,
+      "sha256": "b2079be7b40e8bb88cff3c47850dfdad8a0afb6c8f286bac30161216268ebec6"
+    },
+    {
+      "path": "artifacts/primary026-linux-gateway-trim-002/memory-events-before.txt",
+      "bytes": 42,
+      "sha256": "b2079be7b40e8bb88cff3c47850dfdad8a0afb6c8f286bac30161216268ebec6"
+    },
+    {
+      "path": "artifacts/primary026-linux-gateway-trim-002/pytest.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/primary026-linux-gateway-trim-002/source.txt",
+      "bytes": 41,
+      "sha256": "1c5ebe049a67fedcd71f1116bb20d4115f0ef73529eda2fc255c68a8c8de0cc9"
+    },
+    {
+      "path": "reports/before-gpu-cpu-validation-004.json",
+      "bytes": 6258,
+      "sha256": "4c4114ea4316088bb9ef19ffe82ca3df02cdfbd35aa904a19f112ffe1ae71854"
+    },
+    {
+      "path": "reports/primary026-linux-cpu-acceptance-001.json",
+      "bytes": 13681,
+      "sha256": "6a1d3d10e25d591ef1ec5d953af3f24baf58b34f7b72383b2403102de1a3ae61"
+    },
+    {
+      "path": "reports/primary026-linux-gateway-cpu-001.json",
+      "bytes": 6019,
+      "sha256": "da3c07ba979e0549e6943bf33e84fd5f3e781227896b93087046df46010877b5"
+    },
+    {
+      "path": "reports/primary-transformers513-cpu-full100-comparison-001.json",
+      "bytes": 40809,
+      "sha256": "df33fb4ab3b4e722ca5a5ebd0c2896c2f44355658b6d3d62215fb6fa57a2ce14"
+    },
+    {
+      "path": "reports/s0-official-arm-cpu-alternate-003.json",
+      "bytes": 14814,
+      "sha256": "d2b4bab7aaca9149f37010becdd447b348864b239167e248494aaf4f1049a8e1"
+    },
+    {
+      "path": "reports/before-gpu-teacher-job-fresh-001.json",
+      "bytes": 8409,
+      "sha256": "72acb2131c757202f879ea3eb944b4772f512e0799572534015f51fa5abbed55"
+    }
+  ]
+}

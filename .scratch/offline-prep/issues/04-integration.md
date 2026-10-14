@@ -4,8 +4,8 @@ ID: offline-prep:04
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: root-offline-integration
+Execution: blocked
+Owner: none
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: 01, 02, 03, s0:09
 
@@ -13,9 +13,9 @@ Blocked by: 01, 02, 03, s0:09
 按全项目离线准备spec打通本票资产准备与可验证状态。
 
 ## Acceptance criteria
-- [ ] 逐项汇总全项目必需外部资产，缺文件/哈希/来源/许可/空间/环境均不能通过。
+- [x] 逐项汇总全项目必需外部资产，缺文件/哈希/来源/许可/空间/环境均不能通过。
 - [ ] 保留已知账号/许可/人工身份阻塞与未来派生项，不以pending冒充ready；准备完整后才通知用户开卡。
-- [ ] CPU检查、可恢复命令、磁盘清单、实际退出码落盘，原S0训练门槛不变。
+- [x] CPU检查、可恢复命令、磁盘清单、实际退出码落盘，原S0训练门槛不变。
 - [ ] S0可无卡实现的共享多模态输入、教师processor接入、固定vLLM请求协议与失败路径已逐项验收；仅必须GPU实测的forward/kernel/显存/概率/性能保留待开卡，缺代码不能写成GPU-only。
 
 ## Comments
@@ -23,3 +23,10 @@ Blocked by: 01, 02, 03, s0:09
 复用资产/准入/独立环境接口，尚无覆盖全项目的已完成离线清单；未见同范围拒绝记录。用户已授权自主拆票，主会话统一认领/整合。
 
 2026-10-14用户强调已租实例，应在无卡把可做模型/数据/管线都准备和测试好。新增s0:09为独立CPU前置；本票仍不依赖需要GPU才能关闭的整个s0:01/03，避免开卡依赖环，但需逐项验收这些票的CPU准备子集。
+
+## Current blocker
+Evidence: reports/project-before-gpu-readiness-001.json；reports/before-gpu-cpu-validation-005.json；reports/primary026-linux-cpu-acceptance-001.json。
+
+当前2GiB无卡实例下，primary026 HF100题首次完成exit0/94.092秒；第二遍在第90条后137，native官方类同进程诊断在creating_processor137/零cases，真实网关六类batch四progress后137，释放重复HF媒体tensor后的8/16 batch仍137。未明确killer，不把exit137说成已证明OOM或CPU不支持。官方ARM CPUwheel新源完整hash已通过，GHCR基础镜像仍有界pull超时，未装依赖/未跑native。
+
+用户已选择“继续保持当前实例”，不自动扩CPU/内存/付费/开卡。可用CPU分支、环境、下载、测试、源码和恢复命令均收口，资源受限的CPU门槛仍未通过，不擅自移到开卡后或放宽阈值。本票blocked、ready_to_open_gpu=false。用户要求真正可开卡时才写专用开卡交接；现有plan/handoff仅CPU准备检查点，不是开卡通知。

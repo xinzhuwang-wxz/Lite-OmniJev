@@ -4,8 +4,8 @@ ID: s0:03
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: root-parity-integration
+Execution: blocked
+Owner: none
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04, 09
 
@@ -36,3 +36,5 @@ Blocked by: p0:04, 09
 2026-10-14恢复：s0:09共享CPU输入前置已完成（100×2官方HF processor，Mac真实证据，Linux137不隐藏）。主会话接管本票集成，离线依赖owner继续offline-prep:03，不争写本票模块。下一无卡切片为canonical JPEG/PCM传输、原生chat完整token client/HTTP负测与collector，随后接网关；真实GPU概率阈值不变。
 
 2026-10-14 CPU准备收口：canonical客户端/collector/网关及严格原始概率/版本/输入校验已合入；实际Chromium reports/browser-s0-cpu-004.json明确fake backend，557项CPU回归与独立review已通过。Linux TF5.17 optional视频字段误拒绝已修复，但修复后137保持资源待验，不能关闭真实GPU概率/浏览器模型条目。
+
+2026-10-14资源阻塞收口：真实HF/vLLM/网关严格概率与模型浏览器验收需获授权GPU；primary026 native及Linux视频CPU资源门槛仍blocked。当前无活跃本票作业，释放claim，历史maxTV失败不变。

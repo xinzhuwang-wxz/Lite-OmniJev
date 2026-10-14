@@ -1,0 +1,37 @@
+{
+  "status": "running",
+  "exit_code": 1,
+  "phase": "creating_native_processor",
+  "scope": "Native processor only; no engine/backbone/forward/CUDA or probability acceptance",
+  "gpu_used": false,
+  "weights_loaded": false,
+  "forward_run": false,
+  "complete_100_cases": false,
+  "cache_mode": "disabled",
+  "cases": [],
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "packages": {
+      "vllm": "0.26.0",
+      "torch": "2.11.0",
+      "transformers": "5.13.0",
+      "numpy": "2.3.5",
+      "pillow": "12.3.0"
+    }
+  },
+  "cost": {
+    "new_paid_resources": 0
+  },
+  "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+  "hf_reference_sha256": "1b93e9703a31a480e870974b32562d95f06c92c0cb1d26112c82d6037018db33",
+  "source_sha256": {
+    "scripts/s0_vllm_processor.py": "7ae71366f0f54b21affd5ee945da5372b3275218e1efd7a7dc5a14c2daa5610f",
+    "train/multimodal.py": "a1de57cf94723ab6aaa0780bd3effe4e8943983bac6b5ebd08c3ff1d9bb92d62"
+  },
+  "code_version": "32fb559ad8f6e76d13590d5bb03522e5f71f291d",
+  "elapsed_seconds": 11.303,
+  "max_rss_kib": 867608,
+  "same_process_official_class_inspection": true,
+  "native_platform": "UnspecifiedPlatform"
+}

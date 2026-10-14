@@ -1,0 +1,91 @@
+{
+  "schema": "lite-omnijev.project-before-gpu-readiness.v1",
+  "recorded_utc": "2026-10-14T05:03:56.051629+00:00",
+  "status": "blocked_current_cpu_capacity",
+  "ready_to_open_gpu": false,
+  "gpu_used": false,
+  "release_or_stage_acceptance": false,
+  "source_code_revision": "655a8385c6262c10e6ec4119e994c196e1e3a503",
+  "user_resource_decision": "Continue the current rented instance; no additional CPU resources, payment or GPU opening authorized.",
+  "required_external_preparation": {
+    "models": "passed:7 repositories/70 files/121094724397 bytes",
+    "data": "passed:29-source disposition ledger; training admission separate",
+    "runtimes": "passed:primary026/diagnostic031/root/teacher-job/quant/frontend/browser/edge tools; fresh rebuild evidence retained"
+  },
+  "passed_cpu_branches": [
+    "local560 tests with licensed public media and official processor",
+    "Linux isolation reader actual malicious pickle test",
+    "teacher/job fresh no-index rebuild224.9s, all mandatory imports/probes and pip check0",
+    "primary026 Linux full100 HF input preparation once94.092s",
+    "Mac primaryTF5.13 full100 twice repeatable; version/shape deltas recorded",
+    "actual Chromium official processor gateway with explicit fake backend",
+    "real full GUI image decode and fixed1800-row public video frame freeze",
+    "canonical HTTP protocol, raw probabilities, cancellation safety, bounded media and caller stdin controls"
+  ],
+  "blocked_cpu_branches": [
+    {
+      "item": "primary026 Linux HF full100 repeat",
+      "observed": "second run exit137 after90/100, first16-frame case active; no pass claimed"
+    },
+    {
+      "item": "primary026 native processor",
+      "observed": "same official class diagnostic exit137 atcreating_native_processor, zero cases; no cause asserted"
+    },
+    {
+      "item": "Linux gateway video8/16",
+      "observed": "initial batch four progress dots then137; post tensor-release two-video batch137 with zero completed cases"
+    },
+    {
+      "item": "auxiliary Docker native processor",
+      "observed": "official full ARMwheel downloaded/verified; fixed official GHCRbase pull timed out before complete image, no container/install/cases"
+    }
+  ],
+  "future_generated_outputs": [
+    "LoRA adapters",
+    "calibration parameters",
+    "stage-derived licensed training sets",
+    "quantized models",
+    "API/single-card/edge release packages"
+  ],
+  "unresolved_stage_gates": [
+    "real model/driver/CUDA/weights forward and repeatability",
+    "HF/vLLM strict maxdelta<0.001; historical failures remain",
+    "teacherMMAU \u00b10.02 and fixed nine-task real baseline",
+    "native prefix-cache latency\u22642",
+    "independent sealed gate identity and real human annotation\u03ba\u22650.7",
+    "S1-S6 and FINAL original thresholds/device/operating evidence"
+  ],
+  "handoff_policy": "Current plan/handoff is a CPU checkpoint only. Write the final GPU-opening handoff and notify only after offline-prep:04 truly passes; no resource-bound CPU failure silently deferred to GPU.",
+  "evidence": [
+    {
+      "path": "reports/project-model-offline-acceptance-001.json",
+      "bytes": 677,
+      "sha256": "e47279dd636f1c1870d445262d35df4857104f3e2924110e3efaf073a7dbd64a"
+    },
+    {
+      "path": "reports/project-data-offline-acceptance-001.json",
+      "bytes": 19576,
+      "sha256": "d230cf715aa6f8b17411a9d0f33c241c4f1d6611fc3f8be4adde00fe9e17c4d2"
+    },
+    {
+      "path": "reports/project-runtime-offline-acceptance-001.json",
+      "bytes": 4254,
+      "sha256": "47ceb0f5ff50161e37f6dc5dc30a15a324f52c0558fe526b991faf48383c0be2"
+    },
+    {
+      "path": "reports/before-gpu-cpu-validation-005.json",
+      "bytes": 3742,
+      "sha256": "37e92de3baf9683c24b5faef98e33a385bc9b14c50f3c314098c8890304315f3"
+    },
+    {
+      "path": "reports/primary026-linux-cpu-acceptance-001.json",
+      "bytes": 13681,
+      "sha256": "6a1d3d10e25d591ef1ec5d953af3f24baf58b34f7b72383b2403102de1a3ae61"
+    },
+    {
+      "path": "reports/s0-official-arm-cpu-alternate-003.json",
+      "bytes": 14814,
+      "sha256": "d2b4bab7aaca9149f37010becdd447b348864b239167e248494aaf4f1049a8e1"
+    }
+  ]
+}

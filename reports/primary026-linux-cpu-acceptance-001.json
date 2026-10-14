@@ -1,0 +1,536 @@
+{
+  "schema": "lite-omnijev.primary026-linux-cpu.acceptance.v1",
+  "observed_utc": "2026-10-14T04:59:56.689509+00:00",
+  "status": "partial_cpu_inputs_passed_resource_gates_blocked",
+  "ready_to_open_gpu": false,
+  "gpu_used": false,
+  "weights_loaded": false,
+  "model_forward_run": false,
+  "release_or_stage_acceptance": false,
+  "primary_service": "vllm0.26 unchanged",
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "transformers": "5.13.0",
+    "packages": {
+      "torch": "2.11.0",
+      "torchvision": "0.26.0",
+      "pillow": "12.3.0",
+      "numpy": "2.3.5"
+    }
+  },
+  "source_code_revision": "32fb559ad8f6e76d13590d5bb03522e5f71f291d",
+  "hf_full100_a": {
+    "status": "passed",
+    "exit_code": 0,
+    "cases": 100,
+    "elapsed_seconds": 94.092
+  },
+  "hf_repeat_b": {
+    "process_exit_code": 137,
+    "preserved_checkpoint_status": "pending",
+    "completed_cases": 90,
+    "active_case_id": "public-prepare-video-10",
+    "repeatability_not_passed": true,
+    "checkpoint_exit_code_is_not_final_process_exit": true
+  },
+  "native_processor": {
+    "process_exit_code": 137,
+    "cases": 0,
+    "phase": "creating_native_processor",
+    "last_max_rss_kib": 867608,
+    "last_elapsed_seconds": 11.303,
+    "same_process_official_class_inspection": true,
+    "normal_initialization_not_claimed": true,
+    "cause": "not established; no engine/weights/GPU executed"
+  },
+  "mac_linux_input_comparison": {
+    "same_tf_version": "5.13.0",
+    "cases_compared": 100,
+    "different_case_count": 60,
+    "differences": [
+      {
+        "id": "public-prepare-image-00",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-01",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-02",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-03",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-04",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-05",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-06",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-07",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-08",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-09",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-10",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-11",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-12",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-13",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-14",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-15",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-16",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-17",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-18",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-image-19",
+        "category": "image",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-00",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-01",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-02",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-03",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-04",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-05",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-06",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-07",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-08",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-09",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-10",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-11",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-12",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-13",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-14",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-15",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-16",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-17",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-18",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-screenshot-19",
+        "category": "screenshot",
+        "different_fields": [
+          "http_messages_sha256"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-00",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-01",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-02",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-03",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-04",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-05",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-06",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-07",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-08",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-09",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-10",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-11",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-12",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-13",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-14",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-15",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-16",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-17",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-18",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      },
+      {
+        "id": "public-prepare-audio-19",
+        "category": "audio",
+        "different_fields": [
+          "http_messages_sha256",
+          "tensors"
+        ]
+      }
+    ],
+    "not_a_cross_machine_model_or_numerical_acceptance": true
+  },
+  "retained_observations": [
+    "Base UnspecifiedPlatform import tried vllm._C and warned missing module; installed primary wheel contains _C_stable_libtorch.abi3.so. GPU kernel import/execution remains untested; not classified as a missing required wheel.",
+    "Shell supervision after first six-case command lost stdin lines; real FFmpeg realtime q regression reproduced decoder consumption and was fixed by DEVNULL in32fb559. HF CLI report itself finished six cases exit0."
+  ],
+  "evidence": [
+    {
+      "path": "reports/primary026-linux-hf-full100-a-001.json",
+      "bytes": 413273,
+      "sha256": "1b93e9703a31a480e870974b32562d95f06c92c0cb1d26112c82d6037018db33"
+    },
+    {
+      "path": "reports/primary026-linux-hf-full100-b-001.json",
+      "bytes": 318830,
+      "sha256": "0fbd766c90842ee60fcc94eb1ffe796cfd62445f993793067d04e8003cb479cc"
+    },
+    {
+      "path": "reports/primary026-native-cpu-001-checkpoint.json",
+      "bytes": 1255,
+      "sha256": "11a697682b4d71a9845a2051e079c9fc3d937d838c7865243d78f14f4f442eb9"
+    },
+    {
+      "path": "reports/primary026-native-cpu-001-exit.txt",
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    {
+      "path": "reports/primary026-native-cpu-001-stdout.log",
+      "bytes": 841,
+      "sha256": "185a9a36a84ed3142041ac1ad82255d989c17aa3ae6e8bfd4168dcef9eca9efe"
+    },
+    {
+      "path": "reports/primary026-linux-gateway-cpu-001.json",
+      "bytes": 6019,
+      "sha256": "da3c07ba979e0549e6943bf33e84fd5f3e781227896b93087046df46010877b5"
+    },
+    {
+      "path": "reports/primary-transformers513-cpu-full100-comparison-001.json",
+      "bytes": 40809,
+      "sha256": "df33fb4ab3b4e722ca5a5ebd0c2896c2f44355658b6d3d62215fb6fa57a2ce14"
+    }
+  ]
+}
