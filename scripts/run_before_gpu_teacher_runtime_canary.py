@@ -17,10 +17,19 @@ from typing import Any
 ROOT = pathlib.Path("/root/autodl-tmp/lite-omnijev")
 DEFAULT_BASE = ROOT / "artifacts/runtime-builds/python-wheels/serve-next-vllm031"
 DEFAULT_PYARROW = ROOT / "artifacts/runtime-builds/python-wheels/data-pyarrow"
+DEFAULT_JOB_OVERLAY = DEFAULT_BASE
+DEFAULT_JOB_OVERLAY_MANIFEST = ROOT / "reports/serve-next-vllm031-wheelhouse-manifest.json"
 DEFAULT_ENV = pathlib.Path("/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check")
 DEFAULT_LOG = ROOT / "logs/before-gpu-teacher-runtime-offline-install.log"
 DEFAULT_REPORT = ROOT / "reports/before-gpu-teacher-runtime-canary.json"
 DEFAULT_SOURCE = ROOT / "artifacts/before-gpu-teacher-runtime-source/main-08709d9"
+JOB_OVERLAY_WHEELS = (
+    "pytest-9.1.1-py3-none-any.whl",
+    "pluggy-1.6.0-py3-none-any.whl",
+    "iniconfig-2.3.1-py3-none-any.whl",
+    "peft-0.21.2-py3-none-any.whl",
+    "accelerate-1.15.0-py3-none-any.whl",
+)
 MANDATORY_IMPORTS = (
     "torch",
     "transformers",
@@ -31,6 +40,9 @@ MANDATORY_IMPORTS = (
     "pyarrow.parquet",
     "cv2",
     "torchvision",
+    "pytest",
+    "peft",
+    "accelerate",
     "scripts.s0_teacher_eval",
     "eval.teacher_benchmarks",
     "train.teacher_inference",
@@ -50,12 +62,78 @@ class ExistingOutputError(RuntimeError):
     """Raised before any destructive overwrite of canary evidence or envs."""
 
 
+class WheelManifestError(RuntimeError):
+    """Raised when the job overlay cannot be verified against its manifest."""
+
+
 def sha(path: pathlib.Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def manifest_file_hashes(manifest: pathlib.Path) -> dict[str, str]:
+    data = json.loads(manifest.read_text())
+    records = data.get("files")
+    if not isinstance(records, list):
+        raise WheelManifestError(f"manifest has no files[] records: {manifest}")
+    hashes: dict[str, str] = {}
+    for item in records:
+        if not isinstance(item, Mapping):
+            continue
+        name = item.get("name")
+        digest = item.get("sha256")
+        if isinstance(name, str) and isinstance(digest, str):
+            hashes[name] = digest
+    return hashes
+
+
+def job_overlay_records(
+    wheelhouse: pathlib.Path,
+    manifest: pathlib.Path,
+    wheel_names: Sequence[str] = JOB_OVERLAY_WHEELS,
+) -> list[JsonObject]:
+    expected = manifest_file_hashes(manifest)
+    records: list[JsonObject] = []
+    for wheel_name in wheel_names:
+        if "/" in wheel_name or "\\" in wheel_name or wheel_name.startswith("."):
+            raise WheelManifestError(f"invalid overlay wheel name: {wheel_name}")
+        wheel = wheelhouse / wheel_name
+        if not wheel.is_file():
+            raise WheelManifestError(f"missing overlay wheel: {wheel}")
+        expected_sha = expected.get(wheel_name)
+        if expected_sha is None:
+            raise WheelManifestError(f"manifest missing overlay wheel: {wheel_name}")
+        actual_sha = sha(wheel)
+        if actual_sha != expected_sha:
+            raise WheelManifestError(
+                f"overlay wheel hash mismatch for {wheel_name}: {actual_sha} != {expected_sha}"
+            )
+        records.append(
+            {
+                "name": wheel_name,
+                "path": str(wheel),
+                "bytes": wheel.stat().st_size,
+                "sha256": actual_sha,
+            }
+        )
+    return records
+
+
+def job_overlay_install_command(
+    python: pathlib.Path, records: Sequence[Mapping[str, Any]]
+) -> list[str]:
+    return [
+        str(python),
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--no-deps",
+        *[str(record["path"]) for record in records],
+    ]
 
 
 def run(command: Sequence[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
@@ -113,6 +191,9 @@ def canary(python: pathlib.Path, source: pathlib.Path) -> JsonObject:
             "pyarrow.parquet",
             "cv2",
             "torchvision",
+            "pytest",
+            "peft",
+            "accelerate",
             "scripts.s0_teacher_eval",
             "eval.teacher_benchmarks",
             "train.teacher_inference",
@@ -144,6 +225,9 @@ def canary(python: pathlib.Path, source: pathlib.Path) -> JsonObject:
             "opencv-python-headless",
             "torchvision",
             "vllm",
+            "pytest",
+            "peft",
+            "accelerate",
         ]:
             try:
                 out["versions"][dist] = md.version(dist)
@@ -260,6 +344,12 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-wheelhouse", type=pathlib.Path, default=DEFAULT_BASE)
     parser.add_argument("--pyarrow-wheelhouse", type=pathlib.Path, default=DEFAULT_PYARROW)
+    parser.add_argument("--job-overlay-wheelhouse", type=pathlib.Path, default=DEFAULT_JOB_OVERLAY)
+    parser.add_argument(
+        "--job-overlay-manifest",
+        type=pathlib.Path,
+        default=DEFAULT_JOB_OVERLAY_MANIFEST,
+    )
     parser.add_argument("--base-requirements", type=pathlib.Path)
     parser.add_argument("--pyarrow-requirements", type=pathlib.Path)
     parser.add_argument("--env", type=pathlib.Path, default=DEFAULT_ENV)
@@ -276,7 +366,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     started = time.time()
     try:
         ensure_fresh_outputs(args.env, args.report, args.log)
-    except ExistingOutputError as exc:
+        overlay_records = job_overlay_records(
+            args.job_overlay_wheelhouse, args.job_overlay_manifest
+        )
+    except (ExistingOutputError, WheelManifestError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
 
@@ -290,6 +383,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         "env": str(args.env),
         "base_wheelhouse": str(args.base_wheelhouse),
         "pyarrow_wheelhouse": str(args.pyarrow_wheelhouse),
+        "job_overlay_wheelhouse": str(args.job_overlay_wheelhouse),
+        "job_overlay_manifest": str(args.job_overlay_manifest),
+        "job_overlay_manifest_sha256": sha(args.job_overlay_manifest),
+        "job_overlay_wheels": overlay_records,
+        "job_overlay_install_mode": (
+            "exact wheel paths with --no-deps to avoid resolver torch replacement"
+        ),
         "base_requirements_sha256": sha(base_requirements),
         "pyarrow_requirements_sha256": sha(pyarrow_requirements),
         "install_log": str(args.log),
@@ -327,10 +427,34 @@ def main(argv: Sequence[str] | None = None) -> int:
     with args.log.open("w", encoding="utf-8") as log_handle:
         install = subprocess.run(command, text=True, stdout=log_handle, stderr=subprocess.STDOUT)
     report["install_returncode"] = install.returncode
-    report["install_log_sha256"] = sha(args.log)
     return_code = install.returncode
 
     if install.returncode == 0:
+        overlay_command = job_overlay_install_command(python, overlay_records)
+        report["job_overlay_install_command"] = overlay_command
+        with args.log.open("a", encoding="utf-8") as log_handle:
+            log_handle.write("\n\n# job overlay install\n")
+            overlay_install = subprocess.run(
+                overlay_command,
+                text=True,
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+            )
+        report["job_overlay_install_returncode"] = overlay_install.returncode
+        return_code = overlay_install.returncode
+
+    if return_code == 0:
+        pip_check = run([str(python), "-m", "pip", "check"])
+        report["pip_check"] = {
+            "returncode": pip_check.returncode,
+            "stdout": pip_check.stdout[-4000:],
+            "stderr": pip_check.stderr[-4000:],
+        }
+        return_code = pip_check.returncode
+
+    report["install_log_sha256"] = sha(args.log)
+
+    if return_code == 0:
         probe = canary(python, args.source)
         parsed = probe.get("parsed")
         if isinstance(parsed, Mapping):

@@ -1,0 +1,163 @@
+{
+  "captured_at": "2026-10-14T10:42:56+0800",
+  "env_python": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/bin/python",
+  "errors": [],
+  "imports": {
+    "PIL.Image": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/PIL/Image.py",
+      "status": "ok"
+    },
+    "accelerate": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/accelerate/__init__.py",
+      "status": "ok"
+    },
+    "cv2": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/cv2/__init__.py",
+      "status": "ok"
+    },
+    "eval.teacher_benchmarks": {
+      "file": "/root/autodl-tmp/lite-omnijev/artifacts/before-gpu-teacher-runtime-source/main-08709d9/eval/teacher_benchmarks.py",
+      "status": "ok"
+    },
+    "numpy": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/numpy/__init__.py",
+      "status": "ok"
+    },
+    "peft": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/peft/__init__.py",
+      "status": "ok"
+    },
+    "pyarrow": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/pyarrow/__init__.py",
+      "status": "ok"
+    },
+    "pyarrow.parquet": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/pyarrow/parquet/__init__.py",
+      "status": "ok"
+    },
+    "pytest": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/pytest/__init__.py",
+      "status": "ok"
+    },
+    "safetensors": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/safetensors/__init__.py",
+      "status": "ok"
+    },
+    "scripts.s0_teacher_eval": {
+      "file": "/root/autodl-tmp/lite-omnijev/artifacts/before-gpu-teacher-runtime-source/main-08709d9/scripts/s0_teacher_eval.py",
+      "status": "ok"
+    },
+    "torch": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/torch/__init__.py",
+      "status": "ok"
+    },
+    "torchvision": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/torchvision/__init__.py",
+      "status": "ok"
+    },
+    "train.teacher_inference": {
+      "file": "/root/autodl-tmp/lite-omnijev/artifacts/before-gpu-teacher-runtime-source/main-08709d9/train/teacher_inference.py",
+      "status": "ok"
+    },
+    "train.teacher_media": {
+      "file": "/root/autodl-tmp/lite-omnijev/artifacts/before-gpu-teacher-runtime-source/main-08709d9/train/teacher_media.py",
+      "status": "ok"
+    },
+    "transformers": {
+      "file": "/root/autodl-tmp/envs/before-gpu-teacher-runtime-offline-check/lib/python3.11/site-packages/transformers/__init__.py",
+      "status": "ok"
+    }
+  },
+  "job_overlay_install_mode": "exact wheel paths with --no-deps; no resolver torch replacement",
+  "job_overlay_manifest": "/root/autodl-tmp/lite-omnijev/reports/serve-next-vllm031-wheelhouse-manifest.json",
+  "job_overlay_manifest_sha256": "2825184541c144c81f16962da433818a10bde58335d86dcee7a2ae2ce3415bb8",
+  "job_overlay_wheelhouse": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031",
+  "job_overlay_wheels": [
+    {
+      "bytes": 386536,
+      "manifest_sha256": "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c",
+      "name": "pytest-9.1.1-py3-none-any.whl",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031/pytest-9.1.1-py3-none-any.whl",
+      "sha256": "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c",
+      "status": "ok"
+    },
+    {
+      "bytes": 20538,
+      "manifest_sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746",
+      "name": "pluggy-1.6.0-py3-none-any.whl",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031/pluggy-1.6.0-py3-none-any.whl",
+      "sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746",
+      "status": "ok"
+    },
+    {
+      "bytes": 7552,
+      "manifest_sha256": "9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7",
+      "name": "iniconfig-2.3.1-py3-none-any.whl",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031/iniconfig-2.3.1-py3-none-any.whl",
+      "sha256": "9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7",
+      "status": "ok"
+    },
+    {
+      "bytes": 835427,
+      "manifest_sha256": "106ab6077ff72c54d21577f9af5970e34bac7582cb14209f7b2b511e322a4eae",
+      "name": "peft-0.21.2-py3-none-any.whl",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031/peft-0.21.2-py3-none-any.whl",
+      "sha256": "106ab6077ff72c54d21577f9af5970e34bac7582cb14209f7b2b511e322a4eae",
+      "status": "ok"
+    },
+    {
+      "bytes": 394295,
+      "manifest_sha256": "97eacca0b73e45cb867dbf8c5d5d4dc32219544300e0c8992c7334dc2ef33cec",
+      "name": "accelerate-1.15.0-py3-none-any.whl",
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031/accelerate-1.15.0-py3-none-any.whl",
+      "sha256": "97eacca0b73e45cb867dbf8c5d5d4dc32219544300e0c8992c7334dc2ef33cec",
+      "status": "ok"
+    }
+  ],
+  "mandatory_imports": [
+    "torch",
+    "transformers",
+    "safetensors",
+    "PIL.Image",
+    "numpy",
+    "pyarrow",
+    "pyarrow.parquet",
+    "cv2",
+    "torchvision",
+    "pytest",
+    "peft",
+    "accelerate",
+    "scripts.s0_teacher_eval",
+    "eval.teacher_benchmarks",
+    "train.teacher_inference",
+    "train.teacher_media"
+  ],
+  "mode": "read-only validation of existing teacher env plus hashed serve031 job overlay inputs",
+  "not_claimed": [
+    "No package installation in this validation",
+    "No GPU execution",
+    "No model forward",
+    "No vLLM server startup"
+  ],
+  "pip_check": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "No broken requirements found.\n"
+  },
+  "schema": "lite-omnijev.before-gpu-teacher-runtime-entrypoint-light-validation.v1",
+  "source_snapshot": "/root/autodl-tmp/lite-omnijev/artifacts/before-gpu-teacher-runtime-source/main-08709d9",
+  "versions": {
+    "Pillow": "12.3.0",
+    "accelerate": "1.15.0",
+    "numpy": "2.3.5",
+    "opencv-python-headless": "5.0.0.93",
+    "peft": "0.21.2",
+    "pyarrow": "26.0.0",
+    "pytest": "9.1.1",
+    "safetensors": "0.8.0",
+    "torch": "2.13.0",
+    "torchvision": "0.28.0",
+    "transformers": "5.17.0",
+    "vllm": "0.31.0"
+  }
+}
