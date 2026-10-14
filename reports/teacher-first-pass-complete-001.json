@@ -1,0 +1,97 @@
+{
+  "status": "first_pass_complete_second_incomplete",
+  "s0_acceptance": false,
+  "teacher_quality_admitted": false,
+  "timestamp_unix": 1791975242.111999,
+  "benchmarks": {
+    "mmau-test-mini": {
+      "first_pass_correct": 620,
+      "fixed_total": 1000,
+      "first_pass_micro": 0.62,
+      "first_pass_macro": 0.6199972427517337,
+      "groups": {
+        "music": {
+          "correct": 208,
+          "total": 334,
+          "score": 0.6227544910179641
+        },
+        "sound": {
+          "correct": 187,
+          "total": 333,
+          "score": 0.5615615615615616
+        },
+        "speech": {
+          "correct": 225,
+          "total": 333,
+          "score": 0.6756756756756757
+        }
+      }
+    },
+    "mvbench-public-9task": {
+      "first_pass_correct": 976,
+      "fixed_total": 1800,
+      "first_pass_micro": 0.5422222222222223,
+      "first_pass_macro": 0.5422222222222222,
+      "groups": {
+        "Action Count": {
+          "correct": 70,
+          "total": 200,
+          "score": 0.35
+        },
+        "Action Localization": {
+          "correct": 89,
+          "total": 200,
+          "score": 0.445
+        },
+        "Action Prediction": {
+          "correct": 93,
+          "total": 200,
+          "score": 0.465
+        },
+        "Action Sequence": {
+          "correct": 115,
+          "total": 200,
+          "score": 0.575
+        },
+        "Character Order": {
+          "correct": 132,
+          "total": 200,
+          "score": 0.66
+        },
+        "Object Interaction": {
+          "correct": 137,
+          "total": 200,
+          "score": 0.685
+        },
+        "Object Shuffle": {
+          "correct": 71,
+          "total": 200,
+          "score": 0.355
+        },
+        "State Change": {
+          "correct": 100,
+          "total": 200,
+          "score": 0.5
+        },
+        "Unexpected Action": {
+          "correct": 169,
+          "total": 200,
+          "score": 0.845
+        }
+      }
+    }
+  },
+  "records_at_snapshot": 3079,
+  "required_records": 5600,
+  "second_pass_completed": 279,
+  "compared_pairs": 279,
+  "prediction_mismatches_in_completed_pairs": 0,
+  "probability_mismatches_in_completed_pairs": 0,
+  "binding_sha256": "e5af7892656e496ef33456785a5221f7161b5515f402077e9572ba8309f404e7",
+  "complete_prefix_sha256": "adcc1be2b549df6e1e482fd5a99e6aecc76cc1570b42774cdfcd8970aeb7391d",
+  "complete_prefix_bytes": 4281494,
+  "ignored_incomplete_tail_bytes": 0,
+  "source_revision": "dfdfd935da5a968f497365f74c36989efebb1175",
+  "cost_usd": null,
+  "scope": "public benchmarks only; full second pass required for admission"
+}

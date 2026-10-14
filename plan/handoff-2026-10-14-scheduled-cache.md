@@ -24,3 +24,9 @@
 保持教师占卡。scheduled_native只读实际026源码，提出至多一个官方async/chunked调度候选及证伪条件；不穷举。scheduling_review复核网关测量adapter。主会话整合结果、写票/STATUS，准备完再决定独占短测；性能须冷态每次≤2/四概率<.001，完整on/off/gateway证据就绪才能关04。独立gate身份/两真人κ仍外部条件，不用agent自标代替。
 
 网关adapter独立review已APPROVE，报告s0-scheduled-gateway-review-001.json。只读实际0.26源码后准备的唯一下一候选：eager仅--async-scheduling，其余maxseq10/mmcache1/FP32IEEE/chunked禁用不变。远端artifacts/async-eager-001中on/off启动文件和validate exit0已就绪，没有启动；报告s0-next-async-candidate-preflight-001.json。先保持教师004运行，核实其终态后安排独占native短测，失败不扩展gateway/off。最新教师小快照2645/5600、GPU仅教师24410MiB，reports/teacher-benchmark-progress-004.json。
+
+后续更新：3a9a63d修复adapter写死测试qid的问题，真实冻结cache-probe-*和顺序现已保存并严格绑定；官方LinuxCPU+真实ASGI回放通过9.896秒/8测量/44题/50含预热调用，报告s0-scheduled-gateway-official-cpu-replay-001.json，仅CPU回放不算GPU或性能准入。候选执行树在服务器全停时更新至3a9a63d，gateway static validate真实冻结协议exit0；历史GPU报告执行码仍388ce87，教师冻结DF树未改。
+
+教师第一遍完整2800题已完成：MMAU62.0%、九任务MVBench54.222%；第二遍279对预测/概率完全一致，完整第二遍未完，质量不准入。最新报告teacher-first-pass-complete-001.json，总3079/5600。
+
+用户要求：S0全部门槛验收完成后另写plan/handoff-日期-s0-complete.md及新session启动词，已加入s0:08验收。当前文档仅中途接续，不代表S0完成。
