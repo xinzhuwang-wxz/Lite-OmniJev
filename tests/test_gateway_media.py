@@ -787,3 +787,47 @@ async def test_media_reference_budget_rejects_before_preparation_or_http(
         )
     assert response.status_code == 422 and "PRIVATE" not in response.text
     assert_safe_timing(response)
+
+
+async def test_canonical_gateway_releases_media_tensors_before_backend_call(
+    real_processor: Any,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import weakref
+
+    import serve.gateway.app as gateway_module
+
+    original_prepare = gateway_module.prepare_decision
+    media_refs: list[Any] = []
+
+    def observed_prepare(*args: Any, **kwargs: Any) -> Any:
+        prepared = original_prepare(*args, **kwargs)
+        media_refs.append(weakref.ref(prepared.inputs["pixel_values"]))
+        return prepared
+
+    upstream = NativeChatFixture(real_processor)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert media_refs and all(reference() is None for reference in media_refs)
+        return upstream(request)
+
+    monkeypatch.setattr(gateway_module, "prepare_decision", observed_prepare)
+    app = create_app(
+        Settings(
+            upstream_url="http://fixture",
+            upstream_model="pinned-fixture-model",
+            raw_logprobs_confirmed=True,
+            media_root=Path(os.environ["S0_CANONICAL_MEDIA_ROOT"]),
+        ),
+        processor=real_processor,
+        transport=httpx.MockTransport(handler),
+    )
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://gateway-test"
+        ) as client,
+    ):
+        result = await client.post("/v1/systemone", json=request_case(20))
+    assert result.status_code == 200
+    assert set(result.json()["answers"]) == set(QUESTIONS)

@@ -10,7 +10,7 @@ import os
 import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
@@ -312,7 +312,7 @@ def create_app(
                         503, "Official processor/tokenizer preflight unavailable"
                     ) from None
                 try:
-                    return prepare_decision(
+                    prepared = prepare_decision(
                         prefix,
                         question,
                         runtime_processor,
@@ -320,6 +320,8 @@ def create_app(
                         profile="canonical_http",
                         video_frames=video_frames,
                     )
+                    # HTTP needs canonical bytes and exact IDs, not duplicate HF media tensors.
+                    return replace(prepared, inputs={"input_ids": prepared.inputs["input_ids"]})
                 except Exception:
                     raise HTTPException(
                         422, "Invalid media or unsupported S0 input combination"
