@@ -13,7 +13,7 @@
 先用资产工具下载并校验完整的 pinned E4B。metadata-only 目录可以检查题面/token，但预检会因权重/CUDA 不足以非零退出；这是预期阻塞，不是训练通过。
 
 ```bash
-uv run python -m scripts.train_smoke preflight \
+uv run --extra training python -m scripts.train_smoke preflight \
   --model-dir artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2 \
   --asset-manifest artifacts/manifests/e4b.json \
   --report reports/train-preflight.json
@@ -24,7 +24,7 @@ uv run python -m scripts.train_smoke preflight \
 ## 用户开卡后运行
 
 ```bash
-uv run python -m scripts.train_smoke run \
+uv run --extra training python -m scripts.train_smoke run \
   --model-dir artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2 \
   --asset-manifest artifacts/manifests/e4b.json \
   --output-dir artifacts/training/p0-smoke-001 \
@@ -40,7 +40,7 @@ uv run python -m scripts.train_smoke run \
 每个完成的优化步会原子写入 `checkpoints/step-000N/`。checkpoint 由 JSON provenance、LoRA 可训练张量 safetensors、optimizer tensor safetensors 和 RNG safetensors 组成；恢复不读取 pickle。恢复必须显式指定已有 run 目录里的 checkpoint，普通 `run` 仍拒绝已有 `--output-dir`：
 
 ```bash
-uv run python -m scripts.train_smoke run \
+uv run --extra training python -m scripts.train_smoke run \
   --model-dir artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2 \
   --asset-manifest artifacts/manifests/e4b.json \
   --output-dir artifacts/training/p0-smoke-001 \

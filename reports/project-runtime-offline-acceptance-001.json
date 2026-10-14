@@ -1,0 +1,109 @@
+{
+  "schema": "lite-omnijev.project-runtime-offline-acceptance.v1",
+  "status": "required_external_runtime_dependency_cpu_closure_passed_not_model_or_project_readiness",
+  "ticket": "offline-prep:03",
+  "gpu_used": false,
+  "ready_to_open_gpu": false,
+  "primary_service": "vllm0.26 unchanged",
+  "diagnostic_service": "vllm0.31; not promoted",
+  "teacher_job_fresh": {
+    "install_returncode": 0,
+    "job_overlay_install_returncode": 0,
+    "pip_check_returncode": 0,
+    "mandatory_probe_returncode": 0,
+    "elapsed_seconds": 224.9,
+    "source_git_revision": "3dbbe0d",
+    "environment": "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001",
+    "no_index": true,
+    "no_cross_env_sitepackages": true
+  },
+  "evidence": [
+    {
+      "path": "reports/offline-runtime-slice-summary.json",
+      "bytes": 6371,
+      "sha256": "6546965f2b2e161851b86e1af45ee6bdcface197bc073eb6ae0af09905afba7d"
+    },
+    {
+      "path": "reports/runtime-cpu-builds.json",
+      "bytes": 15996,
+      "sha256": "c87f6d87089e300ee106e29c6e2011d7f7ddb8ce2836996154811b071eb9425c"
+    },
+    {
+      "path": "reports/android-tools-preparation.json",
+      "bytes": 3973,
+      "sha256": "679d3043dd3b90148789621182e7a14e831a81d9434408cde65f19484b8bddb7"
+    },
+    {
+      "path": "reports/litert-lm-android-runtime-cache.json",
+      "bytes": 4803,
+      "sha256": "1e1001b5cedd370029d668bc291b3a0dad3fe971e1c43cc84f8c4ca0b0090e34"
+    },
+    {
+      "path": "reports/litert-lm-android-maven-cache.json",
+      "bytes": 8274,
+      "sha256": "f7adf42d59ccb037bf23f588a692ae5b61d68c07fa231c0bdf655525b8a2445c"
+    },
+    {
+      "path": "reports/litert-android-delivery-scope-audit-20261014.json",
+      "bytes": 4682,
+      "sha256": "1547a4990777362f8aac1af677eba7aee9fe7d19056a3a88fc37981e8c6d098c"
+    },
+    {
+      "path": "reports/root-main-training-dev-monitoring-offline-install.json",
+      "bytes": 3572,
+      "sha256": "dd6b263fe1a218a828fbbdf6595ad45914be9997dfb79d76454b497910175553"
+    },
+    {
+      "path": "reports/root-main-offline-pipeline-tests.json",
+      "bytes": 1423,
+      "sha256": "50d0076ac98c1e8ad98a9783c42a494f33bd30b37d0b654afe237a4a32cd2aa3"
+    },
+    {
+      "path": "reports/serve-next-vllm031-offline-install.json",
+      "bytes": 1478,
+      "sha256": "cd54c095b0342f323f263d331cebe1d97a4b42f792f2aa8b612d02180a6039db"
+    },
+    {
+      "path": "reports/before-gpu-teacher-job-fresh-001.json",
+      "bytes": 8409,
+      "sha256": "72acb2131c757202f879ea3eb944b4772f512e0799572534015f51fa5abbed55"
+    },
+    {
+      "path": "reports/frontend-registry-sources.json",
+      "bytes": 17557,
+      "sha256": "2e105d0e55f2c9f5ed77740a8343649b3e73b355c8fac8f74d2d694bbeca9174"
+    },
+    {
+      "path": "reports/frontend-registry-remote-offline-build-20261014-retry4.json",
+      "bytes": 3736,
+      "sha256": "a7eda140a3be229def6387fb3cb6d43c428b14000b0b5a7a3a6eb9644b66aebc"
+    },
+    {
+      "path": "reports/playwright-fresh-linux-launch.json",
+      "bytes": 785,
+      "sha256": "cb4779d0649be3555761fcfaddf39361f230808b1502649ce610b9fe46770870"
+    }
+  ],
+  "classification": {
+    "required_external_tools": "model/data preparation, training/dev/monitoring, teacher/job, primary026 and diagnostic031 service, quant, frontend/Chromium, llama.cpp/Ollama/LiteRT CLI/NDK caches are evidenced in linked receipts",
+    "android_gradle_app": "no selected Gradle/App first-release artifact; transitive Gradle closure remains unclaimed and mandatory if that packaging route is selected",
+    "future_generated_outputs": [
+      "LoRA adapters",
+      "calibration parameters",
+      "quantized models",
+      "stage-specific derived training data",
+      "release bundles"
+    ],
+    "historical_reports": "Older partial environments, NDK license blockers and failed transfers stay immutable; newer receipts supersede only the corresponding claim."
+  },
+  "pending_product_cpu_validation": [
+    "native vLLM processor six/full100 resource and transport gate",
+    "Linux real gateway video resource gate"
+  ],
+  "pending_gpu_acceptance": [
+    "real kernel/model forward and driver compatibility",
+    "strict HF/vLLM raw probability gate",
+    "teacher quality and native cache latency",
+    "S0-S6 and FINAL gates"
+  ]
+}

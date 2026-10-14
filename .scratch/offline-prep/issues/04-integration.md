@@ -4,9 +4,9 @@ ID: offline-prep:04
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: root-offline-integration
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: 01, 02, 03, s0:09
 
 ## What to build

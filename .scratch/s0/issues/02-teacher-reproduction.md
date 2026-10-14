@@ -34,3 +34,5 @@ Blocked by: p0:04, 01
 2026-10-14用户批准ADR-0006：仅替换MVBench发布分数复现项；九任务真实baseline/逐行一致性仍待GPU，CPU协议冻结由offline准备切片执行。原14/2786公开协议缺失事实保留，非本项前置。
 
 2026-10-14：公开视频1606媒体/1800行/27997唯一帧PNG完整CPU冻结通过，reports/public-video-protocol-freeze-001.json；不含GPU预测/质量。正在补teacher runner/恢复/分母/两遍逐行一致CPU可测代码，真实两遍评测仍pending。
+
+2026-10-14 CPU准备收口：固定teacher runner及真实官方CPU样本、严格分母/两遍/resume/code与模型hash绑定已合入；reports/s0-teacher-eval-official-processor-001.json和TF5.17比较报告仅CPU。真实benchmark两遍/质量门槛尚未运行。

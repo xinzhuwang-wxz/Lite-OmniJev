@@ -34,3 +34,5 @@ Blocked by: p0:04, 09
 调度纠正：先前子代理未交付指定媒体切片，释放认领；离线依赖票准备媒体工具后继续本票，已有文本parity失败结论不重跑。
 
 2026-10-14恢复：s0:09共享CPU输入前置已完成（100×2官方HF processor，Mac真实证据，Linux137不隐藏）。主会话接管本票集成，离线依赖owner继续offline-prep:03，不争写本票模块。下一无卡切片为canonical JPEG/PCM传输、原生chat完整token client/HTTP负测与collector，随后接网关；真实GPU概率阈值不变。
+
+2026-10-14 CPU准备收口：canonical客户端/collector/网关及严格原始概率/版本/输入校验已合入；实际Chromium reports/browser-s0-cpu-004.json明确fake backend，557项CPU回归与独立review已通过。Linux TF5.17 optional视频字段误拒绝已修复，但修复后137保持资源待验，不能关闭真实GPU概率/浏览器模型条目。

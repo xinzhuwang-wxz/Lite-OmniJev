@@ -88,3 +88,5 @@ API 服务端目标：文本<40ms、截图<60ms、16帧视频<200ms；含网关/
 已批准ADR-0005：阶段3视频QA 1.2万用CC0 CLEVRER train，原LLaVA 0.5万题由允许教师在CC0/BY媒体生成；NExT-QA/VidOR、VGGSound与受限LLaVA原媒体仅未来候选，STAR/Charades仅研究评测。DocVQA原图仅隔离研究，商用文档训练用自有/许可明确来源；保持各tranche题量与family隔离，质量门槛不减。用户已具体接受DocVQA-SP和NDK r28b SDK协议，仍需下载/哈希/CPU证据。
 
 用户批准ADR-0006：S0教师MVBench仅改为固定公开9任务/1800题真实独立baseline，发布53.10仅未复现引用；MMAU63.10±2、两遍逐题一致性、其余S0及S3/S4门槛保留。CPU全行clip/16帧RGB hash验收先完成，GPU实际两遍仍待执行。
+
+开卡前统一入口与真实环境路径见 [before-gpu runbook](runbooks/before-gpu.md)。必需外部模型/数据/运行时票已完成不等于开卡就绪；native CPU processor与Linux视频资源验证缺口保持可见，最终开卡通知只认offline-prep:04汇总。

@@ -30,3 +30,5 @@ Blocked by: p0:04, 03
 
 上游能力和风险已研究，仓库没有真实同图10题门槛证据。复用多题HTTP接口测量。
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
+
+2026-10-14 CPU准备收口：native/gateway cache runner、Server-Timing边界及真实CPU媒体/前缀freeze已合入；CPU mock比率失败保留，不能当作GPU prefix命中/≤2时延通过。
