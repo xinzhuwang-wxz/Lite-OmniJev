@@ -282,3 +282,65 @@ def test_total_image_budget_rejects_before_any_decode(
             tmp_path,
             max_total_image_pixels=199,
         )
+
+
+@pytest.mark.parametrize("missing", [None, "pixel_values_videos", "video_position_ids"])
+def test_official_video_tensor_contract_allows_version_optional_frame_counts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, missing: str | None
+) -> None:
+    from types import SimpleNamespace
+
+    torch = pytest.importorskip("torch")
+    from data.schema import Prefix, Question
+    from train.multimodal import prepare_decision
+
+    class Tokenizer:
+        all_special_ids: list[int] = []
+        unk_token_id = -1
+
+        def encode(self, text: str, **kwargs: object) -> list[int]:
+            return [ord(char) for char in text]
+
+        def decode(self, ids: list[int], **kwargs: object) -> str:
+            return "".join(chr(value) for value in ids)
+
+    class Processor:
+        tokenizer = Tokenizer()
+
+        def apply_chat_template(self, *args: object, **kwargs: object) -> str:
+            return "public prompt"
+
+        def __call__(self, **kwargs: object) -> dict:
+            result = {
+                "input_ids": torch.tensor([self.tokenizer.encode("public prompt")]),
+                "attention_mask": torch.ones((1, 13), dtype=torch.int64),
+                "mm_token_type_ids": torch.zeros((1, 13), dtype=torch.int64),
+                "pixel_values_videos": torch.zeros((1, 8, 1, 3)),
+                "video_position_ids": torch.zeros((1, 8, 1, 2), dtype=torch.int64),
+            }
+            if missing:
+                result.pop(missing)
+            return result
+
+    frame = SimpleNamespace(tobytes=lambda: b"public frame")
+    monkeypatch.setattr("train.multimodal.resolve_media", lambda *args, **kwargs: tmp_path / "v")
+    monkeypatch.setattr(
+        "train.multimodal.load_media",
+        lambda *args, **kwargs: {
+            "frames": [frame] * 8,
+            "metadata": {"frames_indices": list(range(8))},
+        },
+    )
+    prefix = Prefix.model_validate(
+        {"state": "public", "media": [{"type": "video", "uri": "v", "sha256": "a" * 64}]}
+    )
+    question = Question(
+        qid="q", type="choice", instruction="Choose evidence", options=["first", "second"]
+    )
+    if missing:
+        with pytest.raises(ValueError, match="omitted required modality tensors"):
+            prepare_decision(prefix, question, Processor(), tmp_path, video_frames=8)
+    else:
+        prepared = prepare_decision(prefix, question, Processor(), tmp_path, video_frames=8)
+        assert "num_frames_per_video" not in prepared.inputs
+        assert len(prepared.summary["decoded_video_frame_sha256"][0]) == 8

@@ -429,7 +429,9 @@ def prepare_decision(
     if media["audio"]:
         required.update({"input_features", "input_features_mask"})
     if media["video"]:
-        required.update({"pixel_values_videos", "video_position_ids", "num_frames_per_video"})
+        # Transformers 5.17 declares these two video inputs. Later versions also
+        # return num_frames_per_video; preserve it when present, never fabricate it.
+        required.update({"pixel_values_videos", "video_position_ids"})
     if not required.issubset(inputs):
         raise ValueError("official processor omitted required modality tensors")
     final_ids = inputs["input_ids"][0].tolist()

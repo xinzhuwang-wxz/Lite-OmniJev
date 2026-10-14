@@ -126,3 +126,16 @@ TOKENIZERS_PARALLELISM=false /path/to/existing/python -m scripts.s0_prepare \
 未提供时对应集成测试明确 skip，不能作为真实证据。canonical 100题两遍结果与限定
 兼容矩阵见专属 `reports/s0-canonical-http-acceptance-001.json`。mock返回的logprobs
 没有模型含义，不证明 vLLM processor、真实 API、GPU forward 或概率门槛通过。
+
+## 固定 processor 版本的视频字段差异
+
+固定 Linux Transformers5.17 的官方Gemma4 video processor只声明并返回
+`pixel_values_videos` 和 `video_position_ids`；5.19另外返回
+`num_frames_per_video`。共享准备要求前两个视频张量，后一字段若存在原样保留，
+不合成、不转换；实际已选帧数仍由冻结media配置/解码帧摘要记录。
+该兼容修复消除5.17误报“omitted required modality tensors”的422，不表示
+跨processor版本张量/概率等价；不同版本的完整输入摘要仍必须分别核对。
+
+证据见 `reports/linux-video-processor-compat-001.json`：Mac5.19真实8/16帧网关CPU通过；
+Linux5.17修复前诊断定位明确，修复后有界网关batch仍exit137，Linux真实网关CPU验收
+保持pending。未发现FFmpeg subprocess失败，未据猜测调整线程参数，未重跑已知OOM。
