@@ -21,6 +21,19 @@ DEFAULT_WORK = Path("artifacts/runtime-builds/offline-tools/frontend/registry-bu
 DEFAULT_REPORT = Path("reports/frontend-registry-offline-build.json")
 
 
+class ExistingOutputError(RuntimeError):
+    """Raised when a canary output path would overwrite existing evidence."""
+
+
+class RegistryFileError(RuntimeError):
+    """Raised when cached registry file metadata is unsafe or ambiguous."""
+
+
+def ensure_new_path(path: Path, label: str) -> None:
+    if path.exists() or path.is_symlink():
+        raise ExistingOutputError(f"{label} already exists, choose a new path: {path}")
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -43,8 +56,59 @@ def load_items(cache_root: Path) -> list[JsonObject]:
     return items
 
 
-def write_registry_files(work: Path, items: Sequence[Mapping[str, Any]]) -> list[str]:
-    written: list[str] = []
+def safe_source_path(value: object) -> Path:
+    if not isinstance(value, str) or not value:
+        raise RegistryFileError(f"invalid registry source path: {value!r}")
+    path = Path(value)
+    if path.is_absolute() or ".." in path.parts:
+        raise RegistryFileError(f"registry source path escapes cache root: {value}")
+    return path
+
+
+def mapped_target(provider_name: str, source_path: Path) -> Path:
+    source = source_path.as_posix()
+    if provider_name.startswith("primitives-"):
+        prefix = "registry/primitives/"
+        if not source.startswith(prefix):
+            raise RegistryFileError(f"Animate UI primitive has unexpected path: {source}")
+        return Path("src/components/animate-ui/primitives") / source_path.relative_to(prefix)
+    if provider_name.startswith("lib-"):
+        prefix = "registry/lib/"
+        if not source.startswith(prefix):
+            raise RegistryFileError(f"Animate UI lib has unexpected path: {source}")
+        return Path("src/lib") / source_path.relative_to(prefix)
+    prefix = "registry/new-york-v4/ui/"
+    if not source.startswith(prefix):
+        raise RegistryFileError(f"shadcn registry item has unexpected path: {source}")
+    return Path("src") / source_path
+
+
+def validate_output_path(work: Path, relative_target: Path) -> None:
+    if relative_target.is_absolute() or ".." in relative_target.parts:
+        raise RegistryFileError(f"mapped target escapes work dir: {relative_target}")
+    if relative_target.parts[0] != "src":
+        raise RegistryFileError(f"mapped target is outside src/: {relative_target}")
+    target = work / relative_target
+    current = work
+    if current.is_symlink():
+        raise RegistryFileError(f"refusing symlink work dir: {current}")
+    for part in relative_target.parent.parts:
+        current = current / part
+        if current.exists() and current.is_symlink():
+            raise RegistryFileError(f"refusing symlink in output path: {current}")
+    if target.exists() or target.is_symlink():
+        raise RegistryFileError(f"registry target already exists: {relative_target}")
+    try:
+        target.parent.resolve().relative_to(work.resolve())
+    except ValueError as exc:
+        raise RegistryFileError(f"mapped target escapes work dir: {relative_target}") from exc
+
+
+def planned_registry_files(
+    work: Path, items: Sequence[Mapping[str, Any]]
+) -> list[tuple[Path, str]]:
+    planned: list[tuple[Path, str]] = []
+    seen: set[Path] = set()
     for item in items:
         provider_name = str(item.get("name"))
         files = item.get("files", [])
@@ -53,19 +117,24 @@ def write_registry_files(work: Path, items: Sequence[Mapping[str, Any]]) -> list
         for file_item in files:
             if not isinstance(file_item, dict) or not isinstance(file_item.get("content"), str):
                 continue
-            source_path = str(file_item.get("path"))
-            if provider_name.startswith("primitives-"):
-                target = source_path.replace(
-                    "registry/primitives/", "src/components/animate-ui/primitives/"
-                )
-            elif provider_name.startswith("lib-"):
-                target = source_path.replace("registry/lib/", "src/lib/")
-            else:
-                target = f"src/{source_path}"
-            output = work / target
-            output.parent.mkdir(parents=True, exist_ok=True)
-            output.write_text(str(file_item["content"]))
-            written.append(target)
+            source_path = safe_source_path(file_item.get("path"))
+            target = mapped_target(provider_name, source_path)
+            validate_output_path(work, target)
+            if target in seen:
+                raise RegistryFileError(f"duplicate registry target: {target}")
+            seen.add(target)
+            planned.append((target, str(file_item["content"])))
+    return planned
+
+
+def write_registry_files(work: Path, items: Sequence[Mapping[str, Any]]) -> list[str]:
+    planned = planned_registry_files(work, items)
+    written: list[str] = []
+    for target, content in planned:
+        output = work / target
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(content)
+        written.append(target.as_posix())
     return sorted(written)
 
 
@@ -189,8 +258,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     started = time.time()
-    if args.work_dir.exists():
-        shutil.rmtree(args.work_dir)
+    ensure_new_path(args.work_dir, "work dir")
+    ensure_new_path(args.report, "report")
     args.work_dir.mkdir(parents=True)
     copy_frontend_seed(args.frontend_dir, args.work_dir)
     items = load_items(args.cache_root)

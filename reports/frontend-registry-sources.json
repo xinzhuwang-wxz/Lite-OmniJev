@@ -4,11 +4,18 @@
     "within_budget": true
   },
   "cache_root": "artifacts/runtime-builds/offline-tools/frontend/registry-sources",
-  "captured_at": "2026-10-14T09:28:57+0800",
+  "captured_at": "2026-10-14T09:42:17+0800",
+  "followups": [
+    {
+      "note": "Full cache includes peft/accelerate, but the current teacher canary did not import them; after SSH auth is restored, add PEFT as a mandatory import for the CLI HF reference job runtime canary.",
+      "scope": "beforeGPU teacher/job runtime audit",
+      "status": "pending_remote_auth"
+    }
+  ],
   "items": [
     {
       "bytes": 2795,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn",
         "radix-ui"
@@ -29,7 +36,7 @@
     },
     {
       "bytes": 2386,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn"
       ],
@@ -49,7 +56,7 @@
     },
     {
       "bytes": 1260,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn"
       ],
@@ -69,7 +76,7 @@
     },
     {
       "bytes": 1056,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn"
       ],
@@ -89,7 +96,7 @@
     },
     {
       "bytes": 6900,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn",
         "radix-ui"
@@ -110,7 +117,7 @@
     },
     {
       "bytes": 4192,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn",
         "radix-ui"
@@ -131,7 +138,7 @@
     },
     {
       "bytes": 1975,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn"
       ],
@@ -151,7 +158,7 @@
     },
     {
       "bytes": 4812,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "cn",
         "radix-ui"
@@ -172,7 +179,7 @@
     },
     {
       "bytes": 9831,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "motion"
       ],
@@ -180,7 +187,7 @@
       "inline_file_sha256": {
         "registry/primitives/animate/tabs/index.tsx": "9793136b187a25be8a24351af33e682dee6a753195696b209ecc27887b3839c9"
       },
-      "license": "MIT",
+      "license": "MIT + Commons Clause License Condition",
       "name": "primitives-animate-tabs",
       "path": "artifacts/runtime-builds/offline-tools/frontend/registry-sources/animate-ui/primitives-animate-tabs.json",
       "provider": "animate-ui",
@@ -196,7 +203,7 @@
     },
     {
       "bytes": 18788,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "motion"
       ],
@@ -204,7 +211,7 @@
       "inline_file_sha256": {
         "registry/primitives/effects/highlight/index.tsx": "08689129d3041b3474cd7bb0141d1f544a4b6361ba96ba4ad338f83dd4a856ac"
       },
-      "license": "MIT",
+      "license": "MIT + Commons Clause License Condition",
       "name": "primitives-effects-highlight",
       "path": "artifacts/runtime-builds/offline-tools/frontend/registry-sources/animate-ui/primitives-effects-highlight.json",
       "provider": "animate-ui",
@@ -216,7 +223,7 @@
     },
     {
       "bytes": 2944,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [
         "motion"
       ],
@@ -224,7 +231,7 @@
       "inline_file_sha256": {
         "registry/primitives/animate/slot/index.tsx": "f215f4b0dd938949b04681aed996c50d602edbcb6d8342a362c87c2bf9360719"
       },
-      "license": "MIT",
+      "license": "MIT + Commons Clause License Condition",
       "name": "primitives-animate-slot",
       "path": "artifacts/runtime-builds/offline-tools/frontend/registry-sources/animate-ui/primitives-animate-slot.json",
       "provider": "animate-ui",
@@ -236,13 +243,13 @@
     },
     {
       "bytes": 1200,
-      "content_type": null,
+      "content_type": "application/json; charset=utf-8",
       "dependencies": [],
       "file_count": 1,
       "inline_file_sha256": {
         "registry/lib/get-strict-context/index.tsx": "11e131ad0fea82497777b9fce9e7cff17929deb3f776a9a81482c753434d7818"
       },
-      "license": "MIT",
+      "license": "MIT + Commons Clause License Condition",
       "name": "lib-get-strict-context",
       "path": "artifacts/runtime-builds/offline-tools/frontend/registry-sources/animate-ui/lib-get-strict-context.json",
       "provider": "animate-ui",
@@ -253,6 +260,30 @@
       "url": "https://animate-ui.com/r/lib-get-strict-context.json"
     }
   ],
+  "licenses": {
+    "animate-ui": {
+      "bytes": 1292,
+      "commit": "efeb96ffd7a3b7a4868667e4ac3c346620fb3044",
+      "content_type": "text/plain; charset=utf-8",
+      "license": "MIT + Commons Clause License Condition",
+      "notice": "MIT + Commons Clause License Condition\n\nCopyright (c) 2025 Elliot Sutton\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, and distribute the Software **as part of an application, website, or product**, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\n## Commons Clause Restriction\n\nYou may use this Software, including for any commercial purpose, **so long as you do not sell or redistribute the components themselves in their original form\u2014whether alone or in a bundle.**\n\n## No Warranty\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "path": "artifacts/runtime-builds/offline-tools/frontend/registry-sources/animate-ui/LICENSE.md",
+      "provider": "animate-ui",
+      "sha256": "bb145c4b692008a88e8e565953d1ca258f2f9ea25190afaa86877a9e9de1c040",
+      "url": "https://raw.githubusercontent.com/imskyleen/animate-ui/efeb96ffd7a3b7a4868667e4ac3c346620fb3044/LICENSE.md"
+    },
+    "shadcn-ui": {
+      "bytes": 1063,
+      "commit": "30a58d4498f270af1c1e981a7d78a15cf5740841",
+      "content_type": "text/plain; charset=utf-8",
+      "license": "MIT",
+      "notice": "MIT License\n\nCopyright (c) 2023 shadcn\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "path": "artifacts/runtime-builds/offline-tools/frontend/registry-sources/shadcn-ui/LICENSE.md",
+      "provider": "shadcn-ui",
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f",
+      "url": "https://raw.githubusercontent.com/shadcn-ui/ui/30a58d4498f270af1c1e981a7d78a15cf5740841/LICENSE.md"
+    }
+  },
   "not_claimed": [
     "No product UI generated",
     "No full registry crawl",
@@ -349,7 +380,7 @@
   "providers": {
     "animate-ui": {
       "docs": "https://animate-ui.com/docs/components",
-      "license": "MIT",
+      "license": "MIT + Commons Clause License Condition",
       "source": "https://animate-ui.com/r/{name}.json"
     },
     "shadcn-ui": {
