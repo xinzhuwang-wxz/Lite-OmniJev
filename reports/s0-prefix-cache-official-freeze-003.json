@@ -1,0 +1,40 @@
+{
+  "status": "frozen-cpu",
+  "exit_code": 0,
+  "weights_loaded": false,
+  "gpu_used": false,
+  "s0_acceptance": false,
+  "code_revision": "66e742e03f0b3cdf062878dfe21ef1553778cd81",
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit"
+  },
+  "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+  "model_files": {
+    "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+    "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+    "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+    "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+    "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5"
+  },
+  "implementation_sha256": {
+    "freeze_prefix_cache.py": "4bf8c18289dd7ad4e71f576ad1f20d031d9d01fccf959c8413f379a45e9fe151",
+    "prefix_cache.py": "f84d1fbef15e6e3f7d0f4a9f245a340865a89f586ea2c8530f12a09fe7ca0f16"
+  },
+  "cost_usd": 0,
+  "scope": "non-quality cache probes only",
+  "source_case_id": "public-prepare-image-00",
+  "source_family": "clevrer-train-00000",
+  "source_manifest_case_sha256": "536803bf1a1c3653b3fb244e6d5ef614fe3ea62d2da7a819e126dd2a5cbb9bb9",
+  "protocol_sha256": "fb00c6a801de86451fb81430166c0c8888ffbe08226a943cf1f80c5599cd8174",
+  "gateway_request_sha256": "777fd2c7a83a921f6e40baf21a76294980f3c0bb02dfeb59735f368c56e5604b",
+  "canonical_image_sha256": "01a7535d3547a774574b6f77ab4ba7f07467862ba4248d77295a02c3a51dff86",
+  "probes": 10,
+  "common_prefix_tokens": 309,
+  "media_prefix_end": 265,
+  "same_canonical_image_and_answer_mapping": true,
+  "native_payloads_equal_official_prepared_messages": true,
+  "prepared_input_summaries_sha256": "299234a6f9f54ddd41f9a7552c2e7f616b216db29818bd98f655c089eefe3187",
+  "duration_seconds": 2.701727250008844
+}

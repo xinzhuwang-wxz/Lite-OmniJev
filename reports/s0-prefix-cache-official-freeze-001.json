@@ -1,0 +1,9 @@
+{
+  "status": "blocked",
+  "exit_code": 1,
+  "weights_loaded": false,
+  "gpu_used": false,
+  "s0_acceptance": false,
+  "error_type": "ValueError",
+  "duration_seconds": 3.4821987920440733
+}

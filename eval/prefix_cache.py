@@ -25,7 +25,7 @@ def digest(value: Any) -> str:
 
 
 class CacheCase(Contract):
-    tail: Nonempty
+    tail: str = Field(min_length=1)
     prompt_token_ids: list[int] = Field(min_length=2)
 
 
@@ -34,7 +34,7 @@ class CacheProtocol(Contract):
 
     image_png_base64: Nonempty
     image_sha256: Sha256
-    shared_text: Nonempty
+    shared_text: str = Field(min_length=1)
     shared_prompt_token_ids: list[int] = Field(min_length=1)
     media_prefix_end: int = Field(gt=0)
     answer_token_ids: dict[str, int]

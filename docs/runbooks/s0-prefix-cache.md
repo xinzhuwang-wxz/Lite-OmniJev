@@ -37,6 +37,29 @@ The runner does not launch/stop servers or manage GPUs.
 
 ## CPU-only validation
 
+Freeze actual inputs before any GPU request; do not hand-write expanded token IDs.
+`scripts.freeze_prefix_cache` reads the unchanged 100-case public development manifest,
+selects one single-image family and derives ten explicitly non-quality instruction/qid
+variants with the same source metadata. Each variant runs the official local CPU
+processor and canonical PNG transport. It extracts the longest common rendered text,
+longest common expanded token prefix and last nonzero `mm_token_type_ids` position;
+it rejects different canonical bytes/mappings or a prefix that omits the image.
+The returned native payload is checked against every actual prepared HTTP message.
+It writes sensitive native protocol and public gateway request only to caller-selected
+local artifact paths. Keep these under ignored `artifacts/`, never commit them.
+Do not use probe variants as training data or quality/annotation evidence.
+
+```bash
+uv run python -m scripts.freeze_prefix_cache --manifest tests/fixtures/s0-prepare-public-001/manifest.json --asset-root artifacts/public-media --model-dir artifacts/pinned-processor --protocol-output artifacts/cache/native.json --gateway-output artifacts/cache/gateway.json --report reports/cache-freeze.json
+```
+
+Run with an already installed official processor/CPU media dependency environment;
+the command never installs packages, downloads weights, or starts a GPU server.
+Outputs must not already exist. A failed first attempt is kept as a separate report.
+Real Mac evidence in `reports/s0-prefix-cache-official-freeze-003.json` confirms ten
+probes from `clevrer-train-00000`, common expanded prefix309 and media endpoint265;
+it is processor-only evidence, not native vLLM forward or cache performance.
+
 ```bash
 uv run python -m scripts.s0_prefix_cache validate --protocol artifacts/cache-protocol.json --server-record artifacts/cache-on-server.json --report reports/cache-protocol-validation.json
 uv run pytest tests/test_prefix_cache.py
