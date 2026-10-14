@@ -4,8 +4,8 @@ ID: s0:03
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: blocked
-Owner: none
+Execution: claimed
+Owner: main-session-gpu-transition
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04, 09
 
@@ -20,6 +20,8 @@ Blocked by: p0:04, 09
 - [ ] 真实浏览器验证本票新增媒体路径与明确错误态；记录实际工具/截图/trace，不以mock代替实测。
 
 ## Evidence
+2026-10-14开卡接续：用户已完成开卡并授权SSH推进；实测H20/97871MiB显存、cgroup150GiB/16CPU、源码HEAD764ee500干净。主会话认领本票资源前置，远端仅在隔离源码artifacts/gpu-transition-20261014-0717生成新证据；先HF100两遍→native正常六case，未经通过不执行full100。历史失败与严格概率门槛保持。
+
 真实GPU验收未完成；CPU子集证据见下文，不能按最初冻结文字误判为缺代码。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
 
 ## Out of scope

@@ -315,6 +315,15 @@ class PreparedDecision:
     http_media_io_kwargs: dict[str, Any] | None = None
 
 
+def native_processor_kwargs(media_io_kwargs: dict[str, Any] | None) -> dict[str, Any]:
+    """Keep native video frames on the pinned checkpoint's official video normalization.
+
+    vLLM 0.26 processes frames through its image processor, whose default is False;
+    the frozen Gemma4 video processor uses True with identity mean/std.
+    """
+    return {"images_kwargs": {"do_normalize": True}} if (media_io_kwargs or {}).get("video") else {}
+
+
 def prepare_decision(
     prefix: Prefix,
     question: Question,
@@ -489,6 +498,9 @@ def prepare_decision(
             ).hexdigest(),
             http_media_io_kwargs_sha256=hashlib.sha256(
                 json.dumps(http_media_io_kwargs, sort_keys=True).encode()
+            ).hexdigest(),
+            http_mm_processor_kwargs_sha256=hashlib.sha256(
+                json.dumps(native_processor_kwargs(http_media_io_kwargs), sort_keys=True).encode()
             ).hexdigest(),
         )
     return PreparedDecision(

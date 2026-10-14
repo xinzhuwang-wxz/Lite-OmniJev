@@ -98,6 +98,30 @@ def test_video_timestamp_and_position_translation():
     assert not compare_native(prepared, result)["passed"]
 
 
+def test_single_video_batch_translation_keeps_exact_pixel_equality():
+    torch = pytest.importorskip("torch")
+    pixels = torch.ones(1, 2, 3, 4)
+    positions = torch.zeros(1, 2, 3, 2, dtype=torch.int64)
+    prepared = SimpleNamespace(
+        inputs={
+            "input_ids": torch.tensor([[1, 2]]),
+            "pixel_values_videos": pixels,
+            "video_position_ids": positions,
+        },
+        http_media_io_kwargs={"video": {"fps": 2.0, "frames_indices": [0, 4]}},
+    )
+    native = NativeFields(
+        pixel_values_videos=pixels[0].clone(),
+        pixel_position_ids_videos=positions[0],
+        video_frame_counts=torch.tensor([2]),
+        video_timestamps=[[0.0, 2.0]],
+    )
+    result = {"prompt_token_ids": [1, 2], "mm_kwargs": native, "mm_placeholders": {}}
+    assert compare_native(prepared, result)["passed"]
+    native["pixel_values_videos"][0, 0, 0] = torch.nextafter(torch.tensor(1.0), torch.tensor(2.0))
+    assert not compare_native(prepared, result)["passed"]
+
+
 def test_explicit_offline_environment_required_and_errors_sanitized(tmp_path, monkeypatch):
     monkeypatch.delenv("HF_HUB_OFFLINE", raising=False)
     output = tmp_path / "report.json"

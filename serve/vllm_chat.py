@@ -12,7 +12,7 @@ from typing import Any, Self
 
 import httpx
 
-from train.multimodal import PreparedDecision
+from train.multimodal import PreparedDecision, native_processor_kwargs
 
 
 class VllmChatProtocolError(ValueError):
@@ -219,6 +219,13 @@ class VllmChatClient:
         }
         if prepared.http_media_io_kwargs:
             payload["media_io_kwargs"] = prepared.http_media_io_kwargs
+        processor_kwargs = native_processor_kwargs(prepared.http_media_io_kwargs)
+        if processor_kwargs:
+            if hashlib.sha256(
+                json.dumps(processor_kwargs, sort_keys=True).encode()
+            ).hexdigest() != prepared.summary.get("http_mm_processor_kwargs_sha256"):
+                raise VllmChatProtocolError("canonical_processor_binding_mismatch")
+            payload["mm_processor_kwargs"] = processor_kwargs
         try:
             response = await self.client.post(self.url, json=payload)
             response.raise_for_status()

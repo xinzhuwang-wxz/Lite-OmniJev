@@ -21,7 +21,7 @@ from typing import Any
 
 from scripts.assets import write_json
 from scripts.s0_prepare import read_manifest
-from train.multimodal import file_hash, prepare_case
+from train.multimodal import file_hash, native_processor_kwargs, prepare_case
 
 
 def canonical_mm_data(parts: list[dict[str, Any]], video_kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -94,11 +94,24 @@ def compare_native(prepared: Any, result: dict[str, Any]) -> dict[str, Any]:
         if native_key not in native:
             checks[hf_key] = False
             continue
+        hf_tensor = prepared.inputs[hf_key]
+        native_tensor = native[native_key]
+        adaptation = None
+        if (
+            hf_key in {"pixel_values_videos", "video_position_ids"}
+            and len(hf_tensor.shape) == 4
+            and hf_tensor.shape[0] == 1
+            and tuple(hf_tensor.shape[1:]) == tuple(native_tensor.shape)
+        ):
+            hf_tensor = hf_tensor[0]
+            adaptation = "single HF video batch to native flat frames; values unchanged"
         expected, actual = (
-            tensor_summary(prepared.inputs[hf_key]),
+            tensor_summary(hf_tensor),
             tensor_summary(native[native_key]),
         )
         fields[hf_key] = {"native_key": native_key, "hf": expected, "native": actual}
+        if adaptation:
+            fields[hf_key]["adaptation"] = adaptation
         checks[hf_key] = expected == actual
     if "input_features" in prepared.inputs:
         mask = prepared.inputs["input_features_mask"][0].bool()
@@ -262,6 +275,7 @@ def main(argv: list[str] | None = None) -> int:
                     "canonical_media",
                     "http_messages_sha256",
                     "http_media_io_kwargs_sha256",
+                    "http_mm_processor_kwargs_sha256",
                     "answer_token_mapping_sha256",
                 )
             )
@@ -272,7 +286,9 @@ def main(argv: list[str] | None = None) -> int:
                 (prepared.http_media_io_kwargs or {}).get("video", {}),
             )
             result = native(
-                prepared.prompt, native.info.parse_mm_data(mm_data), hf_processor_mm_kwargs={}
+                prepared.prompt,
+                native.info.parse_mm_data(mm_data),
+                hf_processor_mm_kwargs=native_processor_kwargs(prepared.http_media_io_kwargs),
             )
             compared = compare_native(prepared, result)
             compared.update(

@@ -124,6 +124,39 @@ async def test_native_chat_requests_all_ids_without_top_k_fallback() -> None:
     assert "PRIVATE INPUT" not in json.dumps(result.summary)
 
 
+@pytest.mark.parametrize("valid_binding", [True, False])
+async def test_video_normalization_is_transported_and_bound(valid_binding: bool) -> None:
+    prepared = prepared_fixture()
+    assert prepared.http_media_io_kwargs is not None
+    prepared.http_media_io_kwargs["video"] = {"fps": 2.0, "frames_indices": [0, 4]}
+    prepared.summary["http_media_io_kwargs_sha256"] = hashlib.sha256(
+        json.dumps(prepared.http_media_io_kwargs, sort_keys=True).encode()
+    ).hexdigest()
+    kwargs = {"images_kwargs": {"do_normalize": True}}
+    prepared.summary["http_mm_processor_kwargs_sha256"] = (
+        hashlib.sha256(json.dumps(kwargs, sort_keys=True).encode()).hexdigest()
+        if valid_binding
+        else "wrong"
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert valid_binding
+        assert json.loads(request.content)["mm_processor_kwargs"] == kwargs
+        return httpx.Response(200, json=response_body())
+
+    async with VllmChatClient(
+        "http://fixture",
+        "pinned-alias",
+        raw_logprobs_confirmed=True,
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        if valid_binding:
+            await client.read_logprobs(prepared)
+        else:
+            with pytest.raises(VllmChatProtocolError, match="canonical_processor_binding_mismatch"):
+                await client.read_logprobs(prepared)
+
+
 @pytest.mark.parametrize(
     "failure",
     [
@@ -330,6 +363,7 @@ async def test_real_media_bytes_roundtrip_to_identical_hf_tensors(
         if audio:
             kwargs.update(audio=audio, sampling_rate=16000)
         if videos:
+            assert payload["mm_processor_kwargs"] == {"images_kwargs": {"do_normalize": True}}
             io_kwargs = payload["media_io_kwargs"]["video"]
             assert io_kwargs["do_sample_frames"] is False
             assert len(io_kwargs["frames_indices"]) == len(videos[0]) == expected_frames

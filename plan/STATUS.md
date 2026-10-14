@@ -1,5 +1,17 @@
 # STATUS
 
+## 当前会话接续（2026-10-14）
+- 最新：SSH认证恢复，用户已完成开卡并要求推进。只读实测H20/97871MiB显存、driver580.65.06、CUDA驱动13.0；cgroup memory.max=161061273600（150GiB）、cpu.max=1600000 100000（16CPU）；持久盘可用420546093056B。远端HEAD764ee500干净，GPU无进程。
+- s0:03主会话认领资源前置；已启动同Linux primary026 HF100两遍→正常native六case，输出artifacts/gpu-transition-20261014-0717，监督句柄50399；CUDA_VISIBLE_DEVICES为空、离线、单线程+重锁，不加载权重。阶段和真实概率门槛未通过。下方旧阻塞记录保留历史；原生工具仍显示blocked，不因此阻止用户已授权的接续工作。
+- 用户已确认开卡。首次接续SSH已可到达，但BatchMode认证返回Permission denied (publickey,password)/exit255；尚未获得GPU/内存/驱动新实测，未启动作业。旧会话复用连接已失效，需要用户恢复SSH认证；不索要或保存密码，恢复后执行既定资源前置。原生get_goal仍为blocked。
+- 当前原生goal已标blocked：连续三轮均无法进入有卡验收（首次无GPU，后两次SSH Connection refused/exit255）；无可认领独立票或活跃作业可等待。需要用户完成开卡并恢复SSH，地址变化时提供新入口。完整终局目标保留，未标complete。
+- 用户已重新发起原终局 `/goal`，本会话 `get_goal` 实际为 active；下文“原生blocked”仅描述旧会话，不代表本会话状态。终局仍未通过。
+- 用户表示准备开卡，已读 GPU-transition 交接及 s0:01/03；开卡由用户操作，尚未启动 GPU 作业。
+- 本轮SSH只读核查成功：`nvidia-smi -L` 仍为 No devices found，cgroup memory.max=2147483648、cpu.max=50000 100000；持久盘可用420546080768B。未重复资源受限失败配置。
+- 远端隔离源码HEAD=764ee5007dcca9171f8c297ed6fdd1ca30b507b9、工作树干净，与本地/远端transition-sync001侧车一致。
+- 下一步：用户完成模式切换后先核验GPU/内存/驱动，再按交接补HF100两遍、native六case→100、网关视频前置，随后最小GPU smoke；S0全绿前不进S1。
+- 后续接续核查：本地loop validate/list均valid，32票、frontier/claimed均空；SSH端口48926返回Connection refused（exit255）。这是连接状态变化，尚不能证明已开卡或GPU可用；没有远端作业句柄，不启动重复作业、不持续轮询。待用户切换完成、SSH恢复后继续只读资源核验；若连接地址变化，使用用户提供的新入口。
+
 更新时间：2026-10-14。当前S0；P0工程冒烟完成，S0–S6/FINAL未完成。终局未完成，原生状态以get_goal为准；当前无卡可自主完成准备已收口，可由用户切换有卡；终局仍待真实GPU及外部阶段条件。
 
 ## 当前目标与决策
