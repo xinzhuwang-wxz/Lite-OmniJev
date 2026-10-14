@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "cohorts": [
+    {
+      "name": "text",
+      "data": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/dev.jsonl",
+      "report": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/report.json",
+      "media_root": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a"
+    },
+    {
+      "name": "image",
+      "data": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/dev.jsonl",
+      "report": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/report.json",
+      "media_root": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/media"
+    },
+    {
+      "name": "audio",
+      "data": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/dev.jsonl",
+      "report": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/report.json",
+      "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002"
+    },
+    {
+      "name": "video",
+      "data": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/dev.jsonl",
+      "report": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/report.json",
+      "media_root": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/media"
+    },
+    {
+      "name": "crossmodal",
+      "data": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/dev.jsonl",
+      "report": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/report.json",
+      "media_root": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/media"
+    }
+  ],
+  "scope": "five completed cohorts; screenshot will be appended after actual admission, no false six-cohort acceptance",
+  "seed": 42,
+  "video_frames": 16,
+  "max_prompt_tokens": 8192,
+  "audio_waveform": "shared mono16k PCM16 canonical roundtrip",
+  "cost_usd": null
+}
