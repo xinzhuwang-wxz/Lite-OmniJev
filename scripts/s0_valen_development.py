@@ -44,7 +44,7 @@ MAX_MEDIA_BYTES = 64 * 1024 * 1024
 MAX_VIDEO_SECONDS = 60.0
 VIDEO_FRAMES = 16
 VALEN_MEDIA_KWARGS = {
-    "images_kwargs": {"longest_edge": 1_048_576, "shortest_edge": 65_536},
+    "images_kwargs": {"size": {"longest_edge": 1_048_576, "shortest_edge": 65_536}},
 }
 
 

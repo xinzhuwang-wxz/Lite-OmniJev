@@ -150,3 +150,9 @@ def test_compare_exact_checks_position_hash() -> None:
 
     assert report["passed"] is False
     assert report["first_mismatches"][0]["kind"] == "position_summary_sha256"
+
+
+def test_media_resize_kwargs_match_pinned_checkpoint_contract() -> None:
+    assert dev.VALEN_MEDIA_KWARGS == {
+        "images_kwargs": {"size": {"longest_edge": 1048576, "shortest_edge": 65536}}
+    }
