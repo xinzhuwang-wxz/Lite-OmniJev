@@ -8,7 +8,7 @@ CPU基线003在72e5e3546682bbf4d2780912c47da2974dece040、远端/root/autodl-tmp
 
 ## 正在做的切片
 
-s0:13在/tmp/lite-text-dev-001，只拥有scripts/s0_text_dev.py与tests/test_s0_text_dev.py；初版已完成，父review要求补输出路径别名/旧report覆盖/symlink/非法count拒绝及真实intent覆盖统计。完成后父统一整合并在Linux真实CLINC已准入JSONL上跑两遍500dev/14750train，保留原文件并排除dev family。规格.scratch/s0/text-development-spec.md，不能以Choice-only切片代完整文本任务覆盖。
+s0:13已done；实现f8edd50，真实Linux树/root/autodl-tmp/s0-text-dev-001，两遍约2.3sec/exit0。artifacts/text-dev-001-a和-b各有dev.jsonl500、train.jsonl14750、development-ledger.jsonl500、allocation-ledger.jsonl15250。四输出字节精确相同，全部原样本只改pool/version，源文件未变、family交集0，dev覆盖144intent、train151。证据reports/s0-text-development-build-001/002.json、s0-text-development-acceptance-001.json。旧15250全train版本已superseded，未来训练须绑定余train SHA12a42005…8cb11及allocation SHA54b3d818…ab7d51，不凭本票自动准入。仅intent Choice，不代完整文本任务覆盖。10本票/54相关回归、83源mypy/ruff/302format/build通过。
 
 s0:12的实际TRAIN候选、family单位、来源许可/语义缺口在.scratch/s0/development-source-contract.md。GUI固定首TRAIN逐步标注已用Mac官方HTTPS取得22471B、SHAf27cabeeba9f7f79d228cf2979484661b70e9915f2b583fe575f2e10de5f3cef，并SCP双端核SHA；远端/root/autodl-tmp/lite-omnijev/artifacts/s0-gui-step-annotation-audit-001/0000628297785099.json。初次远端直接联网失败收据保留reports/gui-odyssey-step-annotation-audit-001.json。当前/tmp/lite-dev-source-map-001代理只读核动作/schema/16截图对齐，交新local-002报告，不再重复下载。单episode不代表500dev或完整语义通过。
 
@@ -19,3 +19,5 @@ s0:12的实际TRAIN候选、family单位、来源许可/语义缺口在.scratch/
 缓存最佳冷比2.3164/2.3335仍fail，未启动下一GPU候选；服务已停。TF32x3只完成源评估，若推进必须新隔离编译缓存、精度显式绑定、完整100概率与重复门槛，不能当IEEE相同。先让教师完成。
 
 接手先读AGENTS、STATUS、docs/02-project.md、当前claimed票及本文；先核真实作业/代理，不重复下载、已完成CPU检查或失败GPU配置。S0全绿才执行s0:08并写正式s0-complete handoff和可复制新session启动词；本文不是阶段完成证明。goal仍active，不push、不自动付费/开关卡、不读取封存内容。
+
+GUI小审计local-002已完成：首episode16steps与16实际截图逐一对齐；CLICK12/TEXT2/SCROLL1/INCOMPLETE1，仅11CLICK合法目标bbox。报告reports/gui-odyssey-step-annotation-audit-local-002.json，只1family，没有全候选元素/开放参数语义或500dev准入。继续具体动作/候选任务协议，不把粗动作Choice替代原完整GUI任务。

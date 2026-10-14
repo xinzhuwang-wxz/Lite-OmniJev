@@ -32,3 +32,5 @@ seed42、版本化family ledger先于模型评分。全局组件/重复媒体SHA
 calibration不在本次构建中偷偷分配；将其family分配标pending，未来校准前必须从训练/dev排除。holdout载荷与标签由外部custodian处理，只给开发返回源/数量/hash/隔离/双标κ汇总。未知组件交叉关系、媒体许可或原gold冲突均阻断相应构建，不以程序补标签伪装成原标签。
 
 证据来源：s0-data:01及reports/clinc-admission-corrected-001.json；reports/stage2-remote-completion-001.json、stage2-media-cpu-validation-001.json；reports/gui-odyssey-download-acceptance-001.json、gui-odyssey-full-decode-cpu-001.json；reports/clotho-aqa-audio-preparation-002.json、clotho-range-recovery-004.json；reports/clevrer-source-download-snapshot.json、clevrer-media-cpu.json。补充bounded source-map读取了公开TRAIN元数据/标注以核数量/schema，未读其他split/封存或教师预测；该审计未做模型推理、媒体decode或训练准入。
+
+2026-10-14小型官方TRAIN动作审计已取得：reports/gui-odyssey-step-annotation-audit-local-002.json。固定首episode16steps全部连续且16非空截图basename逐一对齐；CLICK12/TEXT2/SCROLL1/INCOMPLETE1，11CLICK有合法目标bbox/点击点几何一致，另一CLICK info为字符串。只有单target bbox，无完整候选元素集合；开放参数/INCOMPLETE含义及不泄漏输入规则未冻结。可继续审计粗动作类型Choice，或明确以bbox几何程序真值构造新任务，但不得把自行负例或粗动作类别当原完整GUI动作gold。仍只有1family，不是500或16独立family；001远端无网失败保留，002为Mac成功替代路径，未请求另外两份。

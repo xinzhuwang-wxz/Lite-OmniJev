@@ -1,0 +1,25 @@
+{
+  "status": "passed_public_text_allocation_only",
+  "exit_code": 0,
+  "code_revision": "f8edd50ef958b7cd3c802f6b8b16050f7eea497f",
+  "source_unchanged": true,
+  "all_15250_payloads_preserved_except_pool_and_version": true,
+  "dev_items": 500,
+  "remaining_train_items": 14750,
+  "family_overlap": 0,
+  "repeat_bytes_identical": true,
+  "output_sha256": {
+    "dev.jsonl": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+    "train.jsonl": "12a42005478ff1cd2f618fbe4951ced1af878b9e115a9a055c57d9d79578cb11",
+    "development-ledger.jsonl": "98c7db6ec5593afe787c83e3f1b93a530eb997a508b6dd828adb97a3ff5c96ef",
+    "allocation-ledger.jsonl": "54b3d8186e0f9066aeb2ec3f7bf1da455cbaef4f6194d3a4c6ae64fe81ab7d51"
+  },
+  "gpu_used": false,
+  "holdout_accessed": false,
+  "quality_admitted": false,
+  "training_admitted": false,
+  "scope": "CLINC intent Choice only; remaining five evaluation cohorts and text Score/Noul are not admitted by this receipt.",
+  "timestamp_unix": 1791978323.1073034,
+  "cost_usd": null,
+  "source_root": "/root/autodl-tmp/s0-text-dev-001"
+}

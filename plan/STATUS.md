@@ -16,6 +16,9 @@
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
+- s0:13已done：真实Linux两遍CLINC500dev/14750train，四输出字节相同，family交集0，全15250原数据除pool/version不变，dev144intent/train151；reports/s0-text-development-{build-001,build-002,acceptance-001}.json，10本票/54相关回归/83源mypy/302format/ruff/build通过。旧全train已superseded，未来训练必须绑定allocation和余train hash；仅intent Choice、非质量准入。接续s0-cohorts handoff已更新。
+- GUI local-002审计完成：真实TRAIN1episode16steps/16截图对齐，11CLICK有合法bbox、另1CLICK info字符串，TEXT/SCROLL开放参数/INCOMPLETE未明；没有全候选元素或500dev。001远端网络失败与002替代成功均保留。
+
 - 最新恢复入口plan/handoff-2026-10-14-s0-cohorts.md。教师005快照5275/5600、PID169823 Rl/43:10，唯一GPU作业。
 - baseline CPU003代码72e5e35实际27.967sec/exit0，六主体text/image/token/thinking全部通过；s0:10仍claimed待音视频支持/未探测矩阵与必需探针，不把此通用probe当教师head/Valenforward或质量准入。
 - GUI首个公开TRAIN step annotation已Mac官方HTTPS成功取得22471B，双端SHAf27cabe…3cef一致；远端初次无网络失败保留001，新的schema/动作/16截图对齐审计在/tmp/lite-dev-source-map-001进行。文本构建切片父review补输出路径/旧证据保护与真实intent统计，尚未Linux构建。
