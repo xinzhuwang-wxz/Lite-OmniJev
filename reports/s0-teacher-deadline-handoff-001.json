@@ -1,0 +1,12 @@
+{
+  "status": "bounded controller replacement active; same model process continues",
+  "controller_pid": 675329,
+  "model_pid": 675330,
+  "model_start_ticks": 1444409079,
+  "original_bound_seconds": 2400,
+  "revised_bound_seconds": 5400,
+  "reason": "actual teacher video about3 seconds per item; fixed1000video forwards plus remaining crossmodal cannot fit original estimate; preserve all progress",
+  "scope": "runtime estimate only; all500items x2 and exact repeatability remain required",
+  "original_controller_command": "timeout --signal=INT --kill-after=30 2400 /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python -m scripts.s0_teacher_development --cohorts configs/s0-development-cohorts-h20.json --model-dir /root/autodl-tmp/lite-omnijev/artifacts/models/akhilaaa3__Jev-Omni/5addda86ddee081a68fb067477ea100c221b8917 --protocol-source-dir /root/autodl-tmp/lite-omnijev/artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917 --head /root/autodl-tmp/lite-omnijev/artifacts/teacher/jev-omni/5addda86ddee081a68fb067477ea100c221b8917/head.safetensors --head-conversion-report /root/autodl-tmp/lite-omnijev/reports/teacher-head-conversion.json --output artifacts/teacher-development-001/result ",
+  "cost_usd": null
+}

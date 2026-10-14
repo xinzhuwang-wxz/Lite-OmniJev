@@ -70,3 +70,8 @@
 - 六cohort统一dev排除清单实际双构建通过：/root/autodl-tmp/s0-valen-development-final-001/artifacts/dev-bundle-{001,002}/dev-exclusion.jsonl，SHA64d96a…1e5ed相同；3000 family节点/2500原始family/2000组件，跨模态与原image/audio同池连接。reports/s0-development-bundle-{001,002}.json；未来train须检查family与媒体SHA，calibration/holdout仍pending。
 
 - 学生E4B视频已正常exit0：500×2实际输入/概率精确一致，55.6%，797.732秒（共享GPU、非发布时延）；已收拢reports/s0-development-video-gemma4-e4b-it-001.json。kernel waitstatus=0收据已保存，旧391342已结束，892905接续后续FLA作业。开发通过表当前12支持对，E2B音频44.2%同样保留。
+
+## 最新接续修正（以此替代旧控制PID/截止）
+- 开发通过表已核17/30支持对；其余13明确列在reports/s0-development-baselines-table-001.json，6个音频不支持组合不填零。新增Valen image66.4%及教师text93.8/image78.6/screenshot89.8/audio38.0，各500×2原始概率/媒体精确重复。教师这四份是已完成cohort证据，父作业未终止，不能冒称全教师完成。
+- 教师实际video约3秒/题，原40分钟统一上限会截断固定1000前向；已按ADR0010调整运行估值，总模型上限5400秒。watchdog48305在run-teacher-deadline-handoff-001.py，暂停原timer675329但同一模型675330持续；模型终止后保存kernel退出码至model.exit/deadline-handoff-001.json，再结束旧timer。原shell的控制退出137保留，不代替model.exit，也不当模型失败/通过。所有质量/分母不改。
+- 截图原692449只等待、无子进程/无任何GPU记录，已终止并留waiting-controller-replaced.json；新60167执行run-screenshot-queue-002.py，输出artifacts/screenshot-baselines-002，等待上限7500秒适配实际视频队列；每模型GPU仍1200秒。避免旧估计等待上限导致未开始项被误阻断。

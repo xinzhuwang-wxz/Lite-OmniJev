@@ -1,0 +1,84 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "cohort": "image",
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.786,
+    "ece15": 0.11040888443827698,
+    "brier": 0.3185990685689077,
+    "coverage_at_error": 0.608,
+    "max_error": 0.05
+  },
+  "repeat_exact": true,
+  "records": 1000,
+  "source": {
+    "repo_root": "/root/autodl-tmp/s0-development-final-001",
+    "git": {
+      "commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624",
+      "branch": "HEAD",
+      "dirty": "?? run-teacher-development-001.sh\n?? teacher-development-preflight.py\n?? teacher-supervisor-001.log"
+    },
+    "code_hashes": {
+      "scripts/s0_public_baselines.py": "deaa36b5a311b8a14294081f0de942ca1abc439207181dc73969b81d3f6a1679",
+      "data/jevbench.py": "2a2b0c039fdcf21b44e213e6d6b63a6ef3d2011f880887ad4cd36da34c7e5ad7",
+      "eval/jevbench.py": "4cb09e07d6356fff3d0f0847d7bb7ca00bbab78e4db8338366345c0f990063f1",
+      "serve/gateway/app.py": "86ec45dc9c5f31e33aca368ac3d2ce38a9eb92a1c8b938f44e6b3a8f130cb223",
+      "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+      "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+      "scripts/assets.py": "245ac6e6a93e7c4d4f750793b872c6e3fe01afe0fdbe903c10f9977e7976d5a5",
+      "scripts/s0_parity.py": "51a6564ef906f94f542ce39110e8a3b56eba7af1ba7f80b5c53bfd4584b5a8e2"
+    }
+  },
+  "dev_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+  "records_sha256": "6f4f4fc5c378c60c2b6482b3e6e2b4a739a0bea4c4511fb16fef92fdc5e27a7a",
+  "elapsed_seconds": 133.73489571735263,
+  "scope": "one completed real500x2 cohort within still-live teacher parent; parent final exit not yet available",
+  "parent_job_status": "in_progress",
+  "parent_final_exit_code": null,
+  "runner_sha256": "b1d7665c2e6437c9fda73535e6d0198aa8c855ee8cde33f16eff8333be53a964",
+  "config_sha256": "7d0628e2b2a92a381a3c02da636a3fe5e235c66bb96584820fbace194a890064",
+  "command": [
+    "/root/autodl-tmp/s0-development-final-001/scripts/s0_teacher_development.py",
+    "--cohorts",
+    "configs/s0-development-cohorts-h20.json",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/akhilaaa3__Jev-Omni/5addda86ddee081a68fb067477ea100c221b8917",
+    "--protocol-source-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917",
+    "--head",
+    "/root/autodl-tmp/lite-omnijev/artifacts/teacher/jev-omni/5addda86ddee081a68fb067477ea100c221b8917/head.safetensors",
+    "--head-conversion-report",
+    "/root/autodl-tmp/lite-omnijev/reports/teacher-head-conversion.json",
+    "--output",
+    "artifacts/teacher-development-001/result"
+  ],
+  "environment": {
+    "gpu": "NVIDIA H20",
+    "torch": "2.13.0+cu130"
+  },
+  "cost_usd": null,
+  "teacher_assets": {
+    "repo": "akhilaaa3/Jev-Omni",
+    "revision": "5addda86ddee081a68fb067477ea100c221b8917",
+    "head_conversion_report_sha256": "0249a9a9b9eef1b5c5e7f2c5e1d00b27667d8ffb0be771b23b69649fa213d40d",
+    "head_spec_sha256": "4c0ce3a5056eea90ef320e4642456622aa6cdebb0a6c7cf53092da5f6aaed89b"
+  },
+  "p_U_supported": false,
+  "no_holdout": true,
+  "whole_s0_complete": false,
+  "raw_report": {
+    "path": "artifacts/s0-teacher-development-gpu-001/parent-snapshot-001.json",
+    "sha256": "13b102c6789a53bfa5a6f2bbfd30ed068df9cce4f219621ef55aa9e1a0b25dcc"
+  },
+  "raw_records": {
+    "path": "artifacts/s0-teacher-development-gpu-001/image/records.jsonl",
+    "sha256": "6f4f4fc5c378c60c2b6482b3e6e2b4a739a0bea4c4511fb16fef92fdc5e27a7a"
+  },
+  "cohort_source": {
+    "name": "image",
+    "data": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/dev.jsonl",
+    "report": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/report.json",
+    "media_root": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/media"
+  }
+}

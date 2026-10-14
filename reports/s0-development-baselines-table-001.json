@@ -156,11 +156,169 @@
       "brier": 0.8053977938214587,
       "coverage_at_error": 0.002,
       "max_error": 0.05
+    },
+    {
+      "cohort": "image",
+      "model": "valen-preview-0923",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-image-valen-preview-0923-001.json",
+      "count": 500,
+      "accuracy": 0.664,
+      "ece15": 0.09337754760606025,
+      "brier": 0.45319203314030254,
+      "coverage_at_error": 0.24,
+      "max_error": 0.05
+    },
+    {
+      "cohort": "text",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-text-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.938,
+      "ece15": 0.016352390578482975,
+      "brier": 0.08640920625730883,
+      "coverage_at_error": 0.986,
+      "max_error": 0.05
+    },
+    {
+      "cohort": "image",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-image-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.786,
+      "ece15": 0.11040888443827698,
+      "brier": 0.3185990685689077,
+      "coverage_at_error": 0.608,
+      "max_error": 0.05
+    },
+    {
+      "cohort": "screenshot",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.898,
+      "ece15": 0.018801986483210506,
+      "brier": 0.15873809593374016,
+      "coverage_at_error": 0.884,
+      "max_error": 0.05
+    },
+    {
+      "cohort": "audio",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-audio-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.38,
+      "ece15": 0.5224974461130921,
+      "brier": 1.01293568688913,
+      "coverage_at_error": 0.004,
+      "max_error": 0.05
     }
   ],
-  "other_supported_pairs": "pending actual queue results",
-  "unsupported_pairs": "OneJev audio and audio-bearing crossmodal, metadata inconsistent; no fabricated scores",
+  "unsupported_pairs": [
+    {
+      "cohort": "audio",
+      "model": "onejev-27b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "audio",
+      "model": "onejev-4b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "audio",
+      "model": "valen-preview-0923",
+      "reason": "official Valen compiler rejects audio",
+      "score": null
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "onejev-27b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "onejev-4b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "valen-preview-0923",
+      "reason": "official Valen compiler rejects audio",
+      "score": null
+    }
+  ],
   "whole_s0_complete": false,
   "no_holdout": true,
-  "cost_usd": null
+  "cost_usd": null,
+  "expected_supported_pairs": 30,
+  "expected_unsupported_pairs": 6,
+  "verified_supported_pairs": 17,
+  "pending_supported_pairs": [
+    {
+      "cohort": "crossmodal",
+      "model": "gemma4-e2b-it"
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "gemma4-e4b-it"
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "jev-omni-12b"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "gemma4-e2b-it"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "gemma4-e4b-it"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-27b"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-4b"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "valen-preview-0923"
+    },
+    {
+      "cohort": "video",
+      "model": "gemma4-e2b-it"
+    },
+    {
+      "cohort": "video",
+      "model": "jev-omni-12b"
+    },
+    {
+      "cohort": "video",
+      "model": "onejev-27b"
+    },
+    {
+      "cohort": "video",
+      "model": "onejev-4b"
+    },
+    {
+      "cohort": "video",
+      "model": "valen-preview-0923"
+    }
+  ]
 }
