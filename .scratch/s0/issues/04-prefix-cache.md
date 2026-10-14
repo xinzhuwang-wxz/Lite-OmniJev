@@ -34,3 +34,5 @@ Blocked by: p0:04, 03
 2026-10-14 CPU准备收口：native/gateway cache runner、Server-Timing边界及真实CPU媒体/前缀freeze已合入；CPU mock比率失败保留，不能当作GPU prefix命中/≤2时延通过。
 
 2026-10-14：03正式GPU概率/浏览器独立验收通过后认领。已在相同Linux/026官方processor冻结10题协议，2重复/2预热/零输出容差，commonprefix309含媒体endpoint265；freeze exit0/6.924秒。当前教师benchmark占卡，cache实测等待独占GPU，禁止并行教师性能污染；仅准备协议，不冒称缓存或2倍门槛通过。
+
+2026-10-14原生eager实测：on/off和真实网关全部完成，实际KV命中288覆盖media265，但native cold ratios3.9318/3.9354、gateway cold5.0202/5.0846，旧strict failed。独立architect确认本地额外warm完整重复题分母/零跨路径logprob条件超出原HTML；ADR-0007明确新policy保留原≤2及四概率严格<.001，不覆盖旧strict结果。当前冷态仍失败，不能关票；正在用官方FULL CUDAgraph、mode0和5capture sizes做短canary，原精度/权重/引擎保持。

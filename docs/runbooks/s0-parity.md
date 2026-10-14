@@ -48,3 +48,16 @@ PYTHONPATH=/path/to/Lite-OmniJev python -m scripts.s0_parity synthetic-control  
 - It does not read sealed holdout content; the supplied manifest must be the non-holdout S0 100-case manifest.
 - Reports contain hashes, token IDs, probabilities, environment, elapsed time, and exit code evidence; they avoid storing prompt text or media bytes.
 - A passing CPU synthetic report is not a replacement for the CUDA HF reference or the live vLLM comparison.
+
+## 2026-10-14 admitted numerical reference
+
+The real 100-case GPU numerical reference passed in float32 with vLLM 0.26,
+`TRITON_F32_DEFAULT=ieee` and `NVIDIA_TF32_OVERRIDE=0`. The supported
+`--hf-config-path` copy changes only root/audio/text/vision `dtype` fields to
+float32; original weights, config, template and strict `<1e-3` gate remain fixed.
+See `reports/s0-full100-gpu-acceptance-001.json` for raw artifacts, source/runtime
+bindings, exact reruns, gateway100, Chromium evidence and independent review.
+The gateway harness checks the existing chance-adjusted confidence contract.
+This reference does not admit BF16/FP8 serving performance or cache-enabled
+correctness. The failed BF16 evidence remains preserved. Exact launch paths and
+resume boundaries are in `plan/handoff-2026-10-14-s0-parity-and-teacher-admission.md`.

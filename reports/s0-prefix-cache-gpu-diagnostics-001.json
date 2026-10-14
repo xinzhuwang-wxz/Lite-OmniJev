@@ -1,0 +1,426 @@
+{
+  "schema": "lite-omnijev.s0-cache-gpu-diagnostics.v1",
+  "status": "failed_performance_not_cache_absence",
+  "s0_stage_acceptance": false,
+  "cost_usd": null,
+  "code_version": "dfdfd935da5a968f497365f74c36989efebb1175",
+  "hardware": "NVIDIA H20 97871MiB driver580.65.06",
+  "precision": "float32; NVIDIA_TF32_OVERRIDE=0; TRITON_F32_DEFAULT=ieee",
+  "eager": {
+    "native": {
+      "action": "compare",
+      "status": "failed",
+      "exit_code": 1,
+      "cost_usd": null,
+      "s0_acceptance": false,
+      "python": "3.11.17",
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "code_revision": "dfdfd935da5a968f497365f74c36989efebb1175",
+      "ratio_threshold_inclusive": 2,
+      "statistics": "all paired repeats must pass",
+      "groups": [
+        {
+          "cache_enabled": true,
+          "condition": "cold",
+          "ratios": [
+            3.931812975657207,
+            3.9354307679248604
+          ],
+          "median_ratio": 3.9336218717910336,
+          "maximum_ratio": 3.9354307679248604
+        },
+        {
+          "cache_enabled": true,
+          "condition": "warm",
+          "ratios": [
+            14.54368138123854,
+            14.859840075531253
+          ],
+          "median_ratio": 14.701760728384897,
+          "maximum_ratio": 14.859840075531253
+        },
+        {
+          "cache_enabled": false,
+          "condition": "cold",
+          "ratios": [
+            9.980618500492476,
+            9.993033066870186
+          ],
+          "median_ratio": 9.986825783681331,
+          "maximum_ratio": 9.993033066870186
+        },
+        {
+          "cache_enabled": false,
+          "condition": "warm",
+          "ratios": [
+            10.048739079121885,
+            9.992959309093589
+          ],
+          "median_ratio": 10.020849194107736,
+          "maximum_ratio": 10.048739079121885
+        }
+      ],
+      "failures": [
+        "output_changed",
+        "ten_to_single_ratio_exceeds_two"
+      ],
+      "protocol_sha256": "8b874c32cc7c519fbf74c560a63a838b62db01c74c8fe37b8ed7377552d95fe3",
+      "evidence_kind": "gpu",
+      "gateway_wall_seconds": null,
+      "media_processor_seconds": null,
+      "timing_boundary": "direct native HTTP wall; payload preparation and engine metrics separate",
+      "scope": "latency evidence only; stage dependencies and provenance require review",
+      "source_reports_sha256": {
+        "on": "8b1e77a74e3c79c0196f7f76d2f4881d2ff0b0fcffca768eae63970b9035985b",
+        "off": "bfd2f176dab30d4d00e06a09567efcc04c7e9f66291176ba4a1260c2f6b05899"
+      },
+      "duration_seconds": 0.007851362228393555
+    },
+    "gateway": {
+      "status": "failed",
+      "exit_code": 1,
+      "action": "compare",
+      "weights_loaded": false,
+      "s0_acceptance": false,
+      "cost_usd": null,
+      "python": "3.11.17",
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "code_revision": "dfdfd935da5a968f497365f74c36989efebb1175",
+      "ratio_threshold_inclusive": 2,
+      "statistics": "all paired repeats must pass",
+      "groups": [
+        {
+          "cache_enabled": true,
+          "condition": "cold",
+          "ratios": [
+            5.020221665504366,
+            5.0845706763448275
+          ],
+          "median_ratio": 5.052396170924597,
+          "maximum_ratio": 5.0845706763448275
+        },
+        {
+          "cache_enabled": true,
+          "condition": "warm",
+          "ratios": [
+            12.244893772615653,
+            12.034213778822094
+          ],
+          "median_ratio": 12.139553775718873,
+          "maximum_ratio": 12.244893772615653
+        },
+        {
+          "cache_enabled": false,
+          "condition": "cold",
+          "ratios": [
+            10.023600327656416,
+            10.025477077263872
+          ],
+          "median_ratio": 10.024538702460145,
+          "maximum_ratio": 10.025477077263872
+        },
+        {
+          "cache_enabled": false,
+          "condition": "warm",
+          "ratios": [
+            9.97556395179002,
+            9.99192624131681
+          ],
+          "median_ratio": 9.983745096553415,
+          "maximum_ratio": 9.99192624131681
+        }
+      ],
+      "failures": [
+        "output_changed",
+        "ten_to_single_ratio_exceeds_two"
+      ],
+      "protocol_sha256": "8b874c32cc7c519fbf74c560a63a838b62db01c74c8fe37b8ed7377552d95fe3",
+      "evidence_kind": "gpu",
+      "gateway_wall_seconds": null,
+      "media_processor_seconds": null,
+      "timing_boundary": "actual in-process gateway ASGI wall; measured Server-Timing intervals",
+      "scope": "latency evidence only; stage dependencies and provenance require review",
+      "timing_rows": [
+        {
+          "cache_enabled": true,
+          "repeat": 0,
+          "condition": "cold",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.31395807676017284,
+          "server_timing_ms": {
+            "preprocess": 54.158,
+            "upstream": 257.986,
+            "queue": 0.133,
+            "total": 313.513
+          },
+          "native_http_sum_seconds": 0.25539842806756496
+        },
+        {
+          "cache_enabled": true,
+          "repeat": 0,
+          "condition": "cold",
+          "size": 10,
+          "gateway_client_wall_seconds": 1.5761391390115023,
+          "server_timing_ms": {
+            "preprocess": 539.133,
+            "upstream": 1029.866,
+            "queue": 1.704,
+            "total": 1575.693
+          },
+          "native_http_sum_seconds": 1.0036881547421217
+        },
+        {
+          "cache_enabled": true,
+          "repeat": 0,
+          "condition": "warm",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.11206279136240482,
+          "server_timing_ms": {
+            "preprocess": 53.883,
+            "upstream": 56.333,
+            "queue": 0.161,
+            "total": 111.586
+          },
+          "native_http_sum_seconds": 0.053804388269782066
+        },
+        {
+          "cache_enabled": true,
+          "repeat": 0,
+          "condition": "warm",
+          "size": 10,
+          "gateway_client_wall_seconds": 1.372196976095438,
+          "server_timing_ms": {
+            "preprocess": 539.699,
+            "upstream": 825.738,
+            "queue": 1.55,
+            "total": 1371.699
+          },
+          "native_http_sum_seconds": 0.7996427062898874
+        },
+        {
+          "cache_enabled": true,
+          "repeat": 1,
+          "condition": "cold",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.314055472612381,
+          "server_timing_ms": {
+            "preprocess": 54.115,
+            "upstream": 258.216,
+            "queue": 0.146,
+            "total": 313.648
+          },
+          "native_http_sum_seconds": 0.2556503228843212
+        },
+        {
+          "cache_enabled": true,
+          "repeat": 1,
+          "condition": "cold",
+          "size": 10,
+          "gateway_client_wall_seconds": 1.5968372467905283,
+          "server_timing_ms": {
+            "preprocess": 566.415,
+            "upstream": 1023.682,
+            "queue": 1.562,
+            "total": 1596.41
+          },
+          "native_http_sum_seconds": 0.9974440149962902
+        },
+        {
+          "cache_enabled": true,
+          "repeat": 1,
+          "condition": "warm",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.11737527698278427,
+          "server_timing_ms": {
+            "preprocess": 57.895,
+            "upstream": 57.687,
+            "queue": 0.121,
+            "total": 116.902
+          },
+          "native_http_sum_seconds": 0.055062273517251015
+        },
+        {
+          "cache_enabled": true,
+          "repeat": 1,
+          "condition": "warm",
+          "size": 10,
+          "gateway_client_wall_seconds": 1.4125191755592823,
+          "server_timing_ms": {
+            "preprocess": 572.631,
+            "upstream": 833.222,
+            "queue": 1.381,
+            "total": 1412.036
+          },
+          "native_http_sum_seconds": 0.806377723813057
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 0,
+          "condition": "cold",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.3139824438840151,
+          "server_timing_ms": {
+            "preprocess": 53.212,
+            "upstream": 258.999,
+            "queue": 0.146,
+            "total": 313.535
+          },
+          "native_http_sum_seconds": 0.2564337309449911
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 0,
+          "condition": "cold",
+          "size": 10,
+          "gateway_client_wall_seconds": 3.1472345273941755,
+          "server_timing_ms": {
+            "preprocess": 537.104,
+            "upstream": 2603.756,
+            "queue": 1.505,
+            "total": 3146.787
+          },
+          "native_http_sum_seconds": 2.5782823879271746
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 0,
+          "condition": "warm",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.3151589222252369,
+          "server_timing_ms": {
+            "preprocess": 52.834,
+            "upstream": 260.676,
+            "queue": 0.09,
+            "total": 314.69
+          },
+          "native_http_sum_seconds": 0.25830203481018543
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 0,
+          "condition": "warm",
+          "size": 10,
+          "gateway_client_wall_seconds": 3.143887983635068,
+          "server_timing_ms": {
+            "preprocess": 532.537,
+            "upstream": 2605.773,
+            "queue": 1.074,
+            "total": 3143.367
+          },
+          "native_http_sum_seconds": 2.581116024404764
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 1,
+          "condition": "cold",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.3155602440237999,
+          "server_timing_ms": {
+            "preprocess": 52.788,
+            "upstream": 261.117,
+            "queue": 0.085,
+            "total": 315.136
+          },
+          "native_http_sum_seconds": 0.25874246284365654
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 1,
+          "condition": "cold",
+          "size": 10,
+          "gateway_client_wall_seconds": 3.1636419929564,
+          "server_timing_ms": {
+            "preprocess": 544.059,
+            "upstream": 2614.362,
+            "queue": 1.027,
+            "total": 3163.214
+          },
+          "native_http_sum_seconds": 2.589935565367341
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 1,
+          "condition": "warm",
+          "size": 1,
+          "gateway_client_wall_seconds": 0.31131558306515217,
+          "server_timing_ms": {
+            "preprocess": 52.697,
+            "upstream": 257.059,
+            "queue": 0.08,
+            "total": 310.872
+          },
+          "native_http_sum_seconds": 0.25476595386862755
+        },
+        {
+          "cache_enabled": false,
+          "repeat": 1,
+          "condition": "warm",
+          "size": 10,
+          "gateway_client_wall_seconds": 3.1106423437595367,
+          "server_timing_ms": {
+            "preprocess": 528.357,
+            "upstream": 2576.35,
+            "queue": 1.05,
+            "total": 3109.879
+          },
+          "native_http_sum_seconds": 2.547283424064517
+        }
+      ],
+      "gateway_configuration_sha256": "7a2b040b076e2429e7ef32434e2f43263197e0dcde964a60ee62bebb44584a9c",
+      "gateway_request_sha256": "777fd2c7a83a921f6e40baf21a76294980f3c0bb02dfeb59735f368c56e5604b",
+      "transport_scope": "in-process real gateway; networked upstream; no external gateway network",
+      "duration_seconds": 0.006886675953865051
+    },
+    "all_native_raw_logprob_max_delta": 4.863739013671875e-05
+  },
+  "cuda_graph_native_canary": {
+    "collection_exit_code": 0,
+    "seconds": 6.627664741128683,
+    "compile_mode": 0,
+    "cudagraph_mode": "FULL",
+    "capture_sizes": [
+      32,
+      64,
+      128,
+      256,
+      384
+    ],
+    "graph_capture_seconds": 1,
+    "graph_capture_memory_GiB": 0.38,
+    "cold_ratios": [
+      3.8021196147358567,
+      3.808437421604298
+    ],
+    "warm_diagnostic_ratios": [
+      13.523896506625963,
+      13.261413423198391
+    ],
+    "performance_gate_passed": false,
+    "all_native_raw_logprob_max_delta": 1.811981201171875e-05,
+    "full_gateway_off_not_run": "Short native canary already fails cold <=2; stop this configuration to save GPU time",
+    "startup_health_poll": "first60sec bounded poll expired before ready; next observed-ready collection succeeded, not a model failure"
+  },
+  "cache_hit": {
+    "observed_cached_tokens": [
+      288,
+      352
+    ],
+    "media_prefix_end": 265,
+    "native_real_kv_hit": true
+  },
+  "test_shape_correction": "ADR-0007; original-product-cold-v2 under implementation; original2/.001 unchanged; eager and graph cold still fail",
+  "next": "Bounded multiquestion scheduling/request-local shared preparation requires separate specification and explicit measurement; do not claim serial pass. Teacher resumed from1653 records.",
+  "evidence_sha256": {
+    "artifacts/s0-cache-eager-20261014/gateway-on-001.json": "d4e7ba11db56336a7a7a4557986cd563b0aa42a3e3398a979db5fbe6426dfccd",
+    "artifacts/s0-cache-eager-20261014/gateway-compare-001.json": "8430f94138fefcbacdf68f79742155b9791206b8d246a7ff78e1b513b9e93a46",
+    "artifacts/s0-cache-eager-20261014/gateway-off-001.json": "f91bfc52e75c8b6ed9bb37c2843e635afb0fc640f830f2e15a39c5316272ebac",
+    "artifacts/s0-cache-eager-20261014/native-on-001.json": "c3870a3aa17c7e4a2685df9766aea5d4ca83add914ce1069fc55dc1e5adac51f",
+    "artifacts/s0-cache-eager-20261014/native-compare-001.json": "9cd078f6f45e483638f0571058a9b49a58a41b48be2b4d942193e498ffa3fc92",
+    "artifacts/s0-cache-eager-20261014/native-off-001.json": "6fb9382c244ab0b64194f6d5fdc44ccb6f6e5f80eca74690ab79ef4b6cbe13a6",
+    "artifacts/native-cache-graph-on-001.json": "5ca64a67c96112e02e7b16218f46bf7f56942bc78489321f718b919530d5152f",
+    "reports/s0-prefix-cache-linux-freeze-001.json": "6351a070f0e0cf1d1e23ca6306bb10c4b83d19b0e4c6a8391aa93f8b2727207e",
+    "artifacts/s0-cache-graph-20261014/native-on-001.json": "5ca64a67c96112e02e7b16218f46bf7f56942bc78489321f718b919530d5152f",
+    "artifacts/s0-cache-graph-20261014/server-on.json": "7ec874dcce15918a1a8ca5bb51320c3ea6fcce9780412cf5333f378e2a14f9a0",
+    "artifacts/s0-cache-graph-20261014/server-off.json": "0f9fb646cb29433868e32e27cda8bd0c435be4a742280b3a23139a3767ebd9b9"
+  }
+}

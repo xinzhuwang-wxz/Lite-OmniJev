@@ -11,14 +11,15 @@
 - 验收native PID94918/18001与gateway PID130178/18000已发送TERM；本机转发55174→18000暂保留，服务不再保证可用。实时/proc+health绑定在artifacts/s0-parity-full100-20261014/live-process-binding-001.json，无签名remote attestation，不伪称独立签名证明。两服务仅开发数值验收，非生产。
 - 教师公开text/audio/video两遍真实forward通过/44.564秒；原tensor格式→safehead的GPU功能参考47.418秒exit0：四tensorhash、5counts边界及三类两遍logits/probs精确；31回归通过，s0:01原README声明/安全GPU链已获独立verifier PASS，已关闭；s0:02主会话认领效果复现。严禁正常进程加载pickle或执行上游module。
 - 教师benchmark原pilot900秒退出124，保留1397条；MMAU首遍1000题620正确/62.0%，在63.1±2pp内；MVBench首遍397题仅部分，不作完整baseline。两遍完整质量门槛仍pending。
-- 已从1397记录显式--resume续到1653条后主会话SIGINT安全暂停（exit1），原PID145623已退出；脚本DF树artifacts/resume-teacher-002.sh，日志teacher-benchmark-resume-002.log/exit，输出仍teacher-benchmark-pilot-001.json及.jsonl。不得启动第二份或改冻结源码，不重算已有题。
-- 原生子代理：parity_verifier已完成03只读复核，树/tmp/lite-s0-parity-verifier-0ca8ff1；teacher_reference已交付独立参考脚本，树/tmp/lite-teacher-head-reference-0ca8ff1。父会话统一票/STATUS/整合。
-- 当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
+- 已从1397显式--resume至1653条，SIGINT安全暂停做cache独占测量（resume002 exit1，旧进程已退出）；目前resume003已启动，监督PID146819/timeout146820/教师146821，最多3600秒，新日志teacher-benchmark-resume-003.log/exit，输出仍DF树teacher-benchmark-pilot-001.json及.jsonl。严禁重复启动/改冻结源码/重算已有题。
+- 原生子代理：parity_verifier/teacher_reference均完成，临时树已清理；cache_protocol_review已交只读建议；cache_assessment在/tmp/lite-cache-assessment-v2-0cc38cb实现显式新policy和回归，不启动GPU。父会话统一票/STATUS/整合。
+- 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
-下一步：03已关票；s0:04已认领/同Linux协议freeze通过，已暂停教师并独占GPU启动cache-on PID146066；接着native/gateway on/off顺序10题，然后从1653教师断点恢复。safehead GPU参考已通过。未知费用填null，不冒称时延/质量或最终Playground达标。
+下一步：01/03已关票。02教师resume003继续；04 cache eager完整on/off/native/gateway失败，FULL CUDAgraph canary冷比仍3.802/3.808，已停止，不重复此配置。诊断在reports/s0-prefix-cache-gpu-diagnostics-001.json。按ADR-0007修正额外测量条件（仍保留≤2及四概率严格<.001），旧strict失败保留，冷态依然failed。之后准备有界多题调度/请求内媒体复用技术切片，实测前不冒称串行或服务性能通过。
 
 ## 当前目标与决策
 - 用户已完成开卡，原无卡准备收口；现在复用现有模型、数据、环境及P0产物推进真实GPU闭环，不代开关卡或改租赁。
+- 第十一节逐项阶段检查点见plan/optimization-checkpoints.md：到建议阶段评审收益/预算并记录决定，探索/5b仍默认关闭；当前未启动可选实验。
 - 原方案、阶段顺序和门槛不变；5b/探索关闭，不换基座、不改引擎、不放宽阈值。
 - ADR-0004：AudioCaps首发省略，以Clotho/TTS补题量；ADR-0005：12k视频QA用CC0 CLEVRER，5k图题由允许教师在CC0/BY媒体生成，DocVQA仅研究隔离；NextQA/VGGSound/受限LLaVA仅候选，不下载1.28TB全量LLaVA。
 - ADR-0006用户已批准：仅将S0 MVBench发布53.10±2复现替换为固定9任务1800行独立baseline；MMAU63.10±2、S3≥90%、S4≥97%及其他门槛不变。
@@ -89,4 +90,4 @@
 2. 专用接续文档 `plan/handoff-2026-10-14-gpu-transition.md`：精确环境/缓存/fixture、首批CPU资源补验、GPU小smoke、S0门槛、预算/断点/失败恢复与关卡通知；可复制新session启动词已写好。
 3. 最新源码同步用 `reports/before-gpu-transition-sync-001.json` 与远端同名侧车核对HEAD/完整Git bundle；此前source-sync001仅历史CPU检查点。后加receipt仅元数据，执行代码仍655a838。
 4. 用户切换后按交接先读资源，补同Linux HF100两遍/native正常六case与full100/网关视频8/16，再真实模型与S0。历史maxTV失败及D004未批准不变，S0全绿前禁止S1。
-5. 原生get_goal实际仍blocked，完整目标未完成；本次仅完成无卡准备和交接，不以此complete终局，不重建heartbeat。
+5. 无卡交接时goal曾blocked；当前用户已恢复，工具确认active。完整目标未完成，不重建heartbeat。
