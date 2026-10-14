@@ -50,12 +50,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-partial", action="store_true")
+    parser.add_argument("--profile", choices=("hf_only", "canonical_http"), default="hf_only")
     args = parser.parse_args(argv)
     if args.output.exists() or args.output.is_symlink():
         parser.error("output path already exists; choose a new evidence report path")
     start = time.monotonic()
     report: dict[str, Any] = {
         "status": "pending",
+        "input_profile": "canonical-http-v1" if args.profile == "canonical_http" else "hf-only-v1",
         "exit_code": 1,
         "complete_100_cases": False,
         "pending_vllm_processor_and_transport": True,
@@ -104,7 +106,9 @@ def main(argv: list[str] | None = None) -> int:
         for case in cases:
             report["active_case_id"] = case.id
             write_json(args.output, report)
-            report["cases"].append(prepare_case(case, processor, args.asset_root).summary)
+            report["cases"].append(
+                prepare_case(case, processor, args.asset_root, profile=args.profile).summary
+            )
         report.pop("active_case_id", None)
         report["phase"] = "finished"
         report.update(

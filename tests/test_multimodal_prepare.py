@@ -196,3 +196,21 @@ def test_cli_refuses_existing_output_without_changing_evidence(
     else:
         assert output.is_symlink()
         assert not output.exists()
+
+
+@pytest.mark.parametrize("kinds", [["video", "video"], ["audio", "audio"], ["image", "video"]])
+def test_pending_canonical_combinations_fail_before_loading_files(
+    tmp_path: Path, kinds: list[str]
+) -> None:
+    from data.schema import Prefix, Question
+    from train.multimodal import prepare_decision
+
+    prefix = Prefix.model_validate(
+        {
+            "state": "public fixture",
+            "media": [{"type": kind, "uri": "missing", "sha256": "a" * 64} for kind in kinds],
+        }
+    )
+    question = Question(qid="q", type="noul", instruction="Is evidence sufficient?")
+    with pytest.raises(ValueError, match="canonical|compatibility"):
+        prepare_decision(prefix, question, object(), tmp_path, profile="canonical_http")

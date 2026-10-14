@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import importlib
+import io
 import json
 import subprocess
 import tempfile
+import wave
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -179,45 +182,178 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
 
 
 @dataclass(frozen=True)
+class CanonicalMedia:
+    """HTTP bytes and the HF values redecoded from those exact bytes, kept in memory."""
+
+    hf_value: Any
+    http_part: dict[str, Any]
+    summary: dict[str, Any]
+    video_io_kwargs: dict[str, Any] | None = None
+
+
+def canonicalize_media(kind: str, value: Any) -> CanonicalMedia:
+    image_module = importlib.import_module("PIL.Image") if kind != "audio" else None
+    if kind == "image":
+        assert image_module is not None
+        buffer = io.BytesIO()
+        value.save(buffer, format="PNG", optimize=False, compress_level=6)
+        data = buffer.getvalue()
+        with image_module.open(io.BytesIO(data)) as image:
+            decoded = image.convert("RGB")
+        return CanonicalMedia(
+            decoded,
+            {
+                "type": "image_url",
+                "image_url": {"url": "data:image/png;base64," + base64.b64encode(data).decode()},
+            },
+            {
+                "type": "image",
+                "encoding": "RGB PNG compress_level=6 optimize=false",
+                "source_rgb_sha256": hashlib.sha256(value.tobytes()).hexdigest(),
+                "canonical_bytes_sha256": hashlib.sha256(data).hexdigest(),
+                "canonical_rgb_sha256": hashlib.sha256(decoded.tobytes()).hexdigest(),
+            },
+        )
+    if kind == "audio":
+        np = importlib.import_module("numpy")
+        pcm = np.rint(np.clip(value, -1.0, 1.0) * 32767).astype("<i2").tobytes()
+        buffer = io.BytesIO()
+        with wave.open(buffer, "wb") as audio:
+            audio.setnchannels(1)
+            audio.setsampwidth(2)
+            audio.setframerate(16000)
+            audio.writeframes(pcm)
+        data = buffer.getvalue()
+        with wave.open(io.BytesIO(data), "rb") as audio:
+            decoded_pcm = audio.readframes(audio.getnframes())
+        decoded = np.frombuffer(decoded_pcm, dtype="<i2").astype(np.float32) / 32768.0
+        return CanonicalMedia(
+            decoded,
+            {
+                "type": "input_audio",
+                "input_audio": {"data": base64.b64encode(data).decode(), "format": "wav"},
+            },
+            {
+                "type": "audio",
+                "encoding": "mono 16000Hz PCM16 WAV; round(clip(float,-1,1)*32767)",
+                "sample_rate": 16000,
+                "frames": len(decoded),
+                "source_float32_sha256": hashlib.sha256(value.tobytes()).hexdigest(),
+                "canonical_bytes_sha256": hashlib.sha256(data).hexdigest(),
+                "canonical_pcm16_sha256": hashlib.sha256(decoded_pcm).hexdigest(),
+                "canonical_float32_sha256": hashlib.sha256(decoded.tobytes()).hexdigest(),
+            },
+        )
+    if kind != "video":
+        raise ValueError("unsupported canonical media type")
+    assert image_module is not None
+    frames, encoded, source_hashes, decoded_hashes = [], [], [], []
+    for frame in value["frames"]:
+        buffer = io.BytesIO()
+        frame.save(
+            buffer, format="JPEG", quality=95, subsampling=0, optimize=False, progressive=False
+        )
+        data = buffer.getvalue()
+        with image_module.open(io.BytesIO(data)) as image:
+            decoded = image.convert("RGB")
+        frames.append(decoded)
+        encoded.append(data)
+        source_hashes.append(hashlib.sha256(frame.tobytes()).hexdigest())
+        decoded_hashes.append(hashlib.sha256(decoded.tobytes()).hexdigest())
+    metadata = {**value["metadata"], "video_backend": "canonical_jpeg"}
+    io_kwargs = {
+        key: metadata[key] for key in ("fps", "frames_indices", "total_num_frames", "duration")
+    }
+    io_kwargs["do_sample_frames"] = False
+    return CanonicalMedia(
+        {"frames": frames, "metadata": metadata},
+        {
+            "type": "video_url",
+            "video_url": {
+                "url": "data:video/jpeg;base64,"
+                + ",".join(base64.b64encode(data).decode() for data in encoded)
+            },
+        },
+        {
+            "type": "video",
+            "encoding": "RGB JPEG quality=95 subsampling=0 optimize=false progressive=false",
+            "source_rgb_sha256": source_hashes,
+            "canonical_frame_bytes_sha256": [hashlib.sha256(data).hexdigest() for data in encoded],
+            "canonical_rgb_sha256": decoded_hashes,
+            "metadata": io_kwargs,
+        },
+        io_kwargs,
+    )
+
+
+@dataclass(frozen=True)
 class PreparedDecision:
-    """In-memory shared input; only summary is safe for evidence reports."""
+    """Shared in-memory input; only summary is safe to write as evidence."""
 
     messages: list[dict[str, Any]]
     prompt: str
     inputs: Any
     answer_token_ids: dict[str, int]
     summary: dict[str, Any]
+    http_messages: list[dict[str, Any]] | None = None
+    http_media_io_kwargs: dict[str, Any] | None = None
 
 
-def prepare_case(
-    case: PreparationCase,
+def prepare_decision(
+    prefix: Prefix,
+    question: Question,
     processor: Any,
     root: Path,
     *,
+    profile: Literal["hf_only", "canonical_http"] = "hf_only",
+    video_frames: Literal[8, 16] = 16,
     max_bytes: int = 64 * 1024 * 1024,
     max_audio_seconds: float = 30,
     max_video_seconds: float = 60,
 ) -> PreparedDecision:
-    """Build official CPU tensors and a separate content-free evidence summary."""
-    num_frames = case.video_frames
+    """Prepare inference inputs without inventing any dataset provenance metadata."""
+    num_frames = video_frames
+    if profile not in {"hf_only", "canonical_http"} or num_frames not in {8, 16}:
+        raise ValueError("invalid preparation profile or video frame count")
+    if not prefix.state.strip() or not question.instruction.strip():
+        raise ValueError("empty decision input")
     if max_bytes <= 0 or max_audio_seconds <= 0 or max_video_seconds <= 0:
         raise ValueError("invalid preparation limits")
+    if profile == "canonical_http":
+        types = [item.type for item in prefix.media]
+        if types.count("video") > 1 or types.count("audio") > 1:
+            raise ValueError("canonical S0 profile supports at most one video and one audio")
+        if "video" in types and "image" in types:
+            raise ValueError("image plus video canonical profile CPU compatibility remains pending")
     media: dict[str, list[Any]] = {"image": [], "audio": [], "video": []}
     content: list[dict[str, Any]] = []
-    for item in case.prefix.media:
+    http_content: list[dict[str, Any]] = []
+    canonical_summaries = []
+    http_media_io_kwargs: dict[str, Any] = {}
+    for item in prefix.media:
         path = resolve_media(root, item.uri, item.sha256, max_bytes=max_bytes)
-        media[item.type].append(
-            load_media(
-                path,
-                item.type,
-                num_frames=num_frames,
-                max_seconds=max_audio_seconds if item.type == "audio" else max_video_seconds,
-            )
+        decoded = load_media(
+            path,
+            item.type,
+            num_frames=num_frames,
+            max_seconds=max_audio_seconds if item.type == "audio" else max_video_seconds,
         )
+        if profile == "canonical_http":
+            canonical = canonicalize_media(item.type, decoded)
+            decoded = canonical.hf_value
+            http_content.append(canonical.http_part)
+            canonical_summaries.append(canonical.summary)
+            if canonical.video_io_kwargs is not None:
+                http_media_io_kwargs["video"] = canonical.video_io_kwargs
+        media[item.type].append(decoded)
         content.append({"type": item.type})
-    payload = render_payload(Prefix(state=case.prefix.state), case.question)
+    payload = render_payload(Prefix(state=prefix.state), question)
     content.append({"type": "text", "text": payload})
+    http_content.append({"type": "text", "text": payload})
     messages = [{"role": "user", "content": content}]
+    http_messages = (
+        [{"role": "user", "content": http_content}] if profile == "canonical_http" else None
+    )
     prompt = processor.apply_chat_template(
         messages,
         tokenize=False,
@@ -227,7 +363,7 @@ def prepare_case(
     if not isinstance(prompt, str) or not prompt or "<|think|>" in prompt:
         raise ValueError("invalid official prompt or thinking not disabled")
     tokenizer = processor.tokenizer
-    mapping = check_answer_tokens(tokenizer, case.question)
+    mapping = check_answer_tokens(tokenizer, question)
     prompt_ids = tokenizer.encode(prompt, add_special_tokens=False)
     for answer, token_id in mapping.items():
         if tokenizer.encode(prompt + answer, add_special_tokens=False) != prompt_ids + [token_id]:
@@ -242,6 +378,8 @@ def prepare_case(
         "return_mm_token_type_ids": True,
         "truncation": False,
     }
+    if profile == "canonical_http":
+        kwargs["add_special_tokens"] = False
     if media["image"]:
         kwargs["images"] = [media["image"]]
     if media["audio"]:
@@ -264,7 +402,6 @@ def prepare_case(
     if not required.issubset(inputs):
         raise ValueError("official processor omitted required modality tensors")
     final_ids = inputs["input_ids"][0].tolist()
-    # Media expansion may change the prefix, but cannot change the generation suffix.
     suffix_size = min(8, len(prompt_ids))
     if not suffix_size or final_ids[-suffix_size:] != prompt_ids[-suffix_size:]:
         raise ValueError("processor changed generation boundary suffix")
@@ -280,9 +417,8 @@ def prepare_case(
             "dtype": str(value.dtype),
             "sha256": hashlib.sha256(array.tobytes()).hexdigest(),
         }
-    summary = {
-        "id": case.id,
-        "provenance": case.meta.model_dump(),
+    summary: dict[str, Any] = {
+        "input_profile": "canonical-http-v1" if profile == "canonical_http" else "hf-only-v1",
         "configuration": {
             "max_bytes": max_bytes,
             "max_audio_seconds": max_audio_seconds,
@@ -291,11 +427,9 @@ def prepare_case(
             "truncation": False,
             "enable_thinking": False,
         },
-        "category": case.category,
-        "primitive": case.question.type,
         "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
         "payload_sha256": hashlib.sha256(payload.encode()).hexdigest(),
-        "media_sha256": [item.sha256 for item in case.prefix.media],
+        "media_sha256": [item.sha256 for item in prefix.media],
         "video_metadata": [video["metadata"] for video in media["video"]],
         "decoded_video_frame_sha256": [
             [hashlib.sha256(frame.tobytes()).hexdigest() for frame in video["frames"]]
@@ -308,5 +442,53 @@ def prepare_case(
         "generation_boundary": "passed",
         "tensors": summaries,
     }
+    if http_messages is not None:
+        summary["configuration"]["add_special_tokens"] = False
+        summary.update(
+            canonical_media=canonical_summaries,
+            http_messages_sha256=hashlib.sha256(
+                json.dumps(http_messages, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest(),
+            http_media_io_kwargs_sha256=hashlib.sha256(
+                json.dumps(http_media_io_kwargs, sort_keys=True).encode()
+            ).hexdigest(),
+        )
+    return PreparedDecision(
+        messages,
+        prompt,
+        inputs,
+        mapping,
+        summary,
+        http_messages,
+        http_media_io_kwargs if http_messages is not None else None,
+    )
 
-    return PreparedDecision(messages, prompt, inputs, mapping, summary)
+
+def prepare_case(
+    case: PreparationCase,
+    processor: Any,
+    root: Path,
+    *,
+    profile: Literal["hf_only", "canonical_http"] = "hf_only",
+    max_bytes: int = 64 * 1024 * 1024,
+    max_audio_seconds: float = 30,
+    max_video_seconds: float = 60,
+) -> PreparedDecision:
+    prepared = prepare_decision(
+        case.prefix,
+        case.question,
+        processor,
+        root,
+        profile=profile,
+        video_frames=case.video_frames,
+        max_bytes=max_bytes,
+        max_audio_seconds=max_audio_seconds,
+        max_video_seconds=max_video_seconds,
+    )
+    prepared.summary.update(
+        id=case.id,
+        category=case.category,
+        primitive=case.question.type,
+        provenance=case.meta.model_dump(),
+    )
+    return prepared

@@ -67,3 +67,62 @@ target优先，root既有site-packages随后；root Torch2.14.1/numpy2.4.6未改
 `tests/fixtures/s0-prepare-public-001/build_public_fixture.py`仅用于远端重建小媒体与固定
 问题manifest，输入是已审计源资产；运行时也必须持有重CPU锁。它不读取题标签或
 内部封存集，输出媒体留在artifacts；文本source_sha256绑定此生成器源码。
+
+## Canonical HTTP 准备与 chat 客户端
+
+默认 `--profile hf_only` 保留原 HF-only 输入路径与旧报告；该模式不会返回可发送的
+HTTP messages。`--profile canonical_http` 使用独立版本 `canonical-http-v1`，返回
+`PreparedDecision.http_messages` 与 `http_media_io_kwargs`，不能与 `messages` 的 HF
+占位符混用。共享 API 核心是 `prepare_decision(prefix, question, processor, root, ...)`，
+不要求或杜撰训练用 Metadata；`prepare_case` 只为 fixture 追加真实 id/category/provenance。
+
+canonical 的实际输入约定：
+
+- 图像/截图：RGB PNG，compress_level=6、optimize=false；HF 从同一 PNG 字节重解码。
+- 音频：ffmpeg 转单声道16kHz float32，再以 `round(clip(x,-1,1)*32767)` 编码 PCM16
+  WAV。HF 从同一 WAV 的 PCM16 以 `/32768.0` 还原 float32，不使用编码前 float32。
+- 视频：按已冻结源帧索引提帧，每帧 JPEG quality=95、subsampling=0、optimize=false、
+  progressive=false；HF 使用同一 JPEG 字节重新解码的 RGB。HTTP 用
+  `data:video/jpeg;base64,JPEG0,JPEG1,...`，`media_io_kwargs.video` 带源 fps、indices、
+  total_num_frames、duration、do_sample_frames=false；HF 保持对应 metadata，禁止二次采样。
+- canonical HF 与 HTTP 都显式 add_special_tokens=false、关闭 thinking、不截断。
+
+摘要分别保留原始媒体 SHA、编码前 RGB/float32 SHA、canonical PNG/WAV/JPEG 字节
+与重解码 RGB/PCM/float32 SHA、HTTP messages/视频 IO kwargs hash、实际张量摘要。
+原文、base64、像素、token IDs 只在内存；仅 `summary` 可落盘。
+
+| 当前 S0 profile 组合 | CPU 与 mock HTTP | 真实 vLLM/GPU |
+| --- | --- | --- |
+| text/image/screenshot/一段audio/一个video的8或16帧 | 真实公开媒体重解码与HF张量比对 | pending |
+| 多图、图+单音频、单视频+单音频 | Metadata-free核心与真实媒体重解码/HF张量比对 | pending |
+| 图+视频、多视频、多音频 | 当前profile保守拒绝，后续兼容性CPU验证pending | pending |
+
+这些限制只描述当前 S0 传输 profile 的已验范围，不改变最终产品范围，也不声称引擎
+不能处理混合输入。尤其多视频不可把不同 metadata 塞进同一个全局 video kwargs，
+因此先拒绝；图+视频尚需对不同固定 vLLM 版本的处理器配置做独立 CPU 验证。
+
+`serve.vllm_chat.VllmChatClient(base_url, model, raw_logprobs_confirmed=True, transport=...)`
+支持 `async with`；`await client.read_logprobs(prepared)` 返回 `ChatLogprobs` 的完整
+`raw_logprobs`、内存 prompt IDs、usage 与安全摘要，供共用 readout 使用，客户端不
+自行归一化。`raw_logprobs_confirmed` 必须来自调用者核验的固定启动记录；布尔值和
+response model alias 都不能自证实际权重或引擎配置。响应 model alias 必须精确相等，
+不发明服务端 revision 字段。
+
+客户端使用冻结原生 chat 字段：一位置生成、全部答案与U的指定 IDs、top_logprobs=0、
+无采样变换、thinking=false、return_token_ids=true。服务响应顶层最终展开
+prompt_token_ids 必须逐位等于 HF input_ids，并与 usage 完整匹配。缺 token、重复/非法
+ID、NaN/正值/裁剪哨兵、多位置/多choice、模型声明错配、canonical绑定变化均拒绝；
+额外 sampled token 可忽略，不以 top-k 回退补答案。错误只返回静态码。
+
+```sh
+PYTHONPATH=/path/to/mac-media-libs OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+TOKENIZERS_PARALLELISM=false /path/to/existing/python -m scripts.s0_prepare \
+  --manifest tests/fixtures/s0-prepare-public-001/manifest.json \
+  --asset-root /path/to/verified/public/media --model-dir /path/to/pinned/metadata \
+  --profile canonical_http --output reports/new-canonical-http-cpu.json
+```
+
+真实媒体/mock HTTP 回归需显式设置 `S0_LOCAL_MODEL_DIR`、`S0_CANONICAL_MEDIA_ROOT`；
+未提供时对应集成测试明确 skip，不能作为真实证据。canonical 100题两遍结果与限定
+兼容矩阵见专属 `reports/s0-canonical-http-acceptance-001.json`。mock返回的logprobs
+没有模型含义，不证明 vLLM processor、真实 API、GPU forward 或概率门槛通过。
