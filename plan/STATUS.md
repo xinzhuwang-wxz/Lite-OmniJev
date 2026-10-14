@@ -25,7 +25,7 @@
 - 六cohort各500已真实双构建/媒体验证通过：文本CLINC Choice、图像AOK Choice、截图GUI目标Choice4、音频Clotho一致Noul、视频CLEVRER exist Noul、跨模态image+audio合取Noul。均首primitive切片，不冒称所有任务分布。
 - 截图固定前600标注仅497合法，补30固定TRAIN小标注达到500；筛选基于许可/格式/几何，不看模型分数。RGB实际decode通过。
 - 六公开模型JevBench231各双遍完成，reports/s0-public-baselines-table-001.json：E4B76.1905%、E2B63.6364%、OneJev4 75.7576%、27B83.1169%、教师85.7143%、Valen47.1861%。低成绩原样保留；专用head无U则null。
-- 开发GPU已核17/30支持对，另6个音频不支持组合明确unsupported且不填零。精确完成/剩余清单与分数唯一入口reports/s0-development-baselines-table-001.json；剩余13运行或排队。
+- 开发GPU已核18/30支持对，另6个音频不支持组合明确unsupported且不填零。精确完成/剩余清单与分数唯一入口reports/s0-development-baselines-table-001.json；剩余12运行或排队。
 - 教师已完成text/image/screenshot/audio四cohort，各500×2精确；对应报告只是cohort完成，父作业尚在运行，不能冒称全教师结束。
 - 统一dev排除清单两遍SHA相同：3000family节点/2500原始family/2000组件。跨模态复用原image/audio同池，未来train同时查family和媒体SHA。reports/s0-development-bundle-{001,002}.json；calibration/holdout分配仍pending。
 - s0:04 done：完整真实native/gateway cache-on/off冷暖双测、实际KV命中及四概率<.001；原≤2按ADR0010仅诊断目标。FP32 TF32x3失败候选停止，停止S0性能搜索，原失败证据保留；不宣称最终p95通过。
@@ -36,7 +36,7 @@
 |---|---|---|
 | 教师六cohort | /root/autodl-tmp/s0-development-final-001 HEAD0aec3eb；model675330；watchdog48305/run-teacher-deadline-handoff-001.py；artifacts/teacher-development-001/result | 实测video约3秒/题，原timer675329暂停，同一模型持续，总模型上限5400秒。最终认model.exit、deadline-handoff-001.json kernel退出码及完整report；原shell控制退出137保留，不误当模型失败或成功。 |
 | 剩余学生video/crossmodal | 同树supervisor892905/run-development-queue-fla-002.py；artifacts/development-baselines-fla-002；每job1800秒 | 旧scheduler391342已结束、当前E4B video正常exit0，500对精确/55.6%；kernel收据reports/s0-development-scheduler-handoff-001.json。新队列完成才写旧supervisor.finished；失败写旧queue-blocked。不要重启旧队列。 |
-| Valen开发 | /root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45；queue796345/run-development-queue-001.py；artifacts/valen-development-001；每job1200秒 | 原torch fallback，真实head/LoRA/visual；text35.8%、image66.4%已核；截图/视频继续；audio/crossmodal明确unsupported。 |
+| Valen开发 | /root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45；原queue796345已暂停未来控制；当前video由watchdog227700/run-video-deadline-handoff-001.py保留同一模型运行；artifacts/valen-development-001；video实际1.40秒/题，按实测上限1800秒 | 原torch fallback，真实head/LoRA/visual；text35.8%、image66.4%、screenshot73.2%已核；视频继续；audio/crossmodal明确unsupported。 |
 | 截图四学生 | /root/autodl-tmp/s0-development-final-001；queue60167/run-screenshot-queue-002.py；artifacts/screenshot-baselines-002 | 等前两主队列终态及teacher finished，每GPU job1200秒、等待7500秒。原692449只等待无GPU任务，已终止并留证据，不重启。 |
 
 - 所有共享GPU作业仅质量评测，耗时是诊断数据，不当隔离发布性能。
@@ -63,3 +63,5 @@
 - ADR0011仅proposal，等待用户明确答复：保持6000封存/12000真人判断/逐类κ≥.7与隔离不变，是否仅将资源截止S0移至S4放量前。未批准仍按S0硬门，不把性能授权当真人豁免。
 - 跨机/S6真机/额外预算/生产运营在对应节点处理，不提前制造细票或默认采购。GPU用完记录资源并通知用户关卡。
 - 历史详细状态在plan/archive/STATUS-before-matrix-consolidation-2026-10-14.md及更早归档，只作历史，不作当前调度源。
+
+Valen视频完成认video.exit与video-deadline-handoff-001.json kernel退出码，watchdog将补crossmodal unsupported及finished；原queue在当前模型终止后结束，不重启。
