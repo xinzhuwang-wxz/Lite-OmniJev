@@ -86,3 +86,12 @@ local-only lifespan及负测。上游由MockTransport返回合成logprobs；未�
 取消回归使用ASGI请求与受控阻塞的真实线程：取消首请求后第二请求不能并行准备；
 释放线程后第二请求静态422，shutdown等待被取消请求遗留线程收口。此测试只证明
 取消下的CPU串行边界与线程清理，不代表强制终止processor或生产shutdown时限验收。
+
+共享输入在完整解码前核验全部路径/SHA及图像header，单请求最多8个媒体引用，所有图像累计不超过40,000,000像素；保留已验双图能力。超限返回静态422，既有数据/文件不修改。这些是本地受控资源边界，不是训练/模型质量结论。
+
+## 已运行的真实浏览器 CPU 验收
+
+`python -m scripts.browser_s0_cpu --manifest <公开100题manifest> --output-dir <新目录>`
+使用当前源码树中的测试 fixture，启动本机临时网关，通过实际 Chromium 请求文本、图像、截图、音频、8/16帧视频与三种决策，检查422隐私失败和未配置503；使用官方processor，但推理后端明确为fake。需要已安装Playwright/Chromium、官方本地metadata以及 `S0_LOCAL_MODEL_DIR` / `S0_CANONICAL_MEDIA_ROOT`。输出目录必须不存在，脚本只清理自己启动的进程。实际报告 `reports/browser-s0-cpu-003.json`，截图及trace保留；001失败也保留。此结果不证明模型效果或性能门槛。
+
+未来可对已启动的本机真实网关使用同一入口加 `--base-url http://127.0.0.1:<port> --model-version <期望版本>`；脚本不启动模型、不操作GPU，真实模型及质量来源须另有门槛报告。该live分支尚待真实服务验证。运行时禁止Python `-O`，浏览器检查使用assert。

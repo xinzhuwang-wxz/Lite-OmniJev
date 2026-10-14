@@ -1,0 +1,23 @@
+{
+  "build_log": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/vite-offline-probe/build.log",
+  "captured_at": "2026-10-14T06:32:52+08:00",
+  "dist_files": [
+    "dist/assets/index-DBG-h_PL.js",
+    "dist/index.html"
+  ],
+  "dist_sha256sums": [
+    "e93639045b0dc5da603326d75ff0685be047597109817cedb6b48c9e38c48bc0  dist/assets/index-DBG-h_PL.js",
+    "7e47a5893378a3d76886607622ab8c72ab6b7a78e71e839c03ca2892a020a0db  dist/index.html"
+  ],
+  "entry_sha256": "01e216dc0d5268069fe3ac78f6c4399d4484ba2d83eb5b9888304683867454a8",
+  "index_sha256": "cc7ea6491282813fe31a230d6f1b9b5abc63a9cad0b6fbaa3de0d576a0a9b693",
+  "install_log": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/vite-offline-probe/install.log",
+  "not_claimed": [
+    "No product frontend app generated",
+    "shadcn/AnimateUI registry source snippets not cached here"
+  ],
+  "package_sha256": "d4dbc04c508b88a8972e76ca1683b1db37052742f0ad3aa890ae2e133b413396",
+  "probe_dir": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/vite-offline-probe",
+  "schema": "lite-omnijev.frontend-vite-offline-probe.v1",
+  "status": "offline_vite_build_passed_ignore_scripts"
+}

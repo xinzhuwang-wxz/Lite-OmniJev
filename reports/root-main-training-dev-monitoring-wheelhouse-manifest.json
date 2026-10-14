@@ -1,0 +1,15 @@
+{
+  "captured_at": "2026-10-14T06:21:41+08:00",
+  "contains": {
+    "pytest-9.1.1": true,
+    "torch-2.14.1": true,
+    "triton-3.8.0": true
+  },
+  "du": "3.0G",
+  "file_count": 94,
+  "files_txt_sha256": "51717ca091c6dcf95551be84e56bc6e0db99e9ec10c62b71dcf38771da163279",
+  "requirements": "requirements.txt",
+  "requirements_sha256": "df0ef9caafbeecbcbb2ba943fcf645ae7fdbe011246f76fe7a85e8ee8b1a21b6",
+  "sha256sums_txt_sha256": "1df7f4b16478a4f506acb35625a428c639a1ee94cc26b0565217f8729868f7e7",
+  "wheelhouse": "artifacts/runtime-builds/python-wheels/root-main-training-dev-monitoring"
+}

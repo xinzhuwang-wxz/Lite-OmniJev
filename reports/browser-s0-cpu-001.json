@@ -1,0 +1,23 @@
+{
+  "scope": "Actual Chromium + actual gateway + official CPU processor; fake native backend",
+  "status": "blocked",
+  "exit_code": 1,
+  "gpu_used": false,
+  "real_model_forward": false,
+  "release_or_stage_acceptance": false,
+  "cases": [],
+  "source_sha256": {
+    "scripts/browser_s0_cpu.py": "51fbfa63adedad54bb1fd62d2e598292d49ee2e2afce7011f7c869a71af89fc1",
+    "serve/gateway/app.py": "bc16e3e433ac0f40f5417190a9eb62d6246553537858b4ec3bd4d171e937b664",
+    "train/multimodal.py": "1174466d38a6ab4727ff9c36b6c8d9932559870f18a7a8ff693dd6eba9077890",
+    "tests/test_gateway_media.py": "caea70bfc10a1329c65d750b4aa4f4339eb032a3f957b0a4fe19ccfe85e61267"
+  },
+  "error_type": "Error",
+  "elapsed_seconds": 10.407,
+  "artifacts": {
+    "artifacts/browser-s0-cpu-001/trace.zip": {
+      "bytes": 43867,
+      "sha256": "221d39733736fdb05871a5af23ba40e5a66810c2c56bf28f06b40e90f99be85e"
+    }
+  }
+}

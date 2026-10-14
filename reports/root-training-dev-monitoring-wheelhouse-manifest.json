@@ -1,0 +1,15 @@
+{
+  "canary_no_heavy_file_count": 62,
+  "captured_at": "2026-10-14T06:10:30+08:00",
+  "du": "3.0G",
+  "excluded_heavy_prefixes": [
+    "torch",
+    "triton",
+    "nvidia-*",
+    "cuda-*"
+  ],
+  "file_count": 93,
+  "files_txt_sha256": "5a56fa1d00294916d6a1985179752b509de6a78bb807f0edcfb6848c429a1fd6",
+  "sha256sums_txt_sha256": "85f65900407a866a6eb24123bd2eb3b8693489bbd5e6175962d679c584535b0e",
+  "wheelhouse": "artifacts/runtime-builds/python-wheels/root-training-dev-monitoring"
+}
