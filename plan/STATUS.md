@@ -62,6 +62,15 @@
 - 固定视频CPU已完成：cf821e8前928313b及ba6a2ca整合协议/报告，1606媒体/1800行、27997唯一选帧PNG/28800行帧引用全部SHA/尺寸核验exit0。reports/public-video-protocol-freeze-001.json；GPU/质量未验。video agent在原独立worktree继续MMAU/固定九任务teacher runner，CPU控制流不冒称真实分数。
 - Mac共享媒体target：上述managed worktree `artifacts/mac-media-libs`，multimodal-cpu-prep唯一写入后只读共享，固定Pillow11.3.0/torchvision0.29.0 wheels/hash/license；复用root torch2.14.1/transformers5.19/numpy2.4.6，没有改root包或复制主干。s0:09 Linux两次loading processor即137/0 cases，不伪称Linuxpass；真实fps/indices已修正并重冻结；主树HF-only006/007及canonical003/004两遍分别完全一致，CPU前置已收口。
 
+## 本轮可做CPU代码补齐与审查
+- 主树08709d9：S0 canonical HF/vLLM collector已补真实tensor摘要、严格保存概率校验、seed42/TF32关闭、固定来源hash、启动记录、失败留证/资源释放；定向CPU控制测试不是GPU数值通过。
+- 主树e39ede0：固定teacher benchmark runner初片已整合，root审查发现分benchmark门槛/实际模型resume绑定/严格概率与固定分母等需补强，video_cpu_recovery在原worktree修复，整票未通过。
+- 主树c1db67e：native sequential cache runner/mock算术切片已合入，s0_acceptance恒false；vllm_protocol_fallback在 `/tmp/lite-omnijev-cache-cpu` 补真实官方CPU protocol freeze及gateway Server-Timing适配，不以HTTP减TTFT冒称预处理。
+- 多模态gateway仍由multimodal_cpu_prep独占原managed worktree；root已要求显式media_root时text也走canonical、静态无原文422及真实Server-Timing边界。媒体/模型实际成功仍待GPU。
+- native vLLM processor canary：teacher_adapter_review独占 `/tmp/lite-omnijev-vllm-processor`；031普通路径ModelConfig子进程SIGKILL后exit1/0cases；一次仅同官方类进程内注册诊断在creating_native_processor exit137/0cases，memory.events oom/oom_kill均0，不推定killer或CPU不支持。两份失败报告待整合，不能声称native预处理一致已通过。
+- offline_runtime_dependencies继续026 fresh no-index canary，并审计新teacher/parity实际混合依赖环境（Torch/Transformers/PEFT/Pillow/torchvision/numpy/pyarrow/ffmpeg），不能借跨环境sitepackages或开卡后才补依赖。
+- GUI全量作业已结束；所有当前CPU预检均禁CUDA_VISIBLE_DEVICES，未开GPU/未forward大模型。全部代码/锁/实际CPU验收整合后再写新全项目offline-prep:04报告。
+
 ## 待我决策与后续资源
 - 本轮已具体确认的DocVQA/Android协议与首发来源无需再确认；AudioCaps无需办理。CommonVoice/HLE/模型访问均已完成，不再索要key/token。
 - ADR-0006已批准：无需为现有九任务另办Moments/SSv2/TVQA/Matterport/NTU授权，只有明确扩范围才触发；禁止把候选升级为当前必办。
