@@ -22,12 +22,12 @@
 | 六cohort gate工程 | ADR0009，dev3000合法gold/program truth、holdout6000×两人=12000判断，κ≥.7仅holdout；同item跨池漏洞已修复，合成CLI及独立CLEAR。真实资源未取得。 |
 
 ## s0:07当前完成与剩余
-- 五cohort各500已真实双构建/媒体验证通过；截图v1因坐标捷径撤回，v2双构建exit0、哈希一致/500原family相同。原数据切片：文本CLINC Choice、图像AOK Choice、截图GUI目标Choice4、音频Clotho一致Noul、视频CLEVRER exist Noul、跨模态image+audio合取Noul。均首primitive切片，不冒称所有任务分布。
+- 五cohort各500已真实双构建/媒体验证通过；截图v1因坐标捷径撤回，v2双构建exit0、哈希一致/500原family相同。当前数据切片：文本CLINC Choice、图像AOK Choice、截图GUI目标Choice4、音频Clotho一致Noul、视频CLEVRER exist Noul、跨模态image+audio合取Noul。均首primitive切片，不冒称所有任务分布。
 - 截图固定前600标注仅497合法，补30固定TRAIN小标注达到500；筛选基于许可/格式/几何，不看模型分数。RGB实际decode通过。
 - 六公开模型JevBench231各双遍完成，reports/s0-public-baselines-table-001.json：E4B76.1905%、E2B63.6364%、OneJev4 75.7576%、27B83.1169%、教师85.7143%、Valen47.1861%。低成绩原样保留；专用head无U则null。
 - 开发GPU已核24/24非截图支持对，六截图支持对待v2重测，另6个音频不支持组合明确unsupported。唯一矩阵入口reports/s0-development-baselines-table-001.json；旧截图成绩superseded。
 - 教师六cohort全部完成，各500×2精确；完整6000记录/3000对、model.exit=0及kernel收据，reports/s0-teacher-development-complete-001.json。
-- v1历史统一dev排除清单继续生效，v2须追加并同时查两份，不得删除旧媒体别名。原清单两遍SHA相同：3000family节点/2500原始family/2000组件。跨模态复用原image/audio同池，未来train同时查family和媒体SHA。reports/s0-development-bundle-{001,002}.json；calibration/holdout分配仍pending。
+- v1历史统一dev排除清单继续生效，v1/v2已合并历史union，3000节点，SHA3110f9740d9e7dd9c39023b106d977e927b3446f5dfa82e168f729c127aeda1e，reports/s0-development-exclusion-history-v2-001.json。原清单两遍SHA相同：3000family节点/2500原始family/2000组件。跨模态复用原image/audio同池，未来train同时查family和媒体SHA。reports/s0-development-bundle-{001,002}.json；calibration/holdout分配仍pending。
 - s0:04 done：完整真实native/gateway cache-on/off冷暖双测、实际KV命中及四概率<.001；原≤2按ADR0010仅诊断目标。FP32 TF32x3失败候选停止，停止S0性能搜索，原失败证据保留；不宣称最终p95通过。
 - 07收拢后仍须全部S0依赖通过再认领08，一次集成验收及正式s0-complete交接；当前接续文档plan/handoff-2026-10-14-s0-cohorts.md。
 
@@ -35,7 +35,7 @@
 - 非截图学生队列892905已完成finished；E2B crossmodal50.4%、1000记录/500对精确已核。教师/Valen/video全部结束，不重启。
 - 截图v1结构捷径：无图无指令坐标规则497/500=99.4%，reports/s0-gui-coordinate-shortcut-v1-001.json。旧六模型截图成绩全部撤出当前矩阵，保留证据。queue43477及child343447已结束。
 - scripts/s0_gui_dev.py v2随机合法坐标修复7相关tests/ruff/mypy通过。真实CPU双构建/root/autodl-tmp/s0-gui-dev-v2-001/build.sh已exit0；产物artifacts/run-{a,b}逐字节一致，500原family保留、498原题/2题因合法几何重选；冻结旧坐标规则19/500=3.8%。630标注/媒体复用，无下载。
-- 核对后只重测六截图模型，其他模态不重跑；重绑cohort配置与统一dev排除账本。s0:07首条暂撤勾。
+- 截图六模型补测已启动：/root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382；学生queue343888（artifacts/screenshot-baselines-v2-001，四学生顺序、各1800秒/显存等待）；教师→Valen queue343927（teacher-screenshot-v2-001及valen-screenshot-v2-001，各1800秒）。教师343936、E4B343893实际运行；全部只测screenshot v2，不重跑其余模态。源配置已重绑，历史dev排除union通过，07首条恢复勾选。
 
 - 所有共享GPU作业仅质量评测，耗时是诊断数据，不当隔离发布性能。
 - 官方FLA0.5.2单候选231×2质量/重复通过，warm诊断约2.505倍，reports/s0-qwen-fla-candidate-result-001.json。只在后续OneJev作业显式profile/固定wheelSHA启用，primary环境不变，旧baseline保留；不用较弱backend降低目标。
@@ -46,12 +46,12 @@
 |---|---|
 | text | s0-text-dev-001/artifacts/text-dev-001-a；dev500/余train14750，旧全量15250已superseded |
 | image/video | s0-media-development-002/artifacts/media-dev-002/{image-a,video-a}；media_root各自/media |
-| screenshot | s0-gui-dev-001/artifacts/run-k-actual-001；media_root为原资产artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots |
+| screenshot | s0-gui-dev-v2-001/artifacts/run-a；media_root为原资产artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots |
 | audio | s0-audio-dev-001/artifacts/audio-dev-001-a；原资产artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002 |
 | crossmodal | s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a；media_root为其/media |
-| global dev排除 | s0-valen-development-final-001/artifacts/dev-bundle-001/dev-exclusion.jsonl；SHA64d96a015bd49c08e34ea52ebceea42cece60585b34963a1bc9f85db9d61e5ed |
+| global dev排除 | s0-screenshot-v2-final-001/artifacts/dev-exclusion-history-union-v2-001/dev-exclusion.jsonl；SHA3110f9740d9e7dd9c39023b106d977e927b3446f5dfa82e168f729c127aeda1e |
 
-- 资产根/root/autodl-tmp/lite-omnijev，模型artifacts/models；六cohort完整入口configs/s0-development-cohorts-h20.json。S0全部子切片实现已整合，无活跃子代理待交付。
+- 资产根/root/autodl-tmp/lite-omnijev，模型artifacts/models；六cohort完整入口configs/s0-development-cohorts-h20.json。S0全部子切片实现已整合，无活跃子代理待交付；截图v2 GPU作业运行。
 - SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final；凭据不入仓。H20 97871MiB、cgroup150GiB/16CPU；开关卡由用户操作。
 - primary /root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python（TF5.13/Torch2.11/vLLM.26）；teacher /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python（TF5.17/Torch2.13）。冻结教师/IEEE树gpu-reference-fp32-complete-001 HEADdfdfd935不改代码。
 - 原教师5600records双端SHA75a8b653…d14aa，本地artifacts/s0-teacher-complete-001/records.jsonl；历史cost0只是硬编码占位，真实费用未知null，不冒称累计账单。

@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "/root/autodl-tmp/s0-valen-development-final-001/artifacts/dev-bundle-001/dev-exclusion.jsonl",
+      "sha256": "64d96a015bd49c08e34ea52ebceea42cece60585b34963a1bc9f85db9d61e5ed"
+    },
+    {
+      "path": "/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/dev-bundle-v2-001/dev-exclusion.jsonl",
+      "sha256": "d5844a20103ce7f9b334ac0db002aadc4c255905cc4d1cccfecfe60e466af488"
+    }
+  ],
+  "output": "/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/dev-exclusion-history-union-v2-001/dev-exclusion.jsonl",
+  "sha256": "3110f9740d9e7dd9c39023b106d977e927b3446f5dfa82e168f729c127aeda1e",
+  "family_nodes": 3000,
+  "historical_media_and_ids_retained": true,
+  "scope": "Union v1/v2 by source+family; all historical dev families/media aliases rejected by subsequent train/calibration/holdout; component identities unchanged",
+  "cost_usd": null
+}
