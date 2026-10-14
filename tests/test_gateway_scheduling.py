@@ -10,6 +10,7 @@ import httpx
 import pytest
 
 from serve.gateway.app import Settings, create_app
+from serve.vllm_chat import VllmChatClient, VllmChatProtocolError
 
 pytestmark = pytest.mark.anyio
 
@@ -66,7 +67,7 @@ async def test_api_primes_first_then_bounds_and_orders_answers(
             raw_logprobs=values, usage={"prompt_tokens": 1, "completion_tokens": 1}
         )
 
-    monkeypatch.setattr(gateway.VllmChatClient, "read_logprobs", read)
+    monkeypatch.setattr(VllmChatClient, "read_logprobs", read)
     app = create_app(
         Settings(
             upstream_url="http://fixture",
@@ -140,7 +141,7 @@ async def test_partial_upstream_failure_cancels_siblings_without_partial_success
             )
         if prepared.question.qid == "q1":
             await asyncio.wait_for(sibling_started.wait(), 2)
-            raise gateway.VllmChatProtocolError("PRIVATE failure")
+            raise VllmChatProtocolError("PRIVATE failure")
         active += 1
         sibling_started.set()
         try:
@@ -151,7 +152,7 @@ async def test_partial_upstream_failure_cancels_siblings_without_partial_success
         finally:
             active -= 1
 
-    monkeypatch.setattr(gateway.VllmChatClient, "read_logprobs", read)
+    monkeypatch.setattr(VllmChatClient, "read_logprobs", read)
     app = create_app(
         Settings(
             upstream_url="http://fixture",
@@ -209,7 +210,7 @@ async def test_image_reuse_is_created_once_per_request_and_never_shared(
         )
 
     monkeypatch.setattr(gateway, "prepare_decision", prepare)
-    monkeypatch.setattr(gateway.VllmChatClient, "read_logprobs", read)
+    monkeypatch.setattr(VllmChatClient, "read_logprobs", read)
     app = create_app(
         Settings(
             upstream_url="http://fixture",
@@ -236,3 +237,64 @@ async def test_image_reuse_is_created_once_per_request_and_never_shared(
     assert len(copies) == 2 and copies[0] is not copies[1]
     assert all(p is copies[0] for p in prepared_processors[:3])
     assert all(p is copies[1] for p in prepared_processors[3:])
+
+
+async def test_failed_fanout_drains_running_preparation_and_cancels_queued_preparation(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    import threading
+
+    import serve.gateway.app as gateway
+
+    started = threading.Event()
+    release = threading.Event()
+    queued_started = threading.Event()
+    monkeypatch.setattr(gateway, "check_answer_tokens", lambda *args: {})
+
+    def prepare(prefix: Any, question: Any, *args: Any, **kwargs: Any) -> Any:
+        if question.qid == "q1":
+            raise ValueError("PRIVATE failing media")
+        if question.qid == "q2":
+            started.set()
+            assert release.wait(3)
+        if question.qid == "q3":
+            queued_started.set()
+        return PreparedFixture(question, {"input_ids": [[1]]})
+
+    async def read(self: Any, prepared: Any) -> Any:
+        return SimpleNamespace(
+            raw_logprobs={"yes": -1.0, "no": -2.0, "U": -3.0},
+            usage={"prompt_tokens": 1, "completion_tokens": 1},
+        )
+
+    monkeypatch.setattr(gateway, "prepare_decision", prepare)
+    monkeypatch.setattr(VllmChatClient, "read_logprobs", read)
+    app = create_app(
+        Settings(
+            upstream_url="http://fixture",
+            media_root=tmp_path,
+            raw_logprobs_confirmed=True,
+            question_concurrency=3,
+        ),
+        processor=SimpleNamespace(tokenizer=object()),
+    )
+    payload = {
+        "state": "Public state",
+        "questions": {
+            f"q{i}": {"type": "noul", "instructions": "Public question"} for i in range(4)
+        },
+    }
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app), base_url="http://fixture"
+        ) as client:
+            pending = asyncio.create_task(client.post("/v1/systemone", json=payload))
+            try:
+                assert await asyncio.to_thread(started.wait, 2)
+                await asyncio.sleep(0.05)
+                assert not pending.done(), "failed request must drain its running CPU job"
+            finally:
+                release.set()
+                response = await asyncio.wait_for(pending, 2)
+    assert response.status_code == 422 and "PRIVATE" not in response.text
+    assert not queued_started.is_set()

@@ -2,7 +2,7 @@
 
 Owner: main-session-gpu-transition
 Parent ticket: s0:04
-State: prepared, not implemented or performance-admitted
+State: implemented CPU candidate, GPU performance pending
 
 ## 问题与目标
 

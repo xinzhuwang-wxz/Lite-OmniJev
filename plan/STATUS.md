@@ -11,11 +11,11 @@
 - 验收native PID94918/18001与gateway PID130178/18000已发送TERM；本机转发55174→18000暂保留，服务不再保证可用。实时/proc+health绑定在artifacts/s0-parity-full100-20261014/live-process-binding-001.json，无签名remote attestation，不伪称独立签名证明。两服务仅开发数值验收，非生产。
 - 教师公开text/audio/video两遍真实forward通过/44.564秒；原tensor格式→safehead的GPU功能参考47.418秒exit0：四tensorhash、5counts边界及三类两遍logits/probs精确；31回归通过，s0:01原README声明/安全GPU链已获独立verifier PASS，已关闭；s0:02主会话认领效果复现。严禁正常进程加载pickle或执行上游module。
 - 教师benchmark原pilot900秒退出124，保留1397条；MMAU首遍1000题620正确/62.0%，在63.1±2pp内；MVBench首遍397题仅部分，不作完整baseline。两遍完整质量门槛仍pending。
-- 已从1397显式--resume至1653条，SIGINT安全暂停做cache独占测量（resume002 exit1，旧进程已退出）；目前resume003持续运行（最新小型快照reports/teacher-benchmark-progress-003.json为1855/5600条，无质量准入），监督PID146819/timeout146820/教师146821，最多3600秒，新日志teacher-benchmark-resume-003.log/exit，输出仍DF树teacher-benchmark-pilot-001.json及.jsonl。严禁重复启动/改冻结源码/重算已有题。
+- 已从1397显式--resume至1653条，SIGINT安全暂停做cache独占测量（resume002 exit1，旧进程已退出）；目前resume003持续运行（小型快照reports/teacher-benchmark-progress-003.json为1855/5600条；最新实时/proc核查PID146821 Rl/32:11、2568/5600条，无质量准入），监督PID146819/timeout146820/教师146821，最多3600秒，新日志teacher-benchmark-resume-003.log/exit，输出仍DF树teacher-benchmark-pilot-001.json及.jsonl。严禁重复启动/改冻结源码/重算已有题。
 - 原生子代理：parity_verifier/teacher_reference均完成，临时树已清理；cache_protocol_review已交只读建议；cache_assessment已整合显式新policy（7949365）；34pass/1显式livefixture skip、ruff/mypy通过，架构只读review CLEAR。父会话统一票/STATUS/整合。
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
-下一步：01/03已关票。02教师resume003继续；04 cache eager完整on/off/native/gateway失败，FULL CUDAgraph canary冷比仍3.802/3.808，已停止，不重复此配置。诊断在reports/s0-prefix-cache-gpu-diagnostics-001.json。ADR-0007显式新policy已整合/独立review通过（≤2及四概率严格<.001不变）；旧strict失败保留，新离线native/gateway报告仍仅cold ratio失败，未再消耗GPU。下一切片规格.scratch/s0/cache-product-scheduling-spec.md已冻结；先CPU实现有界调度/请求内复用，再独占短测，不冒称串行或服务性能通过。
+下一步：01/03已关票。02教师resume003继续；04 cache eager完整on/off/native/gateway失败，FULL CUDAgraph canary冷比仍3.802/3.808，已停止，不重复此配置。诊断在reports/s0-prefix-cache-gpu-diagnostics-001.json。ADR-0007显式新policy已整合/独立review通过（≤2及四概率严格<.001不变）；旧strict失败保留，新离线native/gateway报告仍仅cold ratio失败，未再消耗GPU。下一切片.scratch/s0/cache-product-scheduling-spec.md已实现候选（c95d3d6/f3daf3b），默认顺序/不复用，明确optin新模式。官方Linux CPU100×baseline/私有processor两遍共300次summary/messages/映射精确，40缓存命中/94.910秒，reports/s0-request-image-reuse-cpu-001.json；9网关调度与11缓存测试、14原生collector测试通过；独立review指出失败响应留下shielded CPU job，已新增先红后绿回归并修复：只取消未开始CPU的本请求任务，普通失败等待已开始任务结束，外部取消保持占槽/shutdown drain。39pass/38显式媒体fixture skip，4源mypy及ruff通过，独立复核中。通过后独占GPU短测，不冒称串行或服务性能通过。
 
 ## 当前目标与决策
 - 用户已完成开卡，原无卡准备收口；现在复用现有模型、数据、环境及P0产物推进真实GPU闭环，不代开关卡或改租赁。

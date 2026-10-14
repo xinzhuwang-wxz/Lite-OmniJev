@@ -307,6 +307,7 @@ def create_app(
         video_frames: Literal[8, 16],
         timings: dict[str, float],
         selected_processor: Any = None,
+        request_preparations: dict[asyncio.Task[Any], bool] | None = None,
     ) -> tuple[str, dict[str, Any], int, int]:
         selected_processor = runtime_processor if selected_processor is None else selected_processor
         question, labels = core_question(qid, item)
@@ -346,6 +347,12 @@ def create_app(
 
         async def preparation_job() -> Any:
             async with preparation_lock:
+                if request_preparations is not None:
+                    current = asyncio.current_task()
+                    assert current is not None
+                    # Set before yielding to the executor: this job must not be cancelled
+                    # while its thread may still hold the resource slot.
+                    request_preparations[current] = True
                 try:
                     return await asyncio.to_thread(prepare)
                 finally:
@@ -355,6 +362,8 @@ def create_app(
         if shutting_down:
             raise HTTPException(503, "Gateway is shutting down")
         job = asyncio.create_task(preparation_job())
+        if request_preparations is not None:
+            request_preparations[job] = False
         preparation_jobs.add(job)
         job.add_done_callback(preparation_finished)
         # Shield the lock-owning task, not merely the thread await inside a request-owned lock.
@@ -466,6 +475,7 @@ def create_app(
             for qid, item in request.questions.items():
                 core_question(qid, item)
             selected_processor = runtime_processor
+            request_preparations: dict[asyncio.Task[Any], bool] = {}
             if (
                 settings.request_image_reuse
                 and len(request.questions) > 1
@@ -486,6 +496,7 @@ def create_app(
                     request.video_frames,
                     http_request.state.timings,
                     selected_processor,
+                    request_preparations,
                 )
 
             items = list(request.questions.items())
@@ -506,10 +517,19 @@ def create_app(
                 tasks = [asyncio.create_task(bounded(qid, item)) for qid, item in items[1:]]
                 try:
                     results.extend(await asyncio.gather(*tasks))
-                except BaseException:
+                except BaseException as error:
                     for task in tasks:
                         task.cancel()
                     await asyncio.gather(*tasks, return_exceptions=True)
+                    for job, started in request_preparations.items():
+                        if not started:
+                            job.cancel()
+                    if not isinstance(error, asyncio.CancelledError):
+                        # A failed response drains only its own CPU jobs, not another
+                        # request's work. Caller cancellation retains the global drain.
+                        await asyncio.shield(
+                            asyncio.gather(*request_preparations, return_exceptions=True)
+                        )
                     raise
         else:
             results = await asyncio.gather(

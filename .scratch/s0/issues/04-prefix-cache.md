@@ -38,3 +38,5 @@ Blocked by: p0:04, 03
 2026-10-14原生eager实测：on/off和真实网关全部完成，实际KV命中288覆盖media265，但native cold ratios3.9318/3.9354、gateway cold5.0202/5.0846，旧strict failed。独立architect确认本地额外warm完整重复题分母/零跨路径logprob条件超出原HTML；ADR-0007明确新policy保留原≤2及四概率严格<.001，不覆盖旧strict结果。当前冷态仍失败，不能关票；正在用官方FULL CUDAgraph、mode0和5capture sizes做短canary，原精度/权重/引擎保持。
 
 2026-10-14：ADR0007显式新policy已实现/34pass+1显式livefixture skip、ruff/mypy通过，独立架构review CLEAR；对既有真实GPU测量离线重评，native/gateway仍仅cold ratio超过2失败。新报告分别s0-prefix-cache-native/gateway-original-policy-001.json，四概率max均<.001；没有重跑GPU或覆盖旧strict报告。下一优化规格.scratch/s0/cache-product-scheduling-spec.md已冻结，本票仍claimed，不以命中或口径修正关闭。
+
+2026-10-14：有界调度候选及请求内官方image processor复用已实现，官方Linux100题/300次准备逐摘要与HTTP映射精确、40命中；reports/s0-request-image-reuse-cpu-001.json，仅CPU输入。原生collector14测试通过。独立review发现失败请求shielded CPU任务未清理，新增回归先红后绿，普通失败仅drain本请求已开始job、取消未开始job，保持外部取消占槽契约；39pass/38显式fixture skip，mypy/ruff通过，复核中。网关专用并发测量器独立准备，不混用旧顺序collector。未进行新GPU测量，不关票。
