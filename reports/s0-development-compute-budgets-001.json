@@ -1,0 +1,1036 @@
+{
+  "status": "partial",
+  "matrix_sha256": "6b1f0f58d64f4640bd1eaf429767208a1d31d0d5f108b0a5898cecbf18006c25",
+  "summarizer_sha256": "bb705388486cf7c28c1c3740130680b06b18fadb8d70188e9d3e14c831e56e36",
+  "verified_supported_pairs": 25,
+  "expected_supported_pairs": 30,
+  "pending": [
+    {
+      "cohort": "screenshot",
+      "model": "gemma4-e2b-it",
+      "reason": "corrected GUI v2 baseline required"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-4b",
+      "reason": "corrected GUI v2 baseline required"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-27b",
+      "reason": "corrected GUI v2 baseline required"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "jev-omni-12b",
+      "reason": "corrected GUI v2 baseline required"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "valen-preview-0923",
+      "reason": "corrected GUI v2 baseline required"
+    }
+  ],
+  "rows": [
+    {
+      "cohort": "audio",
+      "model": "gemma4-e4b-it",
+      "report": "reports/s0-development-audio-gemma4-e4b-it-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.634,
+      "ece15": 0.23422824739081008,
+      "brier": 0.5894563096689633,
+      "coverage_at_error": 0.012,
+      "max_error": 0.05,
+      "report_sha256": "c87f94285743a628c244d785d3d0748c1eaa97be936570cae97486b228d3b6ae",
+      "records": "artifacts/s0-development-baselines-gpu-001/audio-gemma4-e4b-it.json.records.jsonl",
+      "records_sha256": "bb12eb99b9f28d0ba6ec8f8cdf1860f6c49ae5e8198d789f4dec55e52a5c1c4b",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 444,
+        "p50": 630,
+        "p95": 798,
+        "max": 821
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.077067,
+        "p50": 0.094342,
+        "p95": 0.110893,
+        "max": 0.215908
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.135744,
+        "p50": 0.148629,
+        "p95": 0.158532,
+        "max": 0.1635
+      },
+      "job_elapsed_seconds": 295.01617,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "image",
+      "model": "gemma4-e2b-it",
+      "report": "reports/s0-development-image-gemma4-e2b-it-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.698,
+      "ece15": 0.2392267148124168,
+      "brier": 0.5465216772454623,
+      "coverage_at_error": 0.212,
+      "max_error": 0.05,
+      "report_sha256": "a2ccf9202172cd2d6e94116aad9a7cba7b0a5398af4641004556607e0bce20bc",
+      "records": "artifacts/s0-development-baselines-gpu-001/image-gemma4-e2b-it.json.records.jsonl",
+      "records_sha256": "8f4e2c8cba85251f13f627c5bc5a5617d649d2c00201ddfc86f4a44199e03080",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 329,
+        "p50": 346,
+        "p95": 355,
+        "max": 374
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.057929,
+        "p50": 0.05915,
+        "p95": 0.06046,
+        "max": 0.073934
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.009447,
+        "p50": 0.01152,
+        "p95": 0.013015,
+        "max": 0.018274
+      },
+      "job_elapsed_seconds": 103.219481,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "image",
+      "model": "gemma4-e4b-it",
+      "report": "reports/s0-development-image-gemma4-e4b-it-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.744,
+      "ece15": 0.18476980906287915,
+      "brier": 0.4283678858059787,
+      "coverage_at_error": 0.282,
+      "max_error": 0.05,
+      "report_sha256": "6b8b2c9f3c28947192313773858ea5a0e6356698841590f0ede2bae38406c721",
+      "records": "artifacts/s0-development-baselines-gpu-001/image-gemma4-e4b-it.json.records.jsonl",
+      "records_sha256": "f3f0340c665fe389bca97595043e82045af10ef78889845eb6a5b82f386f7da0",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 329,
+        "p50": 346,
+        "p95": 355,
+        "max": 374
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.067577,
+        "p50": 0.068376,
+        "p95": 0.070994,
+        "max": 0.159718
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.008939,
+        "p50": 0.011352,
+        "p95": 0.012539,
+        "max": 0.093998
+      },
+      "job_elapsed_seconds": 118.114778,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "image",
+      "model": "onejev-27b",
+      "report": "reports/s0-development-image-onejev-27b-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.874,
+      "ece15": 0.029274894497941347,
+      "brier": 0.18570968067875207,
+      "coverage_at_error": 0.792,
+      "max_error": 0.05,
+      "report_sha256": "2048d361fa2161349333fe6a6768f43915490d583fe43b0ce4c925e2feeabc67",
+      "records": "artifacts/s0-development-baselines-gpu-001/image-onejev-27b.json.records.jsonl",
+      "records_sha256": "f46493da70509daacd26b9c5872150f1afea851f415052c7cd67c612093771b7",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 160,
+        "p50": 350,
+        "p95": 409,
+        "max": 488
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.244931,
+        "p50": 0.300019,
+        "p95": 0.66682,
+        "max": 0.842866
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.005926,
+        "p50": 0.010134,
+        "p95": 0.014382,
+        "max": 0.023252
+      },
+      "job_elapsed_seconds": 430.932974,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "image",
+      "model": "onejev-4b",
+      "report": "reports/s0-development-image-onejev-4b-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.836,
+      "ece15": 0.017586733040491607,
+      "brier": 0.23788897013858584,
+      "coverage_at_error": 0.692,
+      "max_error": 0.05,
+      "report_sha256": "38f006a1e2a1229768163ccc414eb31128e165855d073273fe307c92442ddf93",
+      "records": "artifacts/s0-development-baselines-gpu-001/image-onejev-4b.json.records.jsonl",
+      "records_sha256": "53ffb6b8f444cf26c82be4d6bba66f05529df8dbe89111faaaed54fcc6e2d221",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 160,
+        "p50": 350,
+        "p95": 409,
+        "max": 488
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.122793,
+        "p50": 0.136094,
+        "p95": 0.143454,
+        "max": 0.178864
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.005967,
+        "p50": 0.010375,
+        "p95": 0.012988,
+        "max": 0.019902
+      },
+      "job_elapsed_seconds": 185.893582,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "text",
+      "model": "gemma4-e2b-it",
+      "report": "reports/s0-development-text-gemma4-e2b-it-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.884,
+      "ece15": 0.10149936098073248,
+      "brier": 0.20960431979113078,
+      "coverage_at_error": 0.868,
+      "max_error": 0.05,
+      "report_sha256": "2f113e9702c07b8c16445ebef7cee277c9df692d123e8ecd8a3913c8904bfd11",
+      "records": "artifacts/s0-development-baselines-gpu-001/text-gemma4-e2b-it.json.records.jsonl",
+      "records_sha256": "13557e4520a55a5752a0dd46f847705c8817bd6860c6a0d015a9941ded273584",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 109,
+        "p50": 160,
+        "p95": 172,
+        "max": 179
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.033342,
+        "p50": 0.033846,
+        "p95": 0.034855,
+        "max": 0.151133
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.003662,
+        "p50": 0.006144,
+        "p95": 0.006636,
+        "max": 0.009449
+      },
+      "job_elapsed_seconds": 73.199374,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "text",
+      "model": "gemma4-e4b-it",
+      "report": "reports/s0-development-text-gemma4-e4b-it-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.936,
+      "ece15": 0.04346337788364286,
+      "brier": 0.10374850050416666,
+      "coverage_at_error": 0.978,
+      "max_error": 0.05,
+      "report_sha256": "cc6d0a6d724ae9cf9a0ca80309e127547bf7ba76add7e036d8e20a33789cd811",
+      "records": "artifacts/s0-development-baselines-gpu-001/text-gemma4-e4b-it.json.records.jsonl",
+      "records_sha256": "daed0fa8ee71c6db07f36f1f150642502196fe50a7b70b519e557fc94664e047",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 109,
+        "p50": 160,
+        "p95": 172,
+        "max": 179
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.040819,
+        "p50": 0.042238,
+        "p95": 0.04378,
+        "max": 0.063265
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.003708,
+        "p50": 0.006242,
+        "p95": 0.006739,
+        "max": 0.010031
+      },
+      "job_elapsed_seconds": 82.769332,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "text",
+      "model": "onejev-27b",
+      "report": "reports/s0-development-text-onejev-27b-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.982,
+      "ece15": 0.0349422958135857,
+      "brier": 0.03547129725324995,
+      "coverage_at_error": 1.0,
+      "max_error": 0.05,
+      "report_sha256": "49f51cf096de942ab930e15c04299ec91ccf0be68a0897ce4ba8db9d9036952c",
+      "records": "artifacts/s0-development-baselines-gpu-001/text-onejev-27b.json.records.jsonl",
+      "records_sha256": "ecd3d19b145375aca65b7bdb6e02390e8a9d3843aa7215a19ed15cd769d57cd3",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 113,
+        "p50": 164,
+        "p95": 176,
+        "max": 185
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.206948,
+        "p50": 0.216821,
+        "p95": 0.222151,
+        "max": 0.272175
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.004237,
+        "p50": 0.007152,
+        "p95": 0.007598,
+        "max": 0.009021
+      },
+      "job_elapsed_seconds": 307.288139,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "text",
+      "model": "onejev-4b",
+      "report": "reports/s0-development-text-onejev-4b-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.966,
+      "ece15": 0.06403951767110733,
+      "brier": 0.06014550225775701,
+      "coverage_at_error": 1.0,
+      "max_error": 0.05,
+      "report_sha256": "b98c282264827d034634b9e0943112f7eb696a08599d1d5172212c37bac86847",
+      "records": "artifacts/s0-development-baselines-gpu-001/text-onejev-4b.json.records.jsonl",
+      "records_sha256": "e3e72108d3577e0e93063a1a58dc3ae02af270746612904651641ec3a088a2a2",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 113,
+        "p50": 164,
+        "p95": 176,
+        "max": 185
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.102281,
+        "p50": 0.107441,
+        "p95": 0.110478,
+        "max": 0.155479
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.004182,
+        "p50": 0.007198,
+        "p95": 0.007742,
+        "max": 0.010172
+      },
+      "job_elapsed_seconds": 145.394979,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "text",
+      "model": "valen-preview-0923",
+      "report": "reports/s0-development-text-valen-preview-0923-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.358,
+      "ece15": 0.09092771170411258,
+      "brier": 0.7970364143635892,
+      "coverage_at_error": 0.102,
+      "max_error": 0.05,
+      "report_sha256": "1df310388ccf9f5282a761a3622083108e4c4e6ac82d14746aa88eed7b2dcf07",
+      "records": "artifacts/s0-valen-development-gpu-001/text.json.records.jsonl",
+      "records_sha256": "76b2cc3c0b7c751ceb4e32aa866f004aac51ce35eb4a271f2443ff29b0cfc56d",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 88,
+        "p50": 137,
+        "p95": 150,
+        "max": 158
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.100516,
+        "p50": 0.11665,
+        "p95": 0.154207,
+        "max": 0.162231
+      },
+      "warm_prepare_seconds": null,
+      "job_elapsed_seconds": 137.181243,
+      "code_commit": "18b5b455c0cf010b75608db1fd5ae500983c7557"
+    },
+    {
+      "cohort": "audio",
+      "model": "gemma4-e2b-it",
+      "report": "reports/s0-development-audio-gemma4-e2b-it-001.json",
+      "status": "passed",
+      "repeat_exact": true,
+      "count": 500,
+      "accuracy": 0.442,
+      "ece15": 0.5389352598819922,
+      "brier": 1.0867002566333628,
+      "coverage_at_error": 0.0,
+      "max_error": 0.05,
+      "report_sha256": "36a2d274bf9667c3ffada40cbd7466f34f80b2ab38740d0de50f6b088bca0f1e",
+      "records": "artifacts/s0-development-baselines-gpu-001/audio-gemma4-e2b-it.json.records.jsonl",
+      "records_sha256": "748d41ff29e5bffea6c1bee4062b151ba9540489b99266dbcf845bc81772040f",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 444,
+        "p50": 630,
+        "p95": 798,
+        "max": 821
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.064187,
+        "p50": 0.072627,
+        "p95": 0.078744,
+        "max": 0.529754
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.134136,
+        "p50": 0.14838,
+        "p95": 0.157745,
+        "max": 0.16228
+      },
+      "job_elapsed_seconds": 265.264113,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "video",
+      "model": "gemma4-e4b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-gemma4-e4b-it-001.json",
+      "count": 500,
+      "accuracy": 0.556,
+      "ece15": 0.3858723547086834,
+      "brier": 0.8053977938214587,
+      "coverage_at_error": 0.002,
+      "max_error": 0.05,
+      "report_sha256": "5581bb9bdfd113368a1cb76f8d8a8dc58e327bdb334b3df72b16d2773674737d",
+      "records": "artifacts/s0-development-baselines-gpu-001/video-gemma4-e4b-it.json.records.jsonl",
+      "records_sha256": "ce57d1b95a1d30750acc1df39c6ec85327318ed7dc080aa734a36f17d8007534",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 1168,
+        "p50": 1175,
+        "p95": 1181,
+        "max": 1182
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.192053,
+        "p50": 0.335594,
+        "p95": 0.485385,
+        "max": 0.540214
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.357574,
+        "p50": 0.41219,
+        "p95": 0.451643,
+        "max": 0.740923
+      },
+      "job_elapsed_seconds": 797.732416,
+      "code_commit": "731c3d2300956283883a358c82b0574abccec050"
+    },
+    {
+      "cohort": "image",
+      "model": "valen-preview-0923",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-image-valen-preview-0923-001.json",
+      "count": 500,
+      "accuracy": 0.664,
+      "ece15": 0.09337754760606025,
+      "brier": 0.45319203314030254,
+      "coverage_at_error": 0.24,
+      "max_error": 0.05,
+      "report_sha256": "210a030461d38c5b4a4158c8769688661973929562de276d8ab3c47fbfdd9bb9",
+      "records": "artifacts/s0-valen-development-gpu-001/image.json.records.jsonl",
+      "records_sha256": "914bfb68372c41a2d2f1c4e55b3edeacce9315f001b1be671c60555bee1fef6a",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 134,
+        "p50": 325,
+        "p95": 384,
+        "max": 463
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.129595,
+        "p50": 0.244964,
+        "p95": 0.350957,
+        "max": 0.403
+      },
+      "warm_prepare_seconds": null,
+      "job_elapsed_seconds": 250.414335,
+      "code_commit": "18b5b455c0cf010b75608db1fd5ae500983c7557"
+    },
+    {
+      "cohort": "video",
+      "model": "onejev-4b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-onejev-4b-fla-002.json",
+      "runtime_profile": "official FLA0.5.2 overlay; original baseline not overwritten",
+      "count": 500,
+      "accuracy": 0.862,
+      "ece15": 0.05080820045315406,
+      "brier": 0.21806556798438823,
+      "coverage_at_error": 0.624,
+      "max_error": 0.05,
+      "report_sha256": "82bae06f80fb4a237e6c40d4a9c333be5e9c49c5d7e0b377f6c9b562c82cd594",
+      "records": "artifacts/s0-development-baselines-fla-gpu-002/video-onejev-4b.json.records.jsonl",
+      "records_sha256": "773a46e36315e7ffa84aacc9c44401cc25fc9a70b70d13e23dd2214bbb2540b7",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 2212,
+        "p50": 2219,
+        "p95": 2225,
+        "max": 2226
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.240474,
+        "p50": 0.696062,
+        "p95": 0.895593,
+        "max": 0.917913
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.408961,
+        "p50": 0.474644,
+        "p95": 0.513154,
+        "max": 0.848243
+      },
+      "job_elapsed_seconds": 1258.87675,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "video",
+      "model": "gemma4-e2b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-gemma4-e2b-it-001.json",
+      "count": 500,
+      "accuracy": 0.498,
+      "ece15": 0.49970639530954425,
+      "brier": 0.9869698169116403,
+      "coverage_at_error": 0.014,
+      "max_error": 0.05,
+      "report_sha256": "d679d344474ae1ce3ba4ab59dd7adc675236fac7cf604da77ba833ab2f77dc74",
+      "records": "artifacts/s0-development-baselines-fla-gpu-002/video-gemma4-e2b-it.json.records.jsonl",
+      "records_sha256": "dea1a6481c046716fcac720daed818fdf071782734e7a0c21d7e6f98ce0a4921",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 1168,
+        "p50": 1175,
+        "p95": 1181,
+        "max": 1182
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.132339,
+        "p50": 0.320009,
+        "p95": 0.439238,
+        "max": 0.458139
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.348949,
+        "p50": 0.414858,
+        "p95": 0.455869,
+        "max": 0.716255
+      },
+      "job_elapsed_seconds": 776.935748,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "video",
+      "model": "valen-preview-0923",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-valen-preview-0923-001.json",
+      "count": 500,
+      "accuracy": 0.54,
+      "ece15": 0.3484716385303175,
+      "brier": 0.703069726251278,
+      "coverage_at_error": 0.172,
+      "max_error": 0.05,
+      "report_sha256": "4ce0e5c8f6dfaaf2f5442f1bff5940aa0e0155ce8c36378442cc48b37a376022",
+      "records": "artifacts/s0-valen-development-gpu-001/video.json.records.jsonl",
+      "records_sha256": "39934e6a847d896b39f773a6ceb68ac72cb2b0e653c03f65cde2a956d3a7dcea",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 2208,
+        "p50": 2215,
+        "p95": 2221,
+        "max": 2222
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.834336,
+        "p50": 1.326889,
+        "p95": 1.511087,
+        "max": 1.663143
+      },
+      "warm_prepare_seconds": null,
+      "job_elapsed_seconds": 1295.249344,
+      "code_commit": "18b5b455c0cf010b75608db1fd5ae500983c7557"
+    },
+    {
+      "cohort": "text",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-text-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.938,
+      "ece15": 0.016352390578482975,
+      "brier": 0.08640920625730883,
+      "coverage_at_error": 0.986,
+      "max_error": 0.05,
+      "report_sha256": "63727e5a7a4b3b25fad5f3b1b50fc67ab678993c447854051fb9b4a210db725c",
+      "records": "artifacts/s0-teacher-development-gpu-001/text/records.jsonl",
+      "records_sha256": "641bcdb7abd38c94104547fb6de62c644432b2788f07b64cf79aabd02782d82e",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 138,
+        "p50": 214,
+        "p95": 226,
+        "max": 234
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.04807277210056782,
+        "p50": 0.06273655034601688,
+        "p95": 0.13798517547547817,
+        "max": 0.14611921645700932
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.0011973287910223007,
+        "p50": 0.001500602811574936,
+        "p95": 0.0017141364514827728,
+        "max": 0.002466075122356415
+      },
+      "job_elapsed_seconds": 88.72094954550266,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "image",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-image-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.786,
+      "ece15": 0.11040888443827698,
+      "brier": 0.3185990685689077,
+      "coverage_at_error": 0.608,
+      "max_error": 0.05,
+      "report_sha256": "1209b0d8883df83ebc0078e32fc733cb8cfc9b9297aa549812e6d9c9018b1f59",
+      "records": "artifacts/s0-teacher-development-gpu-001/image/records.jsonl",
+      "records_sha256": "6f4f4fc5c378c60c2b6482b3e6e2b4a739a0bea4c4511fb16fef92fdc5e27a7a",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 340,
+        "p50": 356,
+        "p95": 366,
+        "max": 385
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.08721456862986088,
+        "p50": 0.09407153725624084,
+        "p95": 0.2032010219991207,
+        "max": 0.21720371581614017
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.008690329268574715,
+        "p50": 0.012286078184843063,
+        "p95": 0.014301657676696777,
+        "max": 0.0338114146143198
+      },
+      "job_elapsed_seconds": 133.73489571735263,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "audio",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-audio-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.38,
+      "ece15": 0.5224974461130921,
+      "brier": 1.01293568688913,
+      "coverage_at_error": 0.004,
+      "max_error": 0.05,
+      "report_sha256": "e7e663421bd069a2046f59c984794307915a4c00f52347785a2cb1b36940ad4a",
+      "records": "artifacts/s0-teacher-development-gpu-001/audio/records.jsonl",
+      "records_sha256": "1c50223e0ef4b443e3016ba8404df88e44940fec6d1cfbcd717c9d4b2e9a8215",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 451,
+        "p50": 638,
+        "p95": 805,
+        "max": 828
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.11043320409953594,
+        "p50": 0.26391628198325634,
+        "p95": 0.40991299226880074,
+        "max": 0.5004701875150204
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.12322967685759068,
+        "p50": 0.13368071429431438,
+        "p95": 0.14053522050380707,
+        "max": 0.14349015429615974
+      },
+      "job_elapsed_seconds": 429.8078381642699,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "video",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.698,
+      "ece15": 0.06704944731312683,
+      "brier": 0.3772971753578208,
+      "coverage_at_error": 0.186,
+      "max_error": 0.05,
+      "report_sha256": "46df83532e5c9a46b0d693ae54c0c2406924a01c3e7cea5f02f482b2c1a97431",
+      "records": "artifacts/s0-teacher-development-gpu-001/video/records.jsonl",
+      "records_sha256": "d65cd8add447d5b8c7cfcce5706f4b15835df8ae09f3f2b659f2664588e281e0",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 4264,
+        "p50": 4271,
+        "p95": 4277,
+        "max": 4278
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 1.4110950212925673,
+        "p50": 1.6660837810486555,
+        "p95": 1.9881876781582832,
+        "max": 2.2166464887559414
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.48288375325500965,
+        "p50": 0.5502378977835178,
+        "p95": 0.5976492762565613,
+        "max": 0.6255808677524328
+      },
+      "job_elapsed_seconds": 2452.8420194182545,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-crossmodal-jev-omni-12b-001.json",
+      "count": 500,
+      "accuracy": 0.592,
+      "ece15": 0.11019750708893387,
+      "brier": 0.4929108131556527,
+      "coverage_at_error": 0.048,
+      "max_error": 0.05,
+      "report_sha256": "4166f68bfbe5a2f6a5ee0456f921cdfd9646f2170264ed2f44e52c1f70a9c662",
+      "records": "artifacts/s0-teacher-development-gpu-001/crossmodal/records.jsonl",
+      "records_sha256": "ffdda84c7cbe68624e9f776d5f44dc6549fa783f5e2d9d4c34c47e87aaf607dc",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 778,
+        "p50": 974,
+        "p95": 1139,
+        "max": 1166
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.17848998494446278,
+        "p50": 0.4137876033782959,
+        "p95": 0.5583157315850258,
+        "max": 0.5907736271619797
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.13175149075686932,
+        "p50": 0.14158720150589943,
+        "p95": 0.14950750209391117,
+        "max": 0.16036240570247173
+      },
+      "job_elapsed_seconds": 532.5532591100782,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "video",
+      "model": "onejev-27b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-onejev-27b-fla-002.json",
+      "runtime_profile": "official FLA0.5.2 overlay; original baseline not overwritten",
+      "count": 500,
+      "accuracy": 0.942,
+      "ece15": 0.018107662243190655,
+      "brier": 0.07959449883706768,
+      "coverage_at_error": 0.982,
+      "max_error": 0.05,
+      "report_sha256": "c168f450c802bc7ba88c5066681537f902a17cb2b5e116e2aa1e9e7583118210",
+      "records": "artifacts/s0-development-baselines-fla-gpu-002/video-onejev-27b.json.records.jsonl",
+      "records_sha256": "ab852dc636568d347e272bfce918fa82a9a6f93f3f6a3c699534388db885a560",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 2212,
+        "p50": 2219,
+        "p95": 2225,
+        "max": 2226
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 1.02609,
+        "p50": 1.0298,
+        "p95": 1.758624,
+        "max": 1.963625
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.428902,
+        "p50": 0.490112,
+        "p95": 0.533128,
+        "max": 0.803785
+      },
+      "job_elapsed_seconds": 2091.554771,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "gemma4-e4b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-crossmodal-gemma4-e4b-it-001.json",
+      "count": 500,
+      "accuracy": 0.512,
+      "ece15": 0.3930195751129663,
+      "brier": 0.8076708956186244,
+      "coverage_at_error": 0.02,
+      "max_error": 0.05,
+      "report_sha256": "565eb83b049469b46b1908709bb290b35a49abe583182c26315567429cbde6ad",
+      "records": "artifacts/s0-development-baselines-fla-gpu-002/crossmodal-gemma4-e4b-it.json.records.jsonl",
+      "records_sha256": "3a142eafe02dbb2fc66f15e152aaa985f3e849f51f183f5d1095ec1bccdc01be",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 771,
+        "p50": 966,
+        "p95": 1131,
+        "max": 1158
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.131395,
+        "p50": 0.264381,
+        "p95": 0.325397,
+        "max": 0.492748
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.145408,
+        "p50": 0.158706,
+        "p95": 0.169539,
+        "max": 0.17833
+      },
+      "job_elapsed_seconds": 445.966901,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "gemma4-e2b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-crossmodal-gemma4-e2b-it-001.json",
+      "count": 500,
+      "accuracy": 0.504,
+      "ece15": 0.494699669915913,
+      "brier": 0.9859130305130085,
+      "coverage_at_error": 0.0,
+      "max_error": 0.05,
+      "report_sha256": "fcbaeec759205d437db06d706516e2ed1e52788f9eeb990d83057200f1c7713b",
+      "records": "artifacts/s0-development-baselines-fla-gpu-002/crossmodal-gemma4-e2b-it.json.records.jsonl",
+      "records_sha256": "e97285b8229aaabfc9a91e9d8fc2c20301142486c657ed6653016eaa8d3d8e7d",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 771,
+        "p50": 966,
+        "p95": 1131,
+        "max": 1158
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.095901,
+        "p50": 0.185926,
+        "p95": 0.224088,
+        "max": 0.242313
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.143694,
+        "p50": 0.15816,
+        "p95": 0.169138,
+        "max": 0.40583
+      },
+      "job_elapsed_seconds": 365.610611,
+      "code_commit": "0aec3ebf2e160f2439d8f2fae8fdeb94d1b51624"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "gemma4-e4b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-gemma4-e4b-it-v2-001.json",
+      "count": 500,
+      "accuracy": 0.514,
+      "ece15": 0.37411239502749205,
+      "brier": 0.8024621509538359,
+      "coverage_at_error": 0.002,
+      "max_error": 0.05,
+      "report_sha256": "327384ee380ec855b47667e57d0ad710b666dc12701c332a86cd55bc2ea46501",
+      "records": "artifacts/s0-screenshot-v2-gpu-001/gemma4-e4b-it.json.records.jsonl",
+      "records_sha256": "b231ccfa1d49dab9da5fad09ba3c4bb878af94141bf9055610ceee64ad18053c",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 461,
+        "p50": 474,
+        "p95": 494,
+        "max": 516
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.077761,
+        "p50": 0.136349,
+        "p95": 0.183444,
+        "max": 0.187547
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.022179,
+        "p50": 0.072097,
+        "p95": 0.108619,
+        "max": 0.137629
+      },
+      "job_elapsed_seconds": 232.000398,
+      "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
+    }
+  ],
+  "unsupported": [
+    {
+      "cohort": "audio",
+      "model": "onejev-27b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "audio",
+      "model": "onejev-4b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "audio",
+      "model": "valen-preview-0923",
+      "reason": "official Valen compiler rejects audio",
+      "score": null
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "onejev-27b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "onejev-4b",
+      "reason": "fixed local Qwen audio metadata/runtime inconsistent",
+      "score": null
+    },
+    {
+      "cohort": "crossmodal",
+      "model": "valen-preview-0923",
+      "reason": "official Valen compiler rejects audio",
+      "score": null
+    }
+  ],
+  "measurement_boundary": "Pass 2 of shared-GPU quality evaluation; nearest-rank quantiles. Forward excludes media preparation and gateway; Valen preparation was not instrumented and remains null. Diagnostic budgets, not isolated release p95 acceptance.",
+  "cost_usd": null,
+  "whole_s0_complete": false
+}

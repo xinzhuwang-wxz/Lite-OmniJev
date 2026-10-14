@@ -1,28 +1,16 @@
-> 最新覆盖：24/24非截图支持对完成；截图v1成绩superseded，v2双构建/500family/历史排除union通过。六截图模型队列已在s0-screenshot-v2-final-001 HEAD7b4f382启动，学生343888/教师→Valen343927。唯一当前调度源plan/STATUS.md；禁止重启旧队列或重跑其他模态。
+# S0接续入口（尚未全部验收）
 
-# S0接续入口（尚未完成）
+2026-10-14。先读AGENTS.md、plan/STATUS.md、plan/DELIVERY-PLAN.md和.scratch/s0/issues/07-expand-baselines.md。STATUS为唯一当前调度快照；本入口取代此前已过时的PID/队列说明，不覆盖原始报告。
 
-2026-10-14更新。先读AGENTS.md、plan/STATUS.md、plan/DELIVERY-PLAN.md和.scratch/s0/issues/07-expand-baselines.md。STATUS是最新调度事实，保留全部历史失败，不重跑有效证据。
+- P0、教师MMAU1000/MVBench固定9任务1800双轮、100题HF/native/gateway四概率严格<.001、真实Chromium及缓存实测均完成，证据索引见STATUS；禁止重复消耗GPU。
+- 六模型公开JevBench231双轮完整；24/24非截图开发支持组合完整，截图v2 E4B51.4%双轮已核（当前25/30支持对），reports/s0-public-baselines-table-001.json和s0-development-baselines-table-001.json。各cohort500，仅首primitive切片；不支持音频/组合的6对明确unsupported，不填零。
+- 截图v1负例网格泄漏：无图/无指令坐标规则497/500。全部旧截图成绩superseded，失败/完成报告保留。v2随机合法坐标修复7tests/ruff/mypy通过；Linux两遍构建字节相同、保留原500family（498原题/2题因几何换同family步骤），冻结旧规则19/500；不按GPU分数选集。
+- 当前GPU仅补测截图六模型：/root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382。学生queue343888执行四模型（E4B已exit0，当前OneJev4 child344069），artifacts/screenshot-baselines-v2-001；教师→Valen queue343927，artifacts/{teacher-screenshot-v2-001,valen-screenshot-v2-001}。各job1800秒，学生OneJev27等free≥65GiB；共享GPU只做质量，不冒称隔离发布时延。接手核实际进程/exit/完整报告，不能仅因观察超时重启。
+- 数据入口configs/s0-development-cohorts-h20.json已绑定截图v2。历史dev统一排除union位于/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/dev-exclusion-history-union-v2-001/dev-exclusion.jsonl，SHA3110f9740d9e7dd9c39023b106d977e927b3446f5dfa82e168f729c127aeda1e；旧/新题与媒体别名都保留。正式训练须查family及媒体SHA，并预留从未训练的S5校准family；不能事后删训练账本制造隔离。
+- 收齐截图当前版本30支持对后，更新矩阵并运行python3 .scratch/s0/summarize-development.py产生真实token/耗时诊断预算汇总（读取已有sidecar，无模型执行），完成07。检查必要变更/失败即可，集中源码review已完成，不再全检/逐模型review。
+- s0:05仍外部blocked：真实隔离身份、6000封存/12000真人原始判断/逐类κ≥.7缺失。ADR0011仅proposal，无明确批准仍S0硬门；不得代签、读封存、把性能授权当真人豁免。08依赖完成才认领。S1未启动。
+- 用户授权整个方案性能/资源估值按实测自主校准，记录证据和新标准，限额优化即推进（ADR0010）；准确率/正确性/许可/真人要求保留。5b/探索关闭，不push/付费/自动开关卡/生产部署。
 
-- 六cohort各500真实构建及双遍确定性完成，配置configs/s0-development-cohorts-h20.json；crossmodal复用组件family，未来训练用union排除，不能假称新增独立family。
-- 六公开模型JevBench231双遍完成；reports/s0-public-baselines-table-001.json。教师MMAU/MVBench、数值/网关/真实浏览器已完成，复用证据。
-- 开发基线通过表见reports/s0-development-baselines-table-001.json，包含23个已核验支持对/30个必需支持对；剩余GPU矩阵实际运行。旧scheduler391342已在当前E4B视频正常exit0后终止，kernel退出码见reports/s0-development-scheduler-handoff-001.json；不要重启。其余video/crossmodal接续/root/autodl-tmp/s0-development-final-001/run-development-queue-fla-002.py（892905），输出artifacts/development-baselines-fla-002。
-- Valen适配已整合18b5b45，实际CPU四支持类别通过；开发queue796345在/root/autodl-tmp/s0-valen-development-final-002，artifacts/valen-development-001，text已实际passed，其余按原torch fallback运行。教师六cohort在/root/autodl-tmp/s0-development-final-001/artifacts/teacher-development-001；截图原等待控制器已结束，新queue60167运行run-screenshot-queue-002.py、artifacts/screenshot-baselines-002，自动等待旧队列完成标记和教师finished再运行四模型；先核实际状态而非历史PID。
-- 用户授权整个方案性能/资源估值用实测自主校准（ADR0010）；S0缓存已收口，停止配置搜索。正确性/质量/许可/真人证据不豁免。FLA单候选质量重复通过、内部warm诊断2.505倍，可在显式后续profile使用；已完成作业不改，后续派发显式profile，primary环境不修改。
-- ADR0011人工封存截止S0→S4前仅proposal，待用户明确答复；无答复仍S0硬门，不替用户批准。继续独立技术工作。
-- 全部S0依赖完成才执行08一次集成验收及正式s0-complete交接；S1未开始。
+SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final；凭据不入仓。精确环境/模型/媒体路径见STATUS，冻结教师/IEEE树dfdfd935不改。所有GPU作业结束后确认报告/原始记录已持久化，通知用户关卡；不自动关机。
 
-SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final，凭据不入仓；精确环境/模型/媒体路径见STATUS。冻结教师/IEEE树dfdfd935不可改。GPU用完记资源通知用户关卡；不自动操作。
-
-goal active；5b/探索关闭，不push、不付费、不自动开关卡、不生产部署。
-
-统一dev排除：reports/s0-development-bundle-001.json，远端/root/autodl-tmp/s0-valen-development-final-001/artifacts/dev-bundle-001/dev-exclusion.jsonl。3000family节点/2500原始family/2000组件，媒体SHA连接跨模态复用；后续train须同时排除family与媒体别名。calibration/holdout仍pending。
-
-教师计时控制已按实测调整：watchdog48305/run-teacher-deadline-handoff-001.py，总模型上限5400秒；原timer675329暂停，同一模型675330仍运行。完成认model.exit与deadline-handoff-001.json的kernel退出码以及完整report；原shell控制退出137保留，不能误判模型失败或重启。
-
-Valen截图73.2%/500×2已核；视频实测1.40秒/题，原queue796345暂停，同一video模型由watchdog227700/run-video-deadline-handoff-001.py监管，上限1800秒，完成认video.exit及video-deadline-handoff-001.json。不重启原queue。
-
-最新终态：Valen四支持类别已全部完成，video.exit=0/kernel0/finished齐全，796345与227700均已结束，不重启。E2B视频也完成49.8%。当前27B video child684037由watchdog765745按实测3000秒监管，原892905暂停未来派发，模型终态后自动恢复scheduler继续crossmodal；以STATUS最新条目与实际进程为准。
-
-教师六类实际开发GPU全完成：reports/s0-teacher-development-complete-001.json，6000记录/3000对、model.exit0/kernel0。原timer退出137为已记录控制替换，不是模型失败；675330/48305均已结束，禁止重启。截图等待控制60167无GPU记录已终止，新43477/run-screenshot-queue-003.py、artifacts/screenshot-baselines-003提前并行前三模型（free≥24GiB），27B截图仅在free≥65GiB后开始。
-首次正式训练前必须绑定global dev-exclusion和真实holdout分配账本，给未来校准预留未训练family/确定性分池规则；不能将已训练family事后挪为calibration。
+本轮停点：完整goal active，07 claimed，真实截图GPU仍运行。不是s0-complete交接；最终通过后另写用户要求的完整S0出口文档。

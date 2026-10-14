@@ -314,6 +314,19 @@
       "brier": 0.9859130305130085,
       "coverage_at_error": 0.0,
       "max_error": 0.05
+    },
+    {
+      "cohort": "screenshot",
+      "model": "gemma4-e4b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-gemma4-e4b-it-v2-001.json",
+      "count": 500,
+      "accuracy": 0.514,
+      "ece15": 0.37411239502749205,
+      "brier": 0.8024621509538359,
+      "coverage_at_error": 0.002,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -359,13 +372,8 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 24,
+  "verified_supported_pairs": 25,
   "pending_supported_pairs": [
-    {
-      "cohort": "screenshot",
-      "model": "gemma4-e4b-it",
-      "reason": "corrected GUI v2 baseline required"
-    },
     {
       "cohort": "screenshot",
       "model": "gemma4-e2b-it",

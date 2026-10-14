@@ -44,3 +44,5 @@ Blocked by: p0:04, 01, 02, 03, 10, 11, 13
 截图v1撤出当前基线：无图/无指令坐标规则497/500，负例存在网格捷径；旧报告保留superseded。v2随机合法坐标7tests通过，实际双构建exit0；仅重跑六截图模型，24/24非截图支持对已完成并逐对验证。
 
 v2真实双构建exit0且六输出字节一致；原500family保留，498题完全同源/2题因负例合法几何换同family步骤。旧固定坐标规则19/500=3.8%，不按GPU分数选集。新旧dev排除同时保留，截图旧baseline不再作为当前成绩。reports/s0-gui-development-v2-acceptance-001.json。
+
+当前25/30支持对已核：截图v2 E4B51.4%/500×2/232.000秒且输入/原概率/预测完全一致。reports/s0-development-compute-budgets-001.json已从SHA验证sidecar汇总25对真实token和耗时边界，Valen预处理未测保持null；剩余五截图补测正常运行，不重跑非截图。

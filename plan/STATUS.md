@@ -25,7 +25,7 @@
 - 五cohort各500已真实双构建/媒体验证通过；截图v1因坐标捷径撤回，v2双构建exit0、哈希一致/500原family相同。当前数据切片：文本CLINC Choice、图像AOK Choice、截图GUI目标Choice4、音频Clotho一致Noul、视频CLEVRER exist Noul、跨模态image+audio合取Noul。均首primitive切片，不冒称所有任务分布。
 - 截图固定前600标注仅497合法，补30固定TRAIN小标注达到500；筛选基于许可/格式/几何，不看模型分数。RGB实际decode通过。
 - 六公开模型JevBench231各双遍完成，reports/s0-public-baselines-table-001.json：E4B76.1905%、E2B63.6364%、OneJev4 75.7576%、27B83.1169%、教师85.7143%、Valen47.1861%。低成绩原样保留；专用head无U则null。
-- 开发GPU已核24/24非截图支持对，六截图支持对待v2重测，另6个音频不支持组合明确unsupported。唯一矩阵入口reports/s0-development-baselines-table-001.json；旧截图成绩superseded。
+- 开发GPU已核24/24非截图支持对，截图v2 E4B已完成51.4%/500×2，累计25/30支持对，剩余五个截图支持对继续，另6个音频不支持组合明确unsupported。唯一矩阵入口reports/s0-development-baselines-table-001.json；旧截图成绩superseded。
 - 教师六cohort全部完成，各500×2精确；完整6000记录/3000对、model.exit=0及kernel收据，reports/s0-teacher-development-complete-001.json。
 - v1历史统一dev排除清单继续生效，v1/v2已合并历史union，3000节点，SHA3110f9740d9e7dd9c39023b106d977e927b3446f5dfa82e168f729c127aeda1e，reports/s0-development-exclusion-history-v2-001.json。原清单两遍SHA相同：3000family节点/2500原始family/2000组件。跨模态复用原image/audio同池，未来train同时查family和媒体SHA。reports/s0-development-bundle-{001,002}.json；calibration/holdout分配仍pending。
 - s0:04 done：完整真实native/gateway cache-on/off冷暖双测、实际KV命中及四概率<.001；原≤2按ADR0010仅诊断目标。FP32 TF32x3失败候选停止，停止S0性能搜索，原失败证据保留；不宣称最终p95通过。
@@ -35,7 +35,8 @@
 - 非截图学生队列892905已完成finished；E2B crossmodal50.4%、1000记录/500对精确已核。教师/Valen/video全部结束，不重启。
 - 截图v1结构捷径：无图无指令坐标规则497/500=99.4%，reports/s0-gui-coordinate-shortcut-v1-001.json。旧六模型截图成绩全部撤出当前矩阵，保留证据。queue43477及child343447已结束。
 - scripts/s0_gui_dev.py v2随机合法坐标修复7相关tests/ruff/mypy通过。真实CPU双构建/root/autodl-tmp/s0-gui-dev-v2-001/build.sh已exit0；产物artifacts/run-{a,b}逐字节一致，500原family保留、498原题/2题因合法几何重选；冻结旧坐标规则19/500=3.8%。630标注/媒体复用，无下载。
-- 截图六模型补测已启动：/root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382；学生queue343888（artifacts/screenshot-baselines-v2-001，四学生顺序、各1800秒/显存等待）；教师→Valen queue343927（teacher-screenshot-v2-001及valen-screenshot-v2-001，各1800秒）。教师343936、E4B343893实际运行；全部只测screenshot v2，不重跑其余模态。源配置已重绑，历史dev排除union通过，07首条恢复勾选。
+- 截图六模型补测已启动：/root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382；学生queue343888（artifacts/screenshot-baselines-v2-001，四学生顺序、各1800秒/显存等待）；教师→Valen queue343927（teacher-screenshot-v2-001及valen-screenshot-v2-001，各1800秒）。教师343936与OneJev4 344069实际运行；E4B343893已exit0/232.000秒；全部只测screenshot v2，不重跑其余模态。源配置已重绑，历史dev排除union通过，07首条恢复勾选。
+- 已汇总25对真实token/耗时诊断分布：reports/s0-development-compute-budgets-001.json；复现python3 .scratch/s0/summarize-development.py，只读本地已验证sidecar并绑定报告/记录SHA，不重跑模型。Valen未测的预处理耗时保持null。08已同步ADR0010缓存与07同机双轮/S6跨运行时责任，清除过时额外前置。
 
 - 所有共享GPU作业仅质量评测，耗时是诊断数据，不当隔离发布性能。
 - 官方FLA0.5.2单候选231×2质量/重复通过，warm诊断约2.505倍，reports/s0-qwen-fla-candidate-result-001.json。只在后续OneJev作业显式profile/固定wheelSHA启用，primary环境不变，旧baseline保留；不用较弱backend降低目标。
