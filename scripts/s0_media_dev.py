@@ -605,7 +605,7 @@ def build_image(args: argparse.Namespace, *, started_at: float) -> tuple[dict[st
                 "image_id": candidate["raw"]["image_id"],
                 "question_id": candidate["raw"]["question_id"],
                 "uri": relative.as_posix(),
-                "source_path": str(candidate["manifest"]["path"]),
+                "source_path": str(candidate["media_path"]),
                 "sha256": candidate["manifest"]["sha256"],
                 "bytes": copied.stat().st_size,
                 "license": AOK_MEDIA_LICENSE,

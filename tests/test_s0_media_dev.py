@@ -76,7 +76,6 @@ def write_aok_fixture(tmp_path: Path, *, bad_license: bool = False) -> dict[str,
                 "file_name": file_name,
                 "license_id": 7 if bad_license and index == 0 else 4,
                 "sha256": hashlib.sha256(payload).hexdigest(),
-                "path": f"artifacts/images/train/{file_name}",
                 "coco_url": f"http://images.cocodataset.org/train2017/{file_name}",
                 "flickr_url": f"https://example.test/{file_name}",
             }

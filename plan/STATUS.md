@@ -23,9 +23,9 @@
 
 ## 正在做与下一动作
 - s0:07 claimed：整合剩余image/screenshot/video/crossmodal开发500与必需同条件基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
-- 子切片/tmp/lite-media-dev-001：executor只写scripts/s0_media_dev.py、tests/test_s0_media_dev.py，准备原AOK TRAIN Choice500与CLEVRER TRAIN exist Noul500、媒体decode/整family排除；父负责真实Linux批构建。无GPU/新下载/封存读取。
-- 子切片/tmp/lite-public-baselines-001：只写scripts/s0_public_baselines.py、tests/test_s0_public_baselines.py，复用固定JevBench231/core_question完整rubric/官方readout，准备E4B/E2B真实HF两遍基线；父才调度GPU。不得把Qwen base当Valen或通用tokenizer当教师head。
-- s0:04 done（ADR0010用户授权调整预估性能验收）：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，GPU查询无自有作业。reports/s0-tf32x3-cache-result-001.json。
+- 图像/视频builder已合入d23dc39；/tmp/lite-media-dev-001 executor在新冻结remote树执行image-a,b/video-a,b真实CPU500构建与输出hash核对（OMP2），不重复下载。/tmp/lite-gui-dev-001 executor推进GUI目标定位Choice500，限600份原TRAIN小标注，无新媒体/GPU。
+- 新实现已合入d23dc39并同步/root/autodl-tmp/s0-development-next-001；E4B preflight-002真实CPU通过（001仅源目录笔误失败保留）。E4B GPU双轮231题exit0，78.944秒，accuracy176/231=76.1905%，231对raw/conditional完全一致，reports/s0-public-baseline-e4b-001.json；同supervisor已依序E2B（各1200秒上限）；每条记录增量JSONL留存。artifacts/public-baselines-001/{e4b,e2b}-run-001.{json,jsonl,log,exit}，先核实际状态，不重复启动。
+- s0:04 done（ADR0010用户授权调整预估性能验收）：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，失败候选已停止。reports/s0-tf32x3-cache-result-001.json。
 - 原≤2未达到，现作为诊断目标；真实native/gateway on/off冷暖双测、KV命中及四概率<.001构成S0已通过基线，reports/s0-cache-measured-baseline-acceptance-001.json。停止S0性能调参，S6按实际产品候选校准性能标准；不宣称原目标或发布p95通过。
 - s0:08 ready但依赖未齐，不可认领。全部门槛通过后一次集成review、正式plan/handoff-日期-s0-complete.md及可复制启动词，再交新session进入S1。
 
