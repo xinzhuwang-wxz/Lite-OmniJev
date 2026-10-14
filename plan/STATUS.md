@@ -46,8 +46,9 @@
 - 原005 runtime cost=0.0只是历史硬编码占位，真实费用未知null；未来runner已修null，3280.63秒仅最后一次resume外层时间，不冒称全项目GPU时间/账单。
 
 ## 当前活跃作业（接手先核实际状态）
-- GPU公共基线batch002：/root/autodl-tmp/s0-public-baselines-002 HEAD0f09482，supervisor287865；OneJev4B已exit0，142.934秒，175/231=75.7576%，231对概率精确一致；OneJev27B preflight已过、run执行中，之后Jev-Omni专用head公开231双轮。每run1200秒预算，逐条JSONL增量保存，先核exit/进程，勿重启活作业。
-- /tmp/lite-development-baselines-001：冻结六类dev500的通用官方processor/HF读出runner实现中，负责真实开发分数/token/时延；公开231不替代开发集分数。
+- GPU公共基线batch002已全部exit0：OneJev4B75.7576%/142.934秒，27B83.1169%/647.003秒，Jev-Omni85.7143%/125.720秒，各231对概率精确一致；连同E4B/E2B五核心表reports/s0-public-baselines-table-001.json。旧supervisor287865已完成，不重启。
+- 当前开发GPU队列：/root/autodl-tmp/s0-development-baselines-002 HEAD731c3d2，scheduler391342；E4B text500×2已开始，其后按text→image→audio→video→crossmodal，各E4B/OneJev4/E2B/OneJev27（OneJev音频类别明确unsupported，不填零），每job1200秒，JSONL保留，artifacts/development-baselines-001。原生CPU真实首题16支持对全部通过（4音频不支持对明确列出），教师5类首题CPU官方processor通过6.677秒，见两份cpu-preflight001报告，非GPU质量验收。
+- 开发runner已合入731c3d2，流式逐题处理适应150GiB上限，8192token拒截断，重复还绑定实际tensor输入hash；相关10测试通过。教师开发runner已合入05e29ec，同16帧端点与音频PCM16共同输入协议，待串行GPU调度。
 - /tmp/lite-public-baselines-001：Valen真实安全head/LoRA/visual组合adapter实现中。已找齐官方固定源码16小文件/59561B，四原固定SHA全匹配，artifacts/valen-source-audit-42a6-001/retrieval.json；安全转换权重原已存在，不重做转换、不执行上游pickle/module。
 - GUI子切片/tmp/lite-gui-dev-001继续；crossmodal子切片真实构建已完成，不重复执行。
 - image首跑无path字段KeyError保留；修复6e9c467实际双遍已通过，remote /root/autodl-tmp/s0-media-development-002。跨模态remote /root/autodl-tmp/s0-crossmodal-development-001 HEADc4ce657。

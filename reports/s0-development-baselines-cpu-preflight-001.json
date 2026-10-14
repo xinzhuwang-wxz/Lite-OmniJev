@@ -1,0 +1,2208 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "actual official CPU processor first item per supported development cohort; not CUDA/quality",
+  "source_code_sha256": "a5896443b30a9fa28596c043de0e7a4ac28abdd232148affcd522e944c25332f",
+  "elapsed_seconds": 15.91764503903687,
+  "rows": [
+    {
+      "model_id": "gemma4-e4b-it",
+      "cohort": "text",
+      "metadata": {
+        "model_id": "gemma4-e4b-it",
+        "repo_id": "google/gemma-4-E4B-it",
+        "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "4b06b6f5d13a235c2c708218bf21f6c5c822cfc32ba95517d7251a87e4a546db",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/report.json",
+        "sha256": "00b11cd58532cd0b96424cb5f73ffb6ae8ef53491de8941d495d401372cd4c3b",
+        "outputs_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+        "bound_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "11": 46,
+          "20": 454
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 158,
+      "input_sha256": "9597045c47b0a524eed3bd69127a95c561edb90334469a1b118bcdd83ec123dc",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              158
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5842e64df15954cb350a62c52f32ae7a436c06846cb0032d16539b59d6cb660e"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              158
+            ],
+            "dtype": "torch.int64",
+            "sha256": "6e59d63bdde1446bb53faec3ea2973348f94b9d271c0e7170ae5799324016e8f"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              158
+            ],
+            "dtype": "torch.int64",
+            "sha256": "e448b18d634ce66c2f440daeaeb067966ea286db6e9f130879352e97d8f098ec"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e4b-it",
+      "cohort": "image",
+      "metadata": {
+        "model_id": "gemma4-e4b-it",
+        "repo_id": "google/gemma-4-E4B-it",
+        "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "4b06b6f5d13a235c2c708218bf21f6c5c822cfc32ba95517d7251a87e4a546db",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/report.json",
+        "sha256": "35f6eab1ab28e7931f0426ac9cf57d4e622ec185c431f6586e554ff30bd779a3",
+        "outputs_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "bound_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "4": 500
+        },
+        "media_counts": {
+          "image": 500,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 350,
+      "input_sha256": "38b16694f1b42a1947c18b63acf8081fb87b5d130ac7417ef73cc1d390bc3b12",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [
+          {
+            "type": "image",
+            "uri": "image/000000470976.jpg",
+            "sha256": "6ba4b4c4679854a3d7f7d1a8106e4de15a54120d637a5eababde7be8acb6bff3"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              350
+            ],
+            "dtype": "torch.int64",
+            "sha256": "4de3de9817cca1dfbc88123dc516bbb7e680933600c7a09f8501174202664a74"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              350
+            ],
+            "dtype": "torch.int64",
+            "sha256": "f455d4c277db9218a2baef5828a65066e2ce5f10b3075869b9045bbfb297309b"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              350
+            ],
+            "dtype": "torch.int64",
+            "sha256": "8da8661931e56fa1475dc6d38c33935316f195211eef18b98f622b0ac9aaacd3"
+          },
+          "pixel_values": {
+            "shape": [
+              1,
+              2520,
+              768
+            ],
+            "dtype": "torch.float32",
+            "sha256": "1394b9b624bf801c330a471e5449cced9ea311dd9f2cf0241a8d1ab694d7adfe"
+          },
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5b2f1e361e5c275e82ad50d7f5c6338d5db064f4bde7f2d01465412b3e9917e3"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e4b-it",
+      "cohort": "audio",
+      "metadata": {
+        "model_id": "gemma4-e4b-it",
+        "repo_id": "google/gemma-4-E4B-it",
+        "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "4b06b6f5d13a235c2c708218bf21f6c5c822cfc32ba95517d7251a87e4a546db",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/report.json",
+        "sha256": "050812351d10f1a0bb79391b88f694ea0b8edc80365f66ba148b11d72f2090d8",
+        "outputs_dev_jsonl_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+        "bound_dev_jsonl_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 500,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 555,
+      "input_sha256": "a000f9a8281fc09eb7aa1349ef1ba50484362241093e53d7c33e4c51bdc2d3f5",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "sampling_rate": 16000
+        },
+        "media": [
+          {
+            "type": "audio",
+            "uri": "weird rapidbeat.wav",
+            "sha256": "50789e70fa4db506959ba65b4507d6e249afa5ab411857d4428db8f5875b6e0f"
+          }
+        ],
+        "canonical_media": [
+          {
+            "type": "audio",
+            "encoding": "mono 16000Hz PCM16 WAV; round(clip(float,-1,1)*32767)",
+            "sample_rate": 16000,
+            "frames": 309847,
+            "source_float32_sha256": "ecf67fc18fd5288ec15f9fd9793a7b8bdad87e5ace234e534f42dfc9418262da",
+            "canonical_bytes_sha256": "bd5390dcc9f609537c5175ce012a2bb4147e9c964d3f8320998c03bd47510b14",
+            "canonical_pcm16_sha256": "b9fada93237c9201a7490bc5a88bac62e7e3a512b332af099856e067cbd7bce9",
+            "canonical_float32_sha256": "5290775d1bfdf2ffd9807bf51c7d1e4bc5db79d3145d904ca95e77bfeae0cf12"
+          }
+        ],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              555
+            ],
+            "dtype": "torch.int64",
+            "sha256": "da2cfb858bff106f938f7c5c40880cf5f78ebd9f9f7cc05ec2478ff5d09be7d8"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              555
+            ],
+            "dtype": "torch.int64",
+            "sha256": "6e234b18031516bb9d707da4d9d7645a4ef474cac564a59d34372384418d78e3"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              555
+            ],
+            "dtype": "torch.int64",
+            "sha256": "75187be9f28e5b821029ffca464f65185d698fa2b6c33c752fc82af3322d2551"
+          },
+          "input_features": {
+            "shape": [
+              1,
+              1936,
+              128
+            ],
+            "dtype": "torch.float32",
+            "sha256": "64b60e5211f5b906ad97005ca6740200b08273e3b44913a8b00e07a23328bc26"
+          },
+          "input_features_mask": {
+            "shape": [
+              1,
+              1936
+            ],
+            "dtype": "torch.bool",
+            "sha256": "309e021cedfefe77961d6089c875d41e9284887d4733de0a8c0baaaff9e54ce9"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e4b-it",
+      "cohort": "video",
+      "metadata": {
+        "model_id": "gemma4-e4b-it",
+        "repo_id": "google/gemma-4-E4B-it",
+        "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "4b06b6f5d13a235c2c708218bf21f6c5c822cfc32ba95517d7251a87e4a546db",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/report.json",
+        "sha256": "49e102cf176996b19a22e3bc9e11269cf8dadc892254f0b712ac3697f06ed362",
+        "outputs_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "bound_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 500
+        }
+      },
+      "prompt_tokens": 1174,
+      "input_sha256": "01b82eb8ea35b192cd647b1636a1936494462aa0ca9e16439dff45382050a823",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "do_sample_frames": false
+        },
+        "media": [
+          {
+            "type": "video",
+            "uri": "video/video_02615.mp4",
+            "sha256": "695009a1888d29cb833b2c98be30dc3d460d5728b5c3d22f2df477df09e87ea2"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [
+          {
+            "fps": 25.0,
+            "total_num_frames": 128,
+            "duration": 5.12,
+            "frames_indices": [
+              0,
+              8,
+              17,
+              25,
+              34,
+              42,
+              51,
+              59,
+              68,
+              76,
+              85,
+              93,
+              102,
+              110,
+              119,
+              127
+            ],
+            "video_backend": "ffmpeg",
+            "width": 640,
+            "height": 427
+          }
+        ],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              1174
+            ],
+            "dtype": "torch.int64",
+            "sha256": "27bc7c293f12eda5bb33b1abe1ff7ea61304bdfc2d838f2e6670953e27fe5b74"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              1174
+            ],
+            "dtype": "torch.int64",
+            "sha256": "d2b55add978d0cde81fbc89638d371378a604d6d03f318cee28a961e2897b648"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              1174
+            ],
+            "dtype": "torch.int64",
+            "sha256": "b5d2f291e1a6ebd96753e57753c912a280d828a3ce31f71dd937a093673c27f7"
+          },
+          "pixel_values_videos": {
+            "shape": [
+              1,
+              16,
+              630,
+              768
+            ],
+            "dtype": "torch.float32",
+            "sha256": "0317b1c405a9db97d78a636415ab8d645b0d5c0e2b6c37606cb2488d5e3c1695"
+          },
+          "video_position_ids": {
+            "shape": [
+              1,
+              16,
+              630,
+              2
+            ],
+            "dtype": "torch.int64",
+            "sha256": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e4b-it",
+      "cohort": "crossmodal",
+      "metadata": {
+        "model_id": "gemma4-e4b-it",
+        "repo_id": "google/gemma-4-E4B-it",
+        "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "4b06b6f5d13a235c2c708218bf21f6c5c822cfc32ba95517d7251a87e4a546db",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/report.json",
+        "sha256": "c92fe48c010fb639df928360046432e5f2f1f92a1118989276d561387d93f576",
+        "outputs_dev_jsonl_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+        "bound_dev_jsonl_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 500,
+          "audio": 500,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 832,
+      "input_sha256": "3fa6f50ce564a07e1431635eccc7b3f49d8f33a82dd715cb328134d0fcf78543",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "sampling_rate": 16000
+        },
+        "media": [
+          {
+            "type": "image",
+            "uri": "image/000000023660.jpg",
+            "sha256": "fa0645b0d4887a9ea6aa8df02974713868ff72328a03c5ce8d716953ddc47225"
+          },
+          {
+            "type": "audio",
+            "uri": "audio/glass (1).wav",
+            "sha256": "9d7475af7d42ade96288f82c8220c800125fe561d57ae21d19d309fdbe8bf132"
+          }
+        ],
+        "canonical_media": [
+          {
+            "type": "audio",
+            "encoding": "mono 16000Hz PCM16 WAV; round(clip(float,-1,1)*32767)",
+            "sample_rate": 16000,
+            "frames": 267610,
+            "source_float32_sha256": "72a00e6a57cd03042e69d4e8aa8afa4a123086ed089bc8e2600232a213877fa1",
+            "canonical_bytes_sha256": "ea7f40fa7f6aa6dccc01b1163a1056e04b96fa68a0a34110b2e2c5e07faff351",
+            "canonical_pcm16_sha256": "3c036793a3532dd4c2f4d56c48347996a19459e504b85519b9bd7731fef5708b",
+            "canonical_float32_sha256": "507b157fbdabd3965cac4904d2b132b550c91aacb59993e66f59ab160794e1ae"
+          }
+        ],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              832
+            ],
+            "dtype": "torch.int64",
+            "sha256": "c64c4bd619c1ac5ec3e6b5b5177037b0a94917b4934fc03174bd9095f20f3ec0"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              832
+            ],
+            "dtype": "torch.int64",
+            "sha256": "35c804316da6e0cccc52d7d5dea7affd32dc28959b0e07932c8c04102c628cfc"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              832
+            ],
+            "dtype": "torch.int64",
+            "sha256": "f6dac67e0f96bc0141a989e0dbeab1ab019e4efc68a335abf2202d12b1e16880"
+          },
+          "pixel_values": {
+            "shape": [
+              1,
+              2520,
+              768
+            ],
+            "dtype": "torch.float32",
+            "sha256": "63412ed27af585dbcade49f36063588703f71b2aa0d4183dc3fb269cdaae6547"
+          },
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5b2f1e361e5c275e82ad50d7f5c6338d5db064f4bde7f2d01465412b3e9917e3"
+          },
+          "input_features": {
+            "shape": [
+              1,
+              1672,
+              128
+            ],
+            "dtype": "torch.float32",
+            "sha256": "3c2dcfc3b52be5387225b74ae4d5b7405ff5f5eba16844b29f7bb50cce66f9db"
+          },
+          "input_features_mask": {
+            "shape": [
+              1,
+              1672
+            ],
+            "dtype": "torch.bool",
+            "sha256": "15c744e111ec08d65cc5cd0a0277559626baf98ba104a99c2c692897b418fa59"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e2b-it",
+      "cohort": "text",
+      "metadata": {
+        "model_id": "gemma4-e2b-it",
+        "repo_id": "google/gemma-4-E2B-it",
+        "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "0c2b16d6cd3eff6446cd685338765130bba5e8b383f345f7ccc78fc08e74a27d",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/report.json",
+        "sha256": "00b11cd58532cd0b96424cb5f73ffb6ae8ef53491de8941d495d401372cd4c3b",
+        "outputs_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+        "bound_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "11": 46,
+          "20": 454
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 158,
+      "input_sha256": "9597045c47b0a524eed3bd69127a95c561edb90334469a1b118bcdd83ec123dc",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              158
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5842e64df15954cb350a62c52f32ae7a436c06846cb0032d16539b59d6cb660e"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              158
+            ],
+            "dtype": "torch.int64",
+            "sha256": "6e59d63bdde1446bb53faec3ea2973348f94b9d271c0e7170ae5799324016e8f"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              158
+            ],
+            "dtype": "torch.int64",
+            "sha256": "e448b18d634ce66c2f440daeaeb067966ea286db6e9f130879352e97d8f098ec"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e2b-it",
+      "cohort": "image",
+      "metadata": {
+        "model_id": "gemma4-e2b-it",
+        "repo_id": "google/gemma-4-E2B-it",
+        "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "0c2b16d6cd3eff6446cd685338765130bba5e8b383f345f7ccc78fc08e74a27d",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/report.json",
+        "sha256": "35f6eab1ab28e7931f0426ac9cf57d4e622ec185c431f6586e554ff30bd779a3",
+        "outputs_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "bound_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "4": 500
+        },
+        "media_counts": {
+          "image": 500,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 350,
+      "input_sha256": "38b16694f1b42a1947c18b63acf8081fb87b5d130ac7417ef73cc1d390bc3b12",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [
+          {
+            "type": "image",
+            "uri": "image/000000470976.jpg",
+            "sha256": "6ba4b4c4679854a3d7f7d1a8106e4de15a54120d637a5eababde7be8acb6bff3"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              350
+            ],
+            "dtype": "torch.int64",
+            "sha256": "4de3de9817cca1dfbc88123dc516bbb7e680933600c7a09f8501174202664a74"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              350
+            ],
+            "dtype": "torch.int64",
+            "sha256": "f455d4c277db9218a2baef5828a65066e2ce5f10b3075869b9045bbfb297309b"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              350
+            ],
+            "dtype": "torch.int64",
+            "sha256": "8da8661931e56fa1475dc6d38c33935316f195211eef18b98f622b0ac9aaacd3"
+          },
+          "pixel_values": {
+            "shape": [
+              1,
+              2520,
+              768
+            ],
+            "dtype": "torch.float32",
+            "sha256": "1394b9b624bf801c330a471e5449cced9ea311dd9f2cf0241a8d1ab694d7adfe"
+          },
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5b2f1e361e5c275e82ad50d7f5c6338d5db064f4bde7f2d01465412b3e9917e3"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e2b-it",
+      "cohort": "audio",
+      "metadata": {
+        "model_id": "gemma4-e2b-it",
+        "repo_id": "google/gemma-4-E2B-it",
+        "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "0c2b16d6cd3eff6446cd685338765130bba5e8b383f345f7ccc78fc08e74a27d",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/report.json",
+        "sha256": "050812351d10f1a0bb79391b88f694ea0b8edc80365f66ba148b11d72f2090d8",
+        "outputs_dev_jsonl_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+        "bound_dev_jsonl_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 500,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 555,
+      "input_sha256": "a000f9a8281fc09eb7aa1349ef1ba50484362241093e53d7c33e4c51bdc2d3f5",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "sampling_rate": 16000
+        },
+        "media": [
+          {
+            "type": "audio",
+            "uri": "weird rapidbeat.wav",
+            "sha256": "50789e70fa4db506959ba65b4507d6e249afa5ab411857d4428db8f5875b6e0f"
+          }
+        ],
+        "canonical_media": [
+          {
+            "type": "audio",
+            "encoding": "mono 16000Hz PCM16 WAV; round(clip(float,-1,1)*32767)",
+            "sample_rate": 16000,
+            "frames": 309847,
+            "source_float32_sha256": "ecf67fc18fd5288ec15f9fd9793a7b8bdad87e5ace234e534f42dfc9418262da",
+            "canonical_bytes_sha256": "bd5390dcc9f609537c5175ce012a2bb4147e9c964d3f8320998c03bd47510b14",
+            "canonical_pcm16_sha256": "b9fada93237c9201a7490bc5a88bac62e7e3a512b332af099856e067cbd7bce9",
+            "canonical_float32_sha256": "5290775d1bfdf2ffd9807bf51c7d1e4bc5db79d3145d904ca95e77bfeae0cf12"
+          }
+        ],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              555
+            ],
+            "dtype": "torch.int64",
+            "sha256": "da2cfb858bff106f938f7c5c40880cf5f78ebd9f9f7cc05ec2478ff5d09be7d8"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              555
+            ],
+            "dtype": "torch.int64",
+            "sha256": "6e234b18031516bb9d707da4d9d7645a4ef474cac564a59d34372384418d78e3"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              555
+            ],
+            "dtype": "torch.int64",
+            "sha256": "75187be9f28e5b821029ffca464f65185d698fa2b6c33c752fc82af3322d2551"
+          },
+          "input_features": {
+            "shape": [
+              1,
+              1936,
+              128
+            ],
+            "dtype": "torch.float32",
+            "sha256": "64b60e5211f5b906ad97005ca6740200b08273e3b44913a8b00e07a23328bc26"
+          },
+          "input_features_mask": {
+            "shape": [
+              1,
+              1936
+            ],
+            "dtype": "torch.bool",
+            "sha256": "309e021cedfefe77961d6089c875d41e9284887d4733de0a8c0baaaff9e54ce9"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e2b-it",
+      "cohort": "video",
+      "metadata": {
+        "model_id": "gemma4-e2b-it",
+        "repo_id": "google/gemma-4-E2B-it",
+        "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "0c2b16d6cd3eff6446cd685338765130bba5e8b383f345f7ccc78fc08e74a27d",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/report.json",
+        "sha256": "49e102cf176996b19a22e3bc9e11269cf8dadc892254f0b712ac3697f06ed362",
+        "outputs_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "bound_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 500
+        }
+      },
+      "prompt_tokens": 1174,
+      "input_sha256": "01b82eb8ea35b192cd647b1636a1936494462aa0ca9e16439dff45382050a823",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "do_sample_frames": false
+        },
+        "media": [
+          {
+            "type": "video",
+            "uri": "video/video_02615.mp4",
+            "sha256": "695009a1888d29cb833b2c98be30dc3d460d5728b5c3d22f2df477df09e87ea2"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [
+          {
+            "fps": 25.0,
+            "total_num_frames": 128,
+            "duration": 5.12,
+            "frames_indices": [
+              0,
+              8,
+              17,
+              25,
+              34,
+              42,
+              51,
+              59,
+              68,
+              76,
+              85,
+              93,
+              102,
+              110,
+              119,
+              127
+            ],
+            "video_backend": "ffmpeg",
+            "width": 640,
+            "height": 427
+          }
+        ],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              1174
+            ],
+            "dtype": "torch.int64",
+            "sha256": "27bc7c293f12eda5bb33b1abe1ff7ea61304bdfc2d838f2e6670953e27fe5b74"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              1174
+            ],
+            "dtype": "torch.int64",
+            "sha256": "d2b55add978d0cde81fbc89638d371378a604d6d03f318cee28a961e2897b648"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              1174
+            ],
+            "dtype": "torch.int64",
+            "sha256": "b5d2f291e1a6ebd96753e57753c912a280d828a3ce31f71dd937a093673c27f7"
+          },
+          "pixel_values_videos": {
+            "shape": [
+              1,
+              16,
+              630,
+              768
+            ],
+            "dtype": "torch.float32",
+            "sha256": "0317b1c405a9db97d78a636415ab8d645b0d5c0e2b6c37606cb2488d5e3c1695"
+          },
+          "video_position_ids": {
+            "shape": [
+              1,
+              16,
+              630,
+              2
+            ],
+            "dtype": "torch.int64",
+            "sha256": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "gemma4-e2b-it",
+      "cohort": "crossmodal",
+      "metadata": {
+        "model_id": "gemma4-e2b-it",
+        "repo_id": "google/gemma-4-E2B-it",
+        "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "0c2b16d6cd3eff6446cd685338765130bba5e8b383f345f7ccc78fc08e74a27d",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "model_type": "gemma4",
+          "architectures": [
+            "Gemma4ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Gemma4ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/report.json",
+        "sha256": "c92fe48c010fb639df928360046432e5f2f1f92a1118989276d561387d93f576",
+        "outputs_dev_jsonl_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+        "bound_dev_jsonl_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 500,
+          "audio": 500,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 832,
+      "input_sha256": "3fa6f50ce564a07e1431635eccc7b3f49d8f33a82dd715cb328134d0fcf78543",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "sampling_rate": 16000
+        },
+        "media": [
+          {
+            "type": "image",
+            "uri": "image/000000023660.jpg",
+            "sha256": "fa0645b0d4887a9ea6aa8df02974713868ff72328a03c5ce8d716953ddc47225"
+          },
+          {
+            "type": "audio",
+            "uri": "audio/glass (1).wav",
+            "sha256": "9d7475af7d42ade96288f82c8220c800125fe561d57ae21d19d309fdbe8bf132"
+          }
+        ],
+        "canonical_media": [
+          {
+            "type": "audio",
+            "encoding": "mono 16000Hz PCM16 WAV; round(clip(float,-1,1)*32767)",
+            "sample_rate": 16000,
+            "frames": 267610,
+            "source_float32_sha256": "72a00e6a57cd03042e69d4e8aa8afa4a123086ed089bc8e2600232a213877fa1",
+            "canonical_bytes_sha256": "ea7f40fa7f6aa6dccc01b1163a1056e04b96fa68a0a34110b2e2c5e07faff351",
+            "canonical_pcm16_sha256": "3c036793a3532dd4c2f4d56c48347996a19459e504b85519b9bd7731fef5708b",
+            "canonical_float32_sha256": "507b157fbdabd3965cac4904d2b132b550c91aacb59993e66f59ab160794e1ae"
+          }
+        ],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              832
+            ],
+            "dtype": "torch.int64",
+            "sha256": "c64c4bd619c1ac5ec3e6b5b5177037b0a94917b4934fc03174bd9095f20f3ec0"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              832
+            ],
+            "dtype": "torch.int64",
+            "sha256": "35c804316da6e0cccc52d7d5dea7affd32dc28959b0e07932c8c04102c628cfc"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              832
+            ],
+            "dtype": "torch.int64",
+            "sha256": "f6dac67e0f96bc0141a989e0dbeab1ab019e4efc68a335abf2202d12b1e16880"
+          },
+          "pixel_values": {
+            "shape": [
+              1,
+              2520,
+              768
+            ],
+            "dtype": "torch.float32",
+            "sha256": "63412ed27af585dbcade49f36063588703f71b2aa0d4183dc3fb269cdaae6547"
+          },
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5b2f1e361e5c275e82ad50d7f5c6338d5db064f4bde7f2d01465412b3e9917e3"
+          },
+          "input_features": {
+            "shape": [
+              1,
+              1672,
+              128
+            ],
+            "dtype": "torch.float32",
+            "sha256": "3c2dcfc3b52be5387225b74ae4d5b7405ff5f5eba16844b29f7bb50cce66f9db"
+          },
+          "input_features_mask": {
+            "shape": [
+              1,
+              1672
+            ],
+            "dtype": "torch.bool",
+            "sha256": "15c744e111ec08d65cc5cd0a0277559626baf98ba104a99c2c692897b418fa59"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "onejev-4b",
+      "cohort": "text",
+      "metadata": {
+        "model_id": "onejev-4b",
+        "repo_id": "OmniJev/OneJev-4B",
+        "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "61c2c6149b906f13e4e1af67c13dfea648515e4ca19115abd550262c394a6a24",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "1853cf34474e8587fb709bc73134201558fe7d6af39d1a69ed81c9e30a340636",
+          "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+          "config.json": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "generation_config.json": "62153eb6c69f2e1f426beaa8002b7186437e949c7588167085df14e10e9c0a73",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/report.json",
+        "sha256": "00b11cd58532cd0b96424cb5f73ffb6ae8ef53491de8941d495d401372cd4c3b",
+        "outputs_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+        "bound_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "11": 46,
+          "20": 454
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 163,
+      "input_sha256": "663c6beb23c2c6a39f26466603c7c4846bf6e834f0e59082507b6ad5976813d3",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              163
+            ],
+            "dtype": "torch.int64",
+            "sha256": "345de6969aa523dc2dd92ef009977c8532c389b4108fb6b12e34e10bdb822bd7"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              163
+            ],
+            "dtype": "torch.int64",
+            "sha256": "f0550a23778b4b8049820a19e17f1dfa3601935a574a5c645fd8e2a56a395c6f"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              163
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5cad8b3db8fbb29e0cabbd785e1e3449ebcd5b04544cde14c93812a93860cc47"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "onejev-4b",
+      "cohort": "image",
+      "metadata": {
+        "model_id": "onejev-4b",
+        "repo_id": "OmniJev/OneJev-4B",
+        "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "61c2c6149b906f13e4e1af67c13dfea648515e4ca19115abd550262c394a6a24",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "1853cf34474e8587fb709bc73134201558fe7d6af39d1a69ed81c9e30a340636",
+          "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+          "config.json": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "generation_config.json": "62153eb6c69f2e1f426beaa8002b7186437e949c7588167085df14e10e9c0a73",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/report.json",
+        "sha256": "35f6eab1ab28e7931f0426ac9cf57d4e622ec185c431f6586e554ff30bd779a3",
+        "outputs_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "bound_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "4": 500
+        },
+        "media_counts": {
+          "image": 500,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 386,
+      "input_sha256": "f4825ec02d0232789580c73a4c7456b4c8ac0bf5391d6d124e0a09a6a7a0de05",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [
+          {
+            "type": "image",
+            "uri": "image/000000470976.jpg",
+            "sha256": "6ba4b4c4679854a3d7f7d1a8106e4de15a54120d637a5eababde7be8acb6bff3"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              386
+            ],
+            "dtype": "torch.int64",
+            "sha256": "efa21bef58d12ace15d74db8051c98c261109b883df712a5836a0997ccea77c1"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              386
+            ],
+            "dtype": "torch.int64",
+            "sha256": "d2f8c12eefb51ed08325052881efeccca0c58ca0336d47caf8b3fe9cf6339ca9"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              386
+            ],
+            "dtype": "torch.int64",
+            "sha256": "80bdea235332b6d9b2143c9926b73252117202e7b9bfd51f9b3eb5405b355956"
+          },
+          "pixel_values": {
+            "shape": [
+              1200,
+              1536
+            ],
+            "dtype": "torch.float32",
+            "sha256": "6e2e46d6faf95a7b86257c1125ffd3517840f565c3b43a98ce36a69e28bd3731"
+          },
+          "image_grid_thw": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "torch.int64",
+            "sha256": "a382a021bca2e0879737a2fd0059edcba99f882e718e964c4e6e967d7cf80349"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "onejev-4b",
+      "cohort": "audio",
+      "metadata": {
+        "model_id": "onejev-4b",
+        "repo_id": "OmniJev/OneJev-4B",
+        "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "61c2c6149b906f13e4e1af67c13dfea648515e4ca19115abd550262c394a6a24",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "1853cf34474e8587fb709bc73134201558fe7d6af39d1a69ed81c9e30a340636",
+          "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+          "config.json": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "generation_config.json": "62153eb6c69f2e1f426beaa8002b7186437e949c7588167085df14e10e9c0a73",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "unsupported",
+      "reason": "OneJev audio and audio-bearing crossmodal baselines are unsupported: the local Qwen metadata is inconsistent for audio processor inputs"
+    },
+    {
+      "model_id": "onejev-4b",
+      "cohort": "video",
+      "metadata": {
+        "model_id": "onejev-4b",
+        "repo_id": "OmniJev/OneJev-4B",
+        "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "61c2c6149b906f13e4e1af67c13dfea648515e4ca19115abd550262c394a6a24",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "1853cf34474e8587fb709bc73134201558fe7d6af39d1a69ed81c9e30a340636",
+          "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+          "config.json": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "generation_config.json": "62153eb6c69f2e1f426beaa8002b7186437e949c7588167085df14e10e9c0a73",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/report.json",
+        "sha256": "49e102cf176996b19a22e3bc9e11269cf8dadc892254f0b712ac3697f06ed362",
+        "outputs_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "bound_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 500
+        }
+      },
+      "prompt_tokens": 2218,
+      "input_sha256": "ae1e581b1091be2cb58bcd9cf1daac87f26a9571080b6b0652e371a6954dee3f",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "do_sample_frames": false
+        },
+        "media": [
+          {
+            "type": "video",
+            "uri": "video/video_02615.mp4",
+            "sha256": "695009a1888d29cb833b2c98be30dc3d460d5728b5c3d22f2df477df09e87ea2"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [
+          {
+            "fps": 25.0,
+            "total_num_frames": 128,
+            "duration": 5.12,
+            "frames_indices": [
+              0,
+              8,
+              17,
+              25,
+              34,
+              42,
+              51,
+              59,
+              68,
+              76,
+              85,
+              93,
+              102,
+              110,
+              119,
+              127
+            ],
+            "video_backend": "ffmpeg",
+            "width": 640,
+            "height": 427
+          }
+        ],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              2218
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5844c5807cae741eee3bec4c5dee6acf2f3760dbc2c5c2a422b46d203808bc04"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              2218
+            ],
+            "dtype": "torch.int64",
+            "sha256": "c3732e7c2d837b8b699ee1177084f5d58908d6ec3e0a5113fc10a7161abc5cec"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              2218
+            ],
+            "dtype": "torch.int64",
+            "sha256": "0983e7766fd1b949ed687441043d561e4c5ee08865ffbe19e1e4bde4278d1a35"
+          },
+          "pixel_values_videos": {
+            "shape": [
+              8320,
+              1536
+            ],
+            "dtype": "torch.float32",
+            "sha256": "19fc027d55663d7cb4bf3c70e56a98188a40712fe8c94973d7a65c5f16cc3949"
+          },
+          "video_grid_thw": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "torch.int64",
+            "sha256": "94e8e5a12c74b8654c74b484da9b2ab81bfed66294ff1ed44e72bf7ff7f66239"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "onejev-4b",
+      "cohort": "crossmodal",
+      "metadata": {
+        "model_id": "onejev-4b",
+        "repo_id": "OmniJev/OneJev-4B",
+        "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "61c2c6149b906f13e4e1af67c13dfea648515e4ca19115abd550262c394a6a24",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "1853cf34474e8587fb709bc73134201558fe7d6af39d1a69ed81c9e30a340636",
+          "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+          "config.json": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "generation_config.json": "62153eb6c69f2e1f426beaa8002b7186437e949c7588167085df14e10e9c0a73",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "53aa95673d1fb0021348b82fbaed6041d7eccdde3712f741cd04eef1956bac68",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "unsupported",
+      "reason": "OneJev audio and audio-bearing crossmodal baselines are unsupported: the local Qwen metadata is inconsistent for audio processor inputs"
+    },
+    {
+      "model_id": "onejev-27b",
+      "cohort": "text",
+      "metadata": {
+        "model_id": "onejev-27b",
+        "repo_id": "OmniJev/OneJev-27B",
+        "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "57f71c03fea459e3c67fea4832bc50d50aa40c0f1aee12bf3a30742bfdffe0b7",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-27B/aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "d9092b76a051d2104961583ed775ba7b39f70c976689e30a714217dbe793aa0a",
+          "chat_template.jinja": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+          "config.json": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "generation_config.json": "df6f86c3fdce573ecdb55cec35f502ddda70e70abe78288a78164aef120232e7",
+          "model.safetensors.index.json": "0424520f63f04816eee4d229a4487dc9744866ceb46513e591dd987e401b1663",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/report.json",
+        "sha256": "00b11cd58532cd0b96424cb5f73ffb6ae8ef53491de8941d495d401372cd4c3b",
+        "outputs_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+        "bound_dev_jsonl_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "11": 46,
+          "20": 454
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 163,
+      "input_sha256": "663c6beb23c2c6a39f26466603c7c4846bf6e834f0e59082507b6ad5976813d3",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              163
+            ],
+            "dtype": "torch.int64",
+            "sha256": "345de6969aa523dc2dd92ef009977c8532c389b4108fb6b12e34e10bdb822bd7"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              163
+            ],
+            "dtype": "torch.int64",
+            "sha256": "f0550a23778b4b8049820a19e17f1dfa3601935a574a5c645fd8e2a56a395c6f"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              163
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5cad8b3db8fbb29e0cabbd785e1e3449ebcd5b04544cde14c93812a93860cc47"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "onejev-27b",
+      "cohort": "image",
+      "metadata": {
+        "model_id": "onejev-27b",
+        "repo_id": "OmniJev/OneJev-27B",
+        "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "57f71c03fea459e3c67fea4832bc50d50aa40c0f1aee12bf3a30742bfdffe0b7",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-27B/aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "d9092b76a051d2104961583ed775ba7b39f70c976689e30a714217dbe793aa0a",
+          "chat_template.jinja": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+          "config.json": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "generation_config.json": "df6f86c3fdce573ecdb55cec35f502ddda70e70abe78288a78164aef120232e7",
+          "model.safetensors.index.json": "0424520f63f04816eee4d229a4487dc9744866ceb46513e591dd987e401b1663",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/report.json",
+        "sha256": "35f6eab1ab28e7931f0426ac9cf57d4e622ec185c431f6586e554ff30bd779a3",
+        "outputs_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "bound_dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "choice": 500
+        },
+        "option_sizes": {
+          "4": 500
+        },
+        "media_counts": {
+          "image": 500,
+          "audio": 0,
+          "video": 0
+        }
+      },
+      "prompt_tokens": 386,
+      "input_sha256": "f4825ec02d0232789580c73a4c7456b4c8ac0bf5391d6d124e0a09a6a7a0de05",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false
+        },
+        "media": [
+          {
+            "type": "image",
+            "uri": "image/000000470976.jpg",
+            "sha256": "6ba4b4c4679854a3d7f7d1a8106e4de15a54120d637a5eababde7be8acb6bff3"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              386
+            ],
+            "dtype": "torch.int64",
+            "sha256": "efa21bef58d12ace15d74db8051c98c261109b883df712a5836a0997ccea77c1"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              386
+            ],
+            "dtype": "torch.int64",
+            "sha256": "d2f8c12eefb51ed08325052881efeccca0c58ca0336d47caf8b3fe9cf6339ca9"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              386
+            ],
+            "dtype": "torch.int64",
+            "sha256": "80bdea235332b6d9b2143c9926b73252117202e7b9bfd51f9b3eb5405b355956"
+          },
+          "pixel_values": {
+            "shape": [
+              1200,
+              1536
+            ],
+            "dtype": "torch.float32",
+            "sha256": "6e2e46d6faf95a7b86257c1125ffd3517840f565c3b43a98ce36a69e28bd3731"
+          },
+          "image_grid_thw": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "torch.int64",
+            "sha256": "a382a021bca2e0879737a2fd0059edcba99f882e718e964c4e6e967d7cf80349"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "onejev-27b",
+      "cohort": "audio",
+      "metadata": {
+        "model_id": "onejev-27b",
+        "repo_id": "OmniJev/OneJev-27B",
+        "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "57f71c03fea459e3c67fea4832bc50d50aa40c0f1aee12bf3a30742bfdffe0b7",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-27B/aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "d9092b76a051d2104961583ed775ba7b39f70c976689e30a714217dbe793aa0a",
+          "chat_template.jinja": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+          "config.json": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "generation_config.json": "df6f86c3fdce573ecdb55cec35f502ddda70e70abe78288a78164aef120232e7",
+          "model.safetensors.index.json": "0424520f63f04816eee4d229a4487dc9744866ceb46513e591dd987e401b1663",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "unsupported",
+      "reason": "OneJev audio and audio-bearing crossmodal baselines are unsupported: the local Qwen metadata is inconsistent for audio processor inputs"
+    },
+    {
+      "model_id": "onejev-27b",
+      "cohort": "video",
+      "metadata": {
+        "model_id": "onejev-27b",
+        "repo_id": "OmniJev/OneJev-27B",
+        "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "57f71c03fea459e3c67fea4832bc50d50aa40c0f1aee12bf3a30742bfdffe0b7",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-27B/aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "d9092b76a051d2104961583ed775ba7b39f70c976689e30a714217dbe793aa0a",
+          "chat_template.jinja": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+          "config.json": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "generation_config.json": "df6f86c3fdce573ecdb55cec35f502ddda70e70abe78288a78164aef120232e7",
+          "model.safetensors.index.json": "0424520f63f04816eee4d229a4487dc9744866ceb46513e591dd987e401b1663",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "passed",
+      "source": {
+        "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/report.json",
+        "sha256": "49e102cf176996b19a22e3bc9e11269cf8dadc892254f0b712ac3697f06ed362",
+        "outputs_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "bound_dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2"
+      },
+      "dataset": {
+        "rows": 500,
+        "unique_ids": 500,
+        "unique_families": 500,
+        "question_types": {
+          "noul": 500
+        },
+        "option_sizes": {
+          "2": 500
+        },
+        "media_counts": {
+          "image": 0,
+          "audio": 0,
+          "video": 500
+        }
+      },
+      "prompt_tokens": 2218,
+      "input_sha256": "ae1e581b1091be2cb58bcd9cf1daac87f26a9571080b6b0652e371a6954dee3f",
+      "input_summary": {
+        "processor_kwargs": {
+          "return_tensors": "pt",
+          "add_special_tokens": false,
+          "truncation": false,
+          "do_sample_frames": false
+        },
+        "media": [
+          {
+            "type": "video",
+            "uri": "video/video_02615.mp4",
+            "sha256": "695009a1888d29cb833b2c98be30dc3d460d5728b5c3d22f2df477df09e87ea2"
+          }
+        ],
+        "canonical_media": [],
+        "video_metadata": [
+          {
+            "fps": 25.0,
+            "total_num_frames": 128,
+            "duration": 5.12,
+            "frames_indices": [
+              0,
+              8,
+              17,
+              25,
+              34,
+              42,
+              51,
+              59,
+              68,
+              76,
+              85,
+              93,
+              102,
+              110,
+              119,
+              127
+            ],
+            "video_backend": "ffmpeg",
+            "width": 640,
+            "height": 427
+          }
+        ],
+        "tensors": {
+          "input_ids": {
+            "shape": [
+              1,
+              2218
+            ],
+            "dtype": "torch.int64",
+            "sha256": "5844c5807cae741eee3bec4c5dee6acf2f3760dbc2c5c2a422b46d203808bc04"
+          },
+          "attention_mask": {
+            "shape": [
+              1,
+              2218
+            ],
+            "dtype": "torch.int64",
+            "sha256": "c3732e7c2d837b8b699ee1177084f5d58908d6ec3e0a5113fc10a7161abc5cec"
+          },
+          "mm_token_type_ids": {
+            "shape": [
+              1,
+              2218
+            ],
+            "dtype": "torch.int64",
+            "sha256": "0983e7766fd1b949ed687441043d561e4c5ee08865ffbe19e1e4bde4278d1a35"
+          },
+          "pixel_values_videos": {
+            "shape": [
+              8320,
+              1536
+            ],
+            "dtype": "torch.float32",
+            "sha256": "19fc027d55663d7cb4bf3c70e56a98188a40712fe8c94973d7a65c5f16cc3949"
+          },
+          "video_grid_thw": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "torch.int64",
+            "sha256": "94e8e5a12c74b8654c74b484da9b2ab81bfed66294ff1ed44e72bf7ff7f66239"
+          }
+        }
+      }
+    },
+    {
+      "model_id": "onejev-27b",
+      "cohort": "crossmodal",
+      "metadata": {
+        "model_id": "onejev-27b",
+        "repo_id": "OmniJev/OneJev-27B",
+        "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "license": "apache-2.0",
+        "manifest_path": "configs/project-model-assets.json",
+        "manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+        "manifest_metadata_sha256": "57f71c03fea459e3c67fea4832bc50d50aa40c0f1aee12bf3a30742bfdffe0b7",
+        "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-27B/aec969d68e7e8e8b0df051e065c04304c0cd7163",
+        "metadata_hashes": {
+          ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "README.md": "d9092b76a051d2104961583ed775ba7b39f70c976689e30a714217dbe793aa0a",
+          "chat_template.jinja": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+          "config.json": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "generation_config.json": "df6f86c3fdce573ecdb55cec35f502ddda70e70abe78288a78164aef120232e7",
+          "model.safetensors.index.json": "0424520f63f04816eee4d229a4487dc9744866ceb46513e591dd987e401b1663",
+          "processor_config.json": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85",
+          "tokenizer.json": "b6d27c11283798debbfbcb1bd3bbdbcebac6c9b20d0be0c5b79231c97de97501",
+          "tokenizer_config.json": "7488550a894dcf741616126e322ea31d66cf9457b59ec5825f4c7efdced421f8"
+        },
+        "weights_hashes": null,
+        "architecture": {
+          "config_sha256": "6ff734b35e255fc0ead93befc506606cc332d9539d69553f066b760abc85ab77",
+          "model_type": "qwen3_5",
+          "architectures": [
+            "Qwen3_5ForConditionalGeneration"
+          ],
+          "auto_map_absent": true,
+          "transformers_class": "Qwen3_5ForConditionalGeneration"
+        },
+        "trust_remote_code": false,
+        "local_files_only": true
+      },
+      "status": "unsupported",
+      "reason": "OneJev audio and audio-bearing crossmodal baselines are unsupported: the local Qwen metadata is inconsistent for audio processor inputs"
+    }
+  ]
+}
