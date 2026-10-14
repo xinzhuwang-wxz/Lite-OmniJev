@@ -242,16 +242,10 @@ def _base_from_processor(
         return_tensors="pt",
         processor_kwargs={**dict(media_kwargs or {}), "return_metadata": True},
     )
-    try:
-        base = dict(
-            processor.apply_chat_template(
-                _messages_for_state(state), enable_thinking=False, **kwargs
-            )
-        )
-        thinking_false = True
-    except TypeError:
-        base = dict(processor.apply_chat_template(_messages_for_state(state), **kwargs))
-        thinking_false = False
+    base = dict(
+        processor.apply_chat_template(_messages_for_state(state), enable_thinking=False, **kwargs)
+    )
+    thinking_false = True
     media: list[dict[str, Any]] = []
     base.pop("video_metadata", None)
     return base, media, thinking_false

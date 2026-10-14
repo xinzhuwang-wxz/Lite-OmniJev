@@ -340,3 +340,29 @@ def test_qwen_base_assets_verify_exact_manifest_path_and_architecture(tmp_path: 
         verify_qwen_base_assets(
             asset_manifest=manifest, base_model_dir=tmp_path / "wrong" / revision, model_root=root
         )
+
+
+@pytest.mark.parametrize(
+    "message", ["internal processor failure", "unexpected keyword enable_thinking"]
+)
+def test_template_type_error_fails_without_retry(
+    monkeypatch: pytest.MonkeyPatch, message: str
+) -> None:
+    import sys
+
+    monkeypatch.setitem(sys.modules, "torch", FakeTorch)
+
+    class RaisingProcessor(FakeProcessor):
+        calls = 0
+
+        def apply_chat_template(
+            self, messages: list[dict[str, Any]], **kwargs: Any
+        ) -> dict[str, Any]:
+            self.calls += 1
+            assert kwargs["enable_thinking"] is False
+            raise TypeError(message)
+
+    processor = RaisingProcessor()
+    with pytest.raises(TypeError, match=message):
+        compile_qwen_question(processor=processor, state="state", question=_choice_question())
+    assert processor.calls == 1
