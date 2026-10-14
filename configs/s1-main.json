@@ -11,5 +11,5 @@
     "modality": "text",
     "midway_step": 1000,
     "expected_data_version": "clinc-oos-plus-train-v1-s1-pools-v1",
-    "checkpoint_every": 250,
+    "checkpoint_every": 250
 }
