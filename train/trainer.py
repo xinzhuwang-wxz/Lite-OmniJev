@@ -60,7 +60,40 @@ class SmokeConfig(Contract):
         return self
 
 
-def smoke_samples(config: SmokeConfig, data_path: Path | None = None) -> list[Sample]:
+class LoopConfig(Contract):
+    """S1-scale training over a frozen pool; P0 smoke keeps its fixed Literals."""
+
+    seed: int = Field(default=42, ge=0)
+    sample_count: int = Field(ge=2, le=100_000)
+    steps: int = Field(ge=1, le=100_000)
+    accumulation: int = Field(ge=1, le=64)
+    max_length: int = Field(default=2048, ge=32, le=4096)
+    learning_rate: float = Field(default=1e-4, gt=0, le=0.001)
+    rank: Literal[16] = 16
+    alpha: Literal[32] = 32
+    dtype: Literal["bfloat16"] = "bfloat16"
+    modality: Literal["text"] = "text"
+    midway_step: int | None = Field(default=None, ge=1)
+    expected_data_version: str | None = None
+
+    @model_validator(mode="after")
+    def validate_loop(self) -> LoopConfig:
+        if not math.isfinite(self.learning_rate):
+            raise ValueError("learning_rate must be finite")
+        if self.midway_step is not None and self.midway_step > self.steps:
+            raise ValueError("midway_step must not exceed steps")
+        return self
+
+
+TrainConfig = SmokeConfig | LoopConfig
+
+
+def smoke_samples(
+    config: TrainConfig,
+    data_path: Path | None = None,
+    *,
+    expected_data_version: str | None = None,
+) -> list[Sample]:
     if data_path is None:
         samples = generate_samples(config.sample_count, config.seed)
         # Keep exactly one question per source sample, balanced across four target tasks.
@@ -73,11 +106,15 @@ def smoke_samples(config: SmokeConfig, data_path: Path | None = None) -> list[Sa
             if line.strip()
         ]
     if len(samples) != config.sample_count or any(len(s.questions) != 1 for s in samples):
-        raise ValueError("smoke requires exactly 100 samples with one question each")
+        raise ValueError(
+            f"training requires exactly {config.sample_count} samples, one question each"
+        )
     validate_pool_isolation(samples)
     for sample in samples:
         if sample.meta.pool != "train" or sample.meta.modality != ["text"] or sample.prefix.media:
             raise ValueError("smoke accepts text-only training-pool samples")
+        if expected_data_version is not None and sample.meta.data_version != expected_data_version:
+            raise ValueError("training data_version does not match the frozen allocation")
     return samples
 
 
@@ -195,7 +232,7 @@ def runtime_requirements() -> dict[str, str]:
     return versions
 
 
-def attach_lora(model: Any, config: SmokeConfig) -> Any:
+def attach_lora(model: Any, config: TrainConfig) -> Any:
     """Freeze all original weights and target only decoder attention/MLP projections."""
     peft = importlib.import_module("peft")
     projections = {"q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"}
@@ -228,7 +265,7 @@ def attach_lora(model: Any, config: SmokeConfig) -> Any:
 
 def log_training_metrics(
     telemetry: Telemetry,
-    config: SmokeConfig,
+    config: TrainConfig,
     report: dict[str, Any],
     *,
     mean_loss: float,
@@ -246,7 +283,7 @@ def log_training_metrics(
 
 
 def train_smoke(
-    config: SmokeConfig,
+    config: TrainConfig,
     model_dir: Path,
     examples: list[dict[str, Any]],
     output_dir: Path,
@@ -308,7 +345,8 @@ def train_smoke(
         optimizer.zero_grad(set_to_none=True)
         losses = []
         for offset in range(config.accumulation):
-            example = examples[order[step * config.accumulation + offset]]
+            draw = step * config.accumulation + offset
+            example = examples[order[draw % len(examples)]]
             ids = torch.tensor([example["input_ids"]], device="cuda", dtype=torch.long)
             output = model(
                 input_ids=ids,
@@ -330,6 +368,23 @@ def train_smoke(
         mean_loss = math.fsum(losses) / len(losses)
         report["losses"].append(mean_loss)
         log_training_metrics(telemetry, config, report, mean_loss=mean_loss, grad_norm=float(norm))
+        midway = getattr(config, "midway_step", None)
+        if midway is not None and report["steps_completed"] == midway:
+            midway_dir = output_dir / f"adapter-at-step-{midway:04d}"
+            model.save_pretrained(
+                str(midway_dir), safe_serialization=True, save_embedding_layers=False
+            )
+            midway_adapter = midway_dir / "adapter_model.safetensors"
+            if not midway_adapter.is_file():
+                raise ValueError("PEFT did not save the midway safetensors adapter")
+            report.setdefault("midway_adapters", []).append(
+                {
+                    "step": midway,
+                    "path": str(midway_dir),
+                    "sha256": hashlib.sha256(midway_adapter.read_bytes()).hexdigest(),
+                }
+            )
+            write_json(output_dir / "run.json", report)
         checkpoint_path = save_checkpoint(
             output_dir,
             step=report["steps_completed"],
@@ -362,7 +417,7 @@ def code_revision() -> str:
 
 
 def run(
-    config: SmokeConfig,
+    config: TrainConfig,
     model_dir: Path,
     manifest_path: Path,
     output_dir: Path,
@@ -371,6 +426,7 @@ def run(
     data_path: Path | None = None,
     monitoring: SwanLabConfig | None = None,
     resume_from: Path | None = None,
+    scope: str | None = None,
 ) -> dict[str, Any]:
     start = time.monotonic()
     report: dict[str, Any] = {
@@ -381,7 +437,8 @@ def run(
         "platform": platform.platform(),
         "config": config.model_dump(),
         "model_revision": model_dir.name,
-        "scope": "text-only real-model plumbing smoke; not P0 completion or quality evidence",
+        "scope": scope
+        or "text-only real-model plumbing smoke; not P0 completion or quality evidence",
         "resume_supported": True,
         "cost": None,
         "steps_completed": 0,
@@ -399,7 +456,11 @@ def run(
             else:
                 if not output_dir.is_dir():
                     raise ValueError("resume requires an existing output directory")
-        samples = smoke_samples(config, data_path)
+        samples = smoke_samples(
+            config,
+            data_path,
+            expected_data_version=getattr(config, "expected_data_version", None),
+        )
         report["data_sha256"] = hashlib.sha256(data_bytes(samples)).hexdigest()
         blockers = []
         operations: list[tuple[str, Callable[[], dict[str, str]]]] = [
