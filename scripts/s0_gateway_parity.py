@@ -2,7 +2,7 @@
 
 The gateway exposes conditional answer probabilities and p(U), not full raw
 vocabulary logprobs. This script therefore requires a separate passed HF/vLLM
-S0 report and only checks that gateway semantics match those already-sealed
+S0 report and only checks that gateway semantics match those frozen non-holdout
 conditional/U readouts for the same canonical 100-case cohort.
 """
 
@@ -29,8 +29,9 @@ import httpx
 
 from data.schema import Question, answer_tokens
 from scripts.assets import write_json
-from scripts.s0_parity import row_id_hash, sha256_json
+from scripts.s0_parity import row_id_hash, row_to_json, rows_from_json, sha256_json
 from scripts.s0_prepare import read_manifest
+from serve.gateway.app import DecisionRequest, InputQuestion, core_question
 from train.multimodal import PreparationCase
 
 SCHEMA = "lite-omnijev.s0_gateway_parity.report.v1"
@@ -137,6 +138,37 @@ def source_identity() -> dict[str, Any]:
     return {"repo_root": str(REPO_ROOT), "git": git_revision(), "code_hashes": code_hashes()}
 
 
+def manifest_sha256(path: Path) -> str:
+    return sha256_file(path)
+
+
+def case_fingerprint(case: PreparationCase) -> str:
+    return sha256_json(
+        {
+            "id": case.id,
+            "category": case.category,
+            "video_frames": case.video_frames,
+            "prefix": case.prefix.model_dump(),
+            "question": case.question.model_dump(),
+            "source_family": case.meta.family_id,
+            "source_dataset": case.meta.source_dataset,
+            "source_revision": case.meta.source_revision,
+            "source_sha256": case.meta.source_sha256,
+            "pool": case.meta.pool,
+        }
+    )
+
+
+def manifest_binding(path: Path, cases: Sequence[PreparationCase]) -> dict[str, Any]:
+    return {
+        "path": str(path),
+        "sha256": manifest_sha256(path),
+        "cases": len(cases),
+        "case_fingerprints_sha256": sha256_json([case_fingerprint(case) for case in cases]),
+        "source_families_sha256": sha256_json(sorted({case.meta.family_id for case in cases})),
+    }
+
+
 def _strict_float(value: Any, *, field: str) -> float:
     if type(value) not in (int, float) or not math.isfinite(float(value)):
         raise GatewayParityError(f"{field}_not_finite")
@@ -230,17 +262,72 @@ def validate_gateway_record(
     }
 
 
-def load_reference_report(path: Path) -> tuple[dict[str, Any], str]:
+def _require_passed_report(label: str, value: Any) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise GatewayParityError(f"{label}_missing")
+    if value.get("passed") is not True or value.get("status") != "passed":
+        raise GatewayParityError(f"{label}_not_passed")
+    if value.get("samples") != EXPECTED_COHORT_SIZE:
+        raise GatewayParityError(f"{label}_requires_100_samples")
+    if value.get("threshold_exclusive") != THRESHOLD:
+        raise GatewayParityError(f"{label}_threshold_mismatch")
+    maxima = value.get("max_differences")
+    if not isinstance(maxima, Mapping):
+        raise GatewayParityError(f"{label}_max_differences_missing")
+    for key in ("raw_probabilities", "joint", "conditional", "p_U"):
+        if _strict_float(maxima.get(key), field=f"{label}_{key}") >= THRESHOLD:
+            raise GatewayParityError(f"{label}_{key}_exceeds_threshold")
+    return value
+
+
+def load_reference_report(path: Path) -> tuple[dict[str, Any], str, list[dict[str, Any]]]:
     raw = path.read_bytes()
     report = json.loads(raw)
     if report.get("action") != "compare-vllm" or report.get("status") != "passed":
         raise GatewayParityError("s0_hf_vllm_report_must_be_passed_compare_vllm")
-    if report.get("parity", {}).get("passed") is not True:
-        raise GatewayParityError("s0_hf_vllm_parity_not_passed")
-    rows = report.get("rows")
-    if not isinstance(rows, list) or len(rows) != EXPECTED_COHORT_SIZE:
+    reference_validation = _require_passed_report(
+        "reference_validation", report.get("reference_validation")
+    )
+    if reference_validation.get("label") != "reference_rows_match_current_canonical_http_inputs":
+        raise GatewayParityError("reference_validation_label_mismatch")
+    repeatability = _require_passed_report("vllm_repeatability", report.get("vllm_repeatability"))
+    if repeatability.get("label") != "vllm_repeatability":
+        raise GatewayParityError("vllm_repeatability_label_mismatch")
+    parity = _require_passed_report("parity", report.get("parity"))
+    if parity.get("label") != "hf_reference_vs_vllm":
+        raise GatewayParityError("parity_label_mismatch")
+    rows_raw = report.get("rows")
+    if not isinstance(rows_raw, list) or len(rows_raw) != EXPECTED_COHORT_SIZE:
         raise GatewayParityError("s0_hf_vllm_report_requires_100_rows")
-    return report, sha256_bytes(raw)
+    try:
+        rows = rows_from_json(rows_raw)
+    except Exception as exc:
+        raise GatewayParityError("s0_hf_vllm_rows_fail_strict_validation") from exc
+    canonical_rows = [row_to_json(row) for row in rows]
+    if rows_raw != canonical_rows:
+        raise GatewayParityError("s0_hf_vllm_rows_not_strict_canonical")
+    return report, sha256_bytes(raw), canonical_rows
+
+
+def validate_manifest_binding(
+    *, manifest: Path, cases: Sequence[PreparationCase], reference_report: Mapping[str, Any]
+) -> dict[str, Any]:
+    binding = manifest_binding(manifest, cases)
+    provenance = reference_report.get("provenance")
+    if not isinstance(provenance, Mapping):
+        raise GatewayParityError("reference_provenance_missing")
+    manifest_record = provenance.get("manifest")
+    if not isinstance(manifest_record, Mapping):
+        raise GatewayParityError("reference_manifest_provenance_missing")
+    if manifest_record.get("sha256") != binding["sha256"]:
+        raise GatewayParityError("manifest_sha256_mismatch")
+    if provenance.get("profile") != "canonical_http":
+        raise GatewayParityError("reference_profile_not_canonical_http")
+    if provenance.get("cohort_size") != EXPECTED_COHORT_SIZE:
+        raise GatewayParityError("reference_cohort_size_mismatch")
+    if provenance.get("threshold_exclusive") != THRESHOLD:
+        raise GatewayParityError("reference_threshold_mismatch")
+    return binding
 
 
 def reference_row_by_case(
@@ -253,6 +340,8 @@ def reference_row_by_case(
         expected = row_id_hash(case.id)
         if row.get("id_sha256") != expected:
             raise GatewayParityError("reference_row_identity_mismatch")
+        if len(row.get("token_ids", [])) != len(expected_labels(case.question)) + 1:
+            raise GatewayParityError("reference_row_token_count_mismatch")
         by_id[case.id] = row
     return by_id
 
@@ -281,6 +370,11 @@ def gateway_result_row(
     total = math.fsum(conditional)
     if abs(total - 1.0) > 1e-6:
         raise GatewayParityError("gateway_conditional_probabilities_not_normalized")
+    confidence = _strict_probability(answer.get("confidence"), field="gateway_confidence")
+    if answer.get("confidence_semantics") != "normalized_peak_non_U":
+        raise GatewayParityError("gateway_confidence_semantics_mismatch")
+    if abs(confidence - max(conditional)) > 1e-9:
+        raise GatewayParityError("gateway_confidence_not_conditional_peak")
     p_u = _strict_probability(answer.get("p_insufficient"), field="gateway_p_insufficient")
     usage = response.get("usage")
     backend_usage = response.get("backend_usage")
@@ -291,15 +385,36 @@ def gateway_result_row(
             raise GatewayParityError("gateway_usage_invalid")
         if type(backend_usage.get(field)) is not int or backend_usage[field] < 0:
             raise GatewayParityError("gateway_backend_usage_invalid")
+    if usage["input_tokens"] != backend_usage["input_tokens"]:
+        raise GatewayParityError("gateway_usage_input_mismatch")
+    if usage["output_tokens"] != 0 or backend_usage["output_tokens"] != 1:
+        raise GatewayParityError("gateway_usage_output_mismatch")
     semantic: dict[str, Any] = {"labels": labels}
     if case.question.type == "choice":
-        if answer.get("choice") not in labels:
-            raise GatewayParityError("gateway_choice_label_invalid")
+        argmax_label = labels[conditional.index(max(conditional))]
+        if answer.get("choice") != argmax_label:
+            raise GatewayParityError("gateway_choice_not_argmax")
         semantic["choice"] = answer["choice"]
     elif case.question.type == "score":
-        semantic["score"] = _strict_float(answer.get("score"), field="gateway_score")
+        score = _strict_float(answer.get("score"), field="gateway_score")
+        expected_score = math.fsum(
+            index * probability for index, probability in enumerate(conditional)
+        )
+        if not 0.0 <= score <= float(len(labels) - 1):
+            raise GatewayParityError("gateway_score_outside_range")
+        if abs(score - expected_score) > 1e-9:
+            raise GatewayParityError("gateway_score_not_expected_value")
+        expected_legend = {
+            str(index): text for index, text in enumerate(case.question.score_descriptions or [])
+        }
+        if answer.get("legend") != expected_legend:
+            raise GatewayParityError("gateway_score_legend_mismatch")
+        semantic["score"] = score
     else:
-        semantic["noul"] = _strict_probability(answer.get("noul"), field="gateway_noul")
+        noul = _strict_probability(answer.get("noul"), field="gateway_noul")
+        if abs(noul - conditional[0]) > 1e-9:
+            raise GatewayParityError("gateway_noul_not_yes_probability")
+        semantic["noul"] = noul
     return {
         "case_id_sha256": row_id_hash(case.id),
         "category": case.category,
@@ -311,6 +426,15 @@ def gateway_result_row(
         "backend_usage": dict(backend_usage),
         "validation_status": response.get("validation_status"),
     }
+
+
+def validate_loopback_url(value: str) -> str:
+    url = httpx.URL(value)
+    if url.scheme != "http" or url.host not in {"127.0.0.1", "localhost", "::1"}:
+        raise GatewayParityError("gateway_url_must_be_http_loopback")
+    if url.userinfo or url.raw_path not in (b"", b"/") or url.query:
+        raise GatewayParityError("gateway_url_must_be_loopback_origin_only")
+    return value.rstrip("/")
 
 
 async def run_gateway_pass(
@@ -429,6 +553,22 @@ def write_report_once(path: Path, report: Mapping[str, Any]) -> None:
     write_json(path, report)
 
 
+def sanitized_error(error: BaseException) -> dict[str, str]:
+    if isinstance(error, GatewayParityError):
+        code = str(error) or "gateway_parity_error"
+    elif isinstance(error, httpx.TimeoutException):
+        code = "http_timeout"
+    elif isinstance(error, httpx.HTTPStatusError):
+        code = "http_status_error"
+    elif isinstance(error, httpx.HTTPError):
+        code = "http_error"
+    elif isinstance(error, json.JSONDecodeError):
+        code = "invalid_json"
+    else:
+        code = "unexpected_error"
+    return {"type": type(error).__name__, "code": code}
+
+
 def failure_report(
     path: Path, action: str, started_at: str, started: float, error: BaseException
 ) -> int:
@@ -436,7 +576,7 @@ def failure_report(
     report.update(
         status="blocked",
         exit_code=2,
-        error={"type": type(error).__name__, "code": str(error)},
+        error=sanitized_error(error),
         raw_or_k_plus_one_validated_by_gateway=False,
     )
     write_report_once(path, report)
@@ -448,21 +588,25 @@ async def compare_gateway(args: argparse.Namespace) -> int:
     started = time.monotonic()
     started_at = now_iso()
     try:
-        reference_report, reference_sha = load_reference_report(args.hf_vllm_report)
+        reference_report, reference_sha, canonical_rows = load_reference_report(args.hf_vllm_report)
         gateway_record = json.loads(args.gateway_record.read_text())
         gateway = validate_gateway_record(
             gateway_record, reference_report=reference_report, reference_sha256=reference_sha
         )
         cases = read_manifest(args.manifest, allow_partial=False)
-        ref_rows = reference_row_by_case(cases, reference_report["rows"])
+        manifest = validate_manifest_binding(
+            manifest=args.manifest, cases=cases, reference_report=reference_report
+        )
+        gateway_url = validate_loopback_url(args.gateway_url)
+        ref_rows = reference_row_by_case(cases, canonical_rows)
         first, health = await run_gateway_pass(
             cases=cases,
-            base_url=args.gateway_url,
+            base_url=gateway_url,
             expected_model_version=gateway["model_version"],
         )
         second, second_health = await run_gateway_pass(
             cases=cases,
-            base_url=args.gateway_url,
+            base_url=gateway_url,
             expected_model_version=gateway["model_version"],
         )
         repeat = compare_repeatability(first, second)
@@ -475,6 +619,7 @@ async def compare_gateway(args: argparse.Namespace) -> int:
             status="passed" if passed else "failed",
             exit_code=0 if passed else 2,
             gateway=gateway,
+            manifest=manifest,
             health=health,
             second_health=second_health,
             hf_vllm_report={
@@ -535,6 +680,88 @@ def _synthetic_case(index: int, question_type: str) -> PreparationCase:
     )
 
 
+def validate_case_request_mapping(case: PreparationCase) -> dict[str, Any]:
+    payload = decision_request_from_case(case)
+    request = DecisionRequest.model_validate(payload)
+    if request.state != case.prefix.state:
+        raise GatewayParityError("gateway_payload_state_mismatch")
+    if [media.model_dump() for media in request.media] != [
+        media.model_dump() for media in case.prefix.media
+    ]:
+        raise GatewayParityError("gateway_payload_media_mismatch")
+    if request.video_frames != case.video_frames:
+        raise GatewayParityError("gateway_payload_video_frames_mismatch")
+    if set(request.questions) != {case.question.qid}:
+        raise GatewayParityError("gateway_payload_question_set_mismatch")
+    item = request.questions[case.question.qid]
+    if not isinstance(item, InputQuestion):
+        raise GatewayParityError("gateway_payload_question_type_mismatch")
+    question, labels = core_question(case.question.qid, item)
+    if question.model_dump() != case.question.model_dump():
+        raise GatewayParityError("gateway_core_question_mismatch")
+    expected = expected_labels(case.question)
+    if labels != expected:
+        raise GatewayParityError("gateway_core_labels_mismatch")
+    return {
+        "id_sha256": row_id_hash(case.id),
+        "case_fingerprint": case_fingerprint(case),
+        "category": case.category,
+        "primitive": case.question.type,
+        "labels": labels,
+        "answer_count_including_u": len(labels) + 1,
+        "payload_sha256": sha256_json(payload),
+    }
+
+
+def validate_manifest_request_mapping(
+    *,
+    cases: Sequence[PreparationCase],
+    canonical_report: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    rows = [validate_case_request_mapping(case) for case in cases]
+    if canonical_report is not None:
+        if (
+            canonical_report.get("status") != "passed"
+            or canonical_report.get("complete_100_cases") is not True
+        ):
+            raise GatewayParityError("canonical_summary_report_not_passed_100")
+        summaries = canonical_report.get("cases")
+        if not isinstance(summaries, list) or len(summaries) != len(cases):
+            raise GatewayParityError("canonical_summary_case_count_mismatch")
+        by_id = {
+            summary.get("id"): summary for summary in summaries if isinstance(summary, Mapping)
+        }
+        for case, row in zip(cases, rows, strict=True):
+            summary = by_id.get(case.id)
+            if not isinstance(summary, Mapping):
+                raise GatewayParityError("canonical_summary_case_missing")
+            if (
+                summary.get("category") != case.category
+                or summary.get("primitive") != case.question.type
+            ):
+                raise GatewayParityError("canonical_summary_case_contract_mismatch")
+            if summary.get("answer_count_including_u") != row["answer_count_including_u"]:
+                raise GatewayParityError("canonical_summary_answer_count_mismatch")
+            provenance = summary.get("provenance")
+            if provenance != case.meta.model_dump():
+                raise GatewayParityError("canonical_summary_provenance_mismatch")
+    return {
+        "status": "passed",
+        "passed": True,
+        "samples": len(rows),
+        "request_mapping_sha256": sha256_json(rows),
+        "primitive_counts": {
+            primitive: sum(row["primitive"] == primitive for row in rows)
+            for primitive in ("choice", "score", "noul")
+        },
+        "category_counts": {
+            category: sum(row["category"] == category for row in rows)
+            for category in ("text", "image", "screenshot", "audio", "video")
+        },
+        "details_sha256": sha256_json(rows),
+    }
+
+
 def synthetic_cases() -> list[PreparationCase]:
     return [_synthetic_case(0, "choice"), _synthetic_case(1, "score"), _synthetic_case(2, "noul")]
 
@@ -571,7 +798,9 @@ def synthetic_response(case: PreparationCase) -> dict[str, Any]:
         answer["choice"] = labels[conditional.index(max(conditional))]
     elif case.question.type == "score":
         answer["score"] = sum(index * value for index, value in enumerate(conditional))
-        answer["legend"] = {label: label for label in labels}
+        answer["legend"] = {
+            str(index): text for index, text in enumerate(case.question.score_descriptions or [])
+        }
     else:
         answer["noul"] = probabilities["yes"]
     return {
@@ -581,6 +810,35 @@ def synthetic_response(case: PreparationCase) -> dict[str, Any]:
         "backend_usage": {"input_tokens": 10, "output_tokens": 1},
         "validation_status": "GPU parity and calibration pending",
     }
+
+
+def manifest_control(args: argparse.Namespace) -> int:
+    refuse_existing(args.output)
+    started = time.monotonic()
+    started_at = now_iso()
+    try:
+        cases = read_manifest(args.manifest, allow_partial=False)
+        canonical_report = (
+            json.loads(args.canonical_report.read_text()) if args.canonical_report else None
+        )
+        mapping = validate_manifest_request_mapping(cases=cases, canonical_report=canonical_report)
+        report = report_base("manifest-control", started_at, started)
+        report.update(
+            status="passed",
+            exit_code=0,
+            manifest=manifest_binding(args.manifest, cases),
+            mapping=mapping,
+            synthetic_non_gpu_acceptance=False,
+            raw_or_k_plus_one_validated_by_gateway=False,
+            scope=(
+                "CPU-only 100-case manifest to gateway payload and core_question mapping; "
+                "does not contact a model backend or prove S0 acceptance."
+            ),
+        )
+        write_json(args.output, report)
+        return 0
+    except Exception as exc:
+        return failure_report(args.output, "manifest-control", started_at, started, exc)
 
 
 async def synthetic_control(args: argparse.Namespace) -> int:
@@ -650,6 +908,11 @@ def build_parser() -> argparse.ArgumentParser:
     compare.add_argument("--gateway-url", required=True)
     compare.add_argument("--output", type=Path, required=True)
     compare.set_defaults(func=lambda args: asyncio.run(compare_gateway(args)))
+    manifest = sub.add_parser("manifest-control")
+    manifest.add_argument("--manifest", type=Path, required=True)
+    manifest.add_argument("--canonical-report", type=Path)
+    manifest.add_argument("--output", type=Path, required=True)
+    manifest.set_defaults(func=manifest_control)
     synthetic = sub.add_parser("synthetic-control")
     synthetic.add_argument("--output", type=Path, required=True)
     synthetic.set_defaults(func=lambda args: asyncio.run(synthetic_control(args)))
