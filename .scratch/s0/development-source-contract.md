@@ -29,7 +29,7 @@ CLEVRER路径source-audit/clevrer-official/files/questions/train.json与videos/t
 
 seed42、版本化family ledger先于模型评分。全局组件/重复媒体SHA归并后分池，同源不同数据集镜像必须归一family。dev可以多题同family但不能跨池；题数500与独立family数量分报。初始单来源单primitive切片必须显式记录覆盖缺口；最终配比与模型支持矩阵冻结后才形成S0基线，后续改dev必须升版本并同条件重跑全部必需模型，不能择优保留成绩。
 
-calibration不在本次构建中偷偷分配；将其family分配标pending，未来校准前必须从训练/dev排除。holdout载荷与标签由外部custodian处理，只给开发返回源/数量/hash/隔离/双标κ汇总。未知组件交叉关系、媒体许可或原gold冲突均阻断相应构建，不以程序补标签伪装成原标签。
+calibration不在本次构建中偷偷分配；将其family分配标pending，未来校准候选必须未参与实际训练/dev，逐family/媒体对完整训练账本查重拒绝；不能事后删训练记录冒称未训练。holdout载荷与标签由外部custodian处理，只给开发返回源/数量/hash/隔离/双标κ汇总。未知组件交叉关系、媒体许可或原gold冲突均阻断相应构建，不以程序补标签伪装成原标签。
 
 证据来源：s0-data:01及reports/clinc-admission-corrected-001.json；reports/stage2-remote-completion-001.json、stage2-media-cpu-validation-001.json；reports/gui-odyssey-download-acceptance-001.json、gui-odyssey-full-decode-cpu-001.json；reports/clotho-aqa-audio-preparation-002.json、clotho-range-recovery-004.json；reports/clevrer-source-download-snapshot.json、clevrer-media-cpu.json。补充bounded source-map读取了公开TRAIN元数据/标注以核数量/schema，未读其他split/封存或教师预测；该审计未做模型推理、媒体decode或训练准入。
 

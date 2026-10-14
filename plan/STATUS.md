@@ -69,3 +69,5 @@ Valen视频完成认video.exit与video-deadline-handoff-001.json kernel退出码
 OneJev4 video显式FLA profile已完整exit0，500×2实际输入/原始概率精确一致，86.2%，reports/s0-development-video-onejev-4b-fla-002.json；只作为本配置质量基线，不外推隔离时延。阶段0新增源码一次集中只读review在/tmp/lite-s0-review-001进行，与剩余GPU计算重叠，不逐子项审查。
 
 集中技术review已完成并关闭唯一P2（Valen模板TypeError回退），reports/s0-technical-code-review-001.md；历史3462条Valen记录全部显式关闭thinking，复用不重跑。修复后34相关tests、全仓ruff/335格式、95源码mypy、wheel/sdist均通过。后续仅新改动/失败扩大验证，不重复全检。
+
+原HTML规划复核：每模态3–5k校准集属于S5，不在S0提前建完整S5数据。07首条已澄清为当前train/dev账本及四池隔离、真实holdout依赖05；未来校准必须选择未训练family并查完整训练账本，不能事后删记录制造隔离。原S0真人门与S5数量均保留。
