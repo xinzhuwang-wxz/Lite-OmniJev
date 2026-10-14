@@ -21,3 +21,5 @@ primary026仍primary，不被031替换。TF5.13/tokenizers0.22.2独立Mac target
 使用`verify`核实具体完成主张；新可证失败用最窄诊断路径。必要写交接用本机handoff并按用户约定保存在plan。用户已禁止重型OMX/superpowers流程及重复访谈，不启动自动heartbeat。
 
 用户最新要求：真正收尾到可开卡时才写专用开卡交接，确保无缝接续。本文件只是未就绪的CPU检查点；不得凭此启动GPU或当作开卡授权。
+
+最终CPU检查点已同步并独立验hash：`reports/before-gpu-source-sync-001.json`。远端冻结源码HEAD36e51f8，560测试对应执行代码655a838；receipt是后加元数据侧车，不把其提交号冒充实验版本。无活跃owner/作业，当前所有剩余前沿均外部资源/授权阻塞；不空等或重新跑相同失败配置。

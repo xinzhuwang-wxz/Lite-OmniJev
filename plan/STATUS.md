@@ -13,7 +13,7 @@
 ## 资源与版本
 - 远端 `root@region-42.seetacloud.com:48926`，原树 `/root/autodl-tmp/lite-omnijev`；用户已恢复SSH，主会话mux `/tmp/omnijev-ssh-root-final`，凭据不保存。
 - 最新带完整Git历史的隔离源码快照：`/root/autodl-tmp/before-gpu-release-4366197`，目录名是初始快照名，新隔离源码 `/root/autodl-tmp/before-gpu-release-32fb559` 实际代码HEAD655a838；旧目录HEAD3dbbe0d；后续每次核对真实HEAD，不推定目录名=版本。
-- 本地bundle `artifacts/before-gpu-final-3dbbe0d.bundle`，远端同名在 `/root/autodl-tmp/`；未覆盖用户原树/未改远端分支。
+- 最终CPU检查点bundle `artifacts/before-gpu-checkpoint-final.bundle`：冻结HEAD36e51f8、完整Git历史，已同步隔离源码32fb559目录并远端37报告hash/32票validate通过；`reports/before-gpu-source-sync-001.json`。本地后续仅此receipt/调度元数据，不覆盖原树或改远端分支。
 - 无卡cgroup2GiB RAM/0.5CPU，重作业锁 `/tmp/omnijev-cpu-heavy.lock`、数值线程1；不得按宿主机free调度。最新远端剩余430,532,730,880B；保留150GB checkpoint及18.16GB模型临时空间。
 - vLLM0.26仍primary，0.31仅准备/诊断环境，不静默切换。026/031两套完整wheelhouse/fresh安装已实际通过CPU导入。
 - Mac24GiB内存，仅小型公开fixture/metadata，不搬大模型/原始包。只清理自己创建且无用的资源，不删权重缓存/用户容器。

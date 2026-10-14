@@ -1,0 +1,46 @@
+{
+  "schema": "lite-omnijev.before-gpu-source-sync.v1",
+  "observed_utc": "2026-10-14T05:12:14.573042+00:00",
+  "status": "verified_cpu_checkpoint_not_gpu_opening_handoff",
+  "source_snapshot_git_head": "36e51f845a9df5e464cb664b67e387799e7a9d6a",
+  "tested_executable_code_revision": "655a838",
+  "remote_source": "/root/autodl-tmp/before-gpu-release-32fb559",
+  "remote_bundle": "/root/autodl-tmp/before-gpu-checkpoint-final.bundle",
+  "bundle_bytes": 6093683,
+  "bundle_sha256": "d778098b05f446753f79f8f793a45ef0ae7622df80c66ce766689401526f96be",
+  "bundle_complete_history": true,
+  "remote_fetch_checkout_exit_code": 0,
+  "remote_loop_validate": {
+    "exit_code": 0,
+    "tickets": 32,
+    "frontier": [],
+    "claimed": []
+  },
+  "remote_evidence_hashes_verified": 37,
+  "ready_to_open_gpu": false,
+  "gpu_used": false,
+  "user_original_checkout_modified": false,
+  "remote_branches_modified": false,
+  "no_push": true,
+  "packages": [
+    {
+      "path": "dist/.gitignore",
+      "bytes": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
+      "scope": "engineering build, not a model release"
+    },
+    {
+      "path": "dist/lite_omnijev-0.1.0-py3-none-any.whl",
+      "bytes": 249760,
+      "sha256": "9bed7543508554d1cb10ff35f49047cefdbc151298b3103c0613aeaadaab8a06",
+      "scope": "engineering build, not a model release"
+    },
+    {
+      "path": "dist/lite_omnijev-0.1.0.tar.gz",
+      "bytes": 5912130,
+      "sha256": "a84c1e61b44f51af6a893616f5fdf8664894d69e28b9495d33b42a629394be75",
+      "scope": "engineering build, not a model release"
+    }
+  ],
+  "note": "This receipt is a metadata sidecar added after the immutable source snapshot was verified. It is not a release or opening approval."
+}
