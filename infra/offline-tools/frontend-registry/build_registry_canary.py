@@ -19,6 +19,7 @@ DEFAULT_FRONTEND = Path("infra/offline-tools/frontend")
 DEFAULT_STORE = Path("artifacts/runtime-builds/offline-tools/frontend/pnpm-store")
 DEFAULT_WORK = Path("artifacts/runtime-builds/offline-tools/frontend/registry-build-canary")
 DEFAULT_REPORT = Path("reports/frontend-registry-offline-build.json")
+DEFAULT_PNPM_COMMAND = ("npm", "exec", "--offline", "--yes", "pnpm@12.11.2", "--")
 
 
 class ExistingOutputError(RuntimeError):
@@ -255,6 +256,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--store-dir", type=Path, default=DEFAULT_STORE)
     parser.add_argument("--work-dir", type=Path, default=DEFAULT_WORK)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
+    parser.add_argument("--pnpm-command", nargs="+", default=list(DEFAULT_PNPM_COMMAND))
     args = parser.parse_args(argv)
 
     started = time.time()
@@ -265,36 +267,35 @@ def main(argv: Sequence[str] | None = None) -> int:
     items = load_items(args.cache_root)
     written = write_registry_files(args.work_dir, items)
     write_canary_sources(args.work_dir)
+    pnpm_command = [str(part) for part in args.pnpm_command]
     install_command = [
-        "npm",
-        "exec",
-        "--offline",
-        "--yes",
-        "pnpm@12.11.2",
-        "--",
+        *pnpm_command,
         "install",
         "--offline",
         "--frozen-lockfile",
+        "--trust-lockfile",
         "--ignore-scripts",
         "--store-dir",
         str(args.store_dir.resolve()),
     ]
     build_command = [
-        "npm",
-        "exec",
+        *pnpm_command,
         "--offline",
-        "--yes",
-        "pnpm@12.11.2",
-        "--",
         "exec",
         "vite",
         "build",
     ]
-    version = run(
-        ["npm", "exec", "--offline", "--yes", "pnpm@12.11.2", "--", "--version"], cwd=args.work_dir
-    )
+    version = run([*pnpm_command, "--version"], cwd=args.work_dir)
     install = run(install_command, cwd=args.work_dir)
-    build = run(build_command, cwd=args.work_dir)
+    if install.returncode == 0:
+        build = run(build_command, cwd=args.work_dir)
+    else:
+        build = subprocess.CompletedProcess(
+            build_command,
+            1,
+            "",
+            "install failed; build skipped to preserve offline evidence\n",
+        )
     dist_files = (
         sorted(
             str(path.relative_to(args.work_dir))

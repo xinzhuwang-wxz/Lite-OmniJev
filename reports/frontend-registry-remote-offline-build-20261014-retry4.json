@@ -1,0 +1,49 @@
+{
+  "build": {
+    "returncode": 0,
+    "stderr_tail": "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vite.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n",
+    "stdout_tail": "vite v8.3.4 building client environment for production...\ntransforming...\n\u2713 2433 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                  0.09 kB \u2502 gzip:   0.11 kB\ndist/assets/index-DbMsq_KS.js  499.21 kB \u2502 gzip: 158.91 kB\n\n\u2713 built in 1.70s\n"
+  },
+  "captured_at": "2026-10-14T10:00:18+0800",
+  "dist_files": [
+    "dist/assets/index-DbMsq_KS.js",
+    "dist/index.html"
+  ],
+  "dist_hashes": {
+    "dist/assets/index-DbMsq_KS.js": "0dff7562ac43eea4c102d74caba55004ae10dbea1fb57009da4e3d1e0ed4a975",
+    "dist/index.html": "b6430ab9008aaa22e0a07bf503b7ab4a96db5153940ba59f2d14a491a10297c3"
+  },
+  "elapsed_sec": 5.0,
+  "install": {
+    "returncode": 0,
+    "stderr_tail": "",
+    "stdout_tail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages are hard linked from the content-addressable store to the virtual store.\n  Content-addressable store is at: /root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/pnpm-store/v11\n  Virtual store is at:             node_modules/.pnpm\nProgress: resolved 316, reused 316, downloaded 0, added 313\nPackages: +399\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 399, reused 399, downloaded 0, added 399, done\nLockfile is up to date, resolution step is skipped\n\ndependencies:\n+ @vitejs/plugin-react 6.1.2\n+ class-variance-authority 0.7.1\n+ clsx 2.1.1\n+ framer-motion 14.1.0\n+ lucide-react 1.55.0\n+ motion 14.2.0\n+ radix-ui 1.8.1\n+ react 19.3.0\n+ react-dom 19.3.0\n+ tailwind-merge 3.7.0\n+ tailwindcss 4.3.3\n\ndevDependencies:\n+ shadcn 4.21.4\n+ typescript 7.0.2\n+ vite 8.3.4\n\nDone in 2.2s using pnpm v12.11.2\n"
+  },
+  "not_claimed": [
+    "No product UI generated",
+    "No browser visual QA",
+    "No full registry crawl"
+  ],
+  "package_manager_version": "pnpm 12.11.2",
+  "pnpm_invocation": {
+    "build": "node /root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/pnpm-12.11.2/package/bin/pnpm.mjs --offline exec vite build",
+    "install": "node /root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/pnpm-12.11.2/package/bin/pnpm.mjs install --offline --frozen-lockfile --trust-lockfile --ignore-scripts --store-dir /root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/offline-tools/frontend/pnpm-store"
+  },
+  "registry_files_written": [
+    "src/components/animate-ui/primitives/animate/slot/index.tsx",
+    "src/components/animate-ui/primitives/animate/tabs/index.tsx",
+    "src/components/animate-ui/primitives/effects/highlight/index.tsx",
+    "src/lib/get-strict-context/index.tsx",
+    "src/registry/new-york-v4/ui/alert.tsx",
+    "src/registry/new-york-v4/ui/button.tsx",
+    "src/registry/new-york-v4/ui/card.tsx",
+    "src/registry/new-york-v4/ui/dialog.tsx",
+    "src/registry/new-york-v4/ui/input.tsx",
+    "src/registry/new-york-v4/ui/select.tsx",
+    "src/registry/new-york-v4/ui/tabs.tsx",
+    "src/registry/new-york-v4/ui/textarea.tsx"
+  ],
+  "schema": "lite-omnijev.frontend-registry-offline-build.v1",
+  "store_dir": "artifacts/runtime-builds/offline-tools/frontend/pnpm-store",
+  "work_dir": "artifacts/runtime-builds/offline-tools/frontend/registry-build-canary-20261014-retry4"
+}
