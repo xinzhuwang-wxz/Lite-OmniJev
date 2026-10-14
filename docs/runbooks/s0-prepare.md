@@ -160,5 +160,15 @@ messages hash与input_ids hash全部一致；两条视频case唯一字段差异�
 这与5.17诊断一致：视频必要字段仍是`pixel_values_videos`和`video_position_ids`，实际帧数
 由冻结`frames_indices`/解码摘要约束。
 
-该结果只证明Mac CPU官方processor 5.13在六个公开canonical_http输入上可加载并与5.19参考的
-IDs/HTTP绑定一致；不声称native vLLM processor、Linux Torch2.11、GPU forward、概率门槛或生产服务通过。
+随后用同一隔离target在完整100题公开fixture上运行两遍：
+`reports/primary-transformers513-cpu-full100-a-001.json`与
+`reports/primary-transformers513-cpu-full100-b-001.json`均为`complete_100_cases=true`、exit 0。
+`reports/primary-transformers513-cpu-full100-comparison-001.json`记录两遍`cases`摘要逐字节一致，
+并与旧5.19完整参考逐case比较：答案映射、HTTP messages、HTTP media kwargs与input_ids hash全部一致。
+实际差异全部保留在报告里：20条视频case缺少5.13的`num_frames_per_video`，
+`pixel_values_videos`和`video_position_ids`的数值SHA与5.19一致但shape多一层前导batch维。
+text/image/screenshot/audio case没有字段或张量差异。
+
+该结果只证明Mac CPU官方processor 5.13在六个公开canonical_http输入和完整100题公开fixture上
+可加载并与5.19参考的IDs/HTTP绑定一致；不声称native vLLM processor、Linux Torch2.11、GPU forward、
+概率门槛或生产服务通过。

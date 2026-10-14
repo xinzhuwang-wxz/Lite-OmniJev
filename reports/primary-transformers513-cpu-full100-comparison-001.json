@@ -1,0 +1,1486 @@
+{
+  "schema": "lite-omnijev.primary_transformers513_cpu_full100_comparison.v1",
+  "status": "passed_with_version_differences_recorded",
+  "exit_code": 0,
+  "scope": "Mac CPU full100 canonical_http processor comparison only; no native vLLM processor, GPU forward, probability or production acceptance.",
+  "reports": {
+    "transformers513_pass_a": "reports/primary-transformers513-cpu-full100-a-001.json",
+    "transformers513_pass_b": "reports/primary-transformers513-cpu-full100-b-001.json",
+    "reference519": "reports/s0-canonical-http-cpu-003.json"
+  },
+  "versions": {
+    "transformers513": "5.13.0",
+    "tokenizers513_target": "0.22.2",
+    "reference_profile": "canonical-http-v1"
+  },
+  "cases_checked": 100,
+  "repeatability": {
+    "passed": true,
+    "differing_case_ids": [],
+    "cases_sha256_a": "401e9a206d95111699c4d384f4f6984ef74a13e1a7013c0db4c89a8c4cc97240",
+    "cases_sha256_b": "401e9a206d95111699c4d384f4f6984ef74a13e1a7013c0db4c89a8c4cc97240"
+  },
+  "all_answer_mapping_sha_equal": true,
+  "all_http_messages_sha_equal": true,
+  "all_http_media_io_kwargs_sha_equal": true,
+  "all_input_ids_sha_equal": true,
+  "field_delta_case_count": 20,
+  "field_differences_by_case": [
+    {
+      "id": "public-prepare-video-00",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-01",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-02",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-03",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-04",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-05",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-06",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-07",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-08",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-09",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "shape_519": [
+            8,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e",
+          "sha256_519": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "shape_519": [
+            8,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163",
+          "sha256_519": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-10",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-11",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-12",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-13",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-14",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-15",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-16",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-17",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-18",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    },
+    {
+      "id": "public-prepare-video-19",
+      "category": "video",
+      "primitive": "score",
+      "fields_513": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "fields_519": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids",
+        "num_frames_per_video",
+        "pixel_values_videos",
+        "video_position_ids"
+      ],
+      "missing_in_513": [
+        "num_frames_per_video"
+      ],
+      "extra_in_513": [],
+      "matching_common_tensor_fields": [
+        "attention_mask",
+        "input_ids",
+        "mm_token_type_ids"
+      ],
+      "different_common_tensor_fields": [
+        {
+          "field": "pixel_values_videos",
+          "shape_513": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "shape_519": [
+            16,
+            630,
+            768
+          ],
+          "dtype_513": "torch.float32",
+          "dtype_519": "torch.float32",
+          "sha256_513": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739",
+          "sha256_519": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        {
+          "field": "video_position_ids",
+          "shape_513": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "shape_519": [
+            16,
+            630,
+            2
+          ],
+          "dtype_513": "torch.int64",
+          "dtype_519": "torch.int64",
+          "sha256_513": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a",
+          "sha256_519": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      ],
+      "input_ids_sha_equal": true,
+      "answer_mapping_sha_equal": true,
+      "http_messages_sha_equal": true,
+      "http_media_io_kwargs_sha_equal": true
+    }
+  ],
+  "category_counts": {
+    "audio": 20,
+    "image": 20,
+    "screenshot": 20,
+    "text": 20,
+    "video": 20
+  },
+  "primitive_counts": {
+    "choice": 20,
+    "noul": 60,
+    "score": 20
+  },
+  "source": {
+    "git_commit": "851192f84d17a4ba4bc21548412f0a42bde5b036",
+    "dirty": "M docs/runbooks/s0-prepare.md\n?? reports/primary-transformers513-cpu-full100-a-001.json\n?? reports/primary-transformers513-cpu-full100-b-001.json\n?? reports/primary-transformers513-cpu-full100-comparison-001.json",
+    "code_sha256": {
+      "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+      "train/multimodal.py": "f1516eea7fe6fc1487a7d5456bb5519207d455f89611f1ce09b728ab6ff44fee",
+      "docs/runbooks/s0-prepare.md": "9c752141019277267db2206a9e86ab08a932a1e7cfcbccc243952569a2d3755f"
+    }
+  },
+  "environment": {
+    "python": "3.10.18",
+    "executable": "/Users/bamboo/.miniconda3/envs/bambooAI/bin/python",
+    "platform": "macOS-26.5.1-arm64-arm-64bit"
+  },
+  "cost": {
+    "gpu_used": false,
+    "new_paid_resources": 0
+  },
+  "pending": [
+    "Linux Torch2.11 primary service check",
+    "native vLLM processor",
+    "GPU forward/probability acceptance",
+    "production service acceptance"
+  ]
+}
