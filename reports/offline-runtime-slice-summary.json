@@ -3,7 +3,7 @@
     "maven_cache_status": "litertlm_android_0_9_0_aar_and_direct_compile_dependencies_cached_native_needed_recorded",
     "runtime_cache_status": "official_android_arm64_cli_cached_and_abi_verified_aar_build_pending"
   },
-  "captured_at": "2026-10-14T08:05:39+0800",
+  "captured_at": "2026-10-14T08:27:36+0800",
   "frontend": {
     "chromium_cache_probe": {
       "chrome_version": "Google Chrome for Testing 153.0.8010.12",
@@ -22,9 +22,10 @@
       "status": "offline_vite_build_passed_ignore_scripts"
     }
   },
-  "overall": "partial: 031/root/frontend/Chromium pass; 026 still in progress, so full CPU prep remains false",
+  "overall": "026/031/root/frontend/Chromium CPU offline prep closures pass; GPU/server/model-forward remain not claimed",
   "remote_disk_snapshot": {
-    "free_bytes_after_031_and_026_partial": 450091937792,
+    "free_bytes_after_026_complete": 447972753408,
+    "free_bytes_after_031_and_026_partial": 447972753408,
     "reserve_checkpoint_bytes": 150000000000
   },
   "root_main_training_dev_monitoring": {
@@ -77,31 +78,62 @@
     }
   },
   "serve_vllm026": {
-    "current_status": "requirements_only_plus_existing_nonfresh_env; lowrss full wheelhouse download in progress",
-    "latest_probe": {
-      "active_lowrss_downloader": true,
-      "captured_at": "2026-10-14T08:05:39+0800",
-      "free_bytes": 450091937792,
-      "observed_process_rss_kib": {
-        "download_script": 17348,
-        "driver_bash": 1892,
-        "pip_child": 49504
-      },
-      "wheelhouse_du": "1.7G"
-    },
-    "not_claimed": [
-      "No serve-vllm026 full wheelhouse yet",
-      "No serve-vllm026 fresh no-index canary yet"
-    ],
-    "progress": {
-      "captured_at": "2026-10-14T08:01:57+0800",
-      "current": "nvidia-cusparse",
-      "current_index": 97,
-      "elapsed_sec": 1140.5,
-      "files": 98,
+    "current_status": "full wheelhouse completed; fresh no-index CPU import canary passed",
+    "download_progress": {
+      "captured_at": "2026-10-14T08:27:18+0800",
+      "current": "z3-solver",
+      "current_index": 196,
+      "elapsed_sec": 2662.1,
+      "files": 197,
       "returncode": 0,
       "schema": "lite-omnijev.lowrss-wheelhouse-download-progress.v1",
       "total": 196
+    },
+    "fresh_import": {
+      "elapsed_sec": 203.1,
+      "imports": {
+        "torch": {
+          "file": "/root/autodl-tmp/envs/serve-vllm026-offline-check/lib/python3.11/site-packages/torch/__init__.py",
+          "status": "ok",
+          "version": "2.11.0+cu130"
+        },
+        "transformers": {
+          "file": "/root/autodl-tmp/envs/serve-vllm026-offline-check/lib/python3.11/site-packages/transformers/__init__.py",
+          "status": "ok",
+          "version": "5.13.0"
+        },
+        "vllm": {
+          "file": "/root/autodl-tmp/envs/serve-vllm026-offline-check/lib/python3.11/site-packages/vllm/__init__.py",
+          "status": "ok",
+          "version": "0.26.0"
+        }
+      },
+      "install_returncode": 0,
+      "log_sha256": "b5b7262bfb615d5d9290739406fb8c819634cdc26e5e08a530ce0717bd553411",
+      "probe_returncode": 0,
+      "requirements_sha256": "d5a9b72f083e26ee76c289593ed70dd26e85a90207c087dd1ec5cd21dce0f6fa",
+      "torch_probe": {
+        "cpu_sum": 2.0,
+        "cuda_available": false,
+        "file": "/root/autodl-tmp/envs/serve-vllm026-offline-check/lib/python3.11/site-packages/torch/__init__.py",
+        "version": "2.11.0+cu130"
+      }
+    },
+    "not_claimed": [
+      "No GPU execution",
+      "No vLLM server startup",
+      "No model forward"
+    ],
+    "wheelhouse": {
+      "contains": {
+        "torch-2.11.0": true,
+        "transformers-5.13.0": true,
+        "triton-3.6.0": true,
+        "vllm-0.26.0": true
+      },
+      "du": "3.6G",
+      "file_count": 197,
+      "requirements_sha256": "d5a9b72f083e26ee76c289593ed70dd26e85a90207c087dd1ec5cd21dce0f6fa"
     }
   },
   "worktree": "/tmp/lite-omnijev-offline-runtime"

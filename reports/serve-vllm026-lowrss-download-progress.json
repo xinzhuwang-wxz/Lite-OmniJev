@@ -1,9 +1,9 @@
 {
-  "captured_at": "2026-10-14T08:01:57+0800",
-  "current": "nvidia-cusparse",
-  "current_index": 97,
-  "elapsed_sec": 1140.5,
-  "files": 98,
+  "captured_at": "2026-10-14T08:27:18+0800",
+  "current": "z3-solver",
+  "current_index": 196,
+  "elapsed_sec": 2662.1,
+  "files": 197,
   "returncode": 0,
   "schema": "lite-omnijev.lowrss-wheelhouse-download-progress.v1",
   "total": 196
