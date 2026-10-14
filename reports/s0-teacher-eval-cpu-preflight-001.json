@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "mode": "cpu-preflight",
+  "started_utc": "2026-10-14T00:22:58.651247+00:00",
+  "gpu_seconds": 0,
+  "sealed_data_read": false,
+  "payload_values_exported": false,
+  "fixed_denominator_policy": "failures remain in denominator; no row filtering",
+  "status": "passed_cpu_preflight_no_model_forward",
+  "exit_code": 0,
+  "benchmark": "all",
+  "config_sha256": "06276c83040a68684db2275604049fc316adf489de0dc97670e21a847416f4b1",
+  "runner_code_sha256": "b97616a6b8ab6fd1fbef36212ea0c7ba89045a7ca68f23962f3d3a0dfc959259",
+  "example_sets": {
+    "mmau": {
+      "rows": 1000,
+      "groups": {
+        "music": 334,
+        "sound": 333,
+        "speech": 333
+      },
+      "row_id_manifest_sha256": "7871611423023cdb8c908a76ce433a72a830eb5f11d286bbd7b5b2b1b549c142",
+      "source_manifest_sha256": "d49d7a2341cfcb5c19718f22aba15df45ed79323314a6232e759643be4d09566"
+    },
+    "mvbench": {
+      "rows": 1800,
+      "groups": {
+        "Action Count": 200,
+        "Action Localization": 200,
+        "Action Prediction": 200,
+        "Action Sequence": 200,
+        "Character Order": 200,
+        "Object Interaction": 200,
+        "Object Shuffle": 200,
+        "State Change": 200,
+        "Unexpected Action": 200
+      },
+      "row_id_manifest_sha256": "42eb2ba65f0dbd0529e26c1b2354482a0862c04eac89ff9104b2220083c4ce4d",
+      "source_manifest_sha256": "8682339ab64460fe27f20bedd1864ade4fa6c15a9726f3e440f3f4fa7b6812d5"
+    }
+  },
+  "total_rows_selected": 2800,
+  "limits": {
+    "mmau": 0,
+    "mvbench": 0
+  },
+  "full_denominator_available": {
+    "mmau": true,
+    "mvbench": true
+  },
+  "report_contains_prompt_option_or_label_text": false,
+  "media_preflight": {
+    "fake_processor_used": true,
+    "model_forward_run": false,
+    "samples": {
+      "mmau_audio": [
+        {
+          "row_hash": "feab563b6a3e10e168975839f2a637e94f09d4809dee30bdb52b28c638b220e8",
+          "processor_summary": {
+            "modality": "audio",
+            "option_count": 4,
+            "keys": {
+              "input_ids": {
+                "kind": "tensor",
+                "shape": [
+                  1,
+                  4
+                ],
+                "dtype": "fake.int64"
+              },
+              "media_parts": {
+                "kind": "list",
+                "length": 1
+              }
+            },
+            "thinking_disabled": true,
+            "tokenize": true,
+            "contains_payload_values": false
+          },
+          "media_summary": {
+            "media_bytes_sha256": "4858f2259a16a234a703143fceab1be9b7e3426213f9642525c4d83929e3e8f7",
+            "embedded_audio_bytes": 640044,
+            "prepared_pcm_adapter_used": true
+          }
+        },
+        {
+          "row_hash": "e66281a071669d7545d6bc5cde30b114520ca80825743d5ee78444616588dfa5",
+          "processor_summary": {
+            "modality": "audio",
+            "option_count": 4,
+            "keys": {
+              "input_ids": {
+                "kind": "tensor",
+                "shape": [
+                  1,
+                  4
+                ],
+                "dtype": "fake.int64"
+              },
+              "media_parts": {
+                "kind": "list",
+                "length": 1
+              }
+            },
+            "thinking_disabled": true,
+            "tokenize": true,
+            "contains_payload_values": false
+          },
+          "media_summary": {
+            "media_bytes_sha256": "48a13299e13db583a628e11b35400abc76cb9b88b2639ba79a3c845473da41ae",
+            "embedded_audio_bytes": 640044,
+            "prepared_pcm_adapter_used": true
+          }
+        },
+        {
+          "row_hash": "f1634de34a883fb5869f0b7b0346a82a86a589d152ba1cebf4fc0ba668077c08",
+          "processor_summary": {
+            "modality": "audio",
+            "option_count": 4,
+            "keys": {
+              "input_ids": {
+                "kind": "tensor",
+                "shape": [
+                  1,
+                  4
+                ],
+                "dtype": "fake.int64"
+              },
+              "media_parts": {
+                "kind": "list",
+                "length": 1
+              }
+            },
+            "thinking_disabled": true,
+            "tokenize": true,
+            "contains_payload_values": false
+          },
+          "media_summary": {
+            "media_bytes_sha256": "748eacd71ac1d46c14eb864e4ff37a8d5864277e2b6315a7cd2e8fb87b52b44c",
+            "embedded_audio_bytes": 640044,
+            "prepared_pcm_adapter_used": true
+          }
+        }
+      ],
+      "mvbench_video": [
+        {
+          "row_hash": "abdedab7078e53d21ca5cbc5849cb24665f4aaf299f3e4336bb6b9f73a7a4ce8",
+          "processor_summary": {
+            "modality": "video",
+            "option_count": 4,
+            "keys": {
+              "input_ids": {
+                "kind": "tensor",
+                "shape": [
+                  1,
+                  4
+                ],
+                "dtype": "fake.int64"
+              },
+              "media_parts": {
+                "kind": "list",
+                "length": 16
+              }
+            },
+            "thinking_disabled": true,
+            "tokenize": true,
+            "contains_payload_values": false
+          },
+          "media_summary": {
+            "frame_count": 16,
+            "png_bytes": 2568159,
+            "canonical_png_verified": true,
+            "linux_mp4_redecode_used": false
+          }
+        }
+      ]
+    }
+  },
+  "finished_utc": "2026-10-14T00:22:58.839882+00:00"
+}
