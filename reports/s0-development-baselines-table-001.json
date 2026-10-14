@@ -234,6 +234,20 @@
       "brier": 0.44395796938786475,
       "coverage_at_error": 0.242,
       "max_error": 0.05
+    },
+    {
+      "cohort": "video",
+      "model": "onejev-4b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-onejev-4b-fla-002.json",
+      "runtime_profile": "official FLA0.5.2 overlay; original baseline not overwritten",
+      "count": 500,
+      "accuracy": 0.862,
+      "ece15": 0.05080820045315406,
+      "brier": 0.21806556798438823,
+      "coverage_at_error": 0.624,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -279,7 +293,7 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 18,
+  "verified_supported_pairs": 19,
   "pending_supported_pairs": [
     {
       "cohort": "crossmodal",
@@ -320,10 +334,6 @@
     {
       "cohort": "video",
       "model": "onejev-27b"
-    },
-    {
-      "cohort": "video",
-      "model": "onejev-4b"
     },
     {
       "cohort": "video",
