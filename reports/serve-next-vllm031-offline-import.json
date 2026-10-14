@@ -1,0 +1,38 @@
+{
+  "captured_at": "2026-10-14T07:40:09+0800",
+  "env": "/root/autodl-tmp/envs/serve-next-vllm031-offline-check",
+  "imports": {
+    "torch": {
+      "file": "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/torch/__init__.py",
+      "status": "ok",
+      "version": "2.13.0+cu130"
+    },
+    "transformers": {
+      "file": "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/transformers/__init__.py",
+      "status": "ok",
+      "version": "5.17.0"
+    },
+    "vllm": {
+      "file": "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/vllm/__init__.py",
+      "status": "ok",
+      "version": "0.31.0"
+    }
+  },
+  "install_returncode": 0,
+  "log": "/root/autodl-tmp/lite-omnijev/logs/serve-next-vllm031-offline-install.log",
+  "log_sha256": "2f46c285f81e5d0e6d52dad167153a2ef9bbcc4bf6927aae20c56caec772cfc8",
+  "not_claimed": [
+    "No GPU execution",
+    "No vLLM server startup",
+    "No model forward"
+  ],
+  "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+  "schema": "lite-omnijev.serve-next-vllm031-offline-import.v1",
+  "torch_probe": {
+    "cpu_sum": 2.0,
+    "cuda_available": false,
+    "file": "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/torch/__init__.py",
+    "version": "2.13.0+cu130"
+  },
+  "wheelhouse": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031"
+}
