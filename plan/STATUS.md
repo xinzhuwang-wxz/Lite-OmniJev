@@ -16,6 +16,10 @@
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
+- 最新恢复入口plan/handoff-2026-10-14-s0-cohorts.md。教师005快照5275/5600、PID169823 Rl/43:10，唯一GPU作业。
+- baseline CPU003代码72e5e35实际27.967sec/exit0，六主体text/image/token/thinking全部通过；s0:10仍claimed待音视频支持/未探测矩阵与必需探针，不把此通用probe当教师head/Valenforward或质量准入。
+- GUI首个公开TRAIN step annotation已Mac官方HTTPS成功取得22471B，双端SHAf27cabe…3cef一致；远端初次无网络失败保留001，新的schema/动作/16截图对齐审计在/tmp/lite-dev-source-map-001进行。文本构建切片父review补输出路径/旧证据保护与真实intent统计，尚未Linux构建。
+
 - 五基线CPU002实际27.253sec：5passed/Valen-Qwen1partial，无blocked；显式quarantine路径及OneJev官方空thinking关闭分支已解决，剩余Qwen模板语法证明修复中。报告reports/s0-baseline-cpu-linux-002.json，代码c1bba83，未加载权重或GPU，教师专用读出/质量不凭通用probe准入。
 - s0:12公开TRAIN来源事实已写.scratch/s0/development-source-contract.md。GUI step annotation缺口开始最多3个/1MiB官方固定revision小审计；不重下媒体、不碰test/holdout。其余候选不当500dev已准入。
 

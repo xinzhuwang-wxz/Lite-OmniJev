@@ -1,0 +1,1426 @@
+{
+  "schema": "lite-omnijev.s0-baseline-cpu.v1",
+  "mode": "run",
+  "status": "passed",
+  "exit_code": 0,
+  "asset_manifest": "configs/project-model-assets.json",
+  "asset_manifest_sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+  "model_root": "/root/autodl-tmp/lite-omnijev/artifacts/models",
+  "asset_paths": {
+    "valen-preview-0923": "/root/autodl-tmp/lite-omnijev/artifacts/quarantine/Valen-Team__Valen-Preview-0923/30096aaabb2689614c83a79f64f38c865c2ce1c1"
+  },
+  "code_revision": "72e5e3546682bbf4d2780912c47da2974dece040",
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "transformers": "5.13.0",
+    "tokenizers": "0.22.2"
+  },
+  "cost": null,
+  "gpu_used": false,
+  "weights_loaded": false,
+  "quality_admitted": false,
+  "published_teacher_readout_verified": false,
+  "summary": {
+    "passed": 6,
+    "partial": 0,
+    "blocked": 0,
+    "failed": 0
+  },
+  "subjects": [
+    {
+      "id": "gemma4-e2b-it",
+      "display_name": "Gemma 4 E2B IT",
+      "kind": "single_model",
+      "repo_id": "google/gemma-4-E2B-it",
+      "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+      "license": "apache-2.0",
+      "role": "student_backbone_edge_distillation_target",
+      "manifest_metadata_sha256": "0c2b16d6cd3eff6446cd685338765130bba5e8b383f345f7ccc78fc08e74a27d",
+      "local_model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+      "probe_model_id": "gemma4-e2b-it",
+      "adapter": null,
+      "base": null,
+      "status": "passed",
+      "gpu_used": false,
+      "weights_loaded": false,
+      "quality_admitted": false,
+      "published_teacher_readout_verified": false,
+      "local_metadata_sha256": "892db7571fde532da425d067e489d77c20f4a9484d214a9c8b31645049ad3c5c",
+      "tokenizer": {
+        "status": "passed",
+        "class": "transformers.models.gemma.tokenization_gemma.GemmaTokenizer",
+        "template_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+        "template_status": "present",
+        "answer_readout": {
+          "status": "passed",
+          "probes": {
+            "choice": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "U": 236836
+                },
+                "token_ids_sha256": "fda7035b23ad6b506528b2554c40cbafdd4fc7d83c30092d143de37bb6e18f1b",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "U": 236836
+                },
+                "token_ids_sha256": "20e141b389904252d85dd5ba160e7b043f5d5ed5e71eb73f336a50e87c262d45",
+                "failures": []
+              },
+              "4": {
+                "status": "passed",
+                "answer_count_including_u": 5,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "D": 236796,
+                  "U": 236836
+                },
+                "token_ids_sha256": "58e926ebc47f82e9624c875e90c068a666d4291d35a3b6e9b62045b99ed0b059",
+                "failures": []
+              },
+              "20": {
+                "status": "passed",
+                "answer_count_including_u": 21,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "D": 236796,
+                  "E": 236788,
+                  "F": 236811,
+                  "G": 236823,
+                  "H": 236814,
+                  "I": 236777,
+                  "J": 236863,
+                  "K": 236855,
+                  "L": 236798,
+                  "M": 236792,
+                  "N": 236797,
+                  "O": 236806,
+                  "P": 236791,
+                  "Q": 236935,
+                  "R": 236794,
+                  "S": 236773,
+                  "T": 236774,
+                  "U": 236836
+                },
+                "token_ids_sha256": "8a0c568e11ca99d71d3fae340a35218e9de75a7d315384e92c66b59223f78027",
+                "failures": []
+              }
+            },
+            "score": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "U": 236836
+                },
+                "token_ids_sha256": "224baf4d43e18f1bb632a17f923ff8ec160296aa903d84bb74f469b6ef27873c",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "2": 236778,
+                  "U": 236836
+                },
+                "token_ids_sha256": "095f18115917b93f9d2417e96961c99ab52e9adf9edecc9163b64718b8efe8be",
+                "failures": []
+              },
+              "10": {
+                "status": "passed",
+                "answer_count_including_u": 11,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "2": 236778,
+                  "3": 236800,
+                  "4": 236812,
+                  "5": 236810,
+                  "6": 236825,
+                  "7": 236832,
+                  "8": 236828,
+                  "9": 236819,
+                  "U": 236836
+                },
+                "token_ids_sha256": "a5a491a766e097ec45c231481c477a4a3aa5f31a41967264ce93e9a004da7946",
+                "failures": []
+              }
+            },
+            "noul": {
+              "status": "passed",
+              "answer_count_including_u": 3,
+              "token_ids": {
+                "yes": 4443,
+                "no": 1904,
+                "U": 236836
+              },
+              "token_ids_sha256": "18752cbc21d87de571c43cb42512dcf32c30fca8977a92e7020219539ad7349c",
+              "failures": []
+            }
+          },
+          "failures": []
+        },
+        "thinking": {
+          "status": "proved_disabled",
+          "off_prompt_sha256": "cb7c0f8dcbe3d04207877838f04a97661792791a059f291b36283415e308b507",
+          "on_prompt_sha256": "c3a65734e81e8150fd0d0b55c6337cc5c28f4444ba4b37e51cbda22ca09bbeea",
+          "evidence_token_sha256": "bbb633b44333d7218da8c5f9313f590c0fd7bf38c31b96fd9a042a8d71fdba27",
+          "evidence_kind": "token_absent_when_disabled",
+          "disabled_marker_sha256": null
+        }
+      },
+      "processor": {
+        "status": "loaded",
+        "class": "transformers.models.gemma4.processing_gemma4.Gemma4Processor"
+      },
+      "public_inputs": {
+        "status": "selected",
+        "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+        "case_count": 100,
+        "text": {
+          "status": "passed",
+          "payload_sha256": "27e708617dd83938f3a8a176a345fcb85990be70a33cd3da20e9560ca254e7f3",
+          "prompt_sha256": "5ec787cb01e4b3abf5fee4016b01e5b8ea088a87da8527fa75a7524729ece6cc",
+          "prompt_tokens": 65
+        },
+        "image": {
+          "status": "passed",
+          "category": "image",
+          "case_id_sha256": "8e9a89cdcc7e54294b34fb57c791f25f0f7bb8bd39da3bc71b98c5a34f4e567c",
+          "payload_sha256": "100390dd60d113e46c92ce5be772f0096808cfe31fe5d86efef720bfa2d37e50",
+          "prompt_sha256": "8d0e8dd0935f1ce3fbd681fa826e1e7bc1adf8cfd39104b2f5217eaca25315bf",
+          "media_sha256": [
+            "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef"
+          ],
+          "tensors": {
+            "input_ids": {
+              "shape": [
+                1,
+                339
+              ],
+              "dtype": "torch.int64",
+              "sha256": "acd53859908eba72bd87c04424850edd0c57ba94127282b6928d2c15d6193536"
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                339
+              ],
+              "dtype": "torch.int64",
+              "sha256": "b92b7656ae4a9d78b736aeea6bb9727d1076c9aeb10d3508b088d3abcbba5f40"
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                339
+              ],
+              "dtype": "torch.int64",
+              "sha256": "c29cb73bbcaba1bb4d798faa684c859f5edad4a14efd7553ce0172a1b810f912"
+            },
+            "pixel_values": {
+              "shape": [
+                1,
+                2520,
+                768
+              ],
+              "dtype": "torch.float32",
+              "sha256": "baeefdfe112b05d8d806fb2026e23c292fcb29ef90ddc150f5e24a687307d390"
+            },
+            "image_position_ids": {
+              "shape": [
+                1,
+                2520,
+                2
+              ],
+              "dtype": "torch.int64",
+              "sha256": "2b43746b5b51c7effad4d6b2102bb337dddb82689e3869b02b6abdaf37af77ff"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "gemma4-e4b-it",
+      "display_name": "Gemma 4 E4B IT",
+      "kind": "single_model",
+      "repo_id": "google/gemma-4-E4B-it",
+      "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+      "license": "apache-2.0",
+      "role": "student_backbone_primary_api_and_single_card",
+      "manifest_metadata_sha256": "4b06b6f5d13a235c2c708218bf21f6c5c822cfc32ba95517d7251a87e4a546db",
+      "local_model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+      "probe_model_id": "gemma4-e4b-it",
+      "adapter": null,
+      "base": null,
+      "status": "passed",
+      "gpu_used": false,
+      "weights_loaded": false,
+      "quality_admitted": false,
+      "published_teacher_readout_verified": false,
+      "local_metadata_sha256": "358c7818a4a06d69ff4e7f5ee92f5adc3af851468251e4e74702c0044e8af291",
+      "tokenizer": {
+        "status": "passed",
+        "class": "transformers.models.gemma.tokenization_gemma.GemmaTokenizer",
+        "template_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+        "template_status": "present",
+        "answer_readout": {
+          "status": "passed",
+          "probes": {
+            "choice": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "U": 236836
+                },
+                "token_ids_sha256": "fda7035b23ad6b506528b2554c40cbafdd4fc7d83c30092d143de37bb6e18f1b",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "U": 236836
+                },
+                "token_ids_sha256": "20e141b389904252d85dd5ba160e7b043f5d5ed5e71eb73f336a50e87c262d45",
+                "failures": []
+              },
+              "4": {
+                "status": "passed",
+                "answer_count_including_u": 5,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "D": 236796,
+                  "U": 236836
+                },
+                "token_ids_sha256": "58e926ebc47f82e9624c875e90c068a666d4291d35a3b6e9b62045b99ed0b059",
+                "failures": []
+              },
+              "20": {
+                "status": "passed",
+                "answer_count_including_u": 21,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "D": 236796,
+                  "E": 236788,
+                  "F": 236811,
+                  "G": 236823,
+                  "H": 236814,
+                  "I": 236777,
+                  "J": 236863,
+                  "K": 236855,
+                  "L": 236798,
+                  "M": 236792,
+                  "N": 236797,
+                  "O": 236806,
+                  "P": 236791,
+                  "Q": 236935,
+                  "R": 236794,
+                  "S": 236773,
+                  "T": 236774,
+                  "U": 236836
+                },
+                "token_ids_sha256": "8a0c568e11ca99d71d3fae340a35218e9de75a7d315384e92c66b59223f78027",
+                "failures": []
+              }
+            },
+            "score": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "U": 236836
+                },
+                "token_ids_sha256": "224baf4d43e18f1bb632a17f923ff8ec160296aa903d84bb74f469b6ef27873c",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "2": 236778,
+                  "U": 236836
+                },
+                "token_ids_sha256": "095f18115917b93f9d2417e96961c99ab52e9adf9edecc9163b64718b8efe8be",
+                "failures": []
+              },
+              "10": {
+                "status": "passed",
+                "answer_count_including_u": 11,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "2": 236778,
+                  "3": 236800,
+                  "4": 236812,
+                  "5": 236810,
+                  "6": 236825,
+                  "7": 236832,
+                  "8": 236828,
+                  "9": 236819,
+                  "U": 236836
+                },
+                "token_ids_sha256": "a5a491a766e097ec45c231481c477a4a3aa5f31a41967264ce93e9a004da7946",
+                "failures": []
+              }
+            },
+            "noul": {
+              "status": "passed",
+              "answer_count_including_u": 3,
+              "token_ids": {
+                "yes": 4443,
+                "no": 1904,
+                "U": 236836
+              },
+              "token_ids_sha256": "18752cbc21d87de571c43cb42512dcf32c30fca8977a92e7020219539ad7349c",
+              "failures": []
+            }
+          },
+          "failures": []
+        },
+        "thinking": {
+          "status": "proved_disabled",
+          "off_prompt_sha256": "cb7c0f8dcbe3d04207877838f04a97661792791a059f291b36283415e308b507",
+          "on_prompt_sha256": "c3a65734e81e8150fd0d0b55c6337cc5c28f4444ba4b37e51cbda22ca09bbeea",
+          "evidence_token_sha256": "bbb633b44333d7218da8c5f9313f590c0fd7bf38c31b96fd9a042a8d71fdba27",
+          "evidence_kind": "token_absent_when_disabled",
+          "disabled_marker_sha256": null
+        }
+      },
+      "processor": {
+        "status": "loaded",
+        "class": "transformers.models.gemma4.processing_gemma4.Gemma4Processor"
+      },
+      "public_inputs": {
+        "status": "selected",
+        "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+        "case_count": 100,
+        "text": {
+          "status": "passed",
+          "payload_sha256": "27e708617dd83938f3a8a176a345fcb85990be70a33cd3da20e9560ca254e7f3",
+          "prompt_sha256": "5ec787cb01e4b3abf5fee4016b01e5b8ea088a87da8527fa75a7524729ece6cc",
+          "prompt_tokens": 65
+        },
+        "image": {
+          "status": "passed",
+          "category": "image",
+          "case_id_sha256": "8e9a89cdcc7e54294b34fb57c791f25f0f7bb8bd39da3bc71b98c5a34f4e567c",
+          "payload_sha256": "100390dd60d113e46c92ce5be772f0096808cfe31fe5d86efef720bfa2d37e50",
+          "prompt_sha256": "8d0e8dd0935f1ce3fbd681fa826e1e7bc1adf8cfd39104b2f5217eaca25315bf",
+          "media_sha256": [
+            "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef"
+          ],
+          "tensors": {
+            "input_ids": {
+              "shape": [
+                1,
+                339
+              ],
+              "dtype": "torch.int64",
+              "sha256": "acd53859908eba72bd87c04424850edd0c57ba94127282b6928d2c15d6193536"
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                339
+              ],
+              "dtype": "torch.int64",
+              "sha256": "b92b7656ae4a9d78b736aeea6bb9727d1076c9aeb10d3508b088d3abcbba5f40"
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                339
+              ],
+              "dtype": "torch.int64",
+              "sha256": "c29cb73bbcaba1bb4d798faa684c859f5edad4a14efd7553ce0172a1b810f912"
+            },
+            "pixel_values": {
+              "shape": [
+                1,
+                2520,
+                768
+              ],
+              "dtype": "torch.float32",
+              "sha256": "baeefdfe112b05d8d806fb2026e23c292fcb29ef90ddc150f5e24a687307d390"
+            },
+            "image_position_ids": {
+              "shape": [
+                1,
+                2520,
+                2
+              ],
+              "dtype": "torch.int64",
+              "sha256": "2b43746b5b51c7effad4d6b2102bb337dddb82689e3869b02b6abdaf37af77ff"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "jev-omni-12b",
+      "display_name": "Jev-Omni",
+      "kind": "single_model",
+      "repo_id": "akhilaaa3/Jev-Omni",
+      "revision": "5addda86ddee081a68fb067477ea100c221b8917",
+      "license": "apache-2.0",
+      "role": "teacher_audio_video_and_s0_reproduction_baseline",
+      "manifest_metadata_sha256": "6a3e261b4af82e00c8511fe36b109696c8f2d16ff8939b4ad8c84d3c3fe30938",
+      "local_model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/akhilaaa3__Jev-Omni/5addda86ddee081a68fb067477ea100c221b8917",
+      "probe_model_id": "jev-omni-12b",
+      "adapter": null,
+      "base": null,
+      "status": "passed",
+      "gpu_used": false,
+      "weights_loaded": false,
+      "quality_admitted": false,
+      "published_teacher_readout_verified": false,
+      "local_metadata_sha256": "420c7d51548c3b740d13397eeec1a9fdde0bc90fc502db052aff5785f5840221",
+      "tokenizer": {
+        "status": "passed",
+        "class": "transformers.models.gemma.tokenization_gemma.GemmaTokenizer",
+        "template_sha256": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4",
+        "template_status": "present",
+        "answer_readout": {
+          "status": "passed",
+          "probes": {
+            "choice": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "U": 236836
+                },
+                "token_ids_sha256": "fda7035b23ad6b506528b2554c40cbafdd4fc7d83c30092d143de37bb6e18f1b",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "U": 236836
+                },
+                "token_ids_sha256": "20e141b389904252d85dd5ba160e7b043f5d5ed5e71eb73f336a50e87c262d45",
+                "failures": []
+              },
+              "4": {
+                "status": "passed",
+                "answer_count_including_u": 5,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "D": 236796,
+                  "U": 236836
+                },
+                "token_ids_sha256": "58e926ebc47f82e9624c875e90c068a666d4291d35a3b6e9b62045b99ed0b059",
+                "failures": []
+              },
+              "20": {
+                "status": "passed",
+                "answer_count_including_u": 21,
+                "token_ids": {
+                  "A": 236776,
+                  "B": 236799,
+                  "C": 236780,
+                  "D": 236796,
+                  "E": 236788,
+                  "F": 236811,
+                  "G": 236823,
+                  "H": 236814,
+                  "I": 236777,
+                  "J": 236863,
+                  "K": 236855,
+                  "L": 236798,
+                  "M": 236792,
+                  "N": 236797,
+                  "O": 236806,
+                  "P": 236791,
+                  "Q": 236935,
+                  "R": 236794,
+                  "S": 236773,
+                  "T": 236774,
+                  "U": 236836
+                },
+                "token_ids_sha256": "8a0c568e11ca99d71d3fae340a35218e9de75a7d315384e92c66b59223f78027",
+                "failures": []
+              }
+            },
+            "score": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "U": 236836
+                },
+                "token_ids_sha256": "224baf4d43e18f1bb632a17f923ff8ec160296aa903d84bb74f469b6ef27873c",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "2": 236778,
+                  "U": 236836
+                },
+                "token_ids_sha256": "095f18115917b93f9d2417e96961c99ab52e9adf9edecc9163b64718b8efe8be",
+                "failures": []
+              },
+              "10": {
+                "status": "passed",
+                "answer_count_including_u": 11,
+                "token_ids": {
+                  "0": 236771,
+                  "1": 236770,
+                  "2": 236778,
+                  "3": 236800,
+                  "4": 236812,
+                  "5": 236810,
+                  "6": 236825,
+                  "7": 236832,
+                  "8": 236828,
+                  "9": 236819,
+                  "U": 236836
+                },
+                "token_ids_sha256": "a5a491a766e097ec45c231481c477a4a3aa5f31a41967264ce93e9a004da7946",
+                "failures": []
+              }
+            },
+            "noul": {
+              "status": "passed",
+              "answer_count_including_u": 3,
+              "token_ids": {
+                "yes": 4443,
+                "no": 1904,
+                "U": 236836
+              },
+              "token_ids_sha256": "18752cbc21d87de571c43cb42512dcf32c30fca8977a92e7020219539ad7349c",
+              "failures": []
+            }
+          },
+          "failures": []
+        },
+        "thinking": {
+          "status": "proved_disabled",
+          "off_prompt_sha256": "3142a5df26421fd74d1abb2222ff3cf7aee56ef61bf54e3a81776eac6269aac5",
+          "on_prompt_sha256": "c3a65734e81e8150fd0d0b55c6337cc5c28f4444ba4b37e51cbda22ca09bbeea",
+          "evidence_token_sha256": "bbb633b44333d7218da8c5f9313f590c0fd7bf38c31b96fd9a042a8d71fdba27",
+          "evidence_kind": "token_absent_when_disabled",
+          "disabled_marker_sha256": null
+        }
+      },
+      "processor": {
+        "status": "loaded",
+        "class": "transformers.models.gemma4_unified.processing_gemma4_unified.Gemma4UnifiedProcessor"
+      },
+      "public_inputs": {
+        "status": "selected",
+        "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+        "case_count": 100,
+        "text": {
+          "status": "passed",
+          "payload_sha256": "27e708617dd83938f3a8a176a345fcb85990be70a33cd3da20e9560ca254e7f3",
+          "prompt_sha256": "a2ea5b93eab444feef544c90eccafcb98a50b327c3f8ffe61171fd55fa095633",
+          "prompt_tokens": 69
+        },
+        "image": {
+          "status": "passed",
+          "category": "image",
+          "case_id_sha256": "8e9a89cdcc7e54294b34fb57c791f25f0f7bb8bd39da3bc71b98c5a34f4e567c",
+          "payload_sha256": "100390dd60d113e46c92ce5be772f0096808cfe31fe5d86efef720bfa2d37e50",
+          "prompt_sha256": "0e4788e67f3475e169ae75f473441d59bcc8df98e4b2b9cb1ab5c9ea55ccfaf9",
+          "media_sha256": [
+            "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef"
+          ],
+          "tensors": {
+            "input_ids": {
+              "shape": [
+                1,
+                343
+              ],
+              "dtype": "torch.int64",
+              "sha256": "a554b5f7c1973af89c22644e06b189b15d23b14e5c5d3caf75e42281a8c09e3f"
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                343
+              ],
+              "dtype": "torch.int64",
+              "sha256": "f80dd88b3cde9e67cc4b75bdf83007bd7e31d76c8a3dd475ace9375582657407"
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                343
+              ],
+              "dtype": "torch.int64",
+              "sha256": "cac428eb05a5b15763c22a46d13c920e73fdab9ef7c0dd46344b456d595058f3"
+            },
+            "pixel_values": {
+              "shape": [
+                1,
+                280,
+                6912
+              ],
+              "dtype": "torch.float32",
+              "sha256": "3759e1cd539e1d624310a3c2ed2e3b5b0321795aa004299d62b1b8ded95c004b"
+            },
+            "image_position_ids": {
+              "shape": [
+                1,
+                280,
+                2
+              ],
+              "dtype": "torch.int64",
+              "sha256": "5912b92d86062919ebc8d10df7ef9b96935727eac8dacd364ef880406e306a8d"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "onejev-27b",
+      "display_name": "OneJev-27B",
+      "kind": "single_model",
+      "repo_id": "OmniJev/OneJev-27B",
+      "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+      "license": "apache-2.0",
+      "role": "teacher_text_image_screenshot_and_upper_baseline",
+      "manifest_metadata_sha256": "57f71c03fea459e3c67fea4832bc50d50aa40c0f1aee12bf3a30742bfdffe0b7",
+      "local_model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-27B/aec969d68e7e8e8b0df051e065c04304c0cd7163",
+      "probe_model_id": "onejev-27b",
+      "adapter": null,
+      "base": null,
+      "status": "passed",
+      "gpu_used": false,
+      "weights_loaded": false,
+      "quality_admitted": false,
+      "published_teacher_readout_verified": false,
+      "local_metadata_sha256": "ea5cb77d9538e54ffe1e507476a01c1b19e95d7c8cfff5dc4440600a92b10340",
+      "tokenizer": {
+        "status": "passed",
+        "class": "transformers.models.qwen2.tokenization_qwen2.Qwen2Tokenizer",
+        "template_sha256": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+        "template_status": "present",
+        "answer_readout": {
+          "status": "passed",
+          "probes": {
+            "choice": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "U": 52
+                },
+                "token_ids_sha256": "85021b1a328e2cadcaf153c6095c75ec55398e11eba44d7edc8659ea994fb884",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "U": 52
+                },
+                "token_ids_sha256": "530f097dfb4d69355f169afb8da227d219c1d90cda2232688ab4d945cf7d8bbe",
+                "failures": []
+              },
+              "4": {
+                "status": "passed",
+                "answer_count_including_u": 5,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "D": 35,
+                  "U": 52
+                },
+                "token_ids_sha256": "d13c0cca3fa7bc10801e008c524a4d97d9c35df58d6fa419b8c0af7fc53fc07f",
+                "failures": []
+              },
+              "20": {
+                "status": "passed",
+                "answer_count_including_u": 21,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "D": 35,
+                  "E": 36,
+                  "F": 37,
+                  "G": 38,
+                  "H": 39,
+                  "I": 40,
+                  "J": 41,
+                  "K": 42,
+                  "L": 43,
+                  "M": 44,
+                  "N": 45,
+                  "O": 46,
+                  "P": 47,
+                  "Q": 48,
+                  "R": 49,
+                  "S": 50,
+                  "T": 51,
+                  "U": 52
+                },
+                "token_ids_sha256": "f6634fa573bb5568cb9aaf3f875dc2d765055aabcc94b9bf090564879cdf19d0",
+                "failures": []
+              }
+            },
+            "score": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "U": 52
+                },
+                "token_ids_sha256": "3c597f99c5215df18bf72085b7c456ac83ea77bce041e8cfb48de9e8f4c99ca9",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "2": 17,
+                  "U": 52
+                },
+                "token_ids_sha256": "86078f804035510fa4fc52eb97d8d6de4381c5f7dfde7136882040a848e6fb48",
+                "failures": []
+              },
+              "10": {
+                "status": "passed",
+                "answer_count_including_u": 11,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "2": 17,
+                  "3": 18,
+                  "4": 19,
+                  "5": 20,
+                  "6": 21,
+                  "7": 22,
+                  "8": 23,
+                  "9": 24,
+                  "U": 52
+                },
+                "token_ids_sha256": "423c70b428c389521866be70b61617750632bf7532e5e6da18408ed39e2a6e75",
+                "failures": []
+              }
+            },
+            "noul": {
+              "status": "passed",
+              "answer_count_including_u": 3,
+              "token_ids": {
+                "yes": 9405,
+                "no": 2083,
+                "U": 52
+              },
+              "token_ids_sha256": "83ff5bd5f38a28435c23f03c377f57c576a3c0e0a130b77d620f0bada7920f1d",
+              "failures": []
+            }
+          },
+          "failures": []
+        },
+        "thinking": {
+          "status": "proved_disabled",
+          "off_prompt_sha256": "e3d28f34ec8d9b4bbe6eaf6d877b243deac88af8dce0fb7d12c2f4b6d9a0f907",
+          "on_prompt_sha256": "8ee94c2aef38db6e1740fde9e3daa83262b823ead4ea94819f3d6c09a4e4e263",
+          "evidence_token_sha256": null,
+          "evidence_kind": "template_enable_thinking_disabled_branch",
+          "disabled_marker_sha256": "a43d3bd83c42fa0810b7484dcc7b24bd7a39c6b592544cbced24edfe03d9cfb4"
+        }
+      },
+      "processor": {
+        "status": "loaded",
+        "class": "transformers.models.qwen3_vl.processing_qwen3_vl.Qwen3VLProcessor"
+      },
+      "public_inputs": {
+        "status": "selected",
+        "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+        "case_count": 100,
+        "text": {
+          "status": "passed",
+          "payload_sha256": "27e708617dd83938f3a8a176a345fcb85990be70a33cd3da20e9560ca254e7f3",
+          "prompt_sha256": "c5b5adf40bdbf01bd879c933ce5e1d6d5c35e952511790710703eed196624f00",
+          "prompt_tokens": 68
+        },
+        "image": {
+          "status": "passed",
+          "category": "image",
+          "case_id_sha256": "8e9a89cdcc7e54294b34fb57c791f25f0f7bb8bd39da3bc71b98c5a34f4e567c",
+          "payload_sha256": "100390dd60d113e46c92ce5be772f0096808cfe31fe5d86efef720bfa2d37e50",
+          "prompt_sha256": "abf01fda7e4551b32ab5573b328296e742e5ce58fe0854479c4c55f40ebd5411",
+          "media_sha256": [
+            "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef"
+          ],
+          "tensors": {
+            "input_ids": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "3491d4da902c6effdc642434edbea0b67a6bde9a78108623ee7b018ac7ff3d14"
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "7c292da71e6a59fd163b6f342b267a5ebdd173576be5fd73d9b0c18566b41f03"
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "2d5e94dba845c29670a362793eb38ce2101c11db96cd3064406742f9102b0768"
+            },
+            "pixel_values": {
+              "shape": [
+                600,
+                1536
+              ],
+              "dtype": "torch.float32",
+              "sha256": "637db6bfdff3189a435ee799ee47a448cca75ea88f213a35506b51a0cb59ed31"
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "torch.int64",
+              "sha256": "7965d81d0ed2cdb697735ecee8cf4164e0855f505a81988b3bbf44edfecea44d"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "onejev-4b",
+      "display_name": "OneJev-4B",
+      "kind": "single_model",
+      "repo_id": "OmniJev/OneJev-4B",
+      "revision": "c88e18653ceb7a8770716287f55fdefc79d6b588",
+      "license": "apache-2.0",
+      "role": "s0_s1_s2_text_image_screenshot_baseline",
+      "manifest_metadata_sha256": "61c2c6149b906f13e4e1af67c13dfea648515e4ca19115abd550262c394a6a24",
+      "local_model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/OmniJev__OneJev-4B/c88e18653ceb7a8770716287f55fdefc79d6b588",
+      "probe_model_id": "onejev-4b",
+      "adapter": null,
+      "base": null,
+      "status": "passed",
+      "gpu_used": false,
+      "weights_loaded": false,
+      "quality_admitted": false,
+      "published_teacher_readout_verified": false,
+      "local_metadata_sha256": "149ec900b6e4dc75bf62ffa17d5015137731f07cedc0b2255d1f1ddf5348593d",
+      "tokenizer": {
+        "status": "passed",
+        "class": "transformers.models.qwen2.tokenization_qwen2.Qwen2Tokenizer",
+        "template_sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+        "template_status": "present",
+        "answer_readout": {
+          "status": "passed",
+          "probes": {
+            "choice": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "U": 52
+                },
+                "token_ids_sha256": "85021b1a328e2cadcaf153c6095c75ec55398e11eba44d7edc8659ea994fb884",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "U": 52
+                },
+                "token_ids_sha256": "530f097dfb4d69355f169afb8da227d219c1d90cda2232688ab4d945cf7d8bbe",
+                "failures": []
+              },
+              "4": {
+                "status": "passed",
+                "answer_count_including_u": 5,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "D": 35,
+                  "U": 52
+                },
+                "token_ids_sha256": "d13c0cca3fa7bc10801e008c524a4d97d9c35df58d6fa419b8c0af7fc53fc07f",
+                "failures": []
+              },
+              "20": {
+                "status": "passed",
+                "answer_count_including_u": 21,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "D": 35,
+                  "E": 36,
+                  "F": 37,
+                  "G": 38,
+                  "H": 39,
+                  "I": 40,
+                  "J": 41,
+                  "K": 42,
+                  "L": 43,
+                  "M": 44,
+                  "N": 45,
+                  "O": 46,
+                  "P": 47,
+                  "Q": 48,
+                  "R": 49,
+                  "S": 50,
+                  "T": 51,
+                  "U": 52
+                },
+                "token_ids_sha256": "f6634fa573bb5568cb9aaf3f875dc2d765055aabcc94b9bf090564879cdf19d0",
+                "failures": []
+              }
+            },
+            "score": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "U": 52
+                },
+                "token_ids_sha256": "3c597f99c5215df18bf72085b7c456ac83ea77bce041e8cfb48de9e8f4c99ca9",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "2": 17,
+                  "U": 52
+                },
+                "token_ids_sha256": "86078f804035510fa4fc52eb97d8d6de4381c5f7dfde7136882040a848e6fb48",
+                "failures": []
+              },
+              "10": {
+                "status": "passed",
+                "answer_count_including_u": 11,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "2": 17,
+                  "3": 18,
+                  "4": 19,
+                  "5": 20,
+                  "6": 21,
+                  "7": 22,
+                  "8": 23,
+                  "9": 24,
+                  "U": 52
+                },
+                "token_ids_sha256": "423c70b428c389521866be70b61617750632bf7532e5e6da18408ed39e2a6e75",
+                "failures": []
+              }
+            },
+            "noul": {
+              "status": "passed",
+              "answer_count_including_u": 3,
+              "token_ids": {
+                "yes": 9405,
+                "no": 2083,
+                "U": 52
+              },
+              "token_ids_sha256": "83ff5bd5f38a28435c23f03c377f57c576a3c0e0a130b77d620f0bada7920f1d",
+              "failures": []
+            }
+          },
+          "failures": []
+        },
+        "thinking": {
+          "status": "proved_disabled",
+          "off_prompt_sha256": "e3d28f34ec8d9b4bbe6eaf6d877b243deac88af8dce0fb7d12c2f4b6d9a0f907",
+          "on_prompt_sha256": "58d775a285867bd782da655ec5806077878a4951410a6e0a9d1549170fe9ff98",
+          "evidence_token_sha256": null,
+          "evidence_kind": "template_enable_thinking_disabled_branch",
+          "disabled_marker_sha256": "a43d3bd83c42fa0810b7484dcc7b24bd7a39c6b592544cbced24edfe03d9cfb4"
+        }
+      },
+      "processor": {
+        "status": "loaded",
+        "class": "transformers.models.qwen3_vl.processing_qwen3_vl.Qwen3VLProcessor"
+      },
+      "public_inputs": {
+        "status": "selected",
+        "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+        "case_count": 100,
+        "text": {
+          "status": "passed",
+          "payload_sha256": "27e708617dd83938f3a8a176a345fcb85990be70a33cd3da20e9560ca254e7f3",
+          "prompt_sha256": "c5b5adf40bdbf01bd879c933ce5e1d6d5c35e952511790710703eed196624f00",
+          "prompt_tokens": 68
+        },
+        "image": {
+          "status": "passed",
+          "category": "image",
+          "case_id_sha256": "8e9a89cdcc7e54294b34fb57c791f25f0f7bb8bd39da3bc71b98c5a34f4e567c",
+          "payload_sha256": "100390dd60d113e46c92ce5be772f0096808cfe31fe5d86efef720bfa2d37e50",
+          "prompt_sha256": "abf01fda7e4551b32ab5573b328296e742e5ce58fe0854479c4c55f40ebd5411",
+          "media_sha256": [
+            "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef"
+          ],
+          "tensors": {
+            "input_ids": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "3491d4da902c6effdc642434edbea0b67a6bde9a78108623ee7b018ac7ff3d14"
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "7c292da71e6a59fd163b6f342b267a5ebdd173576be5fd73d9b0c18566b41f03"
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "2d5e94dba845c29670a362793eb38ce2101c11db96cd3064406742f9102b0768"
+            },
+            "pixel_values": {
+              "shape": [
+                600,
+                1536
+              ],
+              "dtype": "torch.float32",
+              "sha256": "637db6bfdff3189a435ee799ee47a448cca75ea88f213a35506b51a0cb59ed31"
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "torch.int64",
+              "sha256": "7965d81d0ed2cdb697735ecee8cf4164e0855f505a81988b3bbf44edfecea44d"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "valen-2b-qwen3.5-base",
+      "display_name": "Valen-Preview-0923 / Valen-2B with frozen Qwen3.5-2B base",
+      "kind": "adapter_plus_base_metadata_only",
+      "repo_id": "Valen-Team/Valen-Preview-0923",
+      "revision": "30096aaabb2689614c83a79f64f38c865c2ce1c1",
+      "license": "apache-2.0",
+      "role": "required_original_sota_baseline_valen_2b",
+      "manifest_metadata_sha256": "a0a64f3caae14e607fa1619be12bc1f404f639446b215b41addd11c12ea4492c",
+      "local_model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/Qwen__Qwen3.5-2B/15852e8c16360a2fea060d615a32b45270f8a8fc",
+      "probe_model_id": "qwen3.5-2b-for-valen",
+      "adapter": {
+        "repo_id": "Valen-Team/Valen-Preview-0923",
+        "revision": "30096aaabb2689614c83a79f64f38c865c2ce1c1",
+        "license": "apache-2.0",
+        "manifest_metadata_sha256": "9d3b465eeb3ee2685778c210c814e18445024dc3094c45da1b174cc3e2acbfeb",
+        "local_model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/quarantine/Valen-Team__Valen-Preview-0923/30096aaabb2689614c83a79f64f38c865c2ce1c1"
+      },
+      "base": {
+        "repo_id": "Qwen/Qwen3.5-2B",
+        "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+        "license": "apache-2.0",
+        "manifest_metadata_sha256": "b61fb44850feec33134e3b63bcdd035aeb724c33b8486b3670f8bcb5510920d7"
+      },
+      "status": "passed",
+      "gpu_used": false,
+      "weights_loaded": false,
+      "quality_admitted": false,
+      "published_teacher_readout_verified": false,
+      "local_metadata_sha256": "5ba6eb637691447d9d22b778fde53bb1b49edd1bfb2bb8c311cee3ac4db089f0",
+      "tokenizer": {
+        "status": "passed",
+        "class": "transformers.models.qwen2.tokenization_qwen2.Qwen2Tokenizer",
+        "template_sha256": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+        "template_status": "present",
+        "answer_readout": {
+          "status": "passed",
+          "probes": {
+            "choice": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "U": 52
+                },
+                "token_ids_sha256": "85021b1a328e2cadcaf153c6095c75ec55398e11eba44d7edc8659ea994fb884",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "U": 52
+                },
+                "token_ids_sha256": "530f097dfb4d69355f169afb8da227d219c1d90cda2232688ab4d945cf7d8bbe",
+                "failures": []
+              },
+              "4": {
+                "status": "passed",
+                "answer_count_including_u": 5,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "D": 35,
+                  "U": 52
+                },
+                "token_ids_sha256": "d13c0cca3fa7bc10801e008c524a4d97d9c35df58d6fa419b8c0af7fc53fc07f",
+                "failures": []
+              },
+              "20": {
+                "status": "passed",
+                "answer_count_including_u": 21,
+                "token_ids": {
+                  "A": 32,
+                  "B": 33,
+                  "C": 34,
+                  "D": 35,
+                  "E": 36,
+                  "F": 37,
+                  "G": 38,
+                  "H": 39,
+                  "I": 40,
+                  "J": 41,
+                  "K": 42,
+                  "L": 43,
+                  "M": 44,
+                  "N": 45,
+                  "O": 46,
+                  "P": 47,
+                  "Q": 48,
+                  "R": 49,
+                  "S": 50,
+                  "T": 51,
+                  "U": 52
+                },
+                "token_ids_sha256": "f6634fa573bb5568cb9aaf3f875dc2d765055aabcc94b9bf090564879cdf19d0",
+                "failures": []
+              }
+            },
+            "score": {
+              "2": {
+                "status": "passed",
+                "answer_count_including_u": 3,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "U": 52
+                },
+                "token_ids_sha256": "3c597f99c5215df18bf72085b7c456ac83ea77bce041e8cfb48de9e8f4c99ca9",
+                "failures": []
+              },
+              "3": {
+                "status": "passed",
+                "answer_count_including_u": 4,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "2": 17,
+                  "U": 52
+                },
+                "token_ids_sha256": "86078f804035510fa4fc52eb97d8d6de4381c5f7dfde7136882040a848e6fb48",
+                "failures": []
+              },
+              "10": {
+                "status": "passed",
+                "answer_count_including_u": 11,
+                "token_ids": {
+                  "0": 15,
+                  "1": 16,
+                  "2": 17,
+                  "3": 18,
+                  "4": 19,
+                  "5": 20,
+                  "6": 21,
+                  "7": 22,
+                  "8": 23,
+                  "9": 24,
+                  "U": 52
+                },
+                "token_ids_sha256": "423c70b428c389521866be70b61617750632bf7532e5e6da18408ed39e2a6e75",
+                "failures": []
+              }
+            },
+            "noul": {
+              "status": "passed",
+              "answer_count_including_u": 3,
+              "token_ids": {
+                "yes": 9405,
+                "no": 2083,
+                "U": 52
+              },
+              "token_ids_sha256": "83ff5bd5f38a28435c23f03c377f57c576a3c0e0a130b77d620f0bada7920f1d",
+              "failures": []
+            }
+          },
+          "failures": []
+        },
+        "thinking": {
+          "status": "proved_disabled",
+          "off_prompt_sha256": "e3d28f34ec8d9b4bbe6eaf6d877b243deac88af8dce0fb7d12c2f4b6d9a0f907",
+          "on_prompt_sha256": "58d775a285867bd782da655ec5806077878a4951410a6e0a9d1549170fe9ff98",
+          "evidence_token_sha256": null,
+          "evidence_kind": "template_enable_thinking_disabled_branch",
+          "disabled_marker_sha256": "a43d3bd83c42fa0810b7484dcc7b24bd7a39c6b592544cbced24edfe03d9cfb4"
+        }
+      },
+      "processor": {
+        "status": "loaded",
+        "class": "transformers.models.qwen3_vl.processing_qwen3_vl.Qwen3VLProcessor"
+      },
+      "public_inputs": {
+        "status": "selected",
+        "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+        "case_count": 100,
+        "text": {
+          "status": "passed",
+          "payload_sha256": "27e708617dd83938f3a8a176a345fcb85990be70a33cd3da20e9560ca254e7f3",
+          "prompt_sha256": "c5b5adf40bdbf01bd879c933ce5e1d6d5c35e952511790710703eed196624f00",
+          "prompt_tokens": 68
+        },
+        "image": {
+          "status": "passed",
+          "category": "image",
+          "case_id_sha256": "8e9a89cdcc7e54294b34fb57c791f25f0f7bb8bd39da3bc71b98c5a34f4e567c",
+          "payload_sha256": "100390dd60d113e46c92ce5be772f0096808cfe31fe5d86efef720bfa2d37e50",
+          "prompt_sha256": "abf01fda7e4551b32ab5573b328296e742e5ce58fe0854479c4c55f40ebd5411",
+          "media_sha256": [
+            "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef"
+          ],
+          "tensors": {
+            "input_ids": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "3491d4da902c6effdc642434edbea0b67a6bde9a78108623ee7b018ac7ff3d14"
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "7c292da71e6a59fd163b6f342b267a5ebdd173576be5fd73d9b0c18566b41f03"
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                231
+              ],
+              "dtype": "torch.int64",
+              "sha256": "2d5e94dba845c29670a362793eb38ce2101c11db96cd3064406742f9102b0768"
+            },
+            "pixel_values": {
+              "shape": [
+                600,
+                1536
+              ],
+              "dtype": "torch.float32",
+              "sha256": "637db6bfdff3189a435ee799ee47a448cca75ea88f213a35506b51a0cb59ed31"
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "torch.int64",
+              "sha256": "7965d81d0ed2cdb697735ecee8cf4164e0855f505a81988b3bbf44edfecea44d"
+            }
+          }
+        }
+      },
+      "adapter_local_metadata_sha256": "53f76e4f1a75a8a1351073e1b5edfe219b3b8f2ae384dea426a21aa50143b1e5",
+      "adapter_config_sha256": "18e318b3596ba0b0dc33f37349f312ba0260faf1b41f87a7f2285a9133c9d90c"
+    }
+  ],
+  "elapsed_seconds": 27.967
+}
