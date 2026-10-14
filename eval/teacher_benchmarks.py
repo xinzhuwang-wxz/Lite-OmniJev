@@ -484,6 +484,14 @@ def _validate_probability_vector(values: Sequence[Any], *, expected_length: int)
     return probabilities
 
 
+def _validate_resume_probability_vector(values: Any, *, expected_length: int) -> list[float]:
+    if not isinstance(values, list) or len(values) != expected_length:
+        raise ValueError("resume_record_probability_schema_mismatch")
+    if any(not isinstance(value, float) or isinstance(value, bool) for value in values):
+        raise ValueError("resume_record_probability_schema_mismatch")
+    return _validate_probability_vector(values, expected_length=expected_length)
+
+
 def prediction_record(
     *,
     example: BenchmarkExample,
@@ -531,10 +539,15 @@ def _validate_existing_record(
         raise ValueError("resume_record_schema_mismatch")
     if record.get("binding_sha256") != binding_sha256:
         raise ValueError("resume_binding_mismatch")
-    pass_name = str(record.get("pass"))
-    if pass_name not in {"first", "second"}:
+    pass_name_value = record.get("pass")
+    if not isinstance(pass_name_value, str) or pass_name_value not in {"first", "second"}:
         raise ValueError("resume_record_unknown_pass")
-    key = (str(record.get("benchmark")), str(record.get("row_id")))
+    pass_name = pass_name_value
+    benchmark_value = record.get("benchmark")
+    row_id_value = record.get("row_id")
+    if not isinstance(benchmark_value, str) or not isinstance(row_id_value, str):
+        raise ValueError("resume_record_source_identity_mismatch")
+    key = (benchmark_value, row_id_value)
     example = expected_examples.get(key)
     if example is None:
         raise ValueError("resume_record_not_in_current_cohort")
@@ -546,19 +559,35 @@ def _validate_existing_record(
         raise ValueError("resume_record_row_hash_mismatch")
     if record.get("group") != example.group or record.get("modality") != example.modality:
         raise ValueError("resume_record_source_identity_mismatch")
-    if int(record.get("option_count", -1)) != len(example.options):
+    option_count = record.get("option_count")
+    if (
+        not isinstance(option_count, int)
+        or isinstance(option_count, bool)
+        or option_count != len(example.options)
+    ):
         raise ValueError("resume_record_option_count_mismatch")
     if record.get("source_identity_sha256") != source_identity_sha256(example):
         raise ValueError("resume_record_source_identity_mismatch")
-    prediction_index = int(record.get("prediction_index", -1))
+    prediction_index_value = record.get("prediction_index")
+    if not isinstance(prediction_index_value, int) or isinstance(prediction_index_value, bool):
+        raise ValueError("resume_record_prediction_index_mismatch")
+    prediction_index = prediction_index_value
     if not 0 <= prediction_index < len(example.options):
         raise ValueError("resume_record_prediction_index_mismatch")
-    if bool(record.get("correct")) != (prediction_index == example.label_index):
+    correct_value = record.get("correct")
+    if not isinstance(correct_value, bool):
         raise ValueError("resume_record_correct_tampered")
-    if not math.isfinite(float(record.get("confidence", float("nan")))):
+    if correct_value is not (prediction_index == example.label_index):
+        raise ValueError("resume_record_correct_tampered")
+    confidence = record.get("confidence")
+    if (
+        not isinstance(confidence, float)
+        or isinstance(confidence, bool)
+        or not math.isfinite(confidence)
+    ):
         raise ValueError("resume_record_confidence_not_finite")
-    _validate_probability_vector(
-        record.get("probabilities", []), expected_length=len(example.options)
+    _validate_resume_probability_vector(
+        record.get("probabilities"), expected_length=len(example.options)
     )
     processor_summary = record.get("processor_summary")
     media_summary = record.get("media_summary")

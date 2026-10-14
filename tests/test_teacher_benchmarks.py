@@ -412,3 +412,171 @@ def test_real_forward_limit_guard_writes_static_failure_report(
     assert report["error_code"] == "validation_failed"
     assert "reason" not in report
     assert report["release_or_stage_acceptance"] is False
+
+
+def test_cpu_preflight_can_use_official_processor_source(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import scripts.s0_teacher_eval as runner
+
+    example = BenchmarkExample(
+        benchmark="fixture",
+        row_id="row-1",
+        group="group",
+        question="payload must not persist",
+        options=("wrong", "right"),
+        label_index=1,
+        modality="audio",
+        source_sha256="a" * 64,
+        media_bytes=b"not-real-audio",
+        media_bytes_sha256="b" * 64,
+    )
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"mmau": {"file": {}}, "mvbench": {"tasks": []}}))
+    parquet = tmp_path / "mmau.parquet"
+    parquet.write_bytes(b"placeholder")
+    source_dir = tmp_path / "processor-source"
+    source_dir.mkdir()
+    output = tmp_path / "report.json"
+
+    monkeypatch.setattr(runner, "_load_examples", lambda _args, _config: {"mmau": [example]})
+    monkeypatch.setattr(
+        runner,
+        "validate_teacher_source_tree",
+        lambda _source: {"files": {"tokenizer.json": {"sha256": "c" * 64}}},
+    )
+    monkeypatch.setattr(runner, "load_teacher_processor", lambda _source: RecordingProcessor())
+
+    def fake_build(*_args, **_kwargs):
+        return SimpleNamespace(
+            processor_summary={
+                "contains_payload_values": False,
+                "thinking_disabled": True,
+                "keys": {"input_ids": {"kind": "tensor", "shape": [1, 3], "dtype": "fake.int64"}},
+            },
+            media_summary={"prepared_pcm_adapter_used": True},
+        )
+
+    monkeypatch.setattr(runner, "build_benchmark_processor_inputs", fake_build)
+
+    exit_code = runner.main(
+        [
+            "--mode",
+            "cpu-preflight",
+            "--benchmark",
+            "mmau",
+            "--config",
+            str(config),
+            "--mmau-parquet",
+            str(parquet),
+            "--processor-source-dir",
+            str(source_dir),
+            "--output",
+            str(output),
+        ]
+    )
+
+    report = json.loads(output.read_text())
+    assert exit_code == 0
+    assert report["status"] == "passed_cpu_preflight_official_processor_no_model_forward"
+    assert report["media_preflight"]["fake_processor_used"] is True
+    official = report["official_processor_preflight"]
+    assert official["official_processor_used"] is True
+    assert official["fake_processor_used"] is False
+    assert official["model_forward_run"] is False
+    assert official["trust_remote_code"] is False
+    assert "payload must not persist" not in output.read_text()
+
+
+def test_resume_rejects_json_type_coercion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    example = BenchmarkExample(
+        benchmark="fixture",
+        row_id="row-1",
+        group="group",
+        question="payload must not persist",
+        options=("wrong", "right"),
+        label_index=1,
+        modality="audio",
+        source_sha256="a" * 64,
+        media_bytes=b"not-real-audio",
+        media_bytes_sha256="b" * 64,
+    )
+
+    def fake_build(*_args, **_kwargs):
+        return SimpleNamespace(
+            prepared=SimpleNamespace(modality="audio", option_count=2),
+            inputs={"input_ids": FakeTensor()},
+            processor_summary={"contains_payload_values": False, "thinking_disabled": True},
+            media_summary={"prepared_pcm_adapter_used": True},
+        )
+
+    import eval.teacher_benchmarks as module
+
+    monkeypatch.setattr(module, "build_benchmark_processor_inputs", fake_build)
+    records = tmp_path / "records.jsonl"
+    run_two_pass_forward(
+        forward=FakeForward(),
+        examples=[example],
+        video_cache_root=None,
+        records_path=records,
+        binding={"fixture": True},
+    )
+    lines = [json.loads(line) for line in records.read_text().splitlines()]
+    lines[0]["correct"] = 1
+    lines[0]["prediction_index"] = "1"
+    lines[0]["option_count"] = "2"
+    lines[0]["probabilities"] = ["0.25", "0.75"]
+    records.write_text("\n".join(json.dumps(line) for line in lines) + "\n")
+
+    with pytest.raises(ValueError):
+        run_two_pass_forward(
+            forward=FakeForward(),
+            examples=[example],
+            video_cache_root=None,
+            records_path=records,
+            binding={"fixture": True},
+            resume=True,
+        )
+
+
+def test_runner_code_hashes_are_project_root_relative(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import scripts.s0_teacher_eval as runner
+
+    monkeypatch.chdir(tmp_path)
+    hashes = runner._code_hashes()
+
+    assert hashes["runner"] != "missing"
+    assert hashes["eval_teacher_benchmarks"] != "missing"
+
+
+def test_missing_code_hash_source_writes_static_failure_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import scripts.s0_teacher_eval as runner
+
+    output = tmp_path / "report.json"
+    monkeypatch.setattr(runner, "REQUIRED_CODE_HASH_PATHS", {"missing": Path("missing.py")})
+
+    exit_code = runner.main(
+        [
+            "--mode",
+            "cpu-preflight",
+            "--benchmark",
+            "mmau",
+            "--config",
+            str(tmp_path / "unused.json"),
+            "--mmau-parquet",
+            str(tmp_path / "unused.parquet"),
+            "--output",
+            str(output),
+        ]
+    )
+
+    report = json.loads(output.read_text())
+    assert exit_code == 1
+    assert report["status"] == "failed"
+    assert report["error_code"] == "validation_failed"
+    assert report["error_type"] == "ValueError"
+    assert "reason" not in report

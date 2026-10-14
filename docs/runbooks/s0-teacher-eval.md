@@ -27,10 +27,32 @@ artifacts/public-eval-media-env/bin/python -m scripts.s0_teacher_eval \
 ```
 
 This validates all MMAU/MVBench row identities and fixed denominators, then
-actually prepares selected public audio through the teacher PCM adapter and
-selected canonical PNG frames through the processor call shape. The report
-records hashes, counts, summaries, and boundary flags only; it must not contain
-question text, options, answers, labels, or sealed data.
+prepares selected public audio through the teacher PCM adapter and selected
+canonical PNG frames through the processor call shape. By default this uses the
+fake processor fixture and is only a control-flow/media-boundary check. The
+report records hashes, counts, summaries, and boundary flags only; it must not
+contain question text, options, answers, labels, or sealed data.
+
+Official processor CPU preflight, without loading the teacher backbone, decision
+head, or CUDA:
+
+```bash
+PYTHONPATH="$PWD:/Users/bamboo/.codex/worktrees/s0-multimodal-cpu/Lite-OmniJev/artifacts/mac-media-libs" \
+/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python -m scripts.s0_teacher_eval \
+  --mode cpu-preflight \
+  --benchmark all \
+  --video-cache-root artifacts/s0-teacher-eval/video-cache \
+  --processor-source-dir /tmp/lite-omnijev-s0-teacher/artifacts/teacher-preflight-003/source \
+  --sample-mmau-audio 3 \
+  --sample-video 1 \
+  --output reports/s0-teacher-eval-official-processor-001.json
+```
+
+This path calls `train.teacher_inference.load_teacher_processor(...)` with
+local files only / `trust_remote_code=False`, validates the pinned source tree,
+and records actual official processor tensor summaries for the three public MMAU
+audio rows plus one canonical 16-PNG MVBench row. It still runs no head, no
+backbone, no model forward, no GPU, and no quality gate.
 
 Fake forward control-flow check:
 

@@ -44,7 +44,9 @@ from train.teacher_inference import (
     PreparedTeacherInput,
     TeacherForwardResult,
     load_teacher_forward_bundle,
+    load_teacher_processor,
     teacher_forward_readiness_report,
+    validate_teacher_source_tree,
 )
 
 ERROR_CODES: dict[type[BaseException], str] = {
@@ -52,6 +54,14 @@ ERROR_CODES: dict[type[BaseException], str] = {
     ValueError: "validation_failed",
     RuntimeError: "runtime_failed",
     OSError: "io_failed",
+}
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+REQUIRED_CODE_HASH_PATHS = {
+    "runner": Path("scripts/s0_teacher_eval.py"),
+    "eval_teacher_benchmarks": Path("eval/teacher_benchmarks.py"),
+    "train_teacher_inference": Path("train/teacher_inference.py"),
+    "train_teacher_media": Path("train/teacher_media.py"),
+    "eval_public_video_protocol": Path("eval/public_video_protocol.py"),
 }
 
 
@@ -73,6 +83,11 @@ class FakeProcessor:
         content = messages[0]["content"]
         media_parts = sum(1 for part in content if part["type"] != "text")
         return {"input_ids": _FakeTensor(), "media_parts": [None] * media_parts}
+
+
+class ProcessorOnlyForward:
+    def __init__(self, processor: Any) -> None:
+        self.processor = processor
 
 
 class FakeTeacherForward:
@@ -152,19 +167,17 @@ def _runtime_metadata(started: float) -> dict[str, Any]:
     }
 
 
-def _sha256_or_missing(path: Path) -> str:
-    return file_sha256(path) if path.exists() else "missing"
+def _required_file_sha256(path: Path) -> str:
+    if not path.is_file():
+        raise ValueError("code_hash_source_missing")
+    return file_sha256(path)
 
 
 def _code_hashes() -> dict[str, str]:
-    paths = {
-        "runner": Path(__file__),
-        "eval_teacher_benchmarks": Path("eval/teacher_benchmarks.py"),
-        "train_teacher_inference": Path("train/teacher_inference.py"),
-        "train_teacher_media": Path("train/teacher_media.py"),
-        "eval_public_video_protocol": Path("eval/public_video_protocol.py"),
+    return {
+        name: _required_file_sha256(PROJECT_ROOT / relative_path)
+        for name, relative_path in REQUIRED_CODE_HASH_PATHS.items()
     }
-    return {name: _sha256_or_missing(path) for name, path in paths.items()}
 
 
 def _sanitize_error(error: BaseException) -> dict[str, str]:
@@ -174,20 +187,16 @@ def _sanitize_error(error: BaseException) -> dict[str, str]:
     }
 
 
-def _preflight_media_samples(
+def _collect_preflight_samples(
     *,
+    forward: Any,
     examples: dict[str, list[BenchmarkExample]],
     video_cache_root: Path | None,
     sample_mmau_audio: int,
     sample_video: int,
     ffmpeg_binary: str,
 ) -> dict[str, Any]:
-    forward = FakeTeacherForward()
     report: dict[str, Any] = {
-        "fake_processor_used": True,
-        "processor_fixture": "fake_processor_control_flow_only",
-        "official_processor_used": False,
-        "model_forward_run": False,
         "samples": {},
     }
     mmau_samples = examples.get("mmau", [])[:sample_mmau_audio]
@@ -224,6 +233,72 @@ def _preflight_media_samples(
                 "media_summary": prepared.media_summary,
             }
         )
+    return report
+
+
+def _preflight_media_samples(
+    *,
+    examples: dict[str, list[BenchmarkExample]],
+    video_cache_root: Path | None,
+    sample_mmau_audio: int,
+    sample_video: int,
+    ffmpeg_binary: str,
+) -> dict[str, Any]:
+    report = _collect_preflight_samples(
+        forward=FakeTeacherForward(),
+        examples=examples,
+        video_cache_root=video_cache_root,
+        sample_mmau_audio=sample_mmau_audio,
+        sample_video=sample_video,
+        ffmpeg_binary=ffmpeg_binary,
+    )
+    report.update(
+        {
+            "fake_processor_used": True,
+            "processor_fixture": "fake_processor_control_flow_only",
+            "official_processor_used": False,
+            "model_forward_run": False,
+        }
+    )
+    return report
+
+
+def _official_processor_preflight(
+    *,
+    processor_source_dir: Path,
+    examples: dict[str, list[BenchmarkExample]],
+    video_cache_root: Path | None,
+    sample_mmau_audio: int,
+    sample_video: int,
+    ffmpeg_binary: str,
+) -> dict[str, Any]:
+    source_report = validate_teacher_source_tree(processor_source_dir)
+    processor = load_teacher_processor(processor_source_dir)
+    report = _collect_preflight_samples(
+        forward=ProcessorOnlyForward(processor),
+        examples=examples,
+        video_cache_root=video_cache_root,
+        sample_mmau_audio=sample_mmau_audio,
+        sample_video=sample_video,
+        ffmpeg_binary=ffmpeg_binary,
+    )
+    report.update(
+        {
+            "official_processor_used": True,
+            "processor_class": type(processor).__name__,
+            "processor_source_dir": str(processor_source_dir),
+            "processor_source_sha256": hashlib.sha256(
+                canonical_json(source_report.get("files", {}))
+            ).hexdigest(),
+            "source_tree": source_report,
+            "fake_processor_used": False,
+            "model_forward_run": False,
+            "model_backbone_loaded": False,
+            "student_head_loaded": False,
+            "local_files_only": True,
+            "trust_remote_code": False,
+        }
+    )
     return report
 
 
@@ -355,6 +430,7 @@ def main(argv: list[str] | None = None) -> int:
         default=Path("artifacts/data/research-eval/video-eval-source-metadata"),
     )
     parser.add_argument("--video-cache-root", type=Path)
+    parser.add_argument("--processor-source-dir", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
         "--records-path",
@@ -387,7 +463,6 @@ def main(argv: list[str] | None = None) -> int:
                 "seed": 0,
                 "hardware": {},
             },
-            "code_sha256": _code_hashes(),
             "release_or_stage_acceptance": False,
             "report_contains_prompt_option_or_label_text": False,
         }
@@ -395,6 +470,7 @@ def main(argv: list[str] | None = None) -> int:
     forward: Any | None = None
     try:
         _refuse_report_overwrite(args.output, resume=args.resume)
+        report["code_sha256"] = _code_hashes()
         config = json.loads(args.config.read_text())
         args.mmau_parquet = args.mmau_parquet or _default_mmau_parquet(config)
         examples = _load_examples(args, config)
@@ -422,7 +498,18 @@ def main(argv: list[str] | None = None) -> int:
                 sample_video=args.sample_video,
                 ffmpeg_binary=args.ffmpeg_binary,
             )
-            report["status"] = "passed_cpu_preflight_no_model_forward_fake_processor"
+            if args.processor_source_dir is not None:
+                report["official_processor_preflight"] = _official_processor_preflight(
+                    processor_source_dir=args.processor_source_dir,
+                    examples=examples,
+                    video_cache_root=args.video_cache_root,
+                    sample_mmau_audio=args.sample_mmau_audio,
+                    sample_video=args.sample_video,
+                    ffmpeg_binary=args.ffmpeg_binary,
+                )
+                report["status"] = "passed_cpu_preflight_official_processor_no_model_forward"
+            else:
+                report["status"] = "passed_cpu_preflight_no_model_forward_fake_processor"
             report["exit_code"] = 0
         else:
             if args.mode == "fake-forward":
