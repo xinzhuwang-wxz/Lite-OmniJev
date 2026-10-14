@@ -1,0 +1,258 @@
+{
+  "status": "cpu-integration-passed",
+  "exit_code": 0,
+  "scope": "actual official CPU processor and actual gateway ASGI; mock native KV/logits",
+  "gpu_requests": 0,
+  "weights_loaded": false,
+  "s0_acceptance": false,
+  "protocol_sha256": "7ddfed3a23314cf570bf4652200d5f16e2e699719f679b6139cee25851954bd7",
+  "freeze_summary": {
+    "status": "frozen-cpu",
+    "scope": "non-quality cache probes only",
+    "source_case_id": "public-prepare-image-00",
+    "source_family": "clevrer-train-00000",
+    "source_manifest_case_sha256": "536803bf1a1c3653b3fb244e6d5ef614fe3ea62d2da7a819e126dd2a5cbb9bb9",
+    "protocol_sha256": "7ddfed3a23314cf570bf4652200d5f16e2e699719f679b6139cee25851954bd7",
+    "gateway_request_sha256": "777fd2c7a83a921f6e40baf21a76294980f3c0bb02dfeb59735f368c56e5604b",
+    "canonical_image_sha256": "01a7535d3547a774574b6f77ab4ba7f07467862ba4248d77295a02c3a51dff86",
+    "probes": 10,
+    "common_prefix_tokens": 309,
+    "media_prefix_end": 265,
+    "same_canonical_image_and_answer_mapping": true,
+    "native_payloads_equal_official_prepared_messages": true,
+    "weights_loaded": false,
+    "gpu_used": false,
+    "s0_acceptance": false,
+    "prepared_input_summaries_sha256": "299234a6f9f54ddd41f9a7552c2e7f616b216db29818bd98f655c089eefe3187"
+  },
+  "repeats": 2,
+  "measured_requests": 16,
+  "timing_rows": [
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.020001582917757332,
+      "server_timing_ms": {
+        "preprocess": 17.456,
+        "upstream": 1.433,
+        "queue": 0.026,
+        "total": 19.626
+      },
+      "native_http_sum_seconds": 0.00015474995598196983
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.18877708399668336,
+      "server_timing_ms": {
+        "preprocess": 172.302,
+        "upstream": 14.139,
+        "queue": 0.317,
+        "total": 188.407
+      },
+      "native_http_sum_seconds": 0.001977584441192448
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.019741958007216454,
+      "server_timing_ms": {
+        "preprocess": 17.475,
+        "upstream": 1.36,
+        "queue": 0.02,
+        "total": 19.401
+      },
+      "native_http_sum_seconds": 0.00017470796592533588
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.18764970800839365,
+      "server_timing_ms": {
+        "preprocess": 171.547,
+        "upstream": 13.88,
+        "queue": 0.312,
+        "total": 187.282
+      },
+      "native_http_sum_seconds": 0.0021304601104930043
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.019060209044255316,
+      "server_timing_ms": {
+        "preprocess": 16.766,
+        "upstream": 1.256,
+        "queue": 0.024,
+        "total": 18.625
+      },
+      "native_http_sum_seconds": 0.0001497500343248248
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.18733658408746123,
+      "server_timing_ms": {
+        "preprocess": 171.92,
+        "upstream": 13.336,
+        "queue": 0.272,
+        "total": 186.999
+      },
+      "native_http_sum_seconds": 0.0018077929271385074
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.01952225004788488,
+      "server_timing_ms": {
+        "preprocess": 17.303,
+        "upstream": 1.274,
+        "queue": 0.027,
+        "total": 19.162
+      },
+      "native_http_sum_seconds": 0.00015308300498872995
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.18581000005360693,
+      "server_timing_ms": {
+        "preprocess": 170.272,
+        "upstream": 13.421,
+        "queue": 0.282,
+        "total": 185.428
+      },
+      "native_http_sum_seconds": 0.0018438759725540876
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.019597874954342842,
+      "server_timing_ms": {
+        "preprocess": 17.307,
+        "upstream": 1.331,
+        "queue": 0.023,
+        "total": 19.223
+      },
+      "native_http_sum_seconds": 0.00016004196368157864
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.18714933295268565,
+      "server_timing_ms": {
+        "preprocess": 170.877,
+        "upstream": 14.148,
+        "queue": 0.293,
+        "total": 186.772
+      },
+      "native_http_sum_seconds": 0.002160375821404159
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.01918570906855166,
+      "server_timing_ms": {
+        "preprocess": 16.963,
+        "upstream": 1.309,
+        "queue": 0.021,
+        "total": 18.844
+      },
+      "native_http_sum_seconds": 0.00015666696708649397
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.19378895906265825,
+      "server_timing_ms": {
+        "preprocess": 176.743,
+        "upstream": 14.798,
+        "queue": 0.318,
+        "total": 193.395
+      },
+      "native_http_sum_seconds": 0.0022229593014344573
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.020910749910399318,
+      "server_timing_ms": {
+        "preprocess": 18.279,
+        "upstream": 1.58,
+        "queue": 0.023,
+        "total": 20.494
+      },
+      "native_http_sum_seconds": 0.0001965840347111225
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.1932733339490369,
+      "server_timing_ms": {
+        "preprocess": 176.786,
+        "upstream": 14.16,
+        "queue": 0.306,
+        "total": 192.886
+      },
+      "native_http_sum_seconds": 0.0020064589334651828
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.01997512497473508,
+      "server_timing_ms": {
+        "preprocess": 17.665,
+        "upstream": 1.33,
+        "queue": 0.021,
+        "total": 19.575
+      },
+      "native_http_sum_seconds": 0.00015824998263269663
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 0.18717941700015217,
+      "server_timing_ms": {
+        "preprocess": 171.778,
+        "upstream": 13.317,
+        "queue": 0.284,
+        "total": 186.831
+      },
+      "native_http_sum_seconds": 0.0018836220260709524
+    }
+  ],
+  "latency_gate_evaluated": false,
+  "note": "CPU mock timing ratios do not measure GPU cache performance"
+}

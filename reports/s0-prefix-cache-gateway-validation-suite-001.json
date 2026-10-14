@@ -1,0 +1,86 @@
+{
+  "scope": "CPU-only actual gateway measurement adapter protocol and MockTransport/fakeclock tests",
+  "evidence_kind": "mock",
+  "gpu_requests": 0,
+  "gpu_servers_started": 0,
+  "s0_acceptance": false,
+  "actual_official_cpu_asgi_evidence": "reports/s0-prefix-cache-gateway-official-cpu-004.json",
+  "python": "3.11.14",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "commands": [
+    {
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/test_prefix_cache.py",
+        "tests/test_prefix_cache_gateway.py",
+        "tests/test_freeze_prefix_cache.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "output": ".....................s....                                               [100%]\n=========================== short test summary info ============================\nSKIPPED [1] tests/test_prefix_cache_gateway.py:154: explicit pinned official processor and public media required\n25 passed, 1 skipped in 0.26s\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "eval/prefix_cache.py",
+        "eval/prefix_cache_gateway.py",
+        "scripts/freeze_prefix_cache.py",
+        "scripts/s0_prefix_cache.py",
+        "scripts/s0_prefix_cache_gateway.py",
+        "tests/test_prefix_cache.py",
+        "tests/test_prefix_cache_gateway.py",
+        "tests/test_freeze_prefix_cache.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "format",
+        "--check",
+        "eval/prefix_cache.py",
+        "eval/prefix_cache_gateway.py",
+        "scripts/freeze_prefix_cache.py",
+        "scripts/s0_prefix_cache.py",
+        "scripts/s0_prefix_cache_gateway.py",
+        "tests/test_prefix_cache.py",
+        "tests/test_prefix_cache_gateway.py",
+        "tests/test_freeze_prefix_cache.py"
+      ],
+      "exit_code": 0,
+      "output": "8 files already formatted\n"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "mypy",
+        "eval/prefix_cache.py",
+        "eval/prefix_cache_gateway.py",
+        "scripts/freeze_prefix_cache.py",
+        "scripts/s0_prefix_cache.py",
+        "scripts/s0_prefix_cache_gateway.py"
+      ],
+      "exit_code": 0,
+      "output": "Success: no issues found in 5 source files\n"
+    },
+    {
+      "command": [
+        "uv",
+        "build"
+      ],
+      "exit_code": 0,
+      "output": "Building source distribution...\nBuilding wheel from source distribution...\nSuccessfully built dist/lite_omnijev-0.1.0.tar.gz\nSuccessfully built dist/lite_omnijev-0.1.0-py3-none-any.whl\n"
+    }
+  ],
+  "cost_usd": 0,
+  "exit_code": 0
+}

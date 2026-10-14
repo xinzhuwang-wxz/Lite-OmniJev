@@ -1,0 +1,28 @@
+{
+  "status": "validated-no-network",
+  "exit_code": 0,
+  "action": "validate",
+  "weights_loaded": false,
+  "s0_acceptance": false,
+  "cost_usd": null,
+  "python": "3.11.14",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "code_revision": "0a9c173a5773cab0c9d59ea5c7928ef7ce50fbe8",
+  "gateway_configuration": {
+    "gateway_source_sha256": "df520b2361c74d4ba45dd27f9018ae44cbd0c738a02d29fb6459c06eb7a5daf1",
+    "model_metadata": {
+      "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+      "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+      "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+      "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+      "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+      "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5"
+    },
+    "media_root_identity_sha256": "fb334dfa199d0bfd98224496da7da86273201070f3d1a315861ff41fa9b31fcf",
+    "transport": "in-process-ASGI-canonical-chat"
+  },
+  "protocol_sha256": "fb00c6a801de86451fb81430166c0c8888ffbe08226a943cf1f80c5599cd8174",
+  "gateway_request_sha256": "777fd2c7a83a921f6e40baf21a76294980f3c0bb02dfeb59735f368c56e5604b",
+  "server_record_sha256": "c8063afec43edaa53bdf8710607839734e8c001278825f9c52eacbac6e0153ba",
+  "duration_seconds": 0.02837591606657952
+}

@@ -111,6 +111,51 @@ GPU, precision, model, protocol and evidence type. A measured result still sets
 
 ## Timing and cache boundaries
 
+### Actual project gateway adapter
+
+`scripts.s0_prefix_cache_gateway` uses the real project's `create_app` in an ASGI
+client, with the actual pinned official CPU processor and trusted local media root.
+It wraps the gateway's upstream HTTP transport with `CaptureTransport`: every native
+request must match the frozen canonical messages, seed/sampling settings and answer
+IDs; every response passes strict native IDs/raw-logprobs parsing. Overlapping
+upstream calls are rejected, so the ten-question public request cannot silently
+become `asyncio.gather` concurrency. The public gateway single/ten request is the
+one frozen by the builder, not a reconstructed unrelated question set.
+
+For this adapter the timed sequence is one complete public gateway HTTP request
+containing one or ten questions. The actual gateway performs ten sequential
+prepare/native calls, so public request batching and gateway overhead are included.
+The outer ASGI wall excludes external gateway network/listener costs; report this
+boundary explicitly. Native upstream network is included. No fake HTTP headers or
+derived preprocessing intervals are accepted. The actual gateway's fixed
+`Server-Timing` fields `preprocess`, `upstream`, `queue`, `total` are parsed in ms;
+missing, duplicate, nonfinite, negative or overlapping intervals are rejected.
+`upstream` includes native frontend/queue/GPU/network and strict readout parsing;
+it is not pure GPU execution. The separate native response metrics remain recorded.
+
+```bash
+uv run python -m scripts.s0_prefix_cache_gateway validate --native-protocol artifacts/cache/native.json --gateway-request artifacts/cache/gateway.json --server-record artifacts/cache-on-server.json --model-dir artifacts/pinned-processor --media-root artifacts/public-media --report reports/cache-gateway-validation.json
+uv run python -m scripts.s0_prefix_cache_gateway run --native-protocol artifacts/cache/native.json --gateway-request artifacts/cache/gateway.json --server-record artifacts/cache-on-server.json --model-dir artifacts/pinned-processor --media-root artifacts/public-media --allow-reset --report reports/cache-gateway-on.json
+uv run python -m scripts.s0_prefix_cache_gateway compare --on reports/cache-gateway-on.json --off reports/cache-gateway-off.json --report reports/cache-gateway-comparison.json
+```
+
+Run off in a separately recorded cache-off start using the same configuration and
+frozen local inputs. `validate` performs no processor load, HTTP requests or resets;
+`run` is reserved for an explicitly authorized already-running dedicated GPU test
+server. In CPU tests both the gateway/native transports and clocks are synthetic;
+they cannot attest cache performance. Actual official-processor + actual gateway
+ASGI + MockTransport can validate project preparation/timing integration before
+opening the GPU, while its performance result still remains mock evidence.
+
+Actual Mac integration was run with the pinned local Gemma4 metadata and official
+processor, the committed real gateway, and a simulated native backend. Latest
+`reports/s0-prefix-cache-gateway-official-cpu-004.json` records two preregistered
+repeats per condition, all sixteen single/ten gateway measurements, positive
+actual preparation/upstream intervals, complete input/raw-output bindings and
+mock KV evidence. It retains the mock timing ratio failures explicitly; passing
+CPU integration does not mean attaining the GPU <=2 latency gate. No native
+network request or model forward was performed in this CPU integration test.
+
 Per-request HTTP wall and payload JSON preparation are recorded separately; batch
 wall spans the complete ordered sequence including local parsing/preparation. Native
 `metrics.time_to_first_token_ms` measures scheduled-to-first-token; queue is separate;
