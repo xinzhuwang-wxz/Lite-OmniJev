@@ -11,6 +11,7 @@ from pydantic import Field, model_validator
 
 from data.schema import Contract, Prefix, Sha256
 from eval.prefix_cache import (
+    AssessmentPolicy,
     CacheProtocol,
     CacheRun,
     CacheServer,
@@ -244,13 +245,18 @@ async def collect_gateway(
     )
 
 
-def assess_gateway(on: GatewayRun, off: GatewayRun) -> dict[str, Any]:
+def assess_gateway(
+    on: GatewayRun,
+    off: GatewayRun,
+    *,
+    policy: AssessmentPolicy = "strict-sequential-v1",
+) -> dict[str, Any]:
     if (
         on.gateway_configuration_sha256 != off.gateway_configuration_sha256
         or on.gateway_request_sha256 != off.gateway_request_sha256
     ):
         raise ValueError("gateway configuration or frozen public request changed")
-    result = assess(on, off)
+    result = assess(on, off, policy=policy)
     timing_rows = []
     for run in (on, off):
         if len(run.timings) != len(run.measurements):

@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import math
 from typing import Any
 
 import httpx
@@ -182,6 +183,121 @@ def test_output_drift_and_ratio_failure() -> None:
     assert "output_changed" in result["failures"]
 
 
+def test_original_product_cold_policy_ignores_warm_ratio_and_uses_probability_deltas() -> None:
+    on, _ = run(True)
+    off, _ = run(False)
+    warm_single = next(
+        m for m in on.measurements if (m.condition, m.size, m.repeat) == ("warm", 1, 0)
+    )
+    warm_ten = next(
+        m for m in on.measurements if (m.condition, m.size, m.repeat) == ("warm", 10, 0)
+    )
+    warm_ten.wall_seconds = warm_single.wall_seconds * 3
+    on.measurements[1].observations[0].raw_logprobs["A"] -= 0.0001
+
+    strict = assess(on, off)
+    assert strict["status"] == "failed"
+    assert strict["assessment_policy"] == "strict-sequential-v1"
+    assert "ten_to_single_ratio_exceeds_two" in strict["failures"]
+    assert "output_changed" in strict["failures"]
+
+    original_product = assess(on, off, policy="original-product-cold-v2")
+    assert original_product["status"] == "mock-validated"
+    assert original_product["assessment_policy"] == "original-product-cold-v2"
+    assert original_product["acceptance_timing_condition"].startswith("cache-on cold")
+    assert original_product["probability_threshold_exclusive"] == 0.001
+    assert original_product["max_distribution_differences"]["raw_probabilities"] < 0.001
+    warm_group = next(
+        group
+        for group in original_product["groups"]
+        if group["cache_enabled"] and group["condition"] == "warm"
+    )
+    assert warm_group["maximum_ratio"] > 2
+    assert warm_group["acceptance_condition"] is False
+
+
+def test_original_product_probability_compare_uses_stable_label_order() -> None:
+    on, _ = run(True)
+    off, _ = run(False)
+    row = on.measurements[1].observations[0]
+    row.raw_logprobs = {
+        "U": row.raw_logprobs["U"],
+        "B": row.raw_logprobs["B"],
+        "A": row.raw_logprobs["A"],
+    }
+
+    result = assess(on, off, policy="original-product-cold-v2")
+    assert result["status"] == "mock-validated"
+    assert result["max_distribution_differences"] == {
+        "raw_probabilities": 0.0,
+        "joint": 0.0,
+        "conditional": 0.0,
+        "p_U": 0.0,
+    }
+
+
+def test_original_product_cold_policy_still_fails_cold_ratio() -> None:
+    on, _ = run(True)
+    off, _ = run(False)
+    cold_single = next(
+        m for m in on.measurements if (m.condition, m.size, m.repeat) == ("cold", 1, 0)
+    )
+    cold_ten = next(
+        m for m in on.measurements if (m.condition, m.size, m.repeat) == ("cold", 10, 0)
+    )
+    cold_ten.wall_seconds = cold_single.wall_seconds * 3
+
+    assert assess(on, off)["status"] == "failed"
+    original_product = assess(on, off, policy="original-product-cold-v2")
+    assert original_product["status"] == "failed"
+    assert "ten_to_single_ratio_exceeds_two" in original_product["failures"]
+
+
+@pytest.mark.parametrize("field", ["raw_probabilities", "joint", "conditional", "p_U"])
+def test_original_product_probability_drift_is_strictly_exclusive(field: str) -> None:
+    on, _ = run(True)
+    off, _ = run(False)
+    row = on.measurements[1].observations[0]
+    if field == "p_U":
+        row.raw_logprobs["U"] = math.log(math.exp(row.raw_logprobs["U"]) + 0.0011)
+    elif field == "conditional":
+        row.raw_logprobs["A"] += 0.02
+    elif field == "joint":
+        row.raw_logprobs["B"] += 0.02
+    else:
+        row.raw_logprobs["A"] = math.log(math.exp(row.raw_logprobs["A"]) + 0.0011)
+
+    result = assess(on, off, policy="original-product-cold-v2")
+    assert result["status"] == "failed"
+    assert "probability_distribution_changed" in result["failures"]
+    assert result["max_distribution_differences"][field] >= 0.001
+
+
+@pytest.mark.parametrize("bad", [0.1, -10000.0, float("nan")])
+def test_original_product_rejects_invalid_raw_values_even_when_all_rows_match(bad: float) -> None:
+    on, _ = run(True)
+    off, _ = run(False)
+    for run_result in (on, off):
+        for measurement in run_result.measurements:
+            for row in measurement.observations:
+                row.raw_logprobs["A"] = bad
+
+    with pytest.raises(ValueError, match="raw logprobs"):
+        assess(on, off, policy="original-product-cold-v2")
+
+
+def test_original_product_rejects_raw_probability_mass_even_when_all_rows_match() -> None:
+    on, _ = run(True)
+    off, _ = run(False)
+    for run_result in (on, off):
+        for measurement in run_result.measurements:
+            for row in measurement.observations:
+                row.raw_logprobs = {"A": -0.1, "B": -0.1, "U": -0.1}
+
+    with pytest.raises(ValueError, match="full vocabulary probability mass"):
+        assess(on, off, policy="original-product-cold-v2")
+
+
 def test_missing_repetition_cannot_change_denominator() -> None:
     on, _ = run(True)
     off, _ = run(False)
@@ -242,6 +358,47 @@ def test_threshold_is_inclusive_and_each_repeat_is_required() -> None:
     assert assess(on, off)["status"] == "mock-validated"
     on.measurements[-1].wall_seconds += 0.000001
     assert assess(on, off)["status"] == "failed"
+
+
+def test_cli_compare_accepts_original_product_policy(
+    tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from scripts.s0_prefix_cache import main
+
+    on, _ = run(True)
+    off, _ = run(False)
+    warm_single = next(
+        m for m in on.measurements if (m.condition, m.size, m.repeat) == ("warm", 1, 0)
+    )
+    warm_ten = next(
+        m for m in on.measurements if (m.condition, m.size, m.repeat) == ("warm", 10, 0)
+    )
+    warm_ten.wall_seconds = warm_single.wall_seconds * 3
+    on_path = tmp_path / "on.json"
+    off_path = tmp_path / "off.json"
+    report_path = tmp_path / "compare.json"
+    on_path.write_text(json.dumps({"run": on.model_dump()}, allow_nan=False))
+    off_path.write_text(json.dumps({"run": off.model_dump()}, allow_nan=False))
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "s0-prefix-cache",
+            "compare",
+            "--on",
+            str(on_path),
+            "--off",
+            str(off_path),
+            "--assessment-policy",
+            "original-product-cold-v2",
+            "--report",
+            str(report_path),
+        ],
+    )
+
+    assert main() == 0
+    report = json.loads(report_path.read_text())
+    assert report["assessment_policy"] == "original-product-cold-v2"
+    assert report["status"] == "mock-validated"
 
 
 def test_cli_validation_is_network_free_and_failure_keeps_safe_evidence(

@@ -16,6 +16,10 @@ from pydantic import Field, model_validator
 
 from data.schema import Contract, Nonempty, Sha256
 from serve.vllm_chat import parse_chat_logprobs
+from train.readout import read_probabilities
+
+AssessmentPolicy = Literal["strict-sequential-v1", "original-product-cold-v2"]
+PROBABILITY_THRESHOLD_EXCLUSIVE = 1e-3
 
 
 def digest(value: Any) -> str:
@@ -337,8 +341,56 @@ def collect(
     )
 
 
-def assess(on: CacheRun, off: CacheRun) -> dict[str, Any]:
-    """Every paired repetition is <=2; raw output consistency and KV hits are required."""
+def _distribution(row: Observation) -> dict[str, Any]:
+    if (
+        "U" not in row.raw_logprobs
+        or not 3 <= len(row.raw_logprobs) <= 21
+        or any(
+            type(value) not in (int, float)
+            or not math.isfinite(value)
+            or value > 0
+            or value <= -9999
+            for value in row.raw_logprobs.values()
+        )
+    ):
+        raise ValueError("complete finite unclipped raw logprobs required")
+    raw_mass = math.fsum(math.exp(value) for value in row.raw_logprobs.values())
+    if raw_mass > 1 + 1e-6:
+        raise ValueError("answer mass cannot exceed the full vocabulary probability mass")
+    options = sorted(label for label in row.raw_logprobs if label != "U")
+    readout = read_probabilities(row.raw_logprobs, options)
+    return {
+        "raw_probabilities": [math.exp(row.raw_logprobs[label]) for label in (*options, "U")],
+        "joint": [readout.joint_probabilities[label] for label in (*options, "U")],
+        "conditional": [readout.probabilities[label] for label in options],
+        "p_U": readout.p_insufficient,
+    }
+
+
+def _update_distribution_deltas(
+    maxima: dict[str, float], reference: Observation, row: Observation
+) -> None:
+    expected = _distribution(reference)
+    actual = _distribution(row)
+    for name in ("raw_probabilities", "joint", "conditional"):
+        if len(expected[name]) != len(actual[name]):
+            raise ValueError("distribution shape mismatch")
+        maxima[name] = max(
+            maxima[name],
+            *(abs(a - b) for a, b in zip(expected[name], actual[name], strict=True)),
+        )
+    maxima["p_U"] = max(maxima["p_U"], abs(expected["p_U"] - actual["p_U"]))
+
+
+def assess(
+    on: CacheRun,
+    off: CacheRun,
+    *,
+    policy: AssessmentPolicy = "strict-sequential-v1",
+) -> dict[str, Any]:
+    """Assess the explicit policy; retain complete input, probability and KV evidence."""
+    if policy not in {"strict-sequential-v1", "original-product-cold-v2"}:
+        raise ValueError("unknown prefix-cache assessment policy")
     if not on.server.cache_enabled or off.server.cache_enabled:
         raise ValueError("one on and one off run required")
     if (
@@ -353,6 +405,7 @@ def assess(on: CacheRun, off: CacheRun) -> dict[str, Any]:
     reference: dict[int, Observation] = {}
     groups = []
     failures = []
+    max_differences = dict.fromkeys(("raw_probabilities", "joint", "conditional", "p_U"), 0.0)
     for run in (on, off):
         measurements = {(m.condition, m.size, m.repeat): m for m in run.measurements}
         expected = {
@@ -384,13 +437,23 @@ def assess(on: CacheRun, off: CacheRun) -> dict[str, Any]:
                         ref = reference.setdefault(row.case_index, row)
                         if row.input_sha256 != ref.input_sha256:
                             raise ValueError("case input binding mismatch")
-                        if row.raw_logprobs.keys() != ref.raw_logprobs.keys() or any(
-                            abs(row.raw_logprobs[k] - ref.raw_logprobs[k]) > run.output_tolerance
-                            for k in row.raw_logprobs
-                        ):
+                        if row.raw_logprobs.keys() != ref.raw_logprobs.keys():
                             failures.append("output_changed")
+                        elif policy == "strict-sequential-v1":
+                            if any(
+                                abs(row.raw_logprobs[k] - ref.raw_logprobs[k])
+                                > run.output_tolerance
+                                for k in row.raw_logprobs
+                            ):
+                                failures.append("output_changed")
+                        else:
+                            _update_distribution_deltas(max_differences, ref, row)
             # on is the acceptance target; off remains a fully reported control.
-            if run.server.cache_enabled and any(ratio > 2 for ratio in ratios):
+            if (
+                run.server.cache_enabled
+                and any(ratio > 2 for ratio in ratios)
+                and (policy == "strict-sequential-v1" or condition == "cold")
+            ):
                 failures.append("ten_to_single_ratio_exceeds_two")
             groups.append(
                 {
@@ -399,14 +462,38 @@ def assess(on: CacheRun, off: CacheRun) -> dict[str, Any]:
                     "ratios": ratios,
                     "median_ratio": statistics.median(ratios),
                     "maximum_ratio": max(ratios),
+                    "acceptance_condition": (
+                        run.server.cache_enabled
+                        and (policy == "strict-sequential-v1" or condition == "cold")
+                    ),
                 }
             )
+    if policy == "original-product-cold-v2" and any(
+        value >= PROBABILITY_THRESHOLD_EXCLUSIVE for value in max_differences.values()
+    ):
+        failures.append("probability_distribution_changed")
     mock = on.server.evidence_kind == "mock"
     return {
         "status": "failed" if failures else ("mock-validated" if mock else "measured"),
         "exit_code": 1 if failures else 0,
+        "assessment_policy": policy,
+        "acceptance_timing_condition": (
+            "cache-on cold paired T10/T1 <= 2; warm measurements reported but non-gating"
+            if policy == "original-product-cold-v2"
+            else "cache-on cold and warm paired T10/T1 <= 2"
+        ),
         "ratio_threshold_inclusive": 2,
-        "statistics": "all paired repeats must pass",
+        "probability_threshold_exclusive": (
+            PROBABILITY_THRESHOLD_EXCLUSIVE if policy == "original-product-cold-v2" else None
+        ),
+        "max_distribution_differences": (
+            max_differences if policy == "original-product-cold-v2" else None
+        ),
+        "statistics": (
+            "all cache-on cold paired repeats must pass; warm ratios are reported"
+            if policy == "original-product-cold-v2"
+            else "all paired repeats must pass"
+        ),
         "groups": groups,
         "failures": sorted(set(failures)),
         "protocol_sha256": on.protocol_sha256,

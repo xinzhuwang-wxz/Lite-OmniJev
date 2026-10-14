@@ -99,9 +99,48 @@ async def test_gateway_sequential_capture_and_actual_timer_fields() -> None:
     on, off = await collect(True), await collect(False)
     result = assess_gateway(on, off)
     assert result["status"] == "mock-validated"
+    assert result["assessment_policy"] == "strict-sequential-v1"
     assert result["s0_acceptance"] is False
     assert len(result["timing_rows"]) == 16
     assert all(row["server_timing_ms"]["preprocess"] == 1 for row in result["timing_rows"])
+    original_product = assess_gateway(on, off, policy="original-product-cold-v2")
+    assert original_product["assessment_policy"] == "original-product-cold-v2"
+    assert original_product["gateway_configuration_sha256"] == "c" * 64
+
+
+@pytest.mark.anyio
+async def test_gateway_cli_compare_passes_assessment_policy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.s0_prefix_cache_gateway import main
+
+    on, off = await collect(True), await collect(False)
+    on_path = tmp_path / "gateway-on.json"
+    off_path = tmp_path / "gateway-off.json"
+    report_path = tmp_path / "gateway-compare.json"
+    on_path.write_text(json.dumps({"run": on.model_dump()}, allow_nan=False))
+    off_path.write_text(json.dumps({"run": off.model_dump()}, allow_nan=False))
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "s0-prefix-cache-gateway",
+            "compare",
+            "--on",
+            str(on_path),
+            "--off",
+            str(off_path),
+            "--assessment-policy",
+            "original-product-cold-v2",
+            "--report",
+            str(report_path),
+        ],
+    )
+
+    assert main() == 0
+    report = json.loads(report_path.read_text())
+    assert report["assessment_policy"] == "original-product-cold-v2"
+    assert report["gateway_request_sha256"] == on.gateway_request_sha256
 
 
 @pytest.mark.anyio

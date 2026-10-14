@@ -22,6 +22,11 @@ def main() -> int:
     parser.add_argument("--server-record", type=Path)
     parser.add_argument("--on", type=Path)
     parser.add_argument("--off", type=Path)
+    parser.add_argument(
+        "--assessment-policy",
+        choices=("strict-sequential-v1", "original-product-cold-v2"),
+        default="strict-sequential-v1",
+    )
     parser.add_argument("--allow-reset", action="store_true", default=False)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
@@ -48,7 +53,7 @@ def main() -> int:
                 raise ValueError("two completed evidence files required")
             on = CacheRun.model_validate(json.loads(args.on.read_text())["run"])
             off = CacheRun.model_validate(json.loads(args.off.read_text())["run"])
-            report.update(assess(on, off))
+            report.update(assess(on, off, policy=args.assessment_policy))
             report["source_reports_sha256"] = {
                 "on": digest(json.loads(args.on.read_text())),
                 "off": digest(json.loads(args.off.read_text())),

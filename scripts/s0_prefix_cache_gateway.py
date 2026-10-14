@@ -88,6 +88,11 @@ def main() -> int:
     parser.add_argument("--media-root", type=Path)
     parser.add_argument("--on", type=Path)
     parser.add_argument("--off", type=Path)
+    parser.add_argument(
+        "--assessment-policy",
+        choices=("strict-sequential-v1", "original-product-cold-v2"),
+        default="strict-sequential-v1",
+    )
     parser.add_argument("--allow-reset", action="store_true", default=False)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
@@ -115,7 +120,7 @@ def main() -> int:
                 raise ValueError("two complete gateway run reports required")
             on = GatewayRun.model_validate(json.loads(args.on.read_text())["run"])
             off = GatewayRun.model_validate(json.loads(args.off.read_text())["run"])
-            report.update(assess_gateway(on, off))
+            report.update(assess_gateway(on, off, policy=args.assessment_policy))
         else:
             if any(
                 value is None
