@@ -1,0 +1,64 @@
+{
+  "scope": "Actual Chromium + actual gateway + official CPU processor; fake native backend",
+  "status": "passed_cpu_browser_only",
+  "exit_code": 0,
+  "gpu_used": false,
+  "real_model_forward": false,
+  "release_or_stage_acceptance": false,
+  "cases": [
+    {
+      "category": "text",
+      "frames": 8,
+      "status": 200,
+      "server_timing": "preprocess;dur=241.459, upstream;dur=11.770, total;dur=261.071, queue;dur=1.718"
+    },
+    {
+      "category": "image",
+      "frames": 8,
+      "status": 200,
+      "server_timing": "preprocess;dur=355.461, upstream;dur=79.380, total;dur=444.908, queue;dur=3.777"
+    },
+    {
+      "category": "screenshot",
+      "frames": 8,
+      "status": 200,
+      "server_timing": "preprocess;dur=2611.241, upstream;dur=329.787, total;dur=2946.930, queue;dur=0.881"
+    },
+    {
+      "category": "audio",
+      "frames": 8,
+      "status": 200,
+      "server_timing": "preprocess;dur=576.358, upstream;dur=55.815, total;dur=636.081, queue;dur=0.458"
+    },
+    {
+      "category": "video",
+      "frames": 8,
+      "status": 200,
+      "server_timing": "preprocess;dur=2223.983, upstream;dur=372.595, total;dur=2602.605, queue;dur=0.723"
+    },
+    {
+      "category": "video",
+      "frames": 16,
+      "status": 200,
+      "server_timing": "preprocess;dur=3022.822, upstream;dur=1039.440, total;dur=4075.583, queue;dur=2.964"
+    }
+  ],
+  "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+  "runtime": {
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit"
+  },
+  "cost_usd": 0.0,
+  "source_sha256": {
+    "scripts/browser_s0_cpu.py": "aad9249ad09194d10d13b85706b25f5a9524db1280a5bda958a9880b2e49b451",
+    "serve/gateway/app.py": "bc16e3e433ac0f40f5417190a9eb62d6246553537858b4ec3bd4d171e937b664",
+    "serve/vllm_chat.py": "44f0008150a7e8d610691cfdfbed6f40f1edb0fbe86a0579b9f056484ae481a4",
+    "train/multimodal.py": "1174466d38a6ab4727ff9c36b6c8d9932559870f18a7a8ff693dd6eba9077890",
+    "tests/test_gateway_media.py": "caea70bfc10a1329c65d750b4aa4f4339eb032a3f957b0a4fe19ccfe85e61267"
+  },
+  "bad_media_status": 422,
+  "unconfigured_status": 503,
+  "browser_version": "153.0.8010.12",
+  "page_errors": [],
+  "elapsed_seconds": 43.268
+}

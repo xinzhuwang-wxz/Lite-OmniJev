@@ -8,6 +8,7 @@ import importlib
 import json
 import math
 import os
+import platform
 import runpy
 import socket
 import subprocess
@@ -144,11 +145,15 @@ def main() -> int:
         "real_model_forward": "not_attested_by_browser" if args.base_url else False,
         "release_or_stage_acceptance": False,
         "cases": [],
+        "manifest_sha256": hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
+        "runtime": {"python": platform.python_version(), "platform": platform.platform()},
+        "cost_usd": 0.0 if not args.base_url else None,
         "source_sha256": {
             str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in (
                 Path(__file__),
                 ROOT / "serve/gateway/app.py",
+                ROOT / "serve/vllm_chat.py",
                 ROOT / "train/multimodal.py",
                 ROOT / "tests/test_gateway_media.py",
             )
