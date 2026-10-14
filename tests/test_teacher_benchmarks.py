@@ -10,6 +10,7 @@ from eval.teacher_benchmarks import (
     MVBECH_REFERENCE_SHA256,
     BenchmarkExample,
     TeacherForwardResult,
+    VideoFrameRef,
     build_benchmark_processor_inputs,
     compare_two_pass_records,
     load_mmau_examples,
@@ -119,7 +120,7 @@ def _write_mvbench_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     return metadata, config, manifest
 
 
-def test_mvbench_manifest_mapping_keeps_fixed_denominators(
+def test_synthetic_mvbench_manifest_cannot_self_declare_real_reference(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     metadata, config, manifest = _write_mvbench_fixture(tmp_path)
@@ -150,28 +151,12 @@ def test_mvbench_manifest_mapping_keeps_fixed_denominators(
         ],
     )
 
-    examples = load_mvbench_examples(
-        frame_manifest=manifest, metadata_dir=metadata, config_path=config
-    )
-
-    assert len(examples) == 1800
-    assert {example.group for example in examples} == {
-        "Action Sequence",
-        "Action Prediction",
-        "Unexpected Action",
-        "Object Interaction",
-        "Object Shuffle",
-        "Action Localization",
-        "Action Count",
-        "State Change",
-        "Character Order",
-    }
-    assert examples[0].label_index == 1
+    with pytest.raises(ValueError, match="mvbench_manifest_source_binding_mismatch"):
+        load_mvbench_examples(frame_manifest=manifest, metadata_dir=metadata, config_path=config)
 
 
 def test_canonical_png_read_verifies_sha_and_rgb(tmp_path: Path) -> None:
     image_module = pytest.importorskip("PIL.Image")
-    metadata, config, manifest = _write_mvbench_fixture(tmp_path)
     cache = tmp_path / "cache" / "abc"
     cache.mkdir(parents=True)
     image = image_module.new("RGB", (2, 1), (1, 2, 3))
@@ -179,32 +164,50 @@ def test_canonical_png_read_verifies_sha_and_rgb(tmp_path: Path) -> None:
     image.save(frame_path)
     rgb_hash = __import__("hashlib").sha256(image.tobytes()).hexdigest()
     png_hash = __import__("hashlib").sha256(frame_path.read_bytes()).hexdigest()
-    manifest_rows = json.loads(manifest.read_text())["rows"]
-    for row in manifest_rows:
-        row["frames"] = [
-            {
-                "index": index,
-                "png": "cache/abc/0.png",
-                "png_sha256": png_hash,
-                "RGB24_sha256": rgb_hash,
-            }
-            for index in range(16)
-        ]
-    manifest.write_text(
-        json.dumps({"reference_sha256": MVBECH_REFERENCE_SHA256, "rows": manifest_rows})
+    frames = tuple(
+        VideoFrameRef(
+            index=index,
+            png="cache/abc/0.png",
+            png_sha256=png_hash,
+            rgb24_sha256=rgb_hash,
+        )
+        for index in range(16)
+    )
+    example = BenchmarkExample(
+        benchmark="fixture-video",
+        row_id="row-1",
+        group="fixture",
+        question="payload question must stay out of summaries",
+        options=("left", "right"),
+        label_index=1,
+        modality="video",
+        source_sha256="1" * 64,
+        video_frames=frames,
+        width=2,
+        height=1,
     )
 
-    examples = load_mvbench_examples(
-        frame_manifest=manifest, metadata_dir=metadata, config_path=config
-    )
-    assert len(examples) == 1800
-    assert examples[0].label_index == 1
-    prepared = build_benchmark_processor_inputs(
-        FakeForward(), examples[0], video_cache_root=tmp_path
-    )
+    prepared = build_benchmark_processor_inputs(FakeForward(), example, video_cache_root=tmp_path)
+
     assert prepared.media_summary["frame_count"] == 16
     assert prepared.media_summary["canonical_png_verified"] is True
     assert "payload question" not in json.dumps(prepared.processor_summary)
+
+
+def test_real_mvbench_manifest_rejects_source_binding_tamper(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[1]
+    metadata = root / "artifacts/data/research-eval/video-eval-source-metadata"
+    config = root / "configs/video-eval-assets.json"
+    manifest = root / "artifacts/public-video-protocol-freeze-001/canonical-frame-manifest.json"
+    if not (metadata.is_dir() and config.is_file() and manifest.is_file()):
+        pytest.skip("public MVBench artifacts are unavailable")
+    payload = json.loads(manifest.read_text())
+    payload["rows"][0]["source_sha256"] = "f" * 64
+    tampered = tmp_path / "canonical-frame-manifest-tampered.json"
+    tampered.write_text(json.dumps(payload))
+
+    with pytest.raises(ValueError, match="mvbench_manifest_source_binding_mismatch"):
+        load_mvbench_examples(frame_manifest=tampered, metadata_dir=metadata, config_path=config)
 
 
 def test_two_pass_records_are_resumable_and_payload_light(tmp_path: Path) -> None:

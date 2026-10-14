@@ -38,6 +38,7 @@ MMAU_EXPECTED_ROWS = 1000
 MMAU_SCORE_TARGET = 0.631
 MMAU_SCORE_TOLERANCE = 0.02
 MVBench_EXPECTED_ROWS = 1800
+MVBench_SOURCE_BINDING_SHA256 = "46c15e53eaed875b42bdf30713afb57d8bbe2da6e4e4e5562e6326c8e89ba1ed"
 MVBench_TASKS = PUBLIC_MVBENCH_TASKS
 EXPECTED_ROWS_BY_BENCHMARK = {
     "mmau-test-mini": MMAU_EXPECTED_ROWS,
@@ -305,6 +306,8 @@ def load_mvbench_examples(
         raise ValueError("mvbench_task_denominator_mismatch")
     if not binding_sha256:
         raise ValueError("mvbench_manifest_binding_hash_missing")
+    if binding_sha256 != MVBench_SOURCE_BINDING_SHA256:
+        raise ValueError("mvbench_manifest_source_binding_mismatch")
     return examples
 
 
