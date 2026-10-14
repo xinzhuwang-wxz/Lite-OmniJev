@@ -7,7 +7,7 @@ Status: needs-triage
 Execution: open
 Owner: none
 Worktree: none
-Blocked by: p0:04, 01, 02, 03, 04, 05, 06, 07, 10, 11, 12, 13
+Blocked by: p0:04, 01, 02, 03, 04, 05, 06, 07, 10, 11, 12, 13, 14
 
 ## What to build
 预留最终S0集成票；07必须补入所有新增基线依赖并完成triage后才可认领，以数据→推理→评测→服务的完整链决定是否进入S1。
