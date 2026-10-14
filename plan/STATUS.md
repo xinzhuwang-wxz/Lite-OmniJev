@@ -25,7 +25,7 @@
 - 六cohort各500已真实双构建/媒体验证通过：文本CLINC Choice、图像AOK Choice、截图GUI目标Choice4、音频Clotho一致Noul、视频CLEVRER exist Noul、跨模态image+audio合取Noul。均首primitive切片，不冒称所有任务分布。
 - 截图固定前600标注仅497合法，补30固定TRAIN小标注达到500；筛选基于许可/格式/几何，不看模型分数。RGB实际decode通过。
 - 六公开模型JevBench231各双遍完成，reports/s0-public-baselines-table-001.json：E4B76.1905%、E2B63.6364%、OneJev4 75.7576%、27B83.1169%、教师85.7143%、Valen47.1861%。低成绩原样保留；专用head无U则null。
-- 开发GPU已核19/30支持对，另6个音频不支持组合明确unsupported且不填零。精确完成/剩余清单与分数唯一入口reports/s0-development-baselines-table-001.json；剩余11运行或排队。
+- 开发GPU已核21/30支持对，另6个音频不支持组合明确unsupported且不填零。精确完成/剩余清单与分数唯一入口reports/s0-development-baselines-table-001.json；剩余9运行或排队。
 - 教师已完成text/image/screenshot/audio四cohort，各500×2精确；对应报告只是cohort完成，父作业尚在运行，不能冒称全教师结束。
 - 统一dev排除清单两遍SHA相同：3000family节点/2500原始family/2000组件。跨模态复用原image/audio同池，未来train同时查family和媒体SHA。reports/s0-development-bundle-{001,002}.json；calibration/holdout分配仍pending。
 - s0:04 done：完整真实native/gateway cache-on/off冷暖双测、实际KV命中及四概率<.001；原≤2按ADR0010仅诊断目标。FP32 TF32x3失败候选停止，停止S0性能搜索，原失败证据保留；不宣称最终p95通过。
@@ -35,7 +35,7 @@
 | 作业 | 控制与路径 | 判定边界 |
 |---|---|---|
 | 教师六cohort | /root/autodl-tmp/s0-development-final-001 HEAD0aec3eb；model675330；watchdog48305/run-teacher-deadline-handoff-001.py；artifacts/teacher-development-001/result | 实测video约3秒/题，原timer675329暂停，同一模型持续，总模型上限5400秒。最终认model.exit、deadline-handoff-001.json kernel退出码及完整report；原shell控制退出137保留，不误当模型失败或成功。 |
-| 剩余学生video/crossmodal | 同树supervisor892905/run-development-queue-fla-002.py；artifacts/development-baselines-fla-002；每job1800秒 | 旧scheduler391342已结束、当前E4B video正常exit0，500对精确/55.6%；kernel收据reports/s0-development-scheduler-handoff-001.json。新队列完成才写旧supervisor.finished；失败写旧queue-blocked。不要重启旧队列。 |
+| 剩余学生video/crossmodal | 同树892905/run-development-queue-fla-002.py；artifacts/development-baselines-fla-002；27B video当前由watchdog765745临时接管上限3000秒，其余每job1800秒 | 旧scheduler391342已结束、当前E4B video正常exit0，500对精确/55.6%；kernel收据reports/s0-development-scheduler-handoff-001.json。当前27B child684037继续，892905仅暂停未来派发；实际median forward1.6336秒加媒体准备，1000题预计超原1800秒。watchdog在模型终态后恢复原scheduler正常采集退出并继续crossmodal，不覆盖原report/exit。新队列完成才写旧supervisor.finished；失败写旧queue-blocked。不要重启旧队列。 |
 | Valen开发 | /root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45；原queue796345已暂停未来控制；当前video由watchdog227700/run-video-deadline-handoff-001.py保留同一模型运行；artifacts/valen-development-001；video实际1.40秒/题，按实测上限1800秒 | 原torch fallback，真实head/LoRA/visual；text35.8%、image66.4%、screenshot73.2%已核；视频继续；audio/crossmodal明确unsupported。 |
 | 截图四学生 | /root/autodl-tmp/s0-development-final-001；queue60167/run-screenshot-queue-002.py；artifacts/screenshot-baselines-002 | 等前两主队列终态及teacher finished，每GPU job1200秒、等待7500秒。原692449只等待无GPU任务，已终止并留证据，不重启。 |
 
@@ -71,3 +71,5 @@ OneJev4 video显式FLA profile已完整exit0，500×2实际输入/原始概率�
 集中技术review已完成并关闭唯一P2（Valen模板TypeError回退），reports/s0-technical-code-review-001.md；历史3462条Valen记录全部显式关闭thinking，复用不重跑。修复后34相关tests、全仓ruff/335格式、95源码mypy、wheel/sdist均通过。后续仅新改动/失败扩大验证，不重复全检。
 
 原HTML规划复核：每模态3–5k校准集属于S5，不在S0提前建完整S5数据。07首条已澄清为当前train/dev账本及四池隔离、真实holdout依赖05；未来校准必须选择未训练family并查完整训练账本，不能事后删记录制造隔离。原S0真人门与S5数量均保留。
+
+新增E2B video49.8%/776.936秒、Valen video54.0%/1295.249秒，各500×2精确通过。Valen视频1000记录全部显式关闭thinking；四支持类别已全部完成。剩余9支持对：教师video/crossmodal、OneJev27 video、E4B/E2B crossmodal、四学生screenshot。

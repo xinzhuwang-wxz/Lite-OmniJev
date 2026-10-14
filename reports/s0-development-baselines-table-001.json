@@ -248,6 +248,32 @@
       "brier": 0.21806556798438823,
       "coverage_at_error": 0.624,
       "max_error": 0.05
+    },
+    {
+      "cohort": "video",
+      "model": "gemma4-e2b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-gemma4-e2b-it-001.json",
+      "count": 500,
+      "accuracy": 0.498,
+      "ece15": 0.49970639530954425,
+      "brier": 0.9869698169116403,
+      "coverage_at_error": 0.014,
+      "max_error": 0.05
+    },
+    {
+      "cohort": "video",
+      "model": "valen-preview-0923",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-valen-preview-0923-001.json",
+      "count": 500,
+      "accuracy": 0.54,
+      "ece15": 0.3484716385303175,
+      "brier": 0.703069726251278,
+      "coverage_at_error": 0.172,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -293,7 +319,7 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 19,
+  "verified_supported_pairs": 21,
   "pending_supported_pairs": [
     {
       "cohort": "crossmodal",
@@ -325,19 +351,11 @@
     },
     {
       "cohort": "video",
-      "model": "gemma4-e2b-it"
-    },
-    {
-      "cohort": "video",
       "model": "jev-omni-12b"
     },
     {
       "cohort": "video",
       "model": "onejev-27b"
-    },
-    {
-      "cohort": "video",
-      "model": "valen-preview-0923"
     }
   ]
 }
