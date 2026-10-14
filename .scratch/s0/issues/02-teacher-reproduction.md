@@ -32,3 +32,5 @@ Blocked by: p0:04, 01
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
 
 2026-10-14用户批准ADR-0006：仅替换MVBench发布分数复现项；九任务真实baseline/逐行一致性仍待GPU，CPU协议冻结由offline准备切片执行。原14/2786公开协议缺失事实保留，非本项前置。
+
+2026-10-14：公开视频1606媒体/1800行/27997唯一帧PNG完整CPU冻结通过，reports/public-video-protocol-freeze-001.json；不含GPU预测/质量。正在补teacher runner/恢复/分母/两遍逐行一致CPU可测代码，真实两遍评测仍pending。

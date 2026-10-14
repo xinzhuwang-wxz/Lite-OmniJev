@@ -5,8 +5,8 @@ Milestone: S0
 Category: enhancement
 Status: ready-for-agent
 Execution: claimed
-Owner: offline-runtime
-Worktree: /tmp/lite-omnijev-offline-runtime
+Owner: root-parity-integration
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04, 09
 
 ## What to build
@@ -32,3 +32,5 @@ Blocked by: p0:04, 09
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
 
 调度纠正：先前子代理未交付指定媒体切片，释放认领；离线依赖票准备媒体工具后继续本票，已有文本parity失败结论不重跑。
+
+2026-10-14恢复：s0:09共享CPU输入前置已完成（100×2官方HF processor，Mac真实证据，Linux137不隐藏）。主会话接管本票集成，离线依赖owner继续offline-prep:03，不争写本票模块。下一无卡切片为canonical JPEG/PCM传输、原生chat完整token client/HTTP负测与collector，随后接网关；真实GPU概率阈值不变。

@@ -5,8 +5,8 @@ Milestone: S0
 Category: enhancement
 Status: ready-for-agent
 Execution: claimed
-Owner: teacher-cpu-recovery
-Worktree: /tmp/lite-omnijev-s0-teacher
+Owner: root-teacher-integration
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04
 
 ## What to build
@@ -32,3 +32,5 @@ Blocked by: p0:04
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
 
 2026-10-14恢复：已核查旧执行者不在原生agent列表；保留head转换证据。teacher-cpu-recovery在既有worktree补项目持有的教师输入/安全加载预检适配层，先做无卡processor与拒绝路径验收；真实forward仍待用户开卡。范围限定train/teacher_inference.py、scripts/teacher_preflight.py及对应测试/runbook/报告，不改上游loader快照。
+
+2026-10-14 CPU整合：94acfe7完整安全forward代码/13文件manifest绑定，真实Mac processor003通过、Linux完整23,955,723,321B SHA通过后CUDA gate阻塞（teacher-forward-cpu-005）。独立review两发现已关闭。完整GPU概率与原格式参考等价未做，本票仍claimed、不把CPU检查当教师效果准入。

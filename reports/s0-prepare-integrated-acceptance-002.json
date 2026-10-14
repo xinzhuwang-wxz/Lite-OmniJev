@@ -1,0 +1,38 @@
+{
+  "status": "passed_cpu_only",
+  "exit_code": 0,
+  "code_revision": "0c666e29244c175c8eba97ac6acb619ac1991f9e",
+  "cases": 100,
+  "two_run_case_summaries_identical": true,
+  "source_family_count": 4,
+  "source_families": [
+    "arithmetic",
+    "clevrer-train-00000",
+    "clotho-corneille_city01.wav",
+    "gui-train-0000628297785099"
+  ],
+  "not_independent_quality_samples": true,
+  "pending_vllm_processor_and_transport": true,
+  "gpu_used": false,
+  "weights_loaded": false,
+  "ready_to_open_gpu": false,
+  "runs": [
+    {
+      "report": "reports/s0-prepare-integrated-006.json",
+      "sha256": "ef697d3b6630b87d9bda89a7467b825776fccbba9e2d408f6f354d0b9adb0be3",
+      "elapsed_seconds": 18.055
+    },
+    {
+      "report": "reports/s0-prepare-integrated-007.json",
+      "sha256": "67f0e3376dc9bcf791fde8d397fcd4e891f26ce3eaa1497ccd742f4753cf5f99",
+      "elapsed_seconds": 18.396
+    }
+  ],
+  "metadata_identity_crosscheck": "reports/s0-prepare-model-metadata-crosscheck-001.json",
+  "limits": [
+    "Official HF processor on macOS, reused existing environment only.",
+    "Linux two exit137 attempts preserved separately; not Linux/GPU compatibility acceptance.",
+    "100 fixed variants across four families; future training must apply exclusions.",
+    "Canonical vLLM JPEG/PCM packet and actual chat client remain to implement/test before opening GPU."
+  ]
+}
