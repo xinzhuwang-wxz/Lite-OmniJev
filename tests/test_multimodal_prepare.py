@@ -253,3 +253,32 @@ def test_verified_playlist_cannot_read_unhashed_external_media(tmp_path: Path) -
     path = resolve_media(root, "verified.m3u8", file_hash(playlist), max_bytes=1000)
     with pytest.raises(subprocess.CalledProcessError):
         load_media(path, "audio", num_frames=8, max_seconds=30)
+
+
+def test_total_image_budget_rejects_before_any_decode(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from data.schema import Prefix, Question
+    from train.multimodal import prepare_decision
+
+    image = pytest.importorskip("PIL.Image")
+    for name in ("a.png", "b.png"):
+        image.new("RGB", (10, 10)).save(tmp_path / name)
+    prefix = Prefix(
+        state="public",
+        media=[
+            {"type": "image", "uri": name, "sha256": file_hash(tmp_path / name)}
+            for name in ("a.png", "b.png")
+        ],
+    )
+    monkeypatch.setattr(
+        "train.multimodal.load_media", lambda *a, **k: pytest.fail("must reject before decode")
+    )
+    with pytest.raises(ValueError, match="total image pixel"):
+        prepare_decision(
+            prefix,
+            Question(qid="q", type="noul", instruction="Public question"),
+            None,
+            tmp_path,
+            max_total_image_pixels=199,
+        )

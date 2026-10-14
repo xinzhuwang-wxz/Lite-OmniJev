@@ -321,6 +321,7 @@ def prepare_decision(
     profile: Literal["hf_only", "canonical_http"] = "hf_only",
     video_frames: Literal[8, 16] = 16,
     max_bytes: int = 64 * 1024 * 1024,
+    max_total_image_pixels: int = 40_000_000,
     max_audio_seconds: float = 30,
     max_video_seconds: float = 60,
 ) -> PreparedDecision:
@@ -330,7 +331,12 @@ def prepare_decision(
         raise ValueError("invalid preparation profile or video frame count")
     if not prefix.state.strip() or not question.instruction.strip():
         raise ValueError("empty decision input")
-    if max_bytes <= 0 or max_audio_seconds <= 0 or max_video_seconds <= 0:
+    if (
+        max_bytes <= 0
+        or max_audio_seconds <= 0
+        or max_video_seconds <= 0
+        or max_total_image_pixels <= 0
+    ):
         raise ValueError("invalid preparation limits")
     if profile == "canonical_http":
         types = [item.type for item in prefix.media]
@@ -338,13 +344,25 @@ def prepare_decision(
             raise ValueError("canonical S0 profile supports at most one video and one audio")
         if "video" in types and "image" in types:
             raise ValueError("image plus video canonical profile CPU compatibility remains pending")
+    if len(prefix.media) > 8:
+        raise ValueError("media count exceeds local resource limit")
+    # Hash/path checks and cheap image headers precede every full decode.
+    paths = [
+        resolve_media(root, item.uri, item.sha256, max_bytes=max_bytes) for item in prefix.media
+    ]
+    total_image_pixels = 0
+    for item, path in zip(prefix.media, paths, strict=True):
+        if item.type == "image":
+            with importlib.import_module("PIL.Image").open(path) as source:
+                total_image_pixels += source.width * source.height
+                if total_image_pixels > max_total_image_pixels:
+                    raise ValueError("total image pixel budget exceeded")
     media: dict[str, list[Any]] = {"image": [], "audio": [], "video": []}
     content: list[dict[str, Any]] = []
     http_content: list[dict[str, Any]] = []
     canonical_summaries = []
     http_media_io_kwargs: dict[str, Any] = {}
-    for item in prefix.media:
-        path = resolve_media(root, item.uri, item.sha256, max_bytes=max_bytes)
+    for item, path in zip(prefix.media, paths, strict=True):
         decoded = load_media(
             path,
             item.type,
@@ -434,6 +452,8 @@ def prepare_decision(
         "input_profile": "canonical-http-v1" if profile == "canonical_http" else "hf-only-v1",
         "configuration": {
             "max_bytes": max_bytes,
+            "max_media_items": 8,
+            "max_total_image_pixels": max_total_image_pixels,
             "max_audio_seconds": max_audio_seconds,
             "max_video_seconds": max_video_seconds,
             "video_frames": num_frames,

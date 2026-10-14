@@ -437,3 +437,17 @@ async def test_changed_answer_mapping_cannot_send_request() -> None:
     ) as client:
         with pytest.raises(VllmChatProtocolError, match="answer_token_mapping"):
             await client.read_logprobs(prepared)
+
+
+async def test_raw_answer_mass_cannot_exceed_full_vocabulary_mass() -> None:
+    body = response_body()
+    for entry in body["choices"][0]["logprobs"]["content"][0]["top_logprobs"]:
+        entry["logprob"] = -0.1
+    async with VllmChatClient(
+        "http://fixture",
+        "pinned-alias",
+        raw_logprobs_confirmed=True,
+        transport=httpx.MockTransport(lambda _: httpx.Response(200, json=body)),
+    ) as client:
+        with pytest.raises(VllmChatProtocolError, match="probability_mass"):
+            await client.read_logprobs(prepared_fixture())

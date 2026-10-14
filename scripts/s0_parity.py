@@ -896,13 +896,13 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--report", type=Path, required=True)
 
     hf = sub.add_parser(
-        "hf-reference", help="Run two CUDA HF reference passes and write a sealed reference report"
+        "hf-reference", help="Two CUDA HF passes; frozen non-holdout reference report"
     )
     add_common(hf)
     hf.set_defaults(func=run_hf_reference)
 
     cmp = sub.add_parser(
-        "compare-vllm", help="Compare native vLLM chat logprobs against a sealed HF reference"
+        "compare-vllm", help="Compare native vLLM chat logprobs against a non-holdout HF reference"
     )
     add_common(cmp)
     cmp.add_argument("--reference", type=Path, required=True)

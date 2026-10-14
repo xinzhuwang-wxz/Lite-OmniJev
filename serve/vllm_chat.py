@@ -95,6 +95,8 @@ def parse_chat_logprobs(
             raise VllmChatProtocolError("unexpected_unsolicited_token")
         if not set(answer_token_ids.values()).issubset(by_id):
             raise VllmChatProtocolError("missing_requested_token")
+        if math.fsum(math.exp(value) for value in by_id.values()) > 1 + 1e-6:
+            raise VllmChatProtocolError("invalid_full_vocabulary_probability_mass")
         raw = {answer: by_id[token_id] for answer, token_id in answer_token_ids.items()}
     except VllmChatProtocolError:
         raise
