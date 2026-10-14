@@ -60,3 +60,6 @@
 - 六公开模型基线齐全：Valen实际231×2/462记录精确，109/231=47.186%，88.279秒；保留真实较低成绩，不用Qwen裸基座冒充。reports/s0-public-baseline-valen-001.json。
 - 开发基线已核验9对：text四模型93.6/96.6/88.4/98.2%；image四模型74.4/83.6/69.8/87.4%；audio E4B63.4%；各500×2实际输入/概率精确一致。剩余旧队列继续，不重跑已完成对。
 - 官方FLA单候选完整231×2通过，准确率仍75.7576%，warm forward中位数诊断快2.505倍；可用于显式新profile，旧环境/当前队列保持冻结。共享GPU时延不当发布性能；reports/s0-qwen-fla-candidate-result-001.json。
+
+- 教师六cohort真实GPU已启动：冻结/root/autodl-tmp/s0-development-final-001 HEAD0aec3eb，artifacts/teacher-development-001/result逐cohort增量、run.exit/finished权威；2400秒作业上限，共享GPU质量专用。六类真实首题CPU已通过6.352秒（含新截图），reports/s0-teacher-development-cpu-preflight-002.json；初次仅报告目录不存在的控制失败已识别，未启动GPU重复。
+- 截图四学生queue692449已调度/root/autodl-tmp/s0-development-final-001/run-screenshot-queue-001.py；等待旧学生队列结束/明确停止且教师finished后串行执行，artifacts/screenshot-baselines-001。OneJev显式FLA profile/hash，每job1200秒，意外失败停止保留，不以exit0冒称全矩阵完成。
