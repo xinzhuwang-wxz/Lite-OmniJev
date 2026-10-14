@@ -46,6 +46,9 @@ def prepared_fixture() -> PreparedDecision:
     )
 
     prepared.summary.update(
+        answer_token_mapping_sha256=hashlib.sha256(
+            json.dumps(prepared.answer_token_ids, sort_keys=True).encode()
+        ).hexdigest(),
         http_messages_sha256=hashlib.sha256(
             json.dumps(prepared.http_messages, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest(),
@@ -418,3 +421,19 @@ async def test_default_hf_profile_preserves_original_real_tensor_hashes(
     )
     assert prepared.http_messages is None and prepared.http_media_io_kwargs is None
     assert prepared.summary["tensors"] == baseline["cases"][case_index]["tensors"]
+
+
+async def test_changed_answer_mapping_cannot_send_request() -> None:
+    prepared = prepared_fixture()
+    prepared.summary["answer_token_mapping_sha256"] = hashlib.sha256(
+        json.dumps(prepared.answer_token_ids, sort_keys=True).encode()
+    ).hexdigest()
+    prepared.answer_token_ids["A"], prepared.answer_token_ids["B"] = 2, 1
+    async with VllmChatClient(
+        "http://fixture",
+        "pinned-alias",
+        raw_logprobs_confirmed=True,
+        transport=httpx.MockTransport(lambda _: pytest.fail("mutated mapping must not send")),
+    ) as client:
+        with pytest.raises(VllmChatProtocolError, match="answer_token_mapping"):
+            await client.read_logprobs(prepared)

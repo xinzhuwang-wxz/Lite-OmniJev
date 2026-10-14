@@ -1,0 +1,36 @@
+{
+  "scope": "CPU boundary review; no GPU/model quality acceptance",
+  "reviewer": "independent native teacher_adapter_review",
+  "status": "two_findings_fixed_pending_independent_rereview",
+  "findings": [
+    {
+      "priority": "P1",
+      "issue": "verified playlist followed unhashed external media",
+      "original_d62d471_reproduction_samples": 16719,
+      "fix": "FFprobe/FFmpeg input format allowlist excludes reference demuxers; protocol allowlist file/pipe; MOV external-track loading remains disabled default",
+      "regression": "real AAC TS outside asset root plus verified HLS playlist; rejected before decode"
+    },
+    {
+      "priority": "P2",
+      "issue": "mutable answer mapping was not bound to preparation hash",
+      "fix": "verify answer_token_mapping_sha256 before HTTP",
+      "regression": "valid A/B ID swap rejected without HTTP; test reproduced failure before fix"
+    }
+  ],
+  "verification": {
+    "real_media_targeted": "66 passed in 7.52s before expanded HLS fixture; two final regression tests passed",
+    "original_fixture_decode_and_fixed_rejection_exit_code": 0
+  },
+  "sources": [
+    "https://ffmpeg.org/ffmpeg-formats.html",
+    "https://github.com/FFmpeg/FFmpeg/blob/master/doc/demuxers.texi"
+  ],
+  "gpu_used": false,
+  "release_or_stage_acceptance": false,
+  "source_sha256": {
+    "train/multimodal.py": "dfe8b907ce509a6c4a9060e002afedbe0e0b0002cdc0777a69728610c80dce5a",
+    "serve/vllm_chat.py": "407468b49cc9e4129cdb87b157567698bf2053d7e2f5b7aa73925bed120a8bc4",
+    "tests/test_multimodal_prepare.py": "ee36e950e9d8f0df193df6956c263c756c5fae41b94ca3ad0ec27dcd69afa253",
+    "tests/test_vllm_chat.py": "a3024422c94932af10db25d406d3d8285bf2e2bb7467102c0fd189346dca8cc2"
+  }
+}

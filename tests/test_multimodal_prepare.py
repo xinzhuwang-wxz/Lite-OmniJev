@@ -214,3 +214,42 @@ def test_pending_canonical_combinations_fail_before_loading_files(
     question = Question(qid="q", type="noul", instruction="Is evidence sufficient?")
     with pytest.raises(ValueError, match="canonical|compatibility"):
         prepare_decision(prefix, question, object(), tmp_path, profile="canonical_http")
+
+
+def test_verified_playlist_cannot_read_unhashed_external_media(tmp_path: Path) -> None:
+    import shutil
+    import subprocess
+
+    from train.multimodal import load_media
+
+    if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
+        pytest.skip("ffmpeg required for real external-reference regression")
+    root = tmp_path / "assets"
+    root.mkdir()
+    outside = tmp_path / "outside.ts"
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-f",
+            "lavfi",
+            "-i",
+            "sine=duration=1",
+            "-c:a",
+            "aac",
+            "-f",
+            "mpegts",
+            str(outside),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    playlist = root / "verified.m3u8"
+    playlist.write_text(
+        "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:2\n"
+        "#EXT-X-MEDIA-SEQUENCE:0\n#EXTINF:1.0,\n../outside.ts\n#EXT-X-ENDLIST\n"
+    )
+    path = resolve_media(root, "verified.m3u8", file_hash(playlist), max_bytes=1000)
+    with pytest.raises(subprocess.CalledProcessError):
+        load_media(path, "audio", num_frames=8, max_seconds=30)

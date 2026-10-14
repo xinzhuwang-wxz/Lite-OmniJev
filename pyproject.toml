@@ -44,6 +44,10 @@ addopts = "-ra"
 line-length = 100
 target-version = "py311"
 
+# This archived diagnostic is immutable evidence: its SHA is recorded in its report.
+[tool.ruff.format]
+exclude = ["reports/teacher-preflight-cpu-002.py"]
+
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 

@@ -170,6 +170,9 @@ class VllmChatClient:
         ) or media_kwargs_hash != prepared.summary.get("http_media_io_kwargs_sha256"):
             raise VllmChatProtocolError("canonical_http_binding_mismatch")
         ids = prepared.answer_token_ids
+        mapping_hash = hashlib.sha256(json.dumps(ids, sort_keys=True).encode()).hexdigest()
+        if mapping_hash != prepared.summary.get("answer_token_mapping_sha256"):
+            raise VllmChatProtocolError("answer_token_mapping_binding_mismatch")
         if (
             "U" not in ids
             or len(ids) < 3

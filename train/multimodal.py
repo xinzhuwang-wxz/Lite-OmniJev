@@ -75,6 +75,16 @@ def resolve_media(root: Path, uri: str, sha256: str, *, max_bytes: int) -> Path:
     return path
 
 
+# Exclude playlists, concat and image sequences before probing can follow references.
+# MOV external-track loading stays disabled (FFmpeg's enable_drefs default).
+_DECODE_INPUT_OPTIONS = [
+    "-protocol_whitelist",
+    "file,pipe",
+    "-format_whitelist",
+    "wav,flac,mp3,ogg,aac,mov,matroska,webm,avi,mpegts",
+]
+
+
 def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) -> Any:
     """Decode only preverified local files; reject overlong inputs before decoding."""
     if kind == "image":
@@ -87,6 +97,7 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
     result = subprocess.run(
         [
             "ffprobe",
+            *_DECODE_INPUT_OPTIONS,
             "-v",
             "error",
             "-show_entries",
@@ -107,6 +118,7 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
         result = subprocess.run(
             [
                 "ffmpeg",
+                *_DECODE_INPUT_OPTIONS,
                 "-v",
                 "error",
                 "-threads",
@@ -143,6 +155,7 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
         subprocess.run(
             [
                 "ffmpeg",
+                *_DECODE_INPUT_OPTIONS,
                 "-v",
                 "error",
                 "-threads",
