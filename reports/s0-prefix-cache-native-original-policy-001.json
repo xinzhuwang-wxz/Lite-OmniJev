@@ -1,0 +1,81 @@
+{
+  "action": "compare",
+  "status": "failed",
+  "exit_code": 1,
+  "cost_usd": null,
+  "s0_acceptance": false,
+  "python": "3.11.14",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "code_revision": "794936547ccdc5ff898c205fb793bb73294d5203",
+  "assessment_policy": "original-product-cold-v2",
+  "acceptance_timing_condition": "cache-on cold paired T10/T1 <= 2; warm measurements reported but non-gating",
+  "ratio_threshold_inclusive": 2,
+  "probability_threshold_exclusive": 0.001,
+  "max_distribution_differences": {
+    "raw_probabilities": 2.364886522165932e-07,
+    "joint": 5.3537956290483635e-09,
+    "conditional": 5.1320781568805216e-09,
+    "p_U": 7.640539481314115e-10
+  },
+  "statistics": "all cache-on cold paired repeats must pass; warm ratios are reported",
+  "groups": [
+    {
+      "cache_enabled": true,
+      "condition": "cold",
+      "ratios": [
+        3.931812975657207,
+        3.9354307679248604
+      ],
+      "median_ratio": 3.9336218717910336,
+      "maximum_ratio": 3.9354307679248604,
+      "acceptance_condition": true
+    },
+    {
+      "cache_enabled": true,
+      "condition": "warm",
+      "ratios": [
+        14.54368138123854,
+        14.859840075531253
+      ],
+      "median_ratio": 14.701760728384897,
+      "maximum_ratio": 14.859840075531253,
+      "acceptance_condition": false
+    },
+    {
+      "cache_enabled": false,
+      "condition": "cold",
+      "ratios": [
+        9.980618500492476,
+        9.993033066870186
+      ],
+      "median_ratio": 9.986825783681331,
+      "maximum_ratio": 9.993033066870186,
+      "acceptance_condition": false
+    },
+    {
+      "cache_enabled": false,
+      "condition": "warm",
+      "ratios": [
+        10.048739079121885,
+        9.992959309093589
+      ],
+      "median_ratio": 10.020849194107736,
+      "maximum_ratio": 10.048739079121885,
+      "acceptance_condition": false
+    }
+  ],
+  "failures": [
+    "ten_to_single_ratio_exceeds_two"
+  ],
+  "protocol_sha256": "8b874c32cc7c519fbf74c560a63a838b62db01c74c8fe37b8ed7377552d95fe3",
+  "evidence_kind": "gpu",
+  "gateway_wall_seconds": null,
+  "media_processor_seconds": null,
+  "timing_boundary": "direct native HTTP wall; payload preparation and engine metrics separate",
+  "scope": "latency evidence only; stage dependencies and provenance require review",
+  "source_reports_sha256": {
+    "on": "8b1e77a74e3c79c0196f7f76d2f4881d2ff0b0fcffca768eae63970b9035985b",
+    "off": "bfd2f176dab30d4d00e06a09567efcc04c7e9f66291176ba4a1260c2f6b05899"
+  },
+  "duration_seconds": 0.018657917040400207
+}

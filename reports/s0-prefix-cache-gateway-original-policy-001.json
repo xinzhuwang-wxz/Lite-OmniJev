@@ -1,0 +1,307 @@
+{
+  "status": "failed",
+  "exit_code": 1,
+  "action": "compare",
+  "weights_loaded": false,
+  "s0_acceptance": false,
+  "cost_usd": null,
+  "python": "3.11.14",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "code_revision": "794936547ccdc5ff898c205fb793bb73294d5203",
+  "assessment_policy": "original-product-cold-v2",
+  "acceptance_timing_condition": "cache-on cold paired T10/T1 <= 2; warm measurements reported but non-gating",
+  "ratio_threshold_inclusive": 2,
+  "probability_threshold_exclusive": 0.001,
+  "max_distribution_differences": {
+    "raw_probabilities": 2.364886522165932e-07,
+    "joint": 5.3537956290483635e-09,
+    "conditional": 5.1320781568805216e-09,
+    "p_U": 7.640539481314115e-10
+  },
+  "statistics": "all cache-on cold paired repeats must pass; warm ratios are reported",
+  "groups": [
+    {
+      "cache_enabled": true,
+      "condition": "cold",
+      "ratios": [
+        5.020221665504366,
+        5.0845706763448275
+      ],
+      "median_ratio": 5.052396170924597,
+      "maximum_ratio": 5.0845706763448275,
+      "acceptance_condition": true
+    },
+    {
+      "cache_enabled": true,
+      "condition": "warm",
+      "ratios": [
+        12.244893772615653,
+        12.034213778822094
+      ],
+      "median_ratio": 12.139553775718873,
+      "maximum_ratio": 12.244893772615653,
+      "acceptance_condition": false
+    },
+    {
+      "cache_enabled": false,
+      "condition": "cold",
+      "ratios": [
+        10.023600327656416,
+        10.025477077263872
+      ],
+      "median_ratio": 10.024538702460145,
+      "maximum_ratio": 10.025477077263872,
+      "acceptance_condition": false
+    },
+    {
+      "cache_enabled": false,
+      "condition": "warm",
+      "ratios": [
+        9.97556395179002,
+        9.99192624131681
+      ],
+      "median_ratio": 9.983745096553415,
+      "maximum_ratio": 9.99192624131681,
+      "acceptance_condition": false
+    }
+  ],
+  "failures": [
+    "ten_to_single_ratio_exceeds_two"
+  ],
+  "protocol_sha256": "8b874c32cc7c519fbf74c560a63a838b62db01c74c8fe37b8ed7377552d95fe3",
+  "evidence_kind": "gpu",
+  "gateway_wall_seconds": null,
+  "media_processor_seconds": null,
+  "timing_boundary": "actual in-process gateway ASGI wall; measured Server-Timing intervals",
+  "scope": "latency evidence only; stage dependencies and provenance require review",
+  "timing_rows": [
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.31395807676017284,
+      "server_timing_ms": {
+        "preprocess": 54.158,
+        "upstream": 257.986,
+        "queue": 0.133,
+        "total": 313.513
+      },
+      "native_http_sum_seconds": 0.25539842806756496
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 1.5761391390115023,
+      "server_timing_ms": {
+        "preprocess": 539.133,
+        "upstream": 1029.866,
+        "queue": 1.704,
+        "total": 1575.693
+      },
+      "native_http_sum_seconds": 1.0036881547421217
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.11206279136240482,
+      "server_timing_ms": {
+        "preprocess": 53.883,
+        "upstream": 56.333,
+        "queue": 0.161,
+        "total": 111.586
+      },
+      "native_http_sum_seconds": 0.053804388269782066
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 1.372196976095438,
+      "server_timing_ms": {
+        "preprocess": 539.699,
+        "upstream": 825.738,
+        "queue": 1.55,
+        "total": 1371.699
+      },
+      "native_http_sum_seconds": 0.7996427062898874
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.314055472612381,
+      "server_timing_ms": {
+        "preprocess": 54.115,
+        "upstream": 258.216,
+        "queue": 0.146,
+        "total": 313.648
+      },
+      "native_http_sum_seconds": 0.2556503228843212
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 1.5968372467905283,
+      "server_timing_ms": {
+        "preprocess": 566.415,
+        "upstream": 1023.682,
+        "queue": 1.562,
+        "total": 1596.41
+      },
+      "native_http_sum_seconds": 0.9974440149962902
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.11737527698278427,
+      "server_timing_ms": {
+        "preprocess": 57.895,
+        "upstream": 57.687,
+        "queue": 0.121,
+        "total": 116.902
+      },
+      "native_http_sum_seconds": 0.055062273517251015
+    },
+    {
+      "cache_enabled": true,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 1.4125191755592823,
+      "server_timing_ms": {
+        "preprocess": 572.631,
+        "upstream": 833.222,
+        "queue": 1.381,
+        "total": 1412.036
+      },
+      "native_http_sum_seconds": 0.806377723813057
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.3139824438840151,
+      "server_timing_ms": {
+        "preprocess": 53.212,
+        "upstream": 258.999,
+        "queue": 0.146,
+        "total": 313.535
+      },
+      "native_http_sum_seconds": 0.2564337309449911
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 3.1472345273941755,
+      "server_timing_ms": {
+        "preprocess": 537.104,
+        "upstream": 2603.756,
+        "queue": 1.505,
+        "total": 3146.787
+      },
+      "native_http_sum_seconds": 2.5782823879271746
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.3151589222252369,
+      "server_timing_ms": {
+        "preprocess": 52.834,
+        "upstream": 260.676,
+        "queue": 0.09,
+        "total": 314.69
+      },
+      "native_http_sum_seconds": 0.25830203481018543
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 0,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 3.143887983635068,
+      "server_timing_ms": {
+        "preprocess": 532.537,
+        "upstream": 2605.773,
+        "queue": 1.074,
+        "total": 3143.367
+      },
+      "native_http_sum_seconds": 2.581116024404764
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.3155602440237999,
+      "server_timing_ms": {
+        "preprocess": 52.788,
+        "upstream": 261.117,
+        "queue": 0.085,
+        "total": 315.136
+      },
+      "native_http_sum_seconds": 0.25874246284365654
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "cold",
+      "size": 10,
+      "gateway_client_wall_seconds": 3.1636419929564,
+      "server_timing_ms": {
+        "preprocess": 544.059,
+        "upstream": 2614.362,
+        "queue": 1.027,
+        "total": 3163.214
+      },
+      "native_http_sum_seconds": 2.589935565367341
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 1,
+      "gateway_client_wall_seconds": 0.31131558306515217,
+      "server_timing_ms": {
+        "preprocess": 52.697,
+        "upstream": 257.059,
+        "queue": 0.08,
+        "total": 310.872
+      },
+      "native_http_sum_seconds": 0.25476595386862755
+    },
+    {
+      "cache_enabled": false,
+      "repeat": 1,
+      "condition": "warm",
+      "size": 10,
+      "gateway_client_wall_seconds": 3.1106423437595367,
+      "server_timing_ms": {
+        "preprocess": 528.357,
+        "upstream": 2576.35,
+        "queue": 1.05,
+        "total": 3109.879
+      },
+      "native_http_sum_seconds": 2.547283424064517
+    }
+  ],
+  "gateway_configuration_sha256": "7a2b040b076e2429e7ef32434e2f43263197e0dcde964a60ee62bebb44584a9c",
+  "gateway_request_sha256": "777fd2c7a83a921f6e40baf21a76294980f3c0bb02dfeb59735f368c56e5604b",
+  "transport_scope": "in-process real gateway; networked upstream; no external gateway network",
+  "duration_seconds": 0.014132458018139005
+}

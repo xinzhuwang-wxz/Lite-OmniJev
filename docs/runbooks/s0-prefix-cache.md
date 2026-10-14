@@ -191,3 +191,23 @@ source. No custom headers or invented response metrics are used.
 - [0.26 CLI](https://docs.vllm.ai/en/v0.26.0/cli/serve/) and [0.31 CLI](https://docs.vllm.ai/en/v0.31.0/cli/serve/).
 - [0.26 processor cache size](https://github.com/vllm-project/vllm/blob/v0.26.0/vllm/config/multimodal.py#L123-L131).
 - [0.31 CPU processor test interface](https://github.com/vllm-project/vllm/blob/v0.31.0/tests/models/multimodal/processing/test_gemma4.py#L218-L240). For both versions use `MULTIMODAL_REGISTRY.create_processor(ModelConfig(...))`, `processor.info.parse_mm_data(...)`, then `processor(prompt, items, hf_processor_mm_kwargs={})`. Compare `result["prompt_token_ids"]` and modality tensors with HF. `cache=` is a 0.31 addition and must be omitted on 0.26. These calls do not load model weights or run model forward; actual CPU execution evidence is required.
+
+## Real GPU diagnostic status and original-contract policy
+
+2026-10-14 real eager native/gateway on/off measurements completed, with real
+KV hits covering the media prefix, but cold T10/T1 still exceeds 2. A short
+native FULL CUDAgraph canary also failed cold latency and was stopped before
+expanding GPU use. See `reports/s0-prefix-cache-gpu-diagnostics-001.json`.
+These results do not close S0:04.
+
+ADR-0007 preserves the default `strict-sequential-v1` diagnostics. The explicit
+compare option `--assessment-policy original-product-cold-v2` reports every
+cold/warm/on/off trial while gating all cold paired cache-on ratios at <=2 and
+all four derived probability differences at strict <1e-3. It rejects malformed
+raw values and incomplete measurements. Warm complete-prompt repeats remain a
+reported diagnostic, not the main denominator. No old report is overwritten.
+Actual offline comparisons of the recorded GPU measurements are
+`reports/s0-prefix-cache-native-original-policy-001.json` and the gateway
+counterpart: both still fail cold performance. Independent review passed the
+measurement correction; it does not admit performance. The prepared next
+technical slice is `.scratch/s0/cache-product-scheduling-spec.md`.

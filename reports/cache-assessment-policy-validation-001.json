@@ -1,0 +1,38 @@
+{
+  "schema": "lite-omnijev.cache-assessment-validation.v1",
+  "code_version": "7949365",
+  "scope": "Explicit original-product-cold-v2 assessment; original strict policy preserved",
+  "tests": {
+    "command": "uv run pytest tests/test_prefix_cache.py tests/test_prefix_cache_gateway.py -q",
+    "passed": 34,
+    "skipped": 1,
+    "skip_reason": "explicit pinned official processor and public media required; collectors unchanged; real archived GPU measurements independently re-evaluated",
+    "elapsed_seconds": 0.5,
+    "exit_code": 0
+  },
+  "ruff_check_exit": 0,
+  "ruff_format_exit": 0,
+  "mypy_sources": 4,
+  "mypy_exit": 0,
+  "independent_review": {
+    "agent": "/root/cache_protocol_review",
+    "verdict": "PASS; architectural CLEAR",
+    "blocking_issues": [],
+    "limits": "Original2 and strict.001 retained; current cold performance still failed, no S0 acceptance"
+  },
+  "actual_gpu_artifact_offline_reassessment": {
+    "native": "failed only ten_to_single_ratio_exceeds_two",
+    "gateway": "failed only ten_to_single_ratio_exceeds_two",
+    "new_model_or_gpu_forward": false
+  },
+  "cost_usd": null,
+  "s0_acceptance": false,
+  "evidence_sha256": {
+    "reports/s0-prefix-cache-native-original-policy-001.json": "af8af658b144fab3770f09c22683e6e25b48b658ef36d931711ecbd3fb583252",
+    "reports/s0-prefix-cache-gateway-original-policy-001.json": "63687078145ba6172355e1c90f044890fec10321cdaa1ae20ec08b9cd0b07322",
+    "eval/prefix_cache.py": "5f9d402090ed6ed08e362589c251088cc5169a9f5dc68d5e3d0774c2b045eb20",
+    "eval/prefix_cache_gateway.py": "9bd45768fa5013156bee231f1d0a3ae5d6d8dd9b64649c74014ec9a089fe0449",
+    "scripts/s0_prefix_cache.py": "fe89c6fffdbd937c2974839d87db3cdc9e82389e10292342040e426b11c9d69b",
+    "scripts/s0_prefix_cache_gateway.py": "466ffcdd0d331798ffa47020c8629457d32ba20a23dee15c194a5d43f0ce7e17"
+  }
+}

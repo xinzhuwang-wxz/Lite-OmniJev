@@ -44,3 +44,19 @@ uv run python -m scripts.teacher_forward \
 On CPU-only hosts this report should be `blocked` with `loader_stage=pre_from_pretrained`, `model_backbone_loaded=false`, `model_forward_run=false`, verified `protocol_source` and `model_assets`, and an error stating that CUDA is required before `from_pretrained`.
 
 Video uses the pinned upstream round-and-deduplicate frame sampling formula for same-condition preflight. If that formula yields fewer unique frame indices than requested, the adapter rejects the input before decoding instead of silently reducing the frame count; changing the sampling formula needs a separate protocol decision.
+
+## Real GPU technical admission (2026-10-14)
+
+`reports/teacher-technical-admission-gpu-001.json` records completed technical
+admission, with the fixed source/asset manifest, original publisher declarations,
+controlled safehead reference, real public forward checks, rejection regressions
+and independent review. Teacher-quality admission remains a separate S0:02 gate.
+The actual run used Torch2.13/Transformers5.17, not the student vLLM environment.
+
+The bounded reference script is `.scratch/s0/teacher-head-reference.py`. From a
+pinned source checkout with the existing full teacher environment, run
+`PYTHONPATH=. /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python .scratch/s0/teacher-head-reference.py --asset-root /root/autodl-tmp/lite-omnijev/artifacts --report artifacts/new-unique-head-reference.json`.
+Use a new output path; do not rerun the already accepted evidence. It compares
+all four safe tensor byte hashes to the original isolated conversion, then the
+live GPU head and probabilities to the audited original formula under identical
+BF16 autocast. It never deserializes raw pickle or executes the upstream module.

@@ -1,0 +1,37 @@
+{
+  "schema": "lite-omnijev.teacher-progress.v1",
+  "status": "running_incomplete",
+  "collected_at": "2026-10-14T10:10:35.700505+00:00",
+  "release_or_stage_acceptance": false,
+  "teacher_quality_admitted": false,
+  "completed_predictions": 1855,
+  "required_predictions": 5600,
+  "complete_line_snapshot_sha256": "cdac4c90c49c178b7de783ae36016a954f0e4d5be0fc1e3795dfb505d0b4b645",
+  "checkpoint_path": "/root/autodl-tmp/gpu-reference-fp32-complete-001/artifacts/teacher-benchmark-pilot-001.jsonl",
+  "binding_sha256_values": [
+    "e5af7892656e496ef33456785a5221f7161b5515f402077e9572ba8309f404e7"
+  ],
+  "groups": [
+    {
+      "benchmark": "mmau-test-mini",
+      "pass": "first",
+      "rows": 1000,
+      "correct": 620,
+      "observed_accuracy_partial_unless_full": 0.62
+    },
+    {
+      "benchmark": "mvbench-public-9task",
+      "pass": "first",
+      "rows": 855,
+      "correct": 534,
+      "observed_accuracy_partial_unless_full": 0.624561403508772
+    }
+  ],
+  "resume_script": "artifacts/resume-teacher-003.sh",
+  "resume_script_sha256": "ef6be7713dff64a86bfb4b3c676f228d0fe6425d7be8d89b58631679ab7520d4",
+  "maximum_resume_seconds": 3600,
+  "supervisor_pid": 146819,
+  "teacher_pid": 146821,
+  "source_head": "dfdfd935da5a968f497365f74c36989efebb1175",
+  "cost_usd": null
+}
