@@ -4,8 +4,8 @@ ID: s0:01
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: blocked
-Owner: none
+Execution: claimed
+Owner: main-session-gpu-transition
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04
 
@@ -38,3 +38,5 @@ Blocked by: p0:04
 2026-10-14资源阻塞收口：真实教师大模型forward/规定概率/质量复现需获授权GPU；现有2GiB CPU处理器资源门槛仍待解决。当前无活跃本票作业，释放claim，保留所有代码与证据。
 
 2026-10-14模式切换收口：当前无卡可自主完成部分已整合并验证，见readiness002及GPU-transition交接。2GiB资源受限检查移入切换后首批前置，这是用户明确澄清的调度顺序；本票真实模型/概率/阶段验收仍blocked，未改变门槛。
+
+2026-10-14有卡：主会话认领GPU技术准入收口。真实公开text/audio/video两遍forward/完整有限归一化概率通过；下一验证以隔离转换原tensor哈希链和独立原公式验证safehead实际GPU输出，不在正常进程加载原pickle，不执行上游module。教师效果仍由02独立判定。

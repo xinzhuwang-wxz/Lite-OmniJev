@@ -1,0 +1,500 @@
+{
+  "schema": "lite-omnijev.s0-full100-gpu-evidence.v1",
+  "recorded_at": "2026-10-14T09:43:42.456249+00:00",
+  "status": "passed_ticket_s0_03_only",
+  "s0_stage_acceptance": false,
+  "cost_usd": null,
+  "precision": "float32; IEEE Triton; TF32 disabled",
+  "scope": "Frozen public 100 inputs; numerical reference and API browser media paths. No BF16/performance/quality/Playground acceptance.",
+  "hf": {
+    "source": {
+      "repo_root": "/root/autodl-tmp/gpu-reference-fp32-complete-001",
+      "git": {
+        "commit": "dfdfd935da5a968f497365f74c36989efebb1175",
+        "branch": "HEAD",
+        "dirty": null
+      },
+      "code_hashes": {
+        "scripts/s0_parity.py": "51a6564ef906f94f542ce39110e8a3b56eba7af1ba7f80b5c53bfd4584b5a8e2",
+        "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+        "scripts/assets.py": "245ac6e6a93e7c4d4f750793b872c6e3fe01afe0fdbe903c10f9977e7976d5a5",
+        "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+        "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+        "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+        "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
+        "serve/vllm_chat.py": "0b8db54dff485f2e1ff8d18f241217ce71479eaa74c2cb9967c976712aa84e12",
+        "eval/multimodal_parity.py": "cca59f21b6567987316682125dca1bd2a79a9b43d9e7203c97a80e6bb2befe82"
+      }
+    },
+    "provenance": {
+      "version": "s0-parity-v1",
+      "profile": "canonical_http",
+      "hf_reference_requires_cuda": true,
+      "vllm_compare_starts_server": false,
+      "thinking": false,
+      "truncation": false,
+      "cohort_size": 100,
+      "threshold_exclusive": 0.001,
+      "dtype": "float32",
+      "execution_config": {
+        "seed": 42,
+        "tf32_allowed": false
+      },
+      "manifest": {
+        "path": "tests/fixtures/s0-prepare-public-001/manifest.json",
+        "sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7"
+      },
+      "asset_root": "/root/autodl-tmp/lite-omnijev/artifacts/s0-prepare-public-001",
+      "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+      "asset_manifest": {
+        "path": "/root/autodl-tmp/lite-omnijev/artifacts/manifests/e4b.json",
+        "sha256": "207ce3a8b2ddc8a3a31f199935842bbb42e72ea029febf14978d895d120b1461"
+      },
+      "model_files": {
+        "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+        "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+        "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+        "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+        "model.safetensors": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503",
+        "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+        "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+        "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+      },
+      "adapter": null,
+      "source": {
+        "repo_root": "/root/autodl-tmp/gpu-reference-fp32-complete-001",
+        "git": {
+          "commit": "dfdfd935da5a968f497365f74c36989efebb1175",
+          "branch": "HEAD",
+          "dirty": null
+        },
+        "code_hashes": {
+          "scripts/s0_parity.py": "51a6564ef906f94f542ce39110e8a3b56eba7af1ba7f80b5c53bfd4584b5a8e2",
+          "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+          "scripts/assets.py": "245ac6e6a93e7c4d4f750793b872c6e3fe01afe0fdbe903c10f9977e7976d5a5",
+          "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+          "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+          "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+          "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
+          "serve/vllm_chat.py": "0b8db54dff485f2e1ff8d18f241217ce71479eaa74c2cb9967c976712aa84e12",
+          "eval/multimodal_parity.py": "cca59f21b6567987316682125dca1bd2a79a9b43d9e7203c97a80e6bb2befe82"
+        }
+      }
+    },
+    "environment": {
+      "python": "3.11.17",
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "executable": "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+      "pid": 96391,
+      "cwd": "/root/autodl-tmp/gpu-reference-fp32-complete-001",
+      "packages": {
+        "torch": "2.11.0",
+        "transformers": "5.13.0",
+        "peft": "0.21.2",
+        "httpx": "0.28.1",
+        "pydantic": "2.14.1"
+      },
+      "cuda": {
+        "torch_importable": true,
+        "torch_version": "2.11.0+cu130",
+        "cuda_version": "13.0",
+        "available": true,
+        "current_device": 0,
+        "device_name": "NVIDIA H20",
+        "capability": [
+          9,
+          0
+        ],
+        "total_memory_bytes": 102085623808
+      }
+    },
+    "elapsed_seconds": 162.733593,
+    "exit_code": 0,
+    "hf_repeatability": {
+      "label": "hf_reference_repeatability",
+      "passed": true,
+      "status": "passed",
+      "exit_code": 0,
+      "samples": 100,
+      "threshold_exclusive": 0.001,
+      "max_differences": {
+        "raw_probabilities": 0.0,
+        "joint": 0.0,
+        "conditional": 0.0,
+        "p_U": 0.0
+      },
+      "exact_rerun_required": true,
+      "rows_identical": true,
+      "release_or_stage_acceptance": false,
+      "scope": "Numerical only; source/model/runtime/GPU provenance required separately"
+    }
+  },
+  "native": {
+    "source": {
+      "repo_root": "/root/autodl-tmp/gpu-reference-fp32-complete-001",
+      "git": {
+        "commit": "dfdfd935da5a968f497365f74c36989efebb1175",
+        "branch": "HEAD",
+        "dirty": null
+      },
+      "code_hashes": {
+        "scripts/s0_parity.py": "51a6564ef906f94f542ce39110e8a3b56eba7af1ba7f80b5c53bfd4584b5a8e2",
+        "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+        "scripts/assets.py": "245ac6e6a93e7c4d4f750793b872c6e3fe01afe0fdbe903c10f9977e7976d5a5",
+        "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+        "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+        "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+        "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
+        "serve/vllm_chat.py": "0b8db54dff485f2e1ff8d18f241217ce71479eaa74c2cb9967c976712aa84e12",
+        "eval/multimodal_parity.py": "cca59f21b6567987316682125dca1bd2a79a9b43d9e7203c97a80e6bb2befe82"
+      }
+    },
+    "environment": {
+      "python": "3.11.17",
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "executable": "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+      "pid": 109437,
+      "cwd": "/root/autodl-tmp/gpu-reference-fp32-complete-001",
+      "packages": {
+        "torch": "2.11.0",
+        "transformers": "5.13.0",
+        "peft": "0.21.2",
+        "httpx": "0.28.1",
+        "pydantic": "2.14.1"
+      },
+      "cuda": {
+        "torch_importable": true,
+        "torch_version": "2.11.0+cu130",
+        "cuda_version": "13.0",
+        "available": true,
+        "current_device": 0,
+        "device_name": "NVIDIA H20",
+        "capability": [
+          9,
+          0
+        ],
+        "total_memory_bytes": 102085623808
+      }
+    },
+    "elapsed_seconds": 176.526645,
+    "exit_code": 0,
+    "vllm_repeatability": {
+      "label": "vllm_repeatability",
+      "passed": true,
+      "status": "passed",
+      "exit_code": 0,
+      "samples": 100,
+      "threshold_exclusive": 0.001,
+      "max_differences": {
+        "raw_probabilities": 0.0,
+        "joint": 0.0,
+        "conditional": 0.0,
+        "p_U": 0.0
+      },
+      "exact_rerun_required": true,
+      "rows_identical": true,
+      "release_or_stage_acceptance": false,
+      "scope": "Numerical only; source/model/runtime/GPU provenance required separately"
+    },
+    "parity": {
+      "label": "hf_reference_vs_vllm",
+      "passed": true,
+      "status": "passed",
+      "exit_code": 0,
+      "samples": 100,
+      "threshold_exclusive": 0.001,
+      "max_differences": {
+        "raw_probabilities": 3.229375648383659e-05,
+        "joint": 3.2283035163338525e-05,
+        "conditional": 1.6777992971672706e-05,
+        "p_U": 3.2283035163338525e-05
+      },
+      "exact_rerun_required": false,
+      "rows_identical": false,
+      "release_or_stage_acceptance": false,
+      "scope": "Numerical only; source/model/runtime/GPU provenance required separately"
+    }
+  },
+  "gateway": {
+    "source": {
+      "repo_root": "/root/autodl-tmp/gpu-gateway-contract-001",
+      "git": {
+        "commit": "0ca8ff1d1fdf549527d913e48aa3e0fea3b145a8",
+        "branch": "HEAD",
+        "dirty": null
+      },
+      "code_hashes": {
+        "scripts/s0_gateway_parity.py": "82194a98cd5de7d800deda5bd2f0ec6a00c0488d67d42719ddbeb680a43b142c",
+        "scripts/s0_parity.py": "51a6564ef906f94f542ce39110e8a3b56eba7af1ba7f80b5c53bfd4584b5a8e2",
+        "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+        "serve/gateway/app.py": "18b264f334e9e6515770abc66caf40d0dccb68bdc55eaec3e381f3d54c79fce3",
+        "serve/vllm_chat.py": "0b8db54dff485f2e1ff8d18f241217ce71479eaa74c2cb9967c976712aa84e12",
+        "data/schema.py": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6",
+        "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+        "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b"
+      }
+    },
+    "environment": {
+      "python": "3.11.17",
+      "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+      "executable": "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+      "pid": 131995,
+      "cwd": "/root/autodl-tmp/gpu-gateway-contract-001",
+      "packages": {
+        "httpx": "0.28.1",
+        "pydantic": "2.14.1",
+        "fastapi": "0.136.3",
+        "starlette": "1.8.0",
+        "torch": "2.11.0",
+        "transformers": "5.13.0"
+      }
+    },
+    "elapsed_seconds": 123.138172,
+    "exit_code": 0,
+    "repeatability": {
+      "status": "passed",
+      "passed": true
+    },
+    "health": {
+      "status": "ok",
+      "mode": "canonical-chat",
+      "inference_configured": true,
+      "model_version": "e4b-ee0ef602-fp32-ieee-dfdfd935",
+      "model_quality_verified": false
+    },
+    "second_health": {
+      "status": "ok",
+      "mode": "canonical-chat",
+      "inference_configured": true,
+      "model_version": "e4b-ee0ef602-fp32-ieee-dfdfd935",
+      "model_quality_verified": false
+    }
+  },
+  "gateway_comparison": {
+    "status": "passed",
+    "passed": true,
+    "threshold_exclusive": 0.001,
+    "max_differences": {
+      "conditional": 0.0,
+      "p_insufficient": 0.0
+    },
+    "samples": 100,
+    "details_sha256": "e56055d30c2f9edb1665389ae6eb333f3fa32fa4ba4e68f75f34b156bc6e1170",
+    "raw_or_k_plus_one_validated_by_gateway": false
+  },
+  "browser": {
+    "scope": "Actual Chromium against existing gateway; model/quality provenance separate",
+    "status": "passed_live_browser_contract_only",
+    "exit_code": 0,
+    "gpu_used": null,
+    "real_model_forward": "not_attested_by_browser",
+    "release_or_stage_acceptance": false,
+    "cases": [
+      {
+        "category": "text",
+        "frames": 8,
+        "status": 200,
+        "server_timing": "preprocess;dur=7.535, upstream;dur=171.973, total;dur=181.651, queue;dur=0.456"
+      },
+      {
+        "category": "image",
+        "frames": 8,
+        "status": 200,
+        "server_timing": "preprocess;dur=193.630, upstream;dur=1570.786, total;dur=1766.923, queue;dur=0.494"
+      },
+      {
+        "category": "screenshot",
+        "frames": 8,
+        "status": 200,
+        "server_timing": "preprocess;dur=2418.193, upstream;dur=1525.937, total;dur=3946.868, queue;dur=0.483"
+      },
+      {
+        "category": "audio",
+        "frames": 8,
+        "status": 200,
+        "server_timing": "preprocess;dur=451.066, upstream;dur=1445.477, total;dur=1904.214, queue;dur=0.607"
+      },
+      {
+        "category": "video",
+        "frames": 8,
+        "status": 200,
+        "server_timing": "preprocess;dur=1326.905, upstream;dur=2178.575, total;dur=3517.489, queue;dur=0.599"
+      },
+      {
+        "category": "video",
+        "frames": 16,
+        "status": 200,
+        "server_timing": "preprocess;dur=1699.754, upstream;dur=4919.788, total;dur=6635.559, queue;dur=0.583"
+      }
+    ],
+    "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+    "runtime": {
+      "python": "3.11.14",
+      "platform": "macOS-26.5.1-arm64-arm-64bit"
+    },
+    "cost_usd": null,
+    "source_sha256": {
+      "scripts/browser_s0_cpu.py": "aad9249ad09194d10d13b85706b25f5a9524db1280a5bda958a9880b2e49b451",
+      "serve/gateway/app.py": "18b264f334e9e6515770abc66caf40d0dccb68bdc55eaec3e381f3d54c79fce3",
+      "serve/vllm_chat.py": "0b8db54dff485f2e1ff8d18f241217ce71479eaa74c2cb9967c976712aa84e12",
+      "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+      "tests/test_gateway_media.py": "50fde9e78a2d3407b0ad3b9ed54d17f918caa023134d3e73c5374f588903546a"
+    },
+    "bad_media_status": 422,
+    "browser_version": "153.0.8010.12",
+    "page_errors": [],
+    "elapsed_seconds": 31.353
+  },
+  "live_process_binding": {
+    "collected_at_unix": 1791970990.2442992,
+    "method": "SSH observed /proc plus loopback live health; operator evidence, not signed remote attestation",
+    "processes": {
+      "94918": {
+        "cwd": "/root/autodl-tmp/gpu-transition-ba4b22a",
+        "command": [
+          "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+          "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/vllm",
+          "serve",
+          "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+          "--served-model-name",
+          "s0-e4b-ba4b22a-fp32",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "18001",
+          "--dtype",
+          "float32",
+          "--tensor-parallel-size",
+          "1",
+          "--max-model-len",
+          "8192",
+          "--max-num-seqs",
+          "1",
+          "--max-num-batched-tokens",
+          "8192",
+          "--gpu-memory-utilization",
+          "0.55",
+          "--seed",
+          "42",
+          "--enforce-eager",
+          "--generation-config",
+          "vllm",
+          "--logprobs-mode",
+          "raw_logprobs",
+          "--max-logprobs",
+          "32",
+          "--attention-backend",
+          "TRITON_ATTN",
+          "--mm-processor-cache-gb",
+          "0",
+          "--limit-mm-per-prompt",
+          "{\"image\":1,\"audio\":1,\"video\":1}",
+          "--skip-mm-profiling",
+          "--no-enable-log-requests",
+          "--no-enable-prefix-caching",
+          "--no-async-scheduling",
+          "--no-enable-chunked-prefill",
+          "--kv-cache-memory-bytes",
+          "4294967296",
+          "--hf-config-path",
+          "/root/autodl-tmp/gpu-transition-ba4b22a/artifacts/fp32-hf-config-001"
+        ],
+        "precision_env": {
+          "NVIDIA_TF32_OVERRIDE": "0",
+          "TRITON_F32_DEFAULT": "ieee",
+          "CUDA_VISIBLE_DEVICES": "0"
+        }
+      },
+      "130178": {
+        "cwd": "/root/autodl-tmp/gpu-reference-fp32-complete-001",
+        "command": [
+          "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+          "-m",
+          "uvicorn",
+          "serve.gateway.app:app",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "18000",
+          "--no-access-log",
+          "--log-level",
+          "warning"
+        ],
+        "precision_env": {
+          "NVIDIA_TF32_OVERRIDE": null,
+          "TRITON_F32_DEFAULT": null,
+          "CUDA_VISIBLE_DEVICES": ""
+        }
+      }
+    },
+    "cost_usd": null,
+    "gpu": "NVIDIA H20, 97871 MiB, 63861 MiB, 580.65.06",
+    "health": {
+      "status": "ok",
+      "inference_configured": true,
+      "model_version": "e4b-ee0ef602-fp32-ieee-dfdfd935",
+      "mode": "canonical-chat",
+      "scope": "local-canonical-chat-development",
+      "model_quality_verified": false
+    },
+    "sources": {
+      "94918": {
+        "head": "ba4b22a2672b56cb4e248f33a2542790e8031ca2",
+        "files": {
+          "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+          "serve/vllm_chat.py": "0b8db54dff485f2e1ff8d18f241217ce71479eaa74c2cb9967c976712aa84e12",
+          "serve/gateway/app.py": "18b264f334e9e6515770abc66caf40d0dccb68bdc55eaec3e381f3d54c79fce3"
+        }
+      },
+      "130178": {
+        "head": "dfdfd935da5a968f497365f74c36989efebb1175",
+        "files": {
+          "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+          "serve/vllm_chat.py": "0b8db54dff485f2e1ff8d18f241217ce71479eaa74c2cb9967c976712aa84e12",
+          "serve/gateway/app.py": "18b264f334e9e6515770abc66caf40d0dccb68bdc55eaec3e381f3d54c79fce3"
+        }
+      }
+    }
+  },
+  "evidence_sha256": {
+    "artifacts/s0-parity-full100-20261014/native-runtime-config.json": "c373e6289ff28d868e9b629e5d59fc29520f3f189fc4359ebbebe27d41175c79",
+    "artifacts/s0-parity-full100-20261014/live-process-binding-001.json": "83f12139c9c5d27194743fe43696452100ed4abe7820296f842d38611258c336",
+    "artifacts/s0-parity-full100-20261014/original-config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+    "artifacts/s0-parity-full100-20261014/vllm-fp32-server-record-001.json": "cb8bbf892f65e55c2bf6ad7472e64dbe6a717cd5079cd1448fe3f4486407255e",
+    "artifacts/s0-parity-full100-20261014/hf-fp32-full100-001.json": "ebe98953821191c1eeb4a39e2bc0be48c0d525bb7c682fd75494e2ccfd32a022",
+    "artifacts/s0-parity-full100-20261014/vllm-fp32-full100-001.json": "3353de5cf8292aeeb89a18b4d488bc3edbbd35e08b7428bcf9eb89c0826997a6",
+    "artifacts/s0-parity-full100-20261014/gateway-fp32-full100-002.json": "ea26a7023042d20b44db80c901bc9cd9c8ca5ff825392529be899752e62bb9bf",
+    "artifacts/s0-parity-full100-20261014/gateway-fp32-record-001.json": "e2c57111f9eecb98b3f4b93526506b5e483dee24ecc24f4a1fe995ab21d26a76",
+    "artifacts/browser/s0-live-fp32-ieee-001/report.json": "f53ec8ce6d68f8a2fe2e85b99c5b6138313f19975a26c1cb94749f8a1de336f5",
+    "artifacts/browser/s0-live-fp32-ieee-001/trace.zip": "c14e57952d7f51f893de4bb8646d75ed663dbd8450ed62d65a0baf3a1ceede6e",
+    "artifacts/browser/s0-live-fp32-ieee-001/docs.png": "b05cfca636658465711f4637b80b6cf96e48c3c8553b10409e507391ba537eba"
+  },
+  "history": "reports/gpu-transition-live-browser-and-runtime-001.json preserves failed BF16 and preceding diagnostics; strict thresholds unchanged",
+  "independent_review": {
+    "role": "verifier",
+    "agent": "/root/parity_verifier",
+    "worktree": "/tmp/lite-s0-parity-verifier-0ca8ff1",
+    "head": "0ca8ff1",
+    "verdict": "PASS to close s0:03 only",
+    "findings": [],
+    "verified": [
+      "100 unique IDs; five media categories; Choice/Noul/Score/U",
+      "finite complete raw probabilities recomputed and matching input/token/media bindings",
+      "four dtype-only config deltas; same weight/template; FP32 IEEE runtime binding",
+      "HF/native reruns exact and all four strict parity deltas below 0.001",
+      "gateway100 exact; confidence chance-adjusted; browser trace7 calls including422"
+    ],
+    "limits": [
+      "not BF16/FP8 performance",
+      "not S0-wide acceptance",
+      "operator evidence, not signed remote attestation",
+      "unknown billing cost"
+    ]
+  },
+  "targeted_regression": {
+    "command": "uv run pytest tests/test_s0_parity.py tests/test_s0_gateway_parity.py -q",
+    "passed": 25,
+    "elapsed_seconds": 1.16,
+    "exit_code": 0
+  }
+}

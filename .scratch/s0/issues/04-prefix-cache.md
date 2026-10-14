@@ -4,9 +4,9 @@ ID: s0:04
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: main-session-gpu-transition
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04, 03
 
 ## What to build
@@ -32,3 +32,5 @@ Blocked by: p0:04, 03
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
 
 2026-10-14 CPU准备收口：native/gateway cache runner、Server-Timing边界及真实CPU媒体/前缀freeze已合入；CPU mock比率失败保留，不能当作GPU prefix命中/≤2时延通过。
+
+2026-10-14：03正式GPU概率/浏览器独立验收通过后认领。已在相同Linux/026官方processor冻结10题协议，2重复/2预热/零输出容差，commonprefix309含媒体endpoint265；freeze exit0/6.924秒。当前教师benchmark占卡，cache实测等待独占GPU，禁止并行教师性能污染；仅准备协议，不冒称缓存或2倍门槛通过。

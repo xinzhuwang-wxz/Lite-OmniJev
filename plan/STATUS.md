@@ -1,20 +1,21 @@
 # STATUS
 
-## 当前会话接续（2026-10-14，有卡）
-- 用户已开卡并授权主会话按原方案自主安排参数/调度、减少GPU时间；不重复P0训练，不擅自更换基座/降低门槛，不代开关卡/付费/生产部署。
-- H20/97871MiB显存、driver580.65.06、CUDA13.0；cgroup150GiB/16CPU，盘余约420GB。SSH socket `/tmp/omnijev-ssh-root-final` 可复用，密码未保存到仓库/报告。
-- 执行源码 `/root/autodl-tmp/gpu-transition-ba4b22a`，HEAD ba4b22a；独立CPU测试树 `/root/autodl-tmp/gpu-gateway-reference-001`（a909a37）。原用户树和冻结764ee500树保留，不覆盖。
-- s0:03主会话claimed。primary026同Linux HF100输入两遍完全一致；native正常六case及full100精确通过。官方视频归一化已通过请求参数对齐，仍逐字节比较。独立review无具体阻断发现。
-- E4B六类GPU forward两遍通过/18.76秒；正式BF16 HF100两遍原始概率完全一致/112.18秒。真实媒体传输及gateway完整100输入同Linux参考共16测试通过/56.91秒。
-- BF16真实Chromium→网关→模型6类×3primitive通过、坏媒体422，30.895秒；截图/trace/report在artifacts/browser/s0-live-gpu-001。功能通过，不当作模型质量或时延达标。
-- BF16原生HTTP100两遍完成/130.49秒，但重跑最大raw差0.091862、HF/native最大raw差0.136941，S0严格门槛failed。六case逐请求cache_salt诊断重跑精确，提示缓存复用因素；其HF差仍存在，不关概率票。
-- 0.26音频extra已补齐：AV/SoundFile/SciPy/soxr，pip check0、官方audio extra缺项0、PCM WAV逐值精确；Torch2.11/TF5.13保持。serve锁同步audio extra。PyAV整数PCM fallback未归一化保留为边界，canonical路径用SoundFile。首轮缺audio依赖失败和旧CLI日志flag错误均保留。
-- 教师真实文本/音频/视频两遍均成功、有限概率归一化和重跑精确/44.564秒；artifacts/teacher-public-canary-003.json，脚本.scratch/s0/teacher-public-canary.py。前两次临时记录脚本错误已留失败报告，不当作模型问题；尚未做完整MMAU/MVBench或原格式GPU参考，不关s0:01。
-- FP32 HF六case两遍精确/23.881秒；native首次自动KV预算不足，显式4GiB后音频子配置仍BF16导致dtype错误。当前用官方hf-config-path副本仅同步audio/root/text/vision四处dtype，原权重/配置未改；006子配置对齐后仍有TF32误差；现007服务PID94918、artifacts/vllm-007-ieee.log，TRITON_F32_DEFAULT=ieee，六case两遍精确、全部分布最大差0.0000323通过/14.234秒。正式100尚待执行。不得复用005失败配置。全局GPU当前无其它作业。
-- 网关旧PID68701仍在18000，但上游旧BF16 alias需随新服务重置。SSH本地转发55174→远端18000，仅本机。暂不声称当前网关可推理。
-- 原生goal上次工具状态blocked；用户已明确继续，实际工作持续推进，终局未complete。人工独立gate/双人标注及S6真机缺口保持，S0全绿前不进S1。
+## 当前会话接续（2026-10-14，有卡；本节优先于历史资源记录）
+- 用户已开卡并授权按原方案自主技术决策/调度，减少GPU时间；不换基座/引擎、不降低阈值，不代开关卡/付费/生产部署/push。5b/探索关闭。
+- H20/97871MiB、driver580.65.06、CUDA13.0；cgroup150GiB/16CPU，盘余约420GB。SSH socket `/tmp/omnijev-ssh-root-final`；凭据不入仓库。
+- 冻结执行树 `/root/autodl-tmp/gpu-reference-fp32-complete-001` HEADdfdfd935；网关验收runner树 `/root/autodl-tmp/gpu-gateway-contract-001` HEAD0ca8ff1。原用户树/764ee500树保留。不要从目录名推断版本。
+- s0:03 done；正式FP32/IEEE HF100两遍精确/162.734秒、native100两遍精确/176.527秒；raw/joint/conditional/pU最大差分别0.0000322938/0.0000322830/0.0000167780/0.0000322830，全部严格<0.001。新汇总 `reports/s0-full100-gpu-acceptance-001.json`，独立verifier通过；25定向回归通过。
+- 网关正式100两遍精确/123.138秒，conditional及pU与native最大差0；真实Chromium153六类×三primitive/坏媒体422通过/31.353秒，artifacts/browser/s0-live-fp32-ieee-001含截图trace。置信度validator已按既定chance-adjusted公式修复，API未改；14回归通过。
+- primary026/TF5.13/Torch2.11，audio extra已完整锁定/pip check0。视频官方归一化参数及同Linuxprocessor/HF100逐字节输入等价已通过。FP32仅数值参考；BF16训练不变，最终服务精度/性能另验。
+- 原BF16两遍raw漂移0.091862、HF/native差0.136941失败仍留；FP32仅官方config副本四个dtype字段，TRITON_F32_DEFAULT=ieee和TF32关闭解决参考误差，不更改原权重/模板/阈值。
+- 验收native PID94918/18001与gateway PID130178/18000已发送TERM；本机转发55174→18000暂保留，服务不再保证可用。实时/proc+health绑定在artifacts/s0-parity-full100-20261014/live-process-binding-001.json，无签名remote attestation，不伪称独立签名证明。两服务仅开发数值验收，非生产。
+- 教师公开text/audio/video两遍真实forward通过/44.564秒；原tensor格式→safehead的GPU功能参考正在补，s0:01仍未关。严禁正常进程加载pickle或执行上游module。
+- 教师benchmark原pilot900秒退出124，保留1397条；MMAU首遍1000题620正确/62.0%，在63.1±2pp内；MVBench首遍397题仅部分，不作完整baseline。两遍完整质量门槛仍pending。
+- 已从1397记录显式--resume继续，PID145623，timeout监督145622/最多3600秒；脚本DF树artifacts/resume-teacher-002.sh，日志teacher-benchmark-resume-002.log/exit，输出仍teacher-benchmark-pilot-001.json及.jsonl。不得启动第二份或改冻结源码，不重算已有题。
+- 原生子代理：parity_verifier已完成03只读复核，树/tmp/lite-s0-parity-verifier-0ca8ff1；teacher_reference仅独立参考脚本，树/tmp/lite-teacher-head-reference-0ca8ff1。父会话统一票/STATUS/整合。
+- 当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
-更新时间：2026-10-14。当前S0；P0工程闭环已完成，S0–S6/FINAL未完成。下一步以已通过的FP32/IEEE配置执行正式100和网关/浏览器，不重复失败配置。其后教师限时benchmark估算/断点、缓存性能等独立门槛。
+下一步：03已关票；s0:04已认领/同Linux协议freeze通过，仅等待独占GPU测量；执行安全head GPU参考；教师断点作业结束后独占GPU测cache-on/off及真实网关顺序10题。未知费用填null，不冒称时延/质量或最终Playground达标。
 
 ## 当前目标与决策
 - 用户已完成开卡，原无卡准备收口；现在复用现有模型、数据、环境及P0产物推进真实GPU闭环，不代开关卡或改租赁。
@@ -41,7 +42,7 @@
 - offline-prep:05/06 done：pytest锁修复、真实Linux教师音频CPU适配。
 - s0:09 done：官方HF100题×2输入相同；4原始family变体不是100独立质量样本。`reports/s0-prepare-integrated-acceptance-002.json`，仅CPU输入。
 - s0:01 blocked（无活跃owner）：安全head/loader/teacher forward/benchmark runner代码与CPU控制已合入；全13文件23,955,723,321B已Linux校验；GPU真实概率/复现门槛pending，不关整票。
-- s0:03 blocked（无活跃owner）：canonical媒体/原生chat/collector/网关/版本/失败路径代码已整合；历史HF/vLLM maxTV .01129/.02292仍failed，严格<.001，D004未批准/未应用；GPU真实概率和浏览器模型验收pending。
+- s0:03 done：真实FP32/IEEE正式100、网关100和模型浏览器及独立复核通过；历史BF16失败保留，门槛不变。
 - s0:05/06 blocked：独立封存gate身份及两真人6000题/12000判断、κ≥.7资源缺口。不得agent自标/合成κ。
 - S0全绿前禁止S1；delivery:01未完成，原生goal不complete。
 
@@ -76,10 +77,10 @@
 - primary026 LinuxHF完整100题首次通过exit0/94.092秒；第二遍到90/100后137，未通过Linux重跑；native官方类诊断creating_processor137/零cases。`reports/primary026-linux-cpu-acceptance-001.json`，Mac/Linux60case有编码/张量摘要差异照留，不冒充跨机器模型等价。
 - 原生网关向HTTP后端发包前释放已完成摘要的大HF媒体Tensor，保留精确input IDs/canonical bytes/summary绑定；真实weakref先红后绿、94网关/client测试与独立review通过。此改进不解决2GiB全部资源门槛；新两视频batch137，无完成标记。
 - FFmpeg stdin消费真实复现并修复：probe/decode子进程DEVNULL，实时q输入视频先红后绿，26媒体测试通过；不让SSH管线下一行命令被吞。
-- 所有监督句柄/子代理作业已结束；无活跃CPU/GPU/container作业。最终同步receipt随本批报告保存，不能重复启动失败配置。
+- 无卡收尾时作业均结束；当前有卡活跃作业以顶部本节为准，禁止重复启动。
 
 ## 待用户/外部条件
-- 当前无卡可自主完成工作已完成，可由用户把现有实例切到有卡模式；不自动开卡/调资源/付费。已证实2GiB限制下未完成的CPU验证在切换后首批补验，不阻止模式切换，也不冒称已通过。
+- 用户已完成切换；2GiB历史资源阻塞已按首批补验通过，不再要求切换或重跑无卡路径。独立gate/真人标注仍需外部条件。
 - 真实gate身份、双人标注、S6真机及后续运营观测须安排；对应阶段门槛仍blocked，不伪造终局证据。
 - 数据许可/来源训练准入逐源执行，研究隔离照留；未来LoRA/校准/量化/阶段派生训练集待生成，S4放量预算届时按实测重估。
 

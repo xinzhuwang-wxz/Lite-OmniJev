@@ -4,8 +4,8 @@ ID: s0:03
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: main-session-gpu-transition
+Execution: done
+Owner: none
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04, 09
 
@@ -13,16 +13,17 @@ Blocked by: p0:04, 09
 复用 P0 读出与共享模板，加入真实媒体处理，形成100题HF→vLLM→网关概率与版本证据。
 
 ## Acceptance criteria
-- [ ] 冻结非封存100题manifest、各模态覆盖和Primitive覆盖（Choice/Noul/Score及U）；真实文本/图像/截图/音频/视频均有证据，媒体许可/hash、答案边界单token检查齐备。
-- [ ] HF/vLLM使用同权重/adapter/processor/dtype/模板/prompt token IDs和媒体处理；显式关闭thinking和截断，记录padding/采样配置。
-- [ ] raw_logprobs覆盖全部答案和U；缺项、重复ID、NaN、-9999哨兵失败；分别报告原始token概率、K+1分布、条件答案分布与p(U)最大差，严格<1e-3。
-- [ ] 相同100题重跑完全一致；网关同版本返回真实答案，保留逐题非封存差异、汇总和HTTP证据。
-- [ ] 真实浏览器验证本票新增媒体路径与明确错误态；记录实际工具/截图/trace，不以mock代替实测。
+- [x] 冻结非封存100题manifest、各模态覆盖和Primitive覆盖（Choice/Noul/Score及U）；真实文本/图像/截图/音频/视频均有证据，媒体许可/hash、答案边界单token检查齐备。
+- [x] HF/vLLM使用同权重/adapter/processor/dtype/模板/prompt token IDs和媒体处理；显式关闭thinking和截断，记录padding/采样配置。
+- [x] raw_logprobs覆盖全部答案和U；缺项、重复ID、NaN、-9999哨兵失败；分别报告原始token概率、K+1分布、条件答案分布与p(U)最大差，严格<1e-3。
+- [x] 相同100题重跑完全一致；网关同版本返回真实答案，保留逐题非封存差异、汇总和HTTP证据。
+- [x] 真实浏览器验证本票新增媒体路径与明确错误态；记录实际工具/截图/trace，不以mock代替实测。
 
 ## Evidence
+Evidence: reports/s0-full100-gpu-acceptance-001.json；独立verifier PASS。以下为保留的历史记录，最终结论见末条。
 2026-10-14开卡接续：用户已完成开卡并授权SSH推进；实测H20/97871MiB显存、cgroup150GiB/16CPU、源码HEAD764ee500干净。主会话认领本票资源前置，远端仅在隔离源码artifacts/gpu-transition-20261014-0717生成新证据；先HF100两遍→native正常六case，未经通过不执行full100。历史失败与严格概率门槛保持。
 
-真实GPU验收未完成；CPU子集证据见下文，不能按最初冻结文字误判为缺代码。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
+早期真实GPU验收未完成，现已按末条收口；CPU子集证据保留。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
 
 ## Out of scope
 调宽阈值、改变推理引擎、封存内容、训练优化、完整Playground。
@@ -42,3 +43,5 @@ Blocked by: p0:04, 09
 2026-10-14资源阻塞收口：真实HF/vLLM/网关严格概率与模型浏览器验收需获授权GPU；primary026 native及Linux视频CPU资源门槛仍blocked。当前无活跃本票作业，释放claim，历史maxTV失败不变。
 
 2026-10-14模式切换收口：当前无卡可自主完成部分已整合并验证，见readiness002及GPU-transition交接。2GiB资源受限检查移入切换后首批前置，这是用户明确澄清的调度顺序；本票真实模型/概率/阶段验收仍blocked，未改变门槛。
+
+2026-10-14正式GPU验收关闭：reports/s0-full100-gpu-acceptance-001.json及其逐文件SHA绑定原始HF/native/gateway100报告、实际Chromium153六类/三primitive/422与截图trace。FP32/IEEE仅数值参考；两遍逐行精确，HF/native四分布max<0.001，网关conditional/pU差0。独立只读verifier通过全部五条验收，25定向回归通过。仅四dtype副本/原权重原模板不改，历史BF16失败保留；cache-on/off及最终BF16/FP8性能由独立票验证，不放行S0全阶段。真实运行态通过SSH/proc/health绑定，无签名remote attestation，成本未知null。
