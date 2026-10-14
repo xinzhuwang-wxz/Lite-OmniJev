@@ -388,11 +388,23 @@ def probe_answer_mapping(tokenizer: Any) -> dict[str, Any]:
     }
 
 
-def _template_has_enable_thinking_false_branch(template: str | None) -> bool:
+def _template_has_enable_thinking_disabled_branch(template: str | None) -> bool:
     if not template:
         return False
     compact = " ".join(template.split())
-    return "enable_thinking is defined" in compact and "enable_thinking is false" in compact
+    disabled_marker_in_template = (
+        "<think>\\n\\n</think>" in template or "<think>\n\n</think>" in template
+    )
+    explicit_false_branch = (
+        "enable_thinking is defined" in compact and "enable_thinking is false" in compact
+    )
+    explicit_true_else_branch = (
+        "enable_thinking is defined" in compact
+        and "enable_thinking is true" in compact
+        and "{%- else %}" in template
+        and disabled_marker_in_template
+    )
+    return explicit_false_branch or explicit_true_else_branch
 
 
 def _disabled_thinking_marker(off: str, on: str) -> str | None:
@@ -428,8 +440,8 @@ def probe_thinking(tokenizer: Any, template: str | None = None) -> dict[str, Any
     ]
     matched = [token for token in candidates if token and token not in off and token in on]
     disabled_marker = _disabled_thinking_marker(off, on)
-    template_false_branch = _template_has_enable_thinking_false_branch(template)
-    proved_by_template = off != on and template_false_branch and disabled_marker is not None
+    template_disabled_branch = _template_has_enable_thinking_disabled_branch(template)
+    proved_by_template = off != on and template_disabled_branch and disabled_marker is not None
     status = "proved_disabled" if matched or proved_by_template else "not_proved"
     return {
         "status": status,
@@ -439,7 +451,7 @@ def probe_thinking(tokenizer: Any, template: str | None = None) -> dict[str, Any
         "evidence_kind": (
             "token_absent_when_disabled"
             if matched
-            else "template_enable_thinking_false_branch"
+            else "template_enable_thinking_disabled_branch"
             if proved_by_template
             else None
         ),

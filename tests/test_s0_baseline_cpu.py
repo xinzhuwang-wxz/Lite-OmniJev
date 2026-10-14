@@ -365,7 +365,21 @@ def test_official_enable_thinking_false_branch_proves_disabled() -> None:
         "{{- '<think>\\n\\n</think>\\n\\n' }}{%- endif %}",
     )
     assert report["status"] == "proved_disabled"
-    assert report["evidence_kind"] == "template_enable_thinking_false_branch"
+    assert report["evidence_kind"] == "template_enable_thinking_disabled_branch"
+    assert report["disabled_marker_sha256"]
+
+
+def test_official_enable_thinking_true_else_branch_proves_disabled() -> None:
+    report = baseline.probe_thinking(
+        FakeOfficialThinkingTokenizer(),
+        "{%- if enable_thinking is defined and enable_thinking is true %}"
+        "{{- '<think>\\n' }}"
+        "{%- else %}"
+        "{{- '<think>\\n\\n</think>\\n\\n' }}"
+        "{%- endif %}",
+    )
+    assert report["status"] == "proved_disabled"
+    assert report["evidence_kind"] == "template_enable_thinking_disabled_branch"
     assert report["disabled_marker_sha256"]
 
 
