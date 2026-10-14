@@ -3,6 +3,28 @@
     "maven_cache_status": "litertlm_android_0_9_0_aar_and_direct_compile_dependencies_cached_native_needed_recorded",
     "runtime_cache_status": "official_android_arm64_cli_cached_and_abi_verified_aar_build_pending"
   },
+  "android_litert_scope_audit": {
+    "decision": {
+      "current_required_external_dependency_status": "satisfied_for_pre_gpu_edge_runtime_dependency_preparation_with_cli_and_ndk_toolchain; gradle_transitive_closure_not_marked_done",
+      "gradle_android_app_required_now": false,
+      "rationale": "The current first-release dependency-prep scope has no selected Android app/Gradle deliverable. The official Android arm64 CLI is the concrete side-runtime artifact available now; Maven AAR is prepared only as an integration cache. Claiming Gradle/App closure as done would be false, and downloading a full Gradle graph now would expand product packaging scope."
+    },
+    "future_product_classification": {
+      "android_gradle_app_or_aar_api_package": "future packaging/integration artifact; required only after root selects Android AAR/App as a concrete deliverable or acceptance lane",
+      "required_future_work_if_selected": [
+        "Resolve full transitive Gradle dependencies under an isolated prefix.",
+        "Record licenses, hashes, and source URLs for the complete Gradle graph.",
+        "Run an offline Gradle/AAR or minimal Android compile/link canary without host installs.",
+        "Later run device/emulator and model-forward memory/latency evidence when generated E2B artifacts exist."
+      ]
+    },
+    "report": {
+      "bytes": 4682,
+      "path": "reports/litert-android-delivery-scope-audit-20261014.json",
+      "sha256": "1547a4990777362f8aac1af677eba7aee9fe7d19056a3a88fc37981e8c6d098c"
+    },
+    "status": "gradle_app_not_current_required_dependency; cli_runtime_cached_maven_aar_integration_cache_only"
+  },
   "captured_at": "2026-10-14T08:27:36+0800",
   "frontend": {
     "chromium_cache_probe": {
