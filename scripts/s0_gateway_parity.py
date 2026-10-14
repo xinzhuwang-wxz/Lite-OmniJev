@@ -373,8 +373,10 @@ def gateway_result_row(
     confidence = _strict_probability(answer.get("confidence"), field="gateway_confidence")
     if answer.get("confidence_semantics") != "normalized_peak_non_U":
         raise GatewayParityError("gateway_confidence_semantics_mismatch")
-    if abs(confidence - max(conditional)) > 1e-9:
-        raise GatewayParityError("gateway_confidence_not_conditional_peak")
+    k = len(conditional)
+    expected_confidence = min(1.0, max(0.0, (max(conditional) - 1 / k) / (1 - 1 / k)))
+    if abs(confidence - expected_confidence) > 1e-9:
+        raise GatewayParityError("gateway_confidence_not_normalized_peak")
     p_u = _strict_probability(answer.get("p_insufficient"), field="gateway_p_insufficient")
     usage = response.get("usage")
     backend_usage = response.get("backend_usage")
@@ -789,7 +791,9 @@ def synthetic_response(case: PreparationCase) -> dict[str, Any]:
     answer: dict[str, Any] = {
         "type": case.question.type,
         "probabilities": probabilities,
-        "confidence": max(conditional),
+        "confidence": min(
+            1.0, max(0.0, (max(conditional) - 1 / len(labels)) / (1 - 1 / len(labels)))
+        ),
         "p_insufficient": 0.125,
         "calibration": "unfitted",
         "confidence_semantics": "normalized_peak_non_U",

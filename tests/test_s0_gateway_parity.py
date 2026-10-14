@@ -161,7 +161,7 @@ def test_mock_gateway_pass_compares_conditional_and_u_without_raw_claims() -> No
         answer = {
             "type": case.question.type,
             "probabilities": probabilities,
-            "confidence": max(conditional),
+            "confidence": (max(conditional) - 1 / len(labels)) / (1 - 1 / len(labels)),
             "p_insufficient": 0.125,
             "calibration": "unfitted",
             "confidence_semantics": "normalized_peak_non_U",
@@ -374,7 +374,7 @@ def test_gateway_result_row_rejects_semantic_and_usage_mismatches() -> None:
             "choice": {
                 "type": "choice",
                 "probabilities": {"A": 0.8, "B": 0.2},
-                "confidence": 0.8,
+                "confidence": 0.6,
                 "confidence_semantics": "normalized_peak_non_U",
                 "p_insufficient": 0.1,
                 "choice": "B",
@@ -402,7 +402,7 @@ def test_gateway_result_row_rejects_semantic_and_usage_mismatches() -> None:
             "score": {
                 "type": "score",
                 "probabilities": {"0": 0.2, "1": 0.3, "2": 0.5},
-                "confidence": 0.5,
+                "confidence": 0.25,
                 "confidence_semantics": "normalized_peak_non_U",
                 "p_insufficient": 0.1,
                 "score": 2.0,
@@ -459,3 +459,30 @@ def test_failure_report_sanitizes_external_error_text(tmp_path: Path) -> None:
     assert report["error"] == {"type": "HTTPStatusError", "code": "http_status_error"}
     assert secret not in output.read_text()
     assert "secret body" not in output.read_text()
+
+
+@pytest.mark.parametrize(
+    "probabilities,confidence,valid",
+    [
+        ([0.8, 0.2], 0.6, True),
+        ([0.8, 0.2], 0.8, False),
+        ([0.5, 0.5], 0.0, True),
+        ([0.5, 0.5], 0.5, False),
+    ],
+)
+def test_gateway_confidence_uses_chance_adjusted_peak(probabilities, confidence, valid):
+    case = _case(0, Question(qid="choice", type="choice", instruction="choose", options=["a", "b"]))
+    response = gp.synthetic_response(case)
+    answer = response["answers"]["choice"]
+    answer["probabilities"] = dict(zip(["A", "B"], probabilities, strict=True))
+    answer["confidence"] = confidence
+    if valid:
+        result = gp.gateway_result_row(
+            case=case, response=response, expected_model_version=response["model"]
+        )
+        assert result["conditional"] == probabilities
+    else:
+        with pytest.raises(gp.GatewayParityError, match="confidence"):
+            gp.gateway_result_row(
+                case=case, response=response, expected_model_version=response["model"]
+            )
