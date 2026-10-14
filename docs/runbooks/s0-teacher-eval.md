@@ -54,6 +54,39 @@ and records actual official processor tensor summaries for the three public MMAU
 audio rows plus one canonical 16-PNG MVBench row. It still runs no head, no
 backbone, no model forward, no GPU, and no quality gate.
 
+
+Transformers 5.17 Mac diagnostic, using only the cached pure-Python wheel from
+the serve-next vLLM 0.31 wheelhouse:
+
+```bash
+mkdir -p artifacts/s0-teacher-eval/tf517-wheel artifacts/s0-teacher-eval/tf517-target
+scp -P 48926 \
+  root@region-42.seetacloud.com:/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031/transformers-5.17.0-py3-none-any.whl \
+  artifacts/s0-teacher-eval/tf517-wheel/
+python - <<'PY'
+from pathlib import Path
+import zipfile
+wheel = Path('artifacts/s0-teacher-eval/tf517-wheel/transformers-5.17.0-py3-none-any.whl')
+target = Path('artifacts/s0-teacher-eval/tf517-target')
+with zipfile.ZipFile(wheel) as archive:
+    archive.extractall(target)
+PY
+PYTHONPATH="$PWD/artifacts/s0-teacher-eval/tf517-target:$PWD:/Users/bamboo/.codex/worktrees/s0-multimodal-cpu/Lite-OmniJev/artifacts/mac-media-libs" \
+/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python -m scripts.s0_teacher_eval \
+  --mode cpu-preflight \
+  --benchmark all \
+  --video-cache-root artifacts/s0-teacher-eval/video-cache \
+  --processor-source-dir /tmp/lite-omnijev-s0-teacher/artifacts/teacher-preflight-003/source \
+  --sample-mmau-audio 3 \
+  --sample-video 1 \
+  --output reports/s0-teacher-eval-tf517-processor-001.json
+```
+
+This is a Mac version-drift diagnostic only. It verifies that the cached
+Transformers 5.17.0 processor path produces the same public sample tensor/media
+summaries as the current Mac processor report. It does not prove Linux
+Torch 2.13 behavior, vLLM behavior, backbone/head loading, or teacher quality.
+
 Fake forward control-flow check:
 
 ```bash

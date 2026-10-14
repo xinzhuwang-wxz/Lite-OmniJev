@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-14T00:47:16.397460+00:00",
+  "status": "passed_mac_version_diagnostic",
+  "exit_code": 0,
+  "diagnostic_scope": "mac_transformers_5_17_processor_media_prep_only_not_linux_torch_2_13_forward",
+  "release_or_stage_acceptance": false,
+  "sealed_data_read": false,
+  "payload_values_exported": false,
+  "wheel_source": {
+    "remote_path": "/root/autodl-tmp/lite-omnijev/artifacts/runtime-builds/python-wheels/serve-next-vllm031/transformers-5.17.0-py3-none-any.whl",
+    "local_path": "/tmp/lite-omnijev-video-eval/artifacts/s0-teacher-eval/tf517-wheel/transformers-5.17.0-py3-none-any.whl",
+    "sha256": "78ec1ce21579b38dfb83950a0658cd119f87212a2fcfdff478096ce9d6c03801",
+    "manifest_summary_path": "/tmp/lite-omnijev-video-eval/artifacts/s0-teacher-eval/tf517-wheel/manifest-summary.json",
+    "manifest_summary_sha256": "308e6538433928eada9e1eddcf6e66dafcda5af42c5c14fc42f8a37ef532ad49",
+    "sha256sums_txt_sha256": "b95683228a203ddef5c0c489a12d141b9eb267bfe29ca5608195df622c11e5c5",
+    "manifest_primary_versions": {
+      "torch": "2.13.0",
+      "torchaudio": "2.11.0",
+      "torchvision": "0.28.0",
+      "transformers": "5.17.0",
+      "vllm": "0.31.0"
+    }
+  },
+  "runtime": {
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "transformers_version": "5.17.0",
+    "transformers_file": "/tmp/lite-omnijev-video-eval/artifacts/s0-teacher-eval/tf517-target/transformers/__init__.py",
+    "torch_version": "2.14.1",
+    "torch_file": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/lib/python3.11/site-packages/torch/__init__.py"
+  },
+  "baseline_report": {
+    "path": "/tmp/lite-omnijev-video-eval/reports/s0-teacher-eval-official-processor-001.json",
+    "runner_code_sha256": "69b16b5d6aa91a60978ec49b629c888641769aac1e8e344eeb34eae007662860",
+    "status": "passed_cpu_preflight_official_processor_no_model_forward",
+    "transformers_version_label": "5.19/root-main-venv-prior-report"
+  },
+  "diagnostic_report": {
+    "path": "/tmp/lite-omnijev-video-eval/reports/s0-teacher-eval-tf517-processor-001.json",
+    "runner_code_sha256": "69b16b5d6aa91a60978ec49b629c888641769aac1e8e344eeb34eae007662860",
+    "status": "passed_cpu_preflight_official_processor_no_model_forward",
+    "transformers_version": "5.17.0"
+  },
+  "sample_counts": {
+    "mmau_audio": 3,
+    "mvbench_video": 1
+  },
+  "sample_summaries_match_baseline": true,
+  "differences": [],
+  "compared_fields": [
+    "row_hash",
+    "processor_summary",
+    "media_summary"
+  ],
+  "report_contains_prompt_option_or_label_text": false
+}
