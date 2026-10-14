@@ -1,0 +1,35 @@
+{
+  "schema": "lite-omnijev.before-gpu-transition-sync.v1",
+  "recorded_utc": "2026-10-14T06:58:27.553562+00:00",
+  "status": "verified_no_gpu_preparation_complete_mode_switch_handoff",
+  "source_snapshot_git_head": "764ee5007dcca9171f8c297ed6fdd1ca30b507b9",
+  "tested_executable_code_revision": "655a8385c6262c10e6ec4119e994c196e1e3a503",
+  "remote_source": "/root/autodl-tmp/before-gpu-release-32fb559",
+  "remote_bundle": "/root/autodl-tmp/before-gpu-transition-764ee50.bundle",
+  "bundle_bytes": 6115736,
+  "bundle_sha256": "4b6cf39d6518d6a41b04d022aed26a901bd06585f4af121bd99134fc87cd0e96",
+  "bundle_complete_history": true,
+  "remote_fetch_checkout_exit_code": 0,
+  "remote_evidence_hashes_verified": 61,
+  "remote_loop_validate": {
+    "exit_code": 0,
+    "tickets": 32,
+    "frontier": [],
+    "claimed": [],
+    "blocked": [
+      "delivery:01",
+      "s0:01",
+      "s0:03",
+      "s0:05",
+      "s0:06"
+    ]
+  },
+  "handoff": "plan/handoff-2026-10-14-gpu-transition.md",
+  "ready_to_switch_to_gpu_mode": true,
+  "gpu_opening_authorized": false,
+  "gpu_used": false,
+  "release_or_stage_acceptance": false,
+  "original_checkout_modified": false,
+  "remote_branches_modified": false,
+  "note": "Metadata sidecar added after freezing and verifying snapshot. Only documentation/ticket/readiness metadata differs from previously tested executable code; no GPU or resource-limited check is claimed passed."
+}
