@@ -24,7 +24,7 @@
 ## 正在做与下一动作
 - s0:07 claimed：整合剩余image/screenshot/video/crossmodal开发500与必需同条件基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
 - 图像/视频builder已合入d23dc39；/tmp/lite-media-dev-001 executor在新冻结remote树执行image-a,b/video-a,b真实CPU500构建与输出hash核对（OMP2），不重复下载。/tmp/lite-gui-dev-001 executor推进GUI目标定位Choice500，限600份原TRAIN小标注，无新媒体/GPU。
-- 新实现已合入d23dc39并同步/root/autodl-tmp/s0-development-next-001；E4B preflight-002真实CPU通过（001仅源目录笔误失败保留）。E4B GPU双轮231题exit0，78.944秒，accuracy176/231=76.1905%，231对raw/conditional完全一致，reports/s0-public-baseline-e4b-001.json；同supervisor已依序E2B（各1200秒上限）；每条记录增量JSONL留存。artifacts/public-baselines-001/{e4b,e2b}-run-001.{json,jsonl,log,exit}，先核实际状态，不重复启动。
+- 新实现已合入d23dc39并同步/root/autodl-tmp/s0-development-next-001；E4B preflight-002真实CPU通过（001仅源目录笔误失败保留）。E4B GPU双轮231题exit0，78.944秒，accuracy176/231=76.1905%，231对raw/conditional完全一致，reports/s0-public-baseline-e4b-001.json；E2B也已exit0，97.030秒，147/231=63.6364%，两遍231对完全一致，reports/s0-public-baseline-e2b-001.json。两作业均完成，当前没有自有GPU任务；每条记录增量JSONL留存。artifacts/public-baselines-001/{e4b,e2b}-run-001.{json,jsonl,log,exit}，先核实际状态，不重复启动。
 - s0:04 done（ADR0010用户授权调整预估性能验收）：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，失败候选已停止。reports/s0-tf32x3-cache-result-001.json。
 - 原≤2未达到，现作为诊断目标；真实native/gateway on/off冷暖双测、KV命中及四概率<.001构成S0已通过基线，reports/s0-cache-measured-baseline-acceptance-001.json。停止S0性能调参，S6按实际产品候选校准性能标准；不宣称原目标或发布p95通过。
 - s0:08 ready但依赖未齐，不可认领。全部门槛通过后一次集成review、正式plan/handoff-日期-s0-complete.md及可复制启动词，再交新session进入S1。
@@ -42,3 +42,5 @@
 - s0:05 blocked：真实外部gate身份、两人原始双标与六类κ汇总未取得，agent不能代签/合成。原门槛仍在S0；若要变更阶段位置/数量/阈值须用户明确决定，当前没有自动豁免。
 - 跨机重跑/S6真机/额外放量预算/生产运营到其实际节点再处理，不提前制造细票或默认采购。当前仍有可独立执行工作，goal不blocked、不complete。
 - 原005 runtime cost=0.0只是历史硬编码占位，真实费用未知null；未来runner已修null，3280.63秒仅最后一次resume外层时间，不冒称全项目GPU时间/账单。
+
+本轮新增并行：GUI目标定位Choice500（/tmp/lite-gui-dev-001），image+audio原标签合取crossmodal Noul500（/tmp/lite-crossmodal-dev-001），OneJev4B/27B固定公开JevBench实际runner扩展（/tmp/lite-public-baselines-001）。均在07内，无新增票/独立review，主会话统一整合。image真实首跑暴露allowlist无path字段，已按原schema最小修复6e9c467；CPU构建改在/root/autodl-tmp/s0-media-development-002冻结树继续，失败保留。
