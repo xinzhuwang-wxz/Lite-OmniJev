@@ -8,13 +8,14 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from eval.sealed_gate import SealedManifest, load_annotations, summarize
+from eval.sealed_gate import SealedManifest, load_annotations, load_development, summarize
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--annotations", type=Path, required=True)
+    parser.add_argument("--development", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     return parser.parse_args()
 
@@ -56,7 +57,15 @@ def main() -> int:
         write_redacted_failure(args.out, "invalid_annotations")
         print("sealed_gate_error=invalid_annotations")
         return 1
-    summary = summarize(manifest, annotations)
+    development = None
+    if args.development is not None:
+        try:
+            development = load_development(args.development)
+        except (OSError, ValidationError, ValueError):
+            write_redacted_failure(args.out, "invalid_development")
+            print("sealed_gate_error=invalid_development")
+            return 1
+    summary = summarize(manifest, annotations, development)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(
         json.dumps(summary.model_dump(mode="json"), ensure_ascii=False, indent=2) + "\n",

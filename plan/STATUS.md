@@ -16,16 +16,18 @@
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
+- s0:13已冻结并认领CLINC真实公开train→500dev+14750train排除ledger，切片/tmp/lite-text-dev-001实现中；只覆盖intent Choice，不当完整文本primitive/质量准入。该票已加到08出口依赖。
+
 - 最新收口：s0:11 CPU适配/官方计分语义完成，231题两遍构建SHA11223d98…c75d一致，7回归、82源mypy/ruff/format/build通过；oracle只是计分测试非模型质量。见reports/jevbench-adapter-validation-001.json/build-001及002/oracle-001与plan/handoff-2026-10-14-jevbench-cpu.md。
 - 教师005最新只读快照4785/5600、PID169823仍Rl/27:45，不重启。基线CPU实际Linux3passed/OneJev两项thinking证明partial/Valen路径blocked：Valen已staged在quarantine而非models，正在独立树修复路径和官方关闭语法，不重下载/不改准入。
-- ADR0009已冻结六评测cohort、四物理输入：dev3000合法金标/程序真值；holdout6000×两真人=12000判断，κ≥.7只holdout。sealed_gate三文件实现中，真实身份/人标仍blocked，历史四cohort不自动升级。
+- ADR0009已冻结六评测cohort、四物理输入：dev3000合法金标/程序真值；holdout6000×两真人=12000判断，κ≥.7只holdout。sealed_gate v2已整合，75相关回归/82源mypy/298format/ruff/build通过，六cohort合成CLI通过；独立review发现同item跨池逃逸，已修复并CLEAR。真实身份/人标仍blocked，历史四cohort不自动升级。
 
 - 01/03已关票；02教师resume005继续MVBench第二遍。MMAU两遍均620/1000且完全一致，MVBench第一遍976/1800；第二遍未完成，不关闭02。先核实际PID/exit，活作业不重启。
 - 04仍claimed/性能failed：旧顺序eager/graph失败保留；新scheduled eager冷比2.3469/2.3250，graph1024并发10为2.584/2.551、并发2为3.190/3.188、并发3为3.045/3.047。实际KV覆盖/并发与四概率均通过；未做失败配置gateway/off；两server已停、GPU交还教师。见reports/s0-scheduled-native-eager-canary-001.json及s0-scheduled-native-graph-canaries-001.json。
 - CPU候选已完成：Linux官方100题300次准备精确/40imagecache命中；失败CPUjob清理独立复核APPROVE。新网关并发adapter含实际ASGI wall/work分离、upstream输入/raw/API逐qid绑定、重复case拒绝及摘要JSON roundtrip；独立review APPROVE（reports/s0-scheduled-gateway-review-001.json）；48相关pass、78源mypy/lint/282format/build/32票validate通过，仅CPU准入。
 - async eager官方候选已测：冷比2.3164/2.3335仍fail、四概率max2.36e-7、并发9/KV288，启用日志/真实cmdline与env绑定；已停止server169427、不扩展gateway/off，见reports/s0-scheduled-native-async-canary-001.json。下一TF32x3仅官方安装源评估可用、尚未GPU准备（reports/s0-tf32x3-source-assessment-001.json含实际源码hash）；会改变部分数值实现，不能当IEEE相同，若做必须隔离编译缓存并重验完整100概率/重复，收益假设偏弱，先保持教师占卡。
 - s0:07已认领剩余基线/开发数据规格：移除02/04对纯CPU规划的人工串行依赖（08硬门槛不变），01/03实测充分。模型/协议事实已收集；10的CPU CLI切片已修复metadata expectedhash/缺文件、partial非零退出码、Valen实际adapter元数据及解码前预算等边界，11回归/ruff/mypy通过，已整合待官方Linux实跑；published teacher readout不凭通用tokenprobe准入；OneJev4/27、E2B和额外Valen仍缺基线forward，JevBench231/literal含null148（147非空groups）与教师195口径未证实，dev500不由100 parity fixture替代；规划见.scratch/s0/baseline-expansion-spec.md。
-- s0:10/11/12已认领；12正在原文图6与四模态gate口径独立审查（保持物理输入4、评测六类别500/1k及κ；拟将原文仅封存κ与旧dev双标额外条件分离，不自动改变门槛）。35票validate通过。JevBench实际八文件/231行审计已完成，纠正easy group为JSON null而非easy字符串；官方36original对只用于paraphrase consistency，不能当195场景准确率；139Choice/18离散Score/74Noul都可适配，gold发布方声明非Jev API，但hard模型作者不充真人双标。见reports/jevbench-public-protocol-audit-001.json，下一实现合法adapter/官方计分语义。
+- 历史展开时s0:10/11/12已认领（11现done）；12已完成原文图6与四模态gate口径独立审查（保持物理输入4、评测六类别500/1k及κ；拟将原文仅封存κ与旧dev双标额外条件分离，不自动改变门槛）。36票validate通过。JevBench实际八文件/231行审计已完成，纠正easy group为JSON null而非easy字符串；官方36original对只用于paraphrase consistency，不能当195场景准确率；139Choice/18离散Score/74Noul都可适配，gold发布方声明非Jev API，但hard模型作者不充真人双标。见reports/jevbench-public-protocol-audit-001.json，下一实现合法adapter/官方计分语义。
 - 用户新要求：S0全绿后产出完整 `plan/handoff-日期-s0-complete.md` 及可复制的新session启动词；已加入s0:08验收，不把中途handoff当作S0完成。
 - 补充真实Linux官方processor+ASGI网关回放联调：已发现并修复测量器写死q0..q9的阻断，现保留真实cache-probe-*及顺序绑定；15回归先红后绿/mypy/ruff通过。官方CPU回放9.896秒exit0、8测量/44题/50回放调用、JSON摘要重载通过，reports/s0-scheduled-gateway-official-cpu-replay-001.json，明确无GPUforward/性能/真实KV证据。
 - 接续：plan/handoff-2026-10-14-scheduled-cache.md。05/06独立gate/真人资源仍外部条件；S0全绿前不启动S1，终局goal active。

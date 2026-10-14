@@ -1,9 +1,10 @@
 """Redacted sealed-set annotation summaries.
 
-The isolated gate reads raw double annotations and emits only aggregate counts.
-Development code can exercise this with canaries, but real holdout acceptance
-still requires an externally controlled identity or host because this workspace
-has root access to the GPU instance.
+The isolated gate reads raw double annotations for holdout cohorts and a
+redacted development ledger for dev cohorts. Development code can exercise this
+with canaries, but real holdout acceptance still requires an externally
+controlled identity or host because this workspace has root access to the GPU
+instance.
 """
 
 from __future__ import annotations
@@ -18,15 +19,27 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 
 Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 Nonempty = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
-Modality = Literal["text", "image", "audio", "video"]
+Cohort = Literal["text", "image", "screenshot", "audio", "video", "crossmodal"]
 Pool = Literal["dev", "holdout"]
+LabelOrigin = Literal["hard_gold", "program_truth", "human_verified_gold", "public_benchmark_gold"]
 
+CONTRACT_VERSION: Literal["sealed-cohort-gate-v2"] = "sealed-cohort-gate-v2"
+REAL_COHORTS: tuple[Cohort, ...] = (
+    "text",
+    "image",
+    "screenshot",
+    "audio",
+    "video",
+    "crossmodal",
+)
 PAYLOAD_KEYS = frozenset(
     {
         "answer",
         "answers",
         "content",
         "instruction",
+        "label",
+        "labels",
         "media",
         "media_uri",
         "messages",
@@ -48,12 +61,29 @@ class StrictModel(BaseModel):
 
 class AnnotationRecord(StrictModel):
     item_id: Nonempty
-    modality: Modality
-    pool: Pool
+    modality: Cohort
+    pool: Literal["holdout", "dev"]
     annotator_id: Nonempty
     label: Nonempty
     family_hash: Sha256
     source_hash: Sha256
+
+
+class DevelopmentRecord(StrictModel):
+    item_id: Nonempty
+    modality: Cohort
+    family_hash: Sha256
+    source_hash: Sha256
+    source_dataset: Nonempty
+    source_revision: Nonempty
+    license: Nonempty
+    label_origin: LabelOrigin
+
+    @model_validator(mode="after")
+    def validate_development_contract(self) -> DevelopmentRecord:
+        if self.license.casefold() in {"unknown", "unknown-license", "none", "n/a"}:
+            raise ValueError("development license must be known")
+        return self
 
 
 class SealedManifest(StrictModel):
@@ -63,7 +93,7 @@ class SealedManifest(StrictModel):
     canary: bool
     annotator_ids: tuple[Nonempty, Nonempty]
     min_kappa: float = Field(default=0.7, ge=-1.0, le=1.0)
-    expected_counts: dict[Modality, dict[Pool, int]]
+    expected_counts: dict[Cohort, dict[Pool, int]]
 
     @model_validator(mode="after")
     def validate_gate_contract(self) -> SealedManifest:
@@ -73,15 +103,17 @@ class SealedManifest(StrictModel):
             raise ValueError("expected counts must not be empty")
         for pool_counts in self.expected_counts.values():
             if not pool_counts:
-                raise ValueError("each modality must declare at least one pool")
+                raise ValueError("each cohort must declare at least one pool")
             for expected_items in pool_counts.values():
                 if expected_items <= 0:
                     raise ValueError("expected counts must be positive")
         if not self.canary:
-            if set(self.expected_counts) != {"text", "image", "audio", "video"}:
-                raise ValueError("real sealed gate requires all four modalities")
-            for modality in ("text", "image", "audio", "video"):
-                if self.expected_counts[modality] != {"dev": 500, "holdout": 1000}:
+            if self.min_kappa < 0.7:
+                raise ValueError("real sealed gate min_kappa must be at least 0.7")
+            if set(self.expected_counts) != set(REAL_COHORTS):
+                raise ValueError("real sealed gate requires all six evaluation cohorts")
+            for cohort in REAL_COHORTS:
+                if self.expected_counts[cohort] != {"dev": 500, "holdout": 1000}:
                     raise ValueError("real sealed gate requires dev=500 and holdout=1000")
         return self
 
@@ -90,14 +122,16 @@ class CohortSummary(StrictModel):
     items: int
     annotations: int
     annotators: int
-    kappa: float
+    kappa: float | None
     kappa_degenerate: bool
     missing_items: int
     invalid_items: int
     failure_counts: dict[str, int]
+    source_origin_counts: dict[str, int]
 
 
 class SealedSummary(StrictModel):
+    contract_version: Literal["sealed-cohort-gate-v2"]
     audit_id: str
     dataset_version: str
     source_digest: str
@@ -128,17 +162,26 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def validate_redacted(raw: dict[str, Any]) -> None:
-    present = PAYLOAD_KEYS.intersection(raw)
+def validate_redacted(raw: dict[str, Any], *, allow_label: bool) -> None:
+    forbidden = PAYLOAD_KEYS if not allow_label else PAYLOAD_KEYS - {"label"}
+    present = forbidden.intersection(raw)
     if present:
-        raise ValueError(f"annotation record includes sealed payload fields: {sorted(present)}")
+        raise ValueError(f"sealed record includes payload fields: {sorted(present)}")
 
 
 def load_annotations(path: Path) -> list[AnnotationRecord]:
     records: list[AnnotationRecord] = []
     for raw in read_jsonl(path):
-        validate_redacted(raw)
+        validate_redacted(raw, allow_label=True)
         records.append(AnnotationRecord.model_validate(raw))
+    return records
+
+
+def load_development(path: Path) -> list[DevelopmentRecord]:
+    records: list[DevelopmentRecord] = []
+    for raw in read_jsonl(path):
+        validate_redacted(raw, allow_label=False)
+        records.append(DevelopmentRecord.model_validate(raw))
     return records
 
 
@@ -164,30 +207,111 @@ def _failure_totals(cohorts: dict[str, CohortSummary]) -> dict[str, int]:
     return dict(sorted(totals.items()))
 
 
-def summarize(manifest: SealedManifest, annotations: list[AnnotationRecord]) -> SealedSummary:
-    grouped: dict[tuple[Modality, Pool], dict[str, list[AnnotationRecord]]] = defaultdict(
+def _empty_summary(expected_items: int, failures: Counter[str]) -> CohortSummary:
+    missing = max(expected_items, 0)
+    if missing:
+        failures["missing_items"] += missing
+    return CohortSummary(
+        items=0,
+        annotations=0,
+        annotators=0,
+        kappa=None,
+        kappa_degenerate=True,
+        missing_items=missing,
+        invalid_items=0,
+        failure_counts=dict(sorted(failures.items())),
+        source_origin_counts={},
+    )
+
+
+def _summarize_development(
+    manifest: SealedManifest,
+    development: list[DevelopmentRecord],
+    failure_totals: Counter[str],
+    family_pools: dict[str, set[Pool]],
+    item_cohorts: dict[str, set[Cohort]],
+) -> dict[str, CohortSummary]:
+    grouped: dict[Cohort, dict[str, DevelopmentRecord]] = defaultdict(dict)
+    duplicates: Counter[Cohort] = Counter()
+    for record in development:
+        if record.modality not in manifest.expected_counts:
+            failure_totals["unexpected_modality"] += 1
+            continue
+        if "dev" not in manifest.expected_counts[record.modality]:
+            failure_totals["unexpected_pool"] += 1
+            continue
+        if record.item_id in grouped[record.modality]:
+            duplicates[record.modality] += 1
+            continue
+        grouped[record.modality][record.item_id] = record
+        family_pools[record.family_hash].add("dev")
+        item_cohorts[record.item_id].add(record.modality)
+
+    summaries: dict[str, CohortSummary] = {}
+    for cohort, pool_counts in manifest.expected_counts.items():
+        if "dev" not in pool_counts:
+            continue
+        expected_items = pool_counts["dev"]
+        item_groups = grouped[cohort]
+        failures: Counter[str] = Counter()
+        if duplicates[cohort]:
+            failures["duplicate_development_item"] += duplicates[cohort]
+        observed_items = len(item_groups)
+        missing = max(expected_items - observed_items, 0)
+        extra = max(observed_items - expected_items, 0)
+        if missing:
+            failures["missing_items"] += missing
+        if extra:
+            failures["extra_items"] += extra
+        source_origin_counts = Counter(record.label_origin for record in item_groups.values())
+        summaries[f"{cohort}:dev"] = CohortSummary(
+            items=observed_items,
+            annotations=0,
+            annotators=0,
+            kappa=None,
+            kappa_degenerate=False,
+            missing_items=missing,
+            invalid_items=duplicates[cohort],
+            failure_counts=dict(sorted(failures.items())),
+            source_origin_counts=dict(sorted(source_origin_counts.items())),
+        )
+    return summaries
+
+
+def _summarize_annotation_pool(
+    manifest: SealedManifest,
+    annotations: list[AnnotationRecord],
+    pools: set[Pool],
+    failure_totals: Counter[str],
+    family_pools: dict[str, set[Pool]],
+    item_cohorts: dict[str, set[Cohort]],
+) -> dict[str, CohortSummary]:
+    grouped: dict[tuple[Cohort, Pool], dict[str, list[AnnotationRecord]]] = defaultdict(
         lambda: defaultdict(list)
     )
-    family_pools: dict[str, set[Pool]] = defaultdict(set)
     item_sources: dict[str, set[str]] = defaultdict(set)
-    failure_totals: Counter[str] = Counter()
     for record in annotations:
         if record.modality not in manifest.expected_counts:
             failure_totals["unexpected_modality"] += 1
             continue
-        if record.pool not in manifest.expected_counts[record.modality]:
+        if record.pool not in manifest.expected_counts[record.modality] or record.pool not in pools:
             failure_totals["unexpected_pool"] += 1
             continue
         grouped[(record.modality, record.pool)][record.item_id].append(record)
         family_pools[record.family_hash].add(record.pool)
+        item_cohorts[record.item_id].add(record.modality)
         item_sources[record.item_id].add(record.source_hash)
 
-    cross_pool_family_count = sum(1 for pools in family_pools.values() if len(pools) > 1)
-    cross_cohort_source_mismatch = sum(1 for sources in item_sources.values() if len(sources) > 1)
+    cross_item_source_mismatch = sum(1 for sources in item_sources.values() if len(sources) > 1)
+    if cross_item_source_mismatch:
+        failure_totals["source_hash_mismatch_across_annotations"] += cross_item_source_mismatch
+
     cohorts: dict[str, CohortSummary] = {}
-    for modality, pool_counts in manifest.expected_counts.items():
+    for cohort, pool_counts in manifest.expected_counts.items():
         for pool, expected_items in pool_counts.items():
-            item_groups = grouped[(modality, pool)]
+            if pool not in pools:
+                continue
+            item_groups = grouped[(cohort, pool)]
             labels_a: list[str] = []
             labels_b: list[str] = []
             annotators: set[str] = set()
@@ -218,9 +342,9 @@ def summarize(manifest: SealedManifest, annotations: list[AnnotationRecord]) -> 
 
             observed_items = len(item_groups)
             missing = max(expected_items - observed_items, 0)
+            extra = max(observed_items - expected_items, 0)
             if missing:
                 failures["missing_items"] += missing
-            extra = max(observed_items - expected_items, 0)
             if extra:
                 failures["extra_items"] += extra
 
@@ -234,7 +358,7 @@ def summarize(manifest: SealedManifest, annotations: list[AnnotationRecord]) -> 
             if not manifest.canary and degenerate:
                 failures["kappa_degenerate"] += 1
 
-            cohort_key = f"{modality}:{pool}"
+            cohort_key = f"{cohort}:{pool}"
             cohorts[cohort_key] = CohortSummary(
                 items=observed_items,
                 annotations=sum(len(records) for records in item_groups.values()),
@@ -253,13 +377,75 @@ def summarize(manifest: SealedManifest, annotations: list[AnnotationRecord]) -> 
                     }
                 ),
                 failure_counts=dict(sorted(failures.items())),
+                source_origin_counts={},
             )
+    return cohorts
 
-    failure_totals.update(_failure_totals(cohorts))
+
+def summarize(
+    manifest: SealedManifest,
+    annotations: list[AnnotationRecord],
+    development: list[DevelopmentRecord] | None = None,
+) -> SealedSummary:
+    failure_totals: Counter[str] = Counter()
+    family_pools: dict[str, set[Pool]] = defaultdict(set)
+    item_cohorts: dict[str, set[Cohort]] = defaultdict(set)
+    cohorts: dict[str, CohortSummary] = {}
+    item_pools: dict[str, set[Pool]] = defaultdict(set)
+    item_identities: dict[str, set[tuple[str, str]]] = defaultdict(set)
+    for annotation in annotations:
+        item_pools[annotation.item_id].add(annotation.pool)
+        item_identities[annotation.item_id].add((annotation.family_hash, annotation.source_hash))
+    for entry in development or []:
+        item_pools[entry.item_id].add("dev")
+        item_identities[entry.item_id].add((entry.family_hash, entry.source_hash))
+    cross_pool_items = sum(len(pools) > 1 for pools in item_pools.values())
+    identity_mismatches = sum(len(identities) > 1 for identities in item_identities.values())
+    if cross_pool_items:
+        failure_totals["duplicate_item_across_pools"] = cross_pool_items
+    if identity_mismatches:
+        failure_totals["item_identity_mismatch"] = identity_mismatches
+
+    if development is None:
+        if not manifest.canary:
+            failure_totals["missing_development_ledger"] += 1
+        cohorts.update(
+            _summarize_annotation_pool(
+                manifest,
+                annotations,
+                {"dev", "holdout"},
+                failure_totals,
+                family_pools,
+                item_cohorts,
+            )
+        )
+    else:
+        cohorts.update(
+            _summarize_development(
+                manifest, development, failure_totals, family_pools, item_cohorts
+            )
+        )
+        cohorts.update(
+            _summarize_annotation_pool(
+                manifest,
+                annotations,
+                {"holdout"},
+                failure_totals,
+                family_pools,
+                item_cohorts,
+            )
+        )
+
+    cross_pool_family_count = sum(1 for pools in family_pools.values() if len(pools) > 1)
+    duplicate_item_across_cohorts = sum(
+        1 for cohort_set in item_cohorts.values() if len(cohort_set) > 1
+    )
     if cross_pool_family_count:
         failure_totals["cross_pool_family_overlap"] = cross_pool_family_count
-    if cross_cohort_source_mismatch:
-        failure_totals["source_hash_mismatch_across_cohorts"] = cross_cohort_source_mismatch
+    if duplicate_item_across_cohorts:
+        failure_totals["duplicate_item_across_cohorts"] = duplicate_item_across_cohorts
+    failure_totals.update(_failure_totals(cohorts))
+
     blocked_reason = None
     if not manifest.canary:
         blocked_reason = (
@@ -268,6 +454,7 @@ def summarize(manifest: SealedManifest, annotations: list[AnnotationRecord]) -> 
         )
 
     return SealedSummary(
+        contract_version=CONTRACT_VERSION,
         audit_id=manifest.audit_id,
         dataset_version=manifest.dataset_version,
         source_digest=manifest.source_digest,

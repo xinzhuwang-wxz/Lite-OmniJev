@@ -36,3 +36,5 @@ agent读取/生成封存内容、提前模型封存评测、招聘/付费标注�
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
 
 Evidence: 工程canary与脱敏、双标κ、缺失拒绝行为测试通过，见 `reports/s0-sealed-canary-001.json`、`eval/sealed_gate.py`、`scripts/sealed_gate.py` 和 `tests/test_sealed_gate.py`。真实隔离身份和真实人工κ仍缺，保持blocked；root开发账号不得以chmod冒称隔离完成。
+
+ADR0009合同澄清：评测cohort为text/image/screenshot/audio/video/crossmodal，物理输入仍四值。六类各500dev合法gold/program真值、1000holdout；只holdout需要两位固定真人原始双标及逐cohortκ≥.7。总6000封存题/12000人工判断不变，dev不算人工κ。新的v2合成CLI及拒绝回归只证明工程路径；真实外部身份/人标/来源仍未取得，本票保持blocked。证据reports/s0-sealed-v2-canary-001.json及s0-sealed-v2-canary-validation-001.json；runbook已同步。

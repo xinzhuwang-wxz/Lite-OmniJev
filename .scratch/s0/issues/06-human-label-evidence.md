@@ -29,3 +29,5 @@ agent扮演人工标注者、程序真值代κ、提前封存模型评分。
 
 当前没有可核验人工双标交付或κ证据；这是真实外部阻塞，不阻止其他独立技术票。
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
+
+ADR0009合同澄清：评测cohort为text/image/screenshot/audio/video/crossmodal，物理输入仍四值。六类各500dev合法gold/program真值、1000holdout；只holdout需要两位固定真人原始双标及逐cohortκ≥.7。总6000封存题/12000人工判断不变，dev不算人工κ。新的v2合成CLI及拒绝回归只证明工程路径；真实外部身份/人标/来源仍未取得，本票保持blocked。证据reports/s0-sealed-v2-canary-001.json及s0-sealed-v2-canary-validation-001.json；runbook已同步。

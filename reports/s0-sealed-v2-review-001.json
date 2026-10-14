@@ -1,0 +1,23 @@
+{
+  "status": "clear_engineering_contract_only",
+  "real_gate_passed": false,
+  "real_human_evidence_verified": false,
+  "initial_review": "BLOCK: same item_id across dev/holdout could evade checks using different hashes",
+  "fix": "Unified item pool/identity scan before cohort counting; rejects both same and different family hash cross-pool duplicates.",
+  "independent_recheck": "CLEAR: reviewer reproduced original exploit and now observed passed=false with duplicate_item_across_pools and item_identity_mismatch.",
+  "code_hashes": {
+    "eval/sealed_gate.py": "a4616a9fb462d4fb299225081555a5c9117df07333ac8a241eddad813a4910ae",
+    "scripts/sealed_gate.py": "2c82d57afbbda08dc2cdae74bb8a3e8b2b9471f7aa25b778ecc7c9be4382fe90",
+    "tests/test_sealed_gate.py": "4f83948874e451485b149c947dd6216e40ecba67385565ff14365379c57527f3"
+  },
+  "verification": {
+    "targeted_tests": 75,
+    "sealed_tests": 21,
+    "mypy_sources": 82,
+    "format_files": 298,
+    "ruff": "passed",
+    "build": "passed",
+    "synthetic_cli": "reports/s0-sealed-v2-canary-validation-001.json"
+  },
+  "scope": "ADR0009 implementation, redaction, cohort counts, synthetic CLI and item-isolation regression. No real labels or sealed payloads accessed."
+}
