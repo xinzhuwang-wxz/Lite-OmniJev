@@ -3,9 +3,9 @@
 2026-10-14。先读AGENTS.md、plan/STATUS.md、plan/DELIVERY-PLAN.md和.scratch/s0/issues/07-expand-baselines.md。STATUS为唯一当前调度快照；本入口取代此前已过时的PID/队列说明，不覆盖原始报告。
 
 - P0、教师MMAU1000/MVBench固定9任务1800双轮、100题HF/native/gateway四概率严格<.001、真实Chromium及缓存实测均完成，证据索引见STATUS；禁止重复消耗GPU。
-- 六模型公开JevBench231双轮完整；24/24非截图开发支持组合完整，截图v2 E4B51.4%双轮已核（当前25/30支持对），reports/s0-public-baselines-table-001.json和s0-development-baselines-table-001.json。各cohort500，仅首primitive切片；不支持音频/组合的6对明确unsupported，不填零。
+- 六模型公开JevBench231双轮完整；24/24非截图开发支持组合完整，截图v2 E4B51.4%双轮已核（教师截图v2也已核74.0%，当前26/30支持对），reports/s0-public-baselines-table-001.json和s0-development-baselines-table-001.json。各cohort500，仅首primitive切片；不支持音频/组合的6对明确unsupported，不填零。
 - 截图v1负例网格泄漏：无图/无指令坐标规则497/500。全部旧截图成绩superseded，失败/完成报告保留。v2随机合法坐标修复7tests/ruff/mypy通过；Linux两遍构建字节相同、保留原500family（498原题/2题因几何换同family步骤），冻结旧规则19/500；不按GPU分数选集。
-- 当前GPU仅补测截图六模型：/root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382。学生queue343888执行四模型（E4B已exit0，当前OneJev4 child344069），artifacts/screenshot-baselines-v2-001；教师→Valen queue343927，artifacts/{teacher-screenshot-v2-001,valen-screenshot-v2-001}。各job1800秒，学生OneJev27等free≥65GiB；共享GPU只做质量，不冒称隔离发布时延。接手核实际进程/exit/完整报告，不能仅因观察超时重启。
+- 当前GPU仅补测截图六模型：/root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382。学生queue343888执行四模型（E4B已exit0，当前OneJev4 child344069），artifacts/screenshot-baselines-v2-001；教师→Valen queue343927（教师已exit0/281.014秒，当前Valen child344135），artifacts/{teacher-screenshot-v2-001,valen-screenshot-v2-001}。各job1800秒，学生OneJev27等free≥65GiB；共享GPU只做质量，不冒称隔离发布时延。接手核实际进程/exit/完整报告，不能仅因观察超时重启。
 - 数据入口configs/s0-development-cohorts-h20.json已绑定截图v2。历史dev统一排除union位于/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/dev-exclusion-history-union-v2-001/dev-exclusion.jsonl，SHA3110f9740d9e7dd9c39023b106d977e927b3446f5dfa82e168f729c127aeda1e；旧/新题与媒体别名都保留。正式训练须查family及媒体SHA，并预留从未训练的S5校准family；不能事后删训练账本制造隔离。
 - 收齐截图当前版本30支持对后，更新矩阵并运行python3 .scratch/s0/summarize-development.py产生真实token/耗时诊断预算汇总（读取已有sidecar，无模型执行），完成07。检查必要变更/失败即可，集中源码review已完成，不再全检/逐模型review。
 - s0:05仍外部blocked：真实隔离身份、6000封存/12000真人原始判断/逐类κ≥.7缺失。ADR0011仅proposal，无明确批准仍S0硬门；不得代签、读封存、把性能授权当真人豁免。08依赖完成才认领。S1未启动。

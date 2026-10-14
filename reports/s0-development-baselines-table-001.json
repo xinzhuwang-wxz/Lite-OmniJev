@@ -327,6 +327,19 @@
       "brier": 0.8024621509538359,
       "coverage_at_error": 0.002,
       "max_error": 0.05
+    },
+    {
+      "cohort": "screenshot",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-jev-omni-12b-v2-001.json",
+      "count": 500,
+      "accuracy": 0.74,
+      "ece15": 0.09962139761346678,
+      "brier": 0.39395585455541704,
+      "coverage_at_error": 0.258,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -372,7 +385,7 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 25,
+  "verified_supported_pairs": 26,
   "pending_supported_pairs": [
     {
       "cohort": "screenshot",
@@ -387,11 +400,6 @@
     {
       "cohort": "screenshot",
       "model": "onejev-27b",
-      "reason": "corrected GUI v2 baseline required"
-    },
-    {
-      "cohort": "screenshot",
-      "model": "jev-omni-12b",
       "reason": "corrected GUI v2 baseline required"
     },
     {

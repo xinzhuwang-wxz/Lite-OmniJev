@@ -1,8 +1,8 @@
 {
   "status": "partial",
-  "matrix_sha256": "6b1f0f58d64f4640bd1eaf429767208a1d31d0d5f108b0a5898cecbf18006c25",
+  "matrix_sha256": "e99663ab4e491610c48e73973ea2345f373e8acb7b1151d2d088f46d9a0f3715",
   "summarizer_sha256": "bb705388486cf7c28c1c3740130680b06b18fadb8d70188e9d3e14c831e56e36",
-  "verified_supported_pairs": 25,
+  "verified_supported_pairs": 26,
   "expected_supported_pairs": 30,
   "pending": [
     {
@@ -18,11 +18,6 @@
     {
       "cohort": "screenshot",
       "model": "onejev-27b",
-      "reason": "corrected GUI v2 baseline required"
-    },
-    {
-      "cohort": "screenshot",
-      "model": "jev-omni-12b",
       "reason": "corrected GUI v2 baseline required"
     },
     {
@@ -989,6 +984,45 @@
         "max": 0.137629
       },
       "job_elapsed_seconds": 232.000398,
+      "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "jev-omni-12b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-jev-omni-12b-v2-001.json",
+      "count": 500,
+      "accuracy": 0.74,
+      "ece15": 0.09962139761346678,
+      "brier": 0.39395585455541704,
+      "coverage_at_error": 0.258,
+      "max_error": 0.05,
+      "report_sha256": "71392a8bd4fc066fa20e620a6f7a4f2e052bb1323ac844c47949ce772a78ab9c",
+      "records": "artifacts/s0-screenshot-v2-gpu-001/teacher/records.jsonl",
+      "records_sha256": "2b208dcefe2bdcc6bdd50f87baa3475aedd6dd784bdc20957200d0be38ed4172",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 472,
+        "p50": 485,
+        "p95": 505,
+        "max": 527
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.11113942414522171,
+        "p50": 0.15721787698566914,
+        "p95": 0.26260186545550823,
+        "max": 0.29619262367486954
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.019567374140024185,
+        "p50": 0.06879236735403538,
+        "p95": 0.10557061620056629,
+        "max": 0.1279968786984682
+      },
+      "job_elapsed_seconds": 244.52848893217742,
       "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
     }
   ],

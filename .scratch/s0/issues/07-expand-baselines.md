@@ -46,3 +46,5 @@ Blocked by: p0:04, 01, 02, 03, 10, 11, 13
 v2真实双构建exit0且六输出字节一致；原500family保留，498题完全同源/2题因负例合法几何换同family步骤。旧固定坐标规则19/500=3.8%，不按GPU分数选集。新旧dev排除同时保留，截图旧baseline不再作为当前成绩。reports/s0-gui-development-v2-acceptance-001.json。
 
 当前25/30支持对已核：截图v2 E4B51.4%/500×2/232.000秒且输入/原概率/预测完全一致。reports/s0-development-compute-budgets-001.json已从SHA验证sidecar汇总25对真实token和耗时边界，Valen预处理未测保持null；剩余五截图补测正常运行，不重跑非截图。
+
+截图v2教师74.0%已核1000记录/500双轮原始概率及媒体完全一致，parent/run.exit0/281.014秒。累计26/30支持对，计算预算汇总已更新；其余截图模型实际运行/排队。
