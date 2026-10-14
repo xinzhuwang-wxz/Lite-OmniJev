@@ -1,0 +1,27 @@
+{
+  "status": "passed_bounded_code_review_cpu_only",
+  "s0_acceptance": false,
+  "gpu_gateway_performance_admitted": false,
+  "code_revision": "1ed1370",
+  "reviewer": "scheduling_review",
+  "verdict": "APPROVE",
+  "remaining_substantive_blockers": 0,
+  "checks": [
+    "outer ASGI wall includes response validation; work intervals separate",
+    "endpoint,canonical input,sampling,raw readout and per-qid API binding",
+    "duplicate/missing case,wrong API probability/ordering refusal",
+    "run-level API answer digest JSON roundtrip",
+    "same on/off gateway configuration/request/transport binding"
+  ],
+  "validation": {
+    "gateway_tests_passed": 14,
+    "combined_tests_passed": 48,
+    "mypy_production_sources": 78,
+    "mypy_new_test_file": "passed",
+    "ruff": "passed",
+    "format_files": 282,
+    "build": "wheel and sdist passed",
+    "tickets_valid": 32
+  },
+  "cost_usd": null
+}

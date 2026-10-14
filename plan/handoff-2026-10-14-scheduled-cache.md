@@ -22,3 +22,5 @@
 教师resume003在2610/5600显式SIGINT，exit1已记录。resume004监督167948/timeout167949/教师167950，原/root/autodl-tmp/gpu-reference-fp32-complete-001冻结DF源码，相同输入/记录，最多3600秒。先核/proc、行数和004.exit，未终态不得重启。原始benchmark输出artifacts/teacher-benchmark-pilot-001.json/jsonl；新日志004。第一遍MMAU620/1000仅部分进度，不是完整质量准入。
 
 保持教师占卡。scheduled_native只读实际026源码，提出至多一个官方async/chunked调度候选及证伪条件；不穷举。scheduling_review复核网关测量adapter。主会话整合结果、写票/STATUS，准备完再决定独占短测；性能须冷态每次≤2/四概率<.001，完整on/off/gateway证据就绪才能关04。独立gate身份/两真人κ仍外部条件，不用agent自标代替。
+
+网关adapter独立review已APPROVE，报告s0-scheduled-gateway-review-001.json。只读实际0.26源码后准备的唯一下一候选：eager仅--async-scheduling，其余maxseq10/mmcache1/FP32IEEE/chunked禁用不变。远端artifacts/async-eager-001中on/off启动文件和validate exit0已就绪，没有启动；报告s0-next-async-candidate-preflight-001.json。先保持教师004运行，核实其终态后安排独占native短测，失败不扩展gateway/off。最新教师小快照2645/5600、GPU仅教师24410MiB，reports/teacher-benchmark-progress-004.json。
