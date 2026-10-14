@@ -108,6 +108,7 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
         ],
         check=True,
         capture_output=True,
+        stdin=subprocess.DEVNULL,
         timeout=30,
     )
     probed = json.loads(result.stdout)
@@ -136,6 +137,7 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
             ],
             check=True,
             capture_output=True,
+            stdin=subprocess.DEVNULL,
             timeout=60,
         )
         np = importlib.import_module("numpy")
@@ -172,6 +174,7 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
             ],
             check=True,
             capture_output=True,
+            stdin=subprocess.DEVNULL,
             timeout=60,
         )
         frames = []

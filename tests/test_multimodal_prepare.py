@@ -344,3 +344,74 @@ def test_official_video_tensor_contract_allows_version_optional_frame_counts(
         prepared = prepare_decision(prefix, question, Processor(), tmp_path, video_frames=8)
         assert "num_frames_per_video" not in prepared.inputs
         assert len(prepared.summary["decoded_video_frame_sha256"][0]) == 8
+
+
+@pytest.mark.parametrize("kind", ["audio", "video"])
+def test_media_decoder_preserves_callers_piped_stdin(tmp_path: Path, kind: str) -> None:
+    import hashlib
+    import os
+    import shutil
+    import subprocess
+    import sys
+    import wave
+
+    if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
+        pytest.skip("actual FFmpeg decoder required")
+    pytest.importorskip("numpy")
+    path = tmp_path / "public.wav"
+    with wave.open(str(path), "wb") as wav:
+        wav.setparams((1, 2, 16000, 0, "NONE", "not compressed"))
+        wav.writeframes(b"\0\0" * 16000 * 15)
+    child_env = os.environ.copy()
+    if kind == "video":
+        pytest.importorskip("PIL.Image")
+        path = tmp_path / "public.mp4"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-v",
+                "error",
+                "-f",
+                "lavfi",
+                "-i",
+                "testsrc=size=64x64:rate=25",
+                "-t",
+                "1",
+                "-pix_fmt",
+                "yuv420p",
+                str(path),
+            ],
+            stdin=subprocess.DEVNULL,
+            check=True,
+            capture_output=True,
+            timeout=30,
+        )
+        # A real-time source gives FFmpeg time to poll its interactive stdin.
+        real_ffmpeg = shutil.which("ffmpeg")
+        wrapper = tmp_path / "ffmpeg"
+        wrapper.write_text(
+            f"#!{sys.executable}\nimport os,sys\nos.execv({real_ffmpeg!r}, "
+            f"[{real_ffmpeg!r}, '-re', *sys.argv[1:]])\n"
+        )
+        wrapper.chmod(0o755)
+        child_env["PATH"] = str(tmp_path) + os.pathsep + os.environ["PATH"]
+    sentinel = b"q\npublic caller continuation must remain available\n"
+    code = (
+        "import hashlib,json,sys; from pathlib import Path; "
+        "from train.multimodal import load_media; "
+        "media=load_media(Path(sys.argv[1]),sys.argv[2],num_frames=8,max_seconds=30); "
+        "remaining=sys.stdin.buffer.read(); "
+        "print(json.dumps({'stdin_sha256':hashlib.sha256(remaining).hexdigest()}))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(path), kind],
+        input=sentinel,
+        capture_output=True,
+        timeout=30,
+        check=False,
+        env=child_env,
+    )
+    assert result.returncode == 0, result.stderr.decode()
+    assert json.loads(result.stdout) == {
+        "stdin_sha256": hashlib.sha256(sentinel).hexdigest(),
+    }
