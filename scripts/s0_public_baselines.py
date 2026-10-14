@@ -41,7 +41,29 @@ SEED = 42
 TF32_ALLOWED = False
 DEFAULT_DTYPE = "bfloat16"
 ALLOWED_DTYPES = {"bfloat16", "float16", "float32"}
-SUPPORTED_MODEL_IDS = {"gemma4-e4b-it", "gemma4-e2b-it"}
+MODEL_SPECS: dict[str, dict[str, str]] = {
+    "gemma4-e4b-it": {
+        "model_type": "gemma4",
+        "architecture": "Gemma4ForConditionalGeneration",
+        "transformers_class": "Gemma4ForConditionalGeneration",
+    },
+    "gemma4-e2b-it": {
+        "model_type": "gemma4",
+        "architecture": "Gemma4ForConditionalGeneration",
+        "transformers_class": "Gemma4ForConditionalGeneration",
+    },
+    "onejev-4b": {
+        "model_type": "qwen3_5",
+        "architecture": "Qwen3_5ForConditionalGeneration",
+        "transformers_class": "Qwen3_5ForConditionalGeneration",
+    },
+    "onejev-27b": {
+        "model_type": "qwen3_5",
+        "architecture": "Qwen3_5ForConditionalGeneration",
+        "transformers_class": "Qwen3_5ForConditionalGeneration",
+    },
+}
+SUPPORTED_MODEL_IDS = set(MODEL_SPECS)
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_CODE_FILES = (
     "scripts/s0_public_baselines.py",
@@ -227,10 +249,6 @@ def load_asset_manifest(path: Path) -> dict[str, Any]:
     data = load_json(path)
     if data.get("schema_version") != 1 or not isinstance(data.get("models"), list):
         raise PublicBaselineError("unsupported project model asset manifest")
-    ids = [model.get("id") for model in data["models"] if isinstance(model, dict)]
-    missing = sorted(SUPPORTED_MODEL_IDS - set(ids))
-    if missing:
-        raise PublicBaselineError(f"asset manifest missing supported models: {missing}")
     return data
 
 
@@ -254,7 +272,10 @@ def select_supported_model(manifest: Mapping[str, Any], model_id: str) -> dict[s
             f"public JevBench baseline currently supports only {sorted(SUPPORTED_MODEL_IDS)}; "
             f"requested {model_id!r}"
         )
-    return model_by_id(manifest)[model_id]
+    models = model_by_id(manifest)
+    if model_id not in models:
+        raise PublicBaselineError(f"asset manifest missing requested model: {model_id}")
+    return models[model_id]
 
 
 def _normal_metadata_path(path: str) -> bool:
@@ -358,17 +379,25 @@ def verify_required_weights(directory: Path, model: Mapping[str, Any]) -> dict[s
     return dict(sorted(verified.items()))
 
 
-def verify_gemma_architecture(directory: Path) -> dict[str, Any]:
+def verify_model_architecture(directory: Path, model_id: str) -> dict[str, Any]:
+    spec = MODEL_SPECS[model_id]
     config_path = directory / "config.json"
     config = load_json(config_path)
-    if config.get("model_type") != "gemma4" or config.get("architectures") != [
-        "Gemma4ForConditionalGeneration"
-    ]:
+    expected_architectures = [spec["architecture"]]
+    if (
+        config.get("model_type") != spec["model_type"]
+        or config.get("architectures") != expected_architectures
+    ):
         raise PublicBaselineError("unsupported model architecture")
+    auto_map = config.get("auto_map")
+    if auto_map not in (None, {}):
+        raise PublicBaselineError("custom-code auto_map is not allowed for public baselines")
     return {
         "config_sha256": sha256_file(config_path),
         "model_type": config.get("model_type"),
         "architectures": config.get("architectures"),
+        "auto_map_absent": True,
+        "transformers_class": spec["transformers_class"],
     }
 
 
@@ -639,7 +668,7 @@ def model_evidence(
     model = select_supported_model(manifest, model_id)
     directory = model_dir(model_root, model)
     metadata_hashes = verify_required_metadata(directory, model)
-    architecture = verify_gemma_architecture(directory)
+    architecture = verify_model_architecture(directory, model_id)
     weights = verify_required_weights(directory, model) if require_weights else None
     return (
         {
@@ -738,15 +767,17 @@ def prepared_model_inputs(item: PreparedQuestion, torch: Any) -> dict[str, Any]:
 
 
 def real_forward_factory(
-    *, model_dir_path: Path, tokenizer: ChatTokenizer, dtype_name: str
+    *, model_dir_path: Path, model_id: str, tokenizer: ChatTokenizer, dtype_name: str
 ) -> tuple[ForwardFn, Callable[[], None]]:
     torch = ensure_cuda_available()
     configure_torch_runtime(torch)
     dtype = torch_dtype(torch, dtype_name)
     transformers = importlib.import_module("transformers")
-    if not hasattr(transformers, "Gemma4ForConditionalGeneration"):
-        raise PublicBaselineError("installed Transformers lacks Gemma4ForConditionalGeneration")
-    model = transformers.Gemma4ForConditionalGeneration.from_pretrained(
+    class_name = MODEL_SPECS[model_id]["transformers_class"]
+    if not hasattr(transformers, class_name):
+        raise PublicBaselineError(f"installed Transformers lacks {class_name}")
+    model_cls = getattr(transformers, class_name)
+    model = model_cls.from_pretrained(
         str(model_dir_path),
         local_files_only=True,
         trust_remote_code=False,
@@ -800,7 +831,10 @@ def run_baseline_report(
     prepared = prepare_questions(tasks, tokenizer)
     factory = forward_factory or (
         lambda model_path, tok, dtype_name: real_forward_factory(
-            model_dir_path=model_path, tokenizer=tok, dtype_name=dtype_name
+            model_dir_path=model_path,
+            model_id=model_id,
+            tokenizer=tok,
+            dtype_name=dtype_name,
         )
     )
     forward, cleanup = factory(directory, tokenizer, dtype)

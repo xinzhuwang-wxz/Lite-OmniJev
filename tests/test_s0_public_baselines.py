@@ -152,13 +152,47 @@ def _git_blob(path: Path) -> str:
     return hashlib.sha1(f"blob {len(data)}\0".encode() + data, usedforsecurity=False).hexdigest()
 
 
-def _write_model_assets(tmp_path: Path, *, include_weights: bool = False) -> tuple[Path, Path]:
+def _write_model_assets(
+    tmp_path: Path, *, include_weights: bool = False, include_onejev: bool = False
+) -> tuple[Path, Path]:
     root = tmp_path / "models"
     manifest_models: list[dict[str, Any]] = []
-    for model_id, repo, revision in [
-        ("gemma4-e4b-it", "google/gemma-4-E4B-it", "e" * 40),
-        ("gemma4-e2b-it", "google/gemma-4-E2B-it", "d" * 40),
-    ]:
+    model_rows = [
+        (
+            "gemma4-e4b-it",
+            "google/gemma-4-E4B-it",
+            "e" * 40,
+            "gemma4",
+            "Gemma4ForConditionalGeneration",
+        ),
+        (
+            "gemma4-e2b-it",
+            "google/gemma-4-E2B-it",
+            "d" * 40,
+            "gemma4",
+            "Gemma4ForConditionalGeneration",
+        ),
+    ]
+    if include_onejev:
+        model_rows.extend(
+            [
+                (
+                    "onejev-4b",
+                    "OmniJev/OneJev-4B",
+                    "c" * 40,
+                    "qwen3_5",
+                    "Qwen3_5ForConditionalGeneration",
+                ),
+                (
+                    "onejev-27b",
+                    "OmniJev/OneJev-27B",
+                    "a" * 40,
+                    "qwen3_5",
+                    "Qwen3_5ForConditionalGeneration",
+                ),
+            ]
+        )
+    for model_id, repo, revision, model_type, architecture in model_rows:
         directory = root / repo.replace("/", "__") / revision
         directory.mkdir(parents=True)
         files = {
@@ -166,9 +200,7 @@ def _write_model_assets(tmp_path: Path, *, include_weights: bool = False) -> tup
             "tokenizer_config.json": json.dumps({"chat_template": "{{ messages[0]['content'] }}"})
             + "\n",
             "chat_template.jinja": "{{ messages[0]['content'] }}\n",
-            "config.json": json.dumps(
-                {"model_type": "gemma4", "architectures": ["Gemma4ForConditionalGeneration"]}
-            )
+            "config.json": json.dumps({"model_type": model_type, "architectures": [architecture]})
             + "\n",
         }
         if include_weights:
@@ -345,6 +377,31 @@ def test_repeatability_failure_reports_failed_without_shrinking_denominator(tmp_
     assert len(report["records"]) == 231
     assert report["repeatability"]["passed"] is False
     assert report["score_pass_1"]["public_decisions"] == 231
+
+
+def test_onejev_qwen_architecture_is_explicitly_allowed(tmp_path: Path) -> None:
+    model_root, manifest = _write_model_assets(tmp_path, include_onejev=True)
+
+    evidence, directory = baseline.model_evidence(
+        manifest, model_root, "onejev-4b", require_weights=False
+    )
+
+    assert directory.name == "c" * 40
+    assert evidence["architecture"]["model_type"] == "qwen3_5"
+    assert evidence["architecture"]["architectures"] == ["Qwen3_5ForConditionalGeneration"]
+    assert evidence["architecture"]["transformers_class"] == "Qwen3_5ForConditionalGeneration"
+    assert evidence["architecture"]["auto_map_absent"] is True
+
+
+def test_architecture_rejects_custom_code_auto_map(tmp_path: Path) -> None:
+    model_root, manifest = _write_model_assets(tmp_path, include_onejev=True)
+    config = model_root / "OmniJev__OneJev-4B" / ("c" * 40) / "config.json"
+    data = json.loads(config.read_text())
+    data["auto_map"] = {"AutoModelForCausalLM": "modeling.Custom"}
+    config.write_text(json.dumps(data) + "\n")
+
+    with pytest.raises(baseline.PublicBaselineError, match="auto_map"):
+        baseline.verify_model_architecture(config.parent, "onejev-4b")
 
 
 def test_unsupported_model_is_notimplemented(tmp_path: Path) -> None:
