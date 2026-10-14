@@ -36,7 +36,7 @@
 - 截图v1结构捷径：无图无指令坐标规则497/500=99.4%，reports/s0-gui-coordinate-shortcut-v1-001.json。旧六模型截图成绩全部撤出当前矩阵，保留证据。queue43477及child343447已结束。
 - scripts/s0_gui_dev.py v2随机合法坐标修复7相关tests/ruff/mypy通过。真实CPU双构建/root/autodl-tmp/s0-gui-dev-v2-001/build.sh已exit0；产物artifacts/run-{a,b}逐字节一致，500原family保留、498原题/2题因合法几何重选；冻结旧坐标规则19/500=3.8%。630标注/媒体复用，无下载。
 - 截图六模型补测已启动：/root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382；学生queue343888（artifacts/screenshot-baselines-v2-001，四学生顺序、各1800秒/显存等待）；教师→Valen queue343927（teacher-screenshot-v2-001及valen-screenshot-v2-001，各1800秒）。OneJev4 344069实际运行，Valen344135已正常exit0/finished；教师343936已exit0/281.014秒（cohort244.528秒），E4B343893已exit0/232.000秒；全部只测screenshot v2，不重跑其余模态。源配置已重绑，历史dev排除union通过，07首条恢复勾选。
-- 为减少占卡，27B已提前独立并行：queue344403/child344408，artifacts/screenshot-27b-parallel-v2-001，单job2400秒，启动free76749MiB，当前与OneJev4共用约64GB。交接watcher344402/stop-original-before-27b.py允许原343888继续收OneJev4/E2B的实际kernel退出，E2B终态后停止原队列未来派发，防止27B重复。收据artifacts/screenshot-parallel-handoff-001.json届时生成；接手核实际进程，不能再启动原27B。
+- 为减少占卡，27B已提前独立并行：queue344403/child344408，artifacts/screenshot-27b-parallel-v2-001，单job2400秒，启动free76749MiB，当前与OneJev4共用约64GB。交接watcher344402/stop-original-before-27b.py允许原343888继续收OneJev4/E2B的实际kernel退出，E2B终态后停止原队列未来派发，防止27B重复。收据artifacts/screenshot-parallel-handoff-001.json届时生成；接手核实际进程，不能再启动原27B。 实测共享GPU时27B最近前向median3.799秒/题，初始加载约2分钟；2400秒是估计控制限。其他作业退出后复算剩余时间，必要时提前交接有界watchdog保留同一模型进程，不等待估计timeout杀掉已有结果、不重跑。
 - 已汇总27对真实token/耗时诊断分布：reports/s0-development-compute-budgets-001.json；复现python3 .scratch/s0/summarize-development.py，只读本地已验证sidecar并绑定报告/记录SHA，不重跑模型。Valen未测的预处理耗时保持null。08已同步ADR0010缓存与07同机双轮/S6跨运行时责任，清除过时额外前置。
 
 - 所有共享GPU作业仅质量评测，耗时是诊断数据，不当隔离发布性能。
