@@ -16,6 +16,10 @@
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
+- 最新收口：s0:11 CPU适配/官方计分语义完成，231题两遍构建SHA11223d98…c75d一致，7回归、82源mypy/ruff/format/build通过；oracle只是计分测试非模型质量。见reports/jevbench-adapter-validation-001.json/build-001及002/oracle-001与plan/handoff-2026-10-14-jevbench-cpu.md。
+- 教师005最新只读快照4785/5600、PID169823仍Rl/27:45，不重启。基线CPU实际Linux3passed/OneJev两项thinking证明partial/Valen路径blocked：Valen已staged在quarantine而非models，正在独立树修复路径和官方关闭语法，不重下载/不改准入。
+- ADR0009已冻结六评测cohort、四物理输入：dev3000合法金标/程序真值；holdout6000×两真人=12000判断，κ≥.7只holdout。sealed_gate三文件实现中，真实身份/人标仍blocked，历史四cohort不自动升级。
+
 - 01/03已关票；02教师resume005继续MVBench第二遍。MMAU两遍均620/1000且完全一致，MVBench第一遍976/1800；第二遍未完成，不关闭02。先核实际PID/exit，活作业不重启。
 - 04仍claimed/性能failed：旧顺序eager/graph失败保留；新scheduled eager冷比2.3469/2.3250，graph1024并发10为2.584/2.551、并发2为3.190/3.188、并发3为3.045/3.047。实际KV覆盖/并发与四概率均通过；未做失败配置gateway/off；两server已停、GPU交还教师。见reports/s0-scheduled-native-eager-canary-001.json及s0-scheduled-native-graph-canaries-001.json。
 - CPU候选已完成：Linux官方100题300次准备精确/40imagecache命中；失败CPUjob清理独立复核APPROVE。新网关并发adapter含实际ASGI wall/work分离、upstream输入/raw/API逐qid绑定、重复case拒绝及摘要JSON roundtrip；独立review APPROVE（reports/s0-scheduled-gateway-review-001.json）；48相关pass、78源mypy/lint/282format/build/32票validate通过，仅CPU准入。
