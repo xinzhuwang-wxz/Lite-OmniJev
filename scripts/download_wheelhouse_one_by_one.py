@@ -79,12 +79,16 @@ def main() -> int:
                 "total": len(blocks),
             }
             args.progress.write_text(json.dumps(progress, indent=2, sort_keys=True) + "\n")
-            log.write(f"BLOCK {index}/{len(blocks)} {name} rc={result.returncode} files={file_count}\n")
+            log.write(
+                f"BLOCK {index}/{len(blocks)} {name} rc={result.returncode} files={file_count}\n"
+            )
             log.flush()
             if result.returncode != 0:
                 return result.returncode
 
-        log.write(f"DONE {time.strftime('%Y-%m-%dT%H:%M:%S%z')} elapsed={time.time() - started:.1f}\n")
+        log.write(
+            f"DONE {time.strftime('%Y-%m-%dT%H:%M:%S%z')} elapsed={time.time() - started:.1f}\n"
+        )
     return 0
 
 

@@ -11,6 +11,7 @@ class Readout:
     p_insufficient: float
     confidence: float
     prediction: str
+    joint_probabilities: dict[str, float]
 
 
 def _softmax(values: Sequence[float], temperature: float) -> list[float]:
@@ -56,4 +57,5 @@ def read_probabilities(
         joint[-1],
         min(1.0, max(0.0, (maximum - 1 / k) / (1 - 1 / k))),
         options[conditional.index(maximum)],
+        dict(zip((*options, "U"), joint, strict=True)),
     )
