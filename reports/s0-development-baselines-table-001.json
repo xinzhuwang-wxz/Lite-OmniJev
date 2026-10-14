@@ -143,6 +143,19 @@
       "brier": 1.0867002566333628,
       "coverage_at_error": 0.0,
       "max_error": 0.05
+    },
+    {
+      "cohort": "video",
+      "model": "gemma4-e4b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-video-gemma4-e4b-it-001.json",
+      "count": 500,
+      "accuracy": 0.556,
+      "ece15": 0.3858723547086834,
+      "brier": 0.8053977938214587,
+      "coverage_at_error": 0.002,
+      "max_error": 0.05
     }
   ],
   "other_supported_pairs": "pending actual queue results",

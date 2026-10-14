@@ -1,0 +1,10 @@
+{
+  "status": "current child exited; captured kernel wait status",
+  "scheduler": 391342,
+  "child": 653655,
+  "command": "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python -m scripts.s0_development_baselines --build-report /root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/report.json --dev-jsonl /root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/dev.jsonl --media-root /root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/media --cohort video --model-root /root/autodl-tmp/lite-omnijev/artifacts/models --model-id gemma4-e4b-it --report /root/autodl-tmp/s0-development-baselines-002/artifacts/development-baselines-001/video-gemma4-e4b-it.json ",
+  "reason": "future OneJev long media use verified official FLA profile; no active evaluation restarted",
+  "waitstatus": 0,
+  "exit_code": 0,
+  "report": "/root/autodl-tmp/s0-development-baselines-002/artifacts/development-baselines-001/video-gemma4-e4b-it.json"
+}

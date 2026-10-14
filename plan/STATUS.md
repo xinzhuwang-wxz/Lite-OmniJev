@@ -66,5 +66,7 @@
 
 ## 当前队列接续补充
 - 学生原scheduler391342已SIGSTOP，仅暂停未来派发，当前video E4B子进程653655继续。替代supervisor892905在/root/autodl-tmp/s0-development-final-001/run-development-queue-fla-002.py等待同一子进程终止，保存kernel waitstatus/退出码后结束旧scheduler；已完成题不重跑。其后video OneJev4/E2B/OneJev27及crossmodal四模型转独立artifacts/development-baselines-fla-002，每job1800秒，OneJev显式FLA profile。新队列完成再写旧supervisor.finished释放截图队列；失败明确写旧queue-blocked并留证据。不能仅凭原scheduler停止误判GPU job已停止。
-- Valen开发queue796345已运行：/root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45，artifacts/valen-development-001；text/image/screenshot/video各500×2，原torch fallback保持与公共Valen同配置；audio/crossmodal明确unsupported；共享GPU质量专用、每job1200秒。text已passed，未核sidecar前不加入通过表。
+- Valen开发queue796345已运行：/root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45，artifacts/valen-development-001；text/image/screenshot/video各500×2，原torch fallback保持与公共Valen同配置；audio/crossmodal明确unsupported；共享GPU质量专用、每job1200秒。text500×2已核sidecar精确一致，35.8%，已加入通过表。
 - 六cohort统一dev排除清单实际双构建通过：/root/autodl-tmp/s0-valen-development-final-001/artifacts/dev-bundle-{001,002}/dev-exclusion.jsonl，SHA64d96a…1e5ed相同；3000 family节点/2500原始family/2000组件，跨模态与原image/audio同池连接。reports/s0-development-bundle-{001,002}.json；未来train须检查family与媒体SHA，calibration/holdout仍pending。
+
+- 学生E4B视频已正常exit0：500×2实际输入/概率精确一致，55.6%，797.732秒（共享GPU、非发布时延）；已收拢reports/s0-development-video-gemma4-e4b-it-001.json。kernel waitstatus=0收据已保存，旧391342已结束，892905接续后续FLA作业。开发通过表当前12支持对，E2B音频44.2%同样保留。

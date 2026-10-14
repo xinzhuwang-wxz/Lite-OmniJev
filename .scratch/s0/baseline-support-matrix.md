@@ -17,6 +17,6 @@ OneJev的audio token提示与配置/模板音频路径不一致，不能据此�
 
 此处Jev-Omni的普通tokenizer/template探针不能证明发布教师head读出；教师专用head沿用s0:01真实原tensor安全参考与s0:02完整公开benchmark，reports/teacher-technical-admission-gpu-001.json、teacher-head-reference-gpu-001.json、teacher-benchmark-two-pass-complete-001.json。不能用通用student payload复现发布分数。
 
-Valen配置来自checkpoint.pt对应安全metadata，不假称PEFT LoRA adapter；此票不加载checkpoint或把Qwen base推理当Valen成绩。其真实组合/官方专用任务协议尚待独立闭环，正常进程禁止pickle加载和上游module执行。
+Valen配置来自checkpoint.pt对应安全metadata，不假称PEFT LoRA adapter；此票不加载checkpoint或把Qwen base推理当Valen成绩。真实组合已按固定官方qwen_execution=question实现：PEFT语言LoRA+visual delta+bilinear head，安全428 tensor精确匹配；JevBench231×2实际GPU完成，支持开发text/image/screenshot/video官方processor首题实跑，audio/crossmodal明确unsupported。reports/s0-public-baseline-valen-001.json及s0-valen-development-cpu-preflight-002.json。开发500矩阵继续，不把公共成绩代替视觉质量。正常进程禁止pickle加载和上游module执行。
 
-后续GPU基线须冻结真实dev500与公开JevBench231输入、每模型官方模板/专用读出、逐题概率/pU边界、帧/时长/token/时延条件及两遍/跨机验收；CPU通过不免除真实forward。同原始media组件跨数据池的family排除应在基线和训练两端绑定allocation ledger。S0:07继续展开这些具体依赖，S0:08全绿前不启S1。
+后续GPU基线须冻结真实dev500与公开JevBench231输入、每模型官方模板/专用读出、逐题概率/pU边界、帧/时长/token/时延条件及同机两遍验收（跨运行时/端侧留S6）；CPU通过不免除真实forward。同原始media组件跨数据池的family排除应在基线和训练两端绑定allocation ledger。S0:07继续展开这些具体依赖，S0:08全绿前不启S1。
