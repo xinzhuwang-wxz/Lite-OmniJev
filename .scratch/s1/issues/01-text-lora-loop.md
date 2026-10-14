@@ -15,8 +15,8 @@ Blocked by: None
 
 ## Acceptance criteria
 
-- [ ] 池分配冻结：10750 s1-train/1000 holdout-reserve/3000 calibration-reserve，确定性协议（seed42，family级），双遍字节一致，与dev500及历史排除family零交集，ledger+报告绑定输入/输出SHA；训练入口校验并拒绝dev/预留family。
-- [ ] 答案token探针：A..T+U在真实generation boundary单token，thinking关闭，20选项最大情形覆盖，探针证据保存后才开始训练。
+- [x] 池分配冻结：10750 s1-train/1000 holdout-reserve/3000 calibration-reserve，确定性协议（seed42，family级），双遍字节一致，与dev500及历史排除family零交集，ledger+报告绑定输入/输出SHA；训练入口校验并拒绝dev/预留family。（远端双遍run-a/run-b字节一致，报告artifacts/s1-text-pools-v1-001/run-*/report.json passed；train 75206358…、calib 6d387816…、holdout 6bba594d…、ledger ce49ae4b…；preflight账本校验14750行/2000样本verified）
+- [x] 答案token探针：A..T+U在真实generation boundary单token，thinking关闭，20选项最大情形覆盖，探针证据保存后才开始训练。（smoke preflight ready：2000样本全部经prepare_examples边界校验，max_prompt_tokens=188，blockers=[]；主训练preflight含10750样本同校验）
 - [ ] R0 smoke：2k样本/300步真实GPU训练，训练样本自测acc≥.98，loss下降，adapter+完整provenance报告。
 - [ ] R1主训练：10750池30k samples-seen真实GPU完成，10k样本点与30k终点各保存adapter，SwanLab真实指标（ADR0003），checkpoint可恢复。
 - [ ] dev500同条件评测：10k/30k两adapter各双遍，500×2精确重复，字段含原始/归一概率、pU、confidence、预测，协议同S0基线（spec评测节）。
