@@ -117,6 +117,17 @@ def compare_native(prepared: Any, result: dict[str, Any]) -> dict[str, Any]:
             checks[hf_key] = expected == actual
     if prepared.http_media_io_kwargs and "video" in prepared.http_media_io_kwargs:
         meta = prepared.http_media_io_kwargs["video"]
+        # TF 5.17 omits its count tensor; the frozen media still defines the count.
+        expected_count = tensor_summary(np.asarray([len(meta["frames_indices"])], dtype=np.int64))
+        actual_count = (
+            tensor_summary(native["video_frame_counts"]) if "video_frame_counts" in native else None
+        )
+        fields["canonical_video_frame_count"] = {
+            "source": "frozen canonical frame indices; no HF tensor fabricated",
+            "expected": expected_count,
+            "native": actual_count,
+        }
+        checks["canonical_video_frame_count"] = expected_count == actual_count
         expected = np.asarray([[index / meta["fps"] for index in meta["frames_indices"]]])
         actual = native.get("video_timestamps")
         fields["video_timestamps"] = {

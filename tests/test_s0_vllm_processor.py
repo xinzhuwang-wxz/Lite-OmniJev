@@ -120,3 +120,25 @@ def test_explicit_offline_environment_required_and_errors_sanitized(tmp_path, mo
     assert "PRIVATE" not in output.read_text()
     with pytest.raises(SystemExit):
         main(args)
+
+
+@pytest.mark.parametrize("native_count", [None, 1, 2])
+def test_video_frame_count_stays_required_when_hf_version_omits_count(native_count):
+    torch = pytest.importorskip("torch")
+    prepared = SimpleNamespace(
+        inputs={
+            "input_ids": torch.tensor([[1, 2]]),
+            "pixel_values_videos": torch.ones(2, 3, 4),
+            "video_position_ids": torch.zeros(2, 3, 2, dtype=torch.int64),
+        },
+        http_media_io_kwargs={"video": {"fps": 2.0, "frames_indices": [0, 4]}},
+    )
+    native = NativeFields(
+        pixel_values_videos=prepared.inputs["pixel_values_videos"],
+        pixel_position_ids_videos=prepared.inputs["video_position_ids"],
+        video_timestamps=[[0.0, 2.0]],
+    )
+    if native_count is not None:
+        native["video_frame_counts"] = torch.tensor([native_count])
+    result = {"prompt_token_ids": [1, 2], "mm_kwargs": native, "mm_placeholders": {}}
+    assert compare_native(prepared, result)["passed"] is (native_count == 2)
