@@ -340,6 +340,19 @@
       "brier": 0.39395585455541704,
       "coverage_at_error": 0.258,
       "max_error": 0.05
+    },
+    {
+      "cohort": "screenshot",
+      "model": "valen-preview-0923",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-valen-preview-0923-v2-001.json",
+      "count": 500,
+      "accuracy": 0.73,
+      "ece15": 0.1767084980821355,
+      "brier": 0.41483029281624334,
+      "coverage_at_error": 0.26,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -385,7 +398,7 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 26,
+  "verified_supported_pairs": 27,
   "pending_supported_pairs": [
     {
       "cohort": "screenshot",
@@ -400,11 +413,6 @@
     {
       "cohort": "screenshot",
       "model": "onejev-27b",
-      "reason": "corrected GUI v2 baseline required"
-    },
-    {
-      "cohort": "screenshot",
-      "model": "valen-preview-0923",
       "reason": "corrected GUI v2 baseline required"
     }
   ],

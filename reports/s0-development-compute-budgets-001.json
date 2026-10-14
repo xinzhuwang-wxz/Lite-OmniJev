@@ -1,8 +1,8 @@
 {
   "status": "partial",
-  "matrix_sha256": "e99663ab4e491610c48e73973ea2345f373e8acb7b1151d2d088f46d9a0f3715",
+  "matrix_sha256": "45adfcbe0a1c768b3eda88e9c798ca2ccd2216488ef48ccc5be398150dbd0f06",
   "summarizer_sha256": "bb705388486cf7c28c1c3740130680b06b18fadb8d70188e9d3e14c831e56e36",
-  "verified_supported_pairs": 26,
+  "verified_supported_pairs": 27,
   "expected_supported_pairs": 30,
   "pending": [
     {
@@ -18,11 +18,6 @@
     {
       "cohort": "screenshot",
       "model": "onejev-27b",
-      "reason": "corrected GUI v2 baseline required"
-    },
-    {
-      "cohort": "screenshot",
-      "model": "valen-preview-0923",
       "reason": "corrected GUI v2 baseline required"
     }
   ],
@@ -1023,6 +1018,39 @@
         "max": 0.1279968786984682
       },
       "job_elapsed_seconds": 244.52848893217742,
+      "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "valen-preview-0923",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-valen-preview-0923-v2-001.json",
+      "count": 500,
+      "accuracy": 0.73,
+      "ece15": 0.1767084980821355,
+      "brier": 0.41483029281624334,
+      "coverage_at_error": 0.26,
+      "max_error": 0.05,
+      "report_sha256": "ba0fe49ebc3b3a266d03ec54722b95566b52b62c79a55c25fbf0bf8aff89b52f",
+      "records": "artifacts/s0-screenshot-v2-gpu-001/screenshot.json.records.jsonl",
+      "records_sha256": "a5477e6e0cd50bb8ff0e8a2f25dc16cd5581519159df60db0d4755959c64ee96",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 1054,
+        "p50": 1174,
+        "p95": 1206,
+        "max": 1228
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.300526,
+        "p50": 0.562587,
+        "p95": 0.69881,
+        "max": 0.746869
+      },
+      "warm_prepare_seconds": null,
+      "job_elapsed_seconds": 570.597691,
       "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
     }
   ],

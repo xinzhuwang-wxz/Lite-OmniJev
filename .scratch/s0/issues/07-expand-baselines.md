@@ -48,3 +48,5 @@ v2真实双构建exit0且六输出字节一致；原500family保留，498题完�
 当前25/30支持对已核：截图v2 E4B51.4%/500×2/232.000秒且输入/原概率/预测完全一致。reports/s0-development-compute-budgets-001.json已从SHA验证sidecar汇总25对真实token和耗时边界，Valen预处理未测保持null；剩余五截图补测正常运行，不重跑非截图。
 
 截图v2教师74.0%已核1000记录/500双轮原始概率及媒体完全一致，parent/run.exit0/281.014秒。累计26/30支持对，计算预算汇总已更新；其余截图模型实际运行/排队。
+
+截图v2 Valen73.0%已核500双轮raw_logits/输入/预测精确、1000条显式关闭thinking、exit0/finished。累计27/30支持对。27B在显存足够时提前并行，原调度器受交接watcher保护只继续OneJev4/E2B，不重复27B。
