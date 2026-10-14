@@ -239,10 +239,13 @@ def run(
         }
         code = 0
     except (OSError, DevEvalError, ValueError) as exc:
+        import traceback
+
+        traceback.print_exc()
         report = {
             "status": "blocked",
             "exit_code": 1,
-            "blocker": str(exc) if isinstance(exc, DevEvalError) else type(exc).__name__,
+            "blocker": f"{type(exc).__name__}: {exc}",
             "command": command,
             "cost": None,
             "timing": {"started_at": started_at, "finished_at": time.time()},
