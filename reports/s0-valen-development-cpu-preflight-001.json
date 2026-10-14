@@ -1,0 +1,12 @@
+{
+  "status": "blocked",
+  "exit_code": 2,
+  "scope": "actual official Valen compiler/processor only; no GPU quality",
+  "cohorts": [],
+  "runner_sha256": "51e90c70b02a4d8214e1ddcf2f1fdc2aaa4a9dd6fa19d85fa6ce0f85885d5c53",
+  "error": {
+    "type": "TypeError",
+    "message": "merged_typed_dict.__init__() got an unexpected keyword argument 'longest_edge'"
+  },
+  "seconds": 4.6121300756931305
+}

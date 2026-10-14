@@ -6,3 +6,5 @@
 - 单文件40MP不能约束多图总内存 → 同请求会同时持有解码图、传输bytes和tensor → 全部路径/hash和图像header先预检，默认总图像40MP/媒体8项，再启动任何完整解码。
 
 - 管线脚本stdin被吞/视频提前退出 → FFmpeg默认轮询交互stdin → 媒体probe/decode子进程使用DEVNULL，真实stdin回归包含q输入与实时视频。
+
+- Valen图像参数报longest_edge非法 → checkpoint使用images_kwargs.size嵌套 → 按固定config保留size字典，先实跑官方processor再启动GPU。

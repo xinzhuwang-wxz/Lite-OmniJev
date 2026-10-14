@@ -1,0 +1,312 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "actual official Valen compiler/processor only; no GPU quality",
+  "cohorts": [
+    {
+      "name": "text",
+      "count": 500,
+      "first_actual_compiled": true,
+      "logical_tokens": 134,
+      "inputs": {
+        "input_ids": {
+          "shape": [
+            1,
+            134
+          ],
+          "dtype": "torch.int64",
+          "sha256": "01411cd0ac77c232f73e53041864eb4214f261d7b505f8a69574fd1ef6058dc5"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            134
+          ],
+          "dtype": "torch.int64",
+          "sha256": "3b586d45dc5622fee4ec72f7338eaeb96c0283d025b3b498e0053051bec37003"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            134
+          ],
+          "dtype": "torch.int64",
+          "sha256": "482500ac4ba894ac24dbc1e3e06f5455e570378d55808949294af424208dff4c"
+        }
+      },
+      "positions": [
+        {
+          "keys": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+            "O",
+            "P",
+            "Q",
+            "R",
+            "S",
+            "T"
+          ],
+          "candidate_positions": [
+            39,
+            43,
+            48,
+            53,
+            58,
+            64,
+            68,
+            73,
+            77,
+            82,
+            87,
+            92,
+            96,
+            100,
+            104,
+            111,
+            115,
+            122,
+            126,
+            130
+          ],
+          "decision_position": 133
+        }
+      ],
+      "video_metadata": []
+    },
+    {
+      "name": "image",
+      "count": 500,
+      "first_actual_compiled": true,
+      "logical_tokens": 360,
+      "inputs": {
+        "input_ids": {
+          "shape": [
+            1,
+            360
+          ],
+          "dtype": "torch.int64",
+          "sha256": "7b1dfcfa473f3dfe2d4b34ac70c090ea5ebff7ba290e1ab1fb73dc6a4141f527"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            360
+          ],
+          "dtype": "torch.int64",
+          "sha256": "b67cb5005afeab478193eee00aeab5523f6527105b7105632fbe74a635b9ecc1"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            360
+          ],
+          "dtype": "torch.int64",
+          "sha256": "f105fa28424211e7a472396a9e338390f0ed35746e8c45d4c8a089a1aeb3bbe8"
+        },
+        "pixel_values": {
+          "shape": [
+            1200,
+            1536
+          ],
+          "dtype": "torch.float32",
+          "sha256": "6e2e46d6faf95a7b86257c1125ffd3517840f565c3b43a98ce36a69e28bd3731"
+        },
+        "image_grid_thw": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.int64",
+          "sha256": "a382a021bca2e0879737a2fd0059edcba99f882e718e964c4e6e967d7cf80349"
+        }
+      },
+      "positions": [
+        {
+          "keys": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "candidate_positions": [
+            341,
+            346,
+            351,
+            356
+          ],
+          "decision_position": 359
+        }
+      ],
+      "video_metadata": []
+    },
+    {
+      "name": "screenshot",
+      "count": 500,
+      "first_actual_compiled": true,
+      "logical_tokens": 1151,
+      "inputs": {
+        "input_ids": {
+          "shape": [
+            1,
+            1151
+          ],
+          "dtype": "torch.int64",
+          "sha256": "d4acc57446e134600eabc1e9a4d52386e9d954845408fd9f20253d116035e133"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            1151
+          ],
+          "dtype": "torch.int64",
+          "sha256": "0ad2b4650afc26c4bfbb20685d2343d704a1edcb9235089d569e8339cf225db6"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            1151
+          ],
+          "dtype": "torch.int64",
+          "sha256": "9832906e182ae18a50f0337ce342c4da41cbd97141040e596ade0746a3739984"
+        },
+        "pixel_values": {
+          "shape": [
+            3948,
+            1536
+          ],
+          "dtype": "torch.float32",
+          "sha256": "c5c85fc28c75de5ab603c00705c874fd6683047f1cbfd9fedfa9c02fa56be02d"
+        },
+        "image_grid_thw": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.int64",
+          "sha256": "9bc0a07e6aaf6bc8ce08edd5c16a0b7a0107ca5d0c74e1ca8bbaf79c4b63c246"
+        }
+      },
+      "positions": [
+        {
+          "keys": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "candidate_positions": [
+            1067,
+            1094,
+            1123,
+            1147
+          ],
+          "decision_position": 1150
+        }
+      ],
+      "video_metadata": []
+    },
+    {
+      "name": "video",
+      "count": 500,
+      "first_actual_compiled": true,
+      "logical_tokens": 2214,
+      "inputs": {
+        "input_ids": {
+          "shape": [
+            1,
+            2214
+          ],
+          "dtype": "torch.int64",
+          "sha256": "ed6a648a44abd0c1e77f8e86962171ba16017ee87b4a3326b2d4479066f0c781"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            2214
+          ],
+          "dtype": "torch.int64",
+          "sha256": "890b230881fb764bfd0587da346adcf624503b2c8d023820f60ac554cd32c40b"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            2214
+          ],
+          "dtype": "torch.int64",
+          "sha256": "3cb4fb373f22e9527c158bad1e50afd76dc0011c431efbe8b6d6880271f03d50"
+        },
+        "pixel_values_videos": {
+          "shape": [
+            8320,
+            1536
+          ],
+          "dtype": "torch.float32",
+          "sha256": "19fc027d55663d7cb4bf3c70e56a98188a40712fe8c94973d7a65c5f16cc3949"
+        },
+        "video_grid_thw": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.int64",
+          "sha256": "94e8e5a12c74b8654c74b484da9b2ab81bfed66294ff1ed44e72bf7ff7f66239"
+        }
+      },
+      "positions": [
+        {
+          "keys": [
+            "true",
+            "false"
+          ],
+          "candidate_positions": [
+            2196,
+            2210
+          ],
+          "decision_position": 2213
+        }
+      ],
+      "video_metadata": [
+        {
+          "fps": 25.0,
+          "total_num_frames": 128,
+          "duration": 5.12,
+          "frames_indices": [
+            0,
+            8,
+            17,
+            25,
+            34,
+            42,
+            51,
+            59,
+            68,
+            76,
+            85,
+            93,
+            102,
+            110,
+            119,
+            127
+          ],
+          "video_backend": "ffmpeg",
+          "width": 640,
+          "height": 427
+        }
+      ]
+    }
+  ],
+  "runner_sha256": "51e90c70b02a4d8214e1ddcf2f1fdc2aaa4a9dd6fa19d85fa6ce0f85885d5c53",
+  "seconds": 5.341776316985488
+}

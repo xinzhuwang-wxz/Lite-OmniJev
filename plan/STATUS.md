@@ -48,8 +48,8 @@
 ## 当前活跃作业（接手先核实际状态）
 - GPU公共基线batch002已全部exit0：OneJev4B75.7576%/142.934秒，27B83.1169%/647.003秒，Jev-Omni85.7143%/125.720秒，各231对概率精确一致；连同E4B/E2B五核心表reports/s0-public-baselines-table-001.json。旧supervisor287865已完成，不重启。
 - 当前开发GPU队列：/root/autodl-tmp/s0-development-baselines-002 HEAD731c3d2，scheduler391342；文本E4B93.6%/ECE.04346、OneJev4B96.6%/ECE.06404、E2B88.4%/ECE.10150已各500×2通过实际输入/概率精确一致（reports/s0-development-baselines-table-001.json）；其后按text→image→audio→video→crossmodal，各E4B/OneJev4/E2B/OneJev27（OneJev音频类别明确unsupported，不填零），每job1200秒，JSONL保留，artifacts/development-baselines-001。原生CPU真实首题16支持对全部通过（4音频不支持对明确列出），教师5类首题CPU官方processor通过6.677秒，见两份cpu-preflight001报告，非GPU质量验收。
-- 开发runner已合入731c3d2，流式逐题处理适应150GiB上限，8192token拒截断，重复还绑定实际tensor输入hash；相关10测试通过。教师开发runner已合入05e29ec，同16帧端点与音频PCM16共同输入协议，待串行GPU调度。
-- /tmp/lite-public-baselines-001：Valen真实安全head/LoRA/visual组合adapter实现中。已找齐官方固定源码16小文件/59561B，四原固定SHA全匹配，artifacts/valen-source-audit-42a6-001/retrieval.json；安全转换权重原已存在，不重做转换、不执行上游pickle/module。
+- 开发runner已合入731c3d2，流式逐题处理适应150GiB上限，8192token拒截断，重复还绑定实际tensor输入hash；相关10测试通过。教师开发runner已合入05e29ec，同16帧端点与音频PCM16共同输入协议，当前实际GPU已启动。
+- Valen开发adapter已合入05cb978/18b5b45，子代理切片完成；实际图像参数schema修复后CPU四支持类别首题通过5.342秒。已找齐官方固定源码16小文件/59561B，四原固定SHA全匹配，artifacts/valen-source-audit-42a6-001/retrieval.json；安全转换权重原已存在，不重做转换、不执行上游pickle/module。
 - GUI与crossmodal子切片都已完成，不重复执行。截图报告reports/s0-screenshot-development-acceptance-001.json；实际/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001与run-l-actual-001，source脚本SHA在报告，source实际执行SHA保留在报告及远端冻结树；主树随后仅ruff格式化，不能用新字节冒称原运行SHA。学生旧GPU队列仅捕获五cohort，截图需另外调度，不能误称已评测。
 - image首跑无path字段KeyError保留；修复6e9c467实际双遍已通过，remote /root/autodl-tmp/s0-media-development-002。跨模态remote /root/autodl-tmp/s0-crossmodal-development-001 HEADc4ce657。
 
@@ -63,3 +63,8 @@
 
 - 教师六cohort真实GPU已启动：冻结/root/autodl-tmp/s0-development-final-001 HEAD0aec3eb，artifacts/teacher-development-001/result逐cohort增量、run.exit/finished权威；2400秒作业上限，共享GPU质量专用。六类真实首题CPU已通过6.352秒（含新截图），reports/s0-teacher-development-cpu-preflight-002.json；初次仅报告目录不存在的控制失败已识别，未启动GPU重复。
 - 截图四学生queue692449已调度/root/autodl-tmp/s0-development-final-001/run-screenshot-queue-001.py；等待旧学生队列结束/明确停止且教师finished后串行执行，artifacts/screenshot-baselines-001。OneJev显式FLA profile/hash，每job1200秒，意外失败停止保留，不以exit0冒称全矩阵完成。
+
+## 当前队列接续补充
+- 学生原scheduler391342已SIGSTOP，仅暂停未来派发，当前video E4B子进程653655继续。替代supervisor892905在/root/autodl-tmp/s0-development-final-001/run-development-queue-fla-002.py等待同一子进程终止，保存kernel waitstatus/退出码后结束旧scheduler；已完成题不重跑。其后video OneJev4/E2B/OneJev27及crossmodal四模型转独立artifacts/development-baselines-fla-002，每job1800秒，OneJev显式FLA profile。新队列完成再写旧supervisor.finished释放截图队列；失败明确写旧queue-blocked并留证据。不能仅凭原scheduler停止误判GPU job已停止。
+- Valen开发queue796345已运行：/root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45，artifacts/valen-development-001；text/image/screenshot/video各500×2，原torch fallback保持与公共Valen同配置；audio/crossmodal明确unsupported；共享GPU质量专用、每job1200秒。text已passed，未核sidecar前不加入通过表。
+- 六cohort统一dev排除清单实际双构建通过：/root/autodl-tmp/s0-valen-development-final-001/artifacts/dev-bundle-{001,002}/dev-exclusion.jsonl，SHA64d96a…1e5ed相同；3000 family节点/2500原始family/2000组件，跨模态与原image/audio同池连接。reports/s0-development-bundle-{001,002}.json；未来train须检查family与媒体SHA，calibration/holdout仍pending。
