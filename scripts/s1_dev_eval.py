@@ -155,6 +155,16 @@ def metrics_from_records(records: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def repeat_identical_over(passes_records: list[list[dict[str, Any]]]) -> bool | None:
+    """Exact cross-pass equality; None when fewer than two passes make it undefined."""
+    if len(passes_records) < 2:
+        return None
+    return all(
+        canonical_json(first) == canonical_json(second)
+        for first, second in zip(passes_records, passes_records[1:], strict=False)
+    )
+
+
 def run(
     *,
     model_dir: Path,
@@ -194,10 +204,7 @@ def run(
                 logits, readout = forward_readout(model, tokenizer, sample, max_length)
                 records.append(record_for(sample, readout, logits))
             all_passes.append(records)
-        repeat_identical = all(
-            canonical_json(first) == canonical_json(second)
-            for first, second in zip(all_passes, all_passes[1:], strict=True)
-        )
+        repeat_identical = repeat_identical_over(all_passes)
         sidecar = output_dir / "records.jsonl"
         with sidecar.open("w", encoding="utf-8") as handle:
             for pass_index, records in enumerate(all_passes):
@@ -205,7 +212,7 @@ def run(
                     handle.write(canonical_json({**record, "pass": pass_index}) + "\n")
         metrics = metrics_from_records(all_passes[0])
         report = {
-            "status": "passed" if repeat_identical else "passed_unstable_repeat",
+            "status": "passed" if repeat_identical is not False else "passed_unstable_repeat",
             "exit_code": 0,
             "command": command,
             "model_revision": model_dir.name,

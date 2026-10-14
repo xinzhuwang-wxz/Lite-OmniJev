@@ -135,3 +135,21 @@ def test_sample_schema_accepts_ledger_style_family(tmp_path: Path) -> None:
     rows = [sample_row(0)]
     samples = [Sample.model_validate_json(json.dumps(row)) for row in rows]
     assert samples[0].meta.pool == "train"
+
+
+def test_repeat_identical_handles_single_pass() -> None:
+    from scripts.s1_dev_eval import repeat_identical_over
+
+    one: list[list[dict]] = [[{"id": "a"}]]
+    assert repeat_identical_over(one) is None
+    assert (
+        repeat_identical_over(
+            one,
+        )
+        is None
+    )
+    assert repeat_identical_over([]) is None
+    two_same: list[list[dict]] = [[{"id": "a", "p": 0.5}], [{"id": "a", "p": 0.5}]]
+    assert repeat_identical_over(two_same) is True
+    two_diff: list[list[dict]] = [[{"id": "a", "p": 0.5}], [{"id": "a", "p": 0.4}]]
+    assert repeat_identical_over(two_diff) is False
