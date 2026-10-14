@@ -4,9 +4,9 @@ ID: s0:12
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: main-session-gpu-transition
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04, 01, 03
 
 ## What to build
