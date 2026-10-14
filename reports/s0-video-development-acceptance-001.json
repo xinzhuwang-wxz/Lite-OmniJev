@@ -1,0 +1,111 @@
+{
+  "status": "passed_real_cpu_development_build",
+  "scope": "video original TRAIN first primitive slice only; not model quality or human kappa",
+  "source_tree": "/root/autodl-tmp/s0-media-development-002",
+  "source_commit": "6e9c467633e71ef59c5bdceb17ccf043da76990c",
+  "runs": {
+    "a": {
+      "status": "passed",
+      "exit_code": 0,
+      "git_head": "6e9c467633e71ef59c5bdceb17ccf043da76990c",
+      "script_sha256": "6dbd7576fcdee019931dfbcc3b8a7bba0fbd87f7085faf77c461ba557e6c2786",
+      "duration_seconds": 188.00912499427795,
+      "split": {
+        "dev_items": 500,
+        "candidate_qa": 20000,
+        "candidate_families": 10000,
+        "all_train_families": 10000,
+        "selected_families": 500,
+        "excluded_counts": {},
+        "fixed_video_frames": 16,
+        "max_video_seconds": 60.0
+      },
+      "outputs": {
+        "dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "development_ledger_sha256": "4cd9f641dfc16ca9f20400fd970c4ad7429bf5c211232bf1cb14ee7964ed3ab6",
+        "exclusion_ledger_sha256": "96a2a75baf8d9f47c20ce792d92836dc240db35e5ed0fc1748409357d5e1ddf9",
+        "media_manifest_sha256": "227014fb0481106aeab3c5f4ab6c919d99c680dac365569a2e4967b15c5fd65e"
+      },
+      "output_file_sha256": {
+        "dev.jsonl": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "dev-ledger.jsonl": "4cd9f641dfc16ca9f20400fd970c4ad7429bf5c211232bf1cb14ee7964ed3ab6",
+        "exclusion.jsonl": "96a2a75baf8d9f47c20ce792d92836dc240db35e5ed0fc1748409357d5e1ddf9",
+        "media.jsonl": "227014fb0481106aeab3c5f4ab6c919d99c680dac365569a2e4967b15c5fd65e",
+        "report.json": "49e102cf176996b19a22e3bc9e11269cf8dadc892254f0b712ac3697f06ed362"
+      },
+      "media_file_count": 500,
+      "media_tree_sha256": "39b6983c315c42451f10380ee3ae3f00c4e522c259485080e73bacb84e89f9a7",
+      "decode_stats": {
+        "count": 500,
+        "decoded_frames_values": [
+          16
+        ],
+        "min_duration_seconds": 5.12,
+        "max_duration_seconds": 5.12,
+        "max_sampled_frame_index": 127,
+        "min_total_num_frames": 128,
+        "max_total_num_frames": 128,
+        "decoded_sizes": [
+          [
+            640,
+            427
+          ]
+        ],
+        "total_bytes": 625278050
+      }
+    },
+    "b": {
+      "status": "passed",
+      "exit_code": 0,
+      "git_head": "6e9c467633e71ef59c5bdceb17ccf043da76990c",
+      "script_sha256": "6dbd7576fcdee019931dfbcc3b8a7bba0fbd87f7085faf77c461ba557e6c2786",
+      "duration_seconds": 181.86486864089966,
+      "split": {
+        "dev_items": 500,
+        "candidate_qa": 20000,
+        "candidate_families": 10000,
+        "all_train_families": 10000,
+        "selected_families": 500,
+        "excluded_counts": {},
+        "fixed_video_frames": 16,
+        "max_video_seconds": 60.0
+      },
+      "outputs": {
+        "dev_jsonl_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "development_ledger_sha256": "4cd9f641dfc16ca9f20400fd970c4ad7429bf5c211232bf1cb14ee7964ed3ab6",
+        "exclusion_ledger_sha256": "96a2a75baf8d9f47c20ce792d92836dc240db35e5ed0fc1748409357d5e1ddf9",
+        "media_manifest_sha256": "227014fb0481106aeab3c5f4ab6c919d99c680dac365569a2e4967b15c5fd65e"
+      },
+      "output_file_sha256": {
+        "dev.jsonl": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "dev-ledger.jsonl": "4cd9f641dfc16ca9f20400fd970c4ad7429bf5c211232bf1cb14ee7964ed3ab6",
+        "exclusion.jsonl": "96a2a75baf8d9f47c20ce792d92836dc240db35e5ed0fc1748409357d5e1ddf9",
+        "media.jsonl": "227014fb0481106aeab3c5f4ab6c919d99c680dac365569a2e4967b15c5fd65e",
+        "report.json": "624d5a9ad71f0b6ccc18ff92177a5c4e1b334e83e3d5103b1d0a6c27a931314c"
+      },
+      "media_file_count": 500,
+      "media_tree_sha256": "39b6983c315c42451f10380ee3ae3f00c4e522c259485080e73bacb84e89f9a7",
+      "decode_stats": {
+        "count": 500,
+        "decoded_frames_values": [
+          16
+        ],
+        "min_duration_seconds": 5.12,
+        "max_duration_seconds": 5.12,
+        "max_sampled_frame_index": 127,
+        "min_total_num_frames": 128,
+        "max_total_num_frames": 128,
+        "decoded_sizes": [
+          [
+            640,
+            427
+          ]
+        ],
+        "total_bytes": 625278050
+      }
+    }
+  },
+  "same_outputs": true,
+  "gpu_used": false,
+  "holdout_accessed": false
+}

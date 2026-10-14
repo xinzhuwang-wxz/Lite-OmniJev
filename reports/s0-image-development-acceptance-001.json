@@ -1,0 +1,99 @@
+{
+  "status": "passed_real_cpu_development_build",
+  "scope": "image original TRAIN first primitive slice only; not model quality or human kappa",
+  "source_tree": "/root/autodl-tmp/s0-media-development-002",
+  "source_commit": "6e9c467633e71ef59c5bdceb17ccf043da76990c",
+  "runs": {
+    "a": {
+      "status": "passed",
+      "exit_code": 0,
+      "git_head": "6e9c467633e71ef59c5bdceb17ccf043da76990c",
+      "script_sha256": "6dbd7576fcdee019931dfbcc3b8a7bba0fbd87f7085faf77c461ba557e6c2786",
+      "duration_seconds": 2.6182355880737305,
+      "split": {
+        "dev_items": 500,
+        "candidate_qa": 2738,
+        "candidate_families": 2641,
+        "all_train_families": 16540,
+        "selected_families": 500,
+        "excluded_counts": {
+          "missing_allowed_license_or_media": 14315,
+          "invalid_choice_options": 3
+        }
+      },
+      "outputs": {
+        "dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "development_ledger_sha256": "909abd4546df864ac19cc1b6b6891f2b27aef6f94507b16164f01d7e207fde29",
+        "exclusion_ledger_sha256": "9286360d9016894141076e1f114e44aa64109b81b93b2010995279b2b1f2248b",
+        "media_manifest_sha256": "b0e8f3a7bc7d88b76f41e3f99d6528638bd22e6a7c48a518e0b0f36b0a1cde37"
+      },
+      "output_file_sha256": {
+        "dev.jsonl": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "dev-ledger.jsonl": "909abd4546df864ac19cc1b6b6891f2b27aef6f94507b16164f01d7e207fde29",
+        "exclusion.jsonl": "9286360d9016894141076e1f114e44aa64109b81b93b2010995279b2b1f2248b",
+        "media.jsonl": "b0e8f3a7bc7d88b76f41e3f99d6528638bd22e6a7c48a518e0b0f36b0a1cde37",
+        "report.json": "35f6eab1ab28e7931f0426ac9cf57d4e622ec185c431f6586e554ff30bd779a3"
+      },
+      "media_file_count": 500,
+      "media_tree_sha256": "ac886cb505010aea7be763949f89d79f65ae913850cfa8324712e5b4a20c4898",
+      "decode_stats": {
+        "count": 500,
+        "min_width": 253,
+        "max_width": 640,
+        "min_height": 151,
+        "max_height": 640,
+        "formats": [
+          "JPEG"
+        ],
+        "total_bytes": 86921274
+      }
+    },
+    "b": {
+      "status": "passed",
+      "exit_code": 0,
+      "git_head": "6e9c467633e71ef59c5bdceb17ccf043da76990c",
+      "script_sha256": "6dbd7576fcdee019931dfbcc3b8a7bba0fbd87f7085faf77c461ba557e6c2786",
+      "duration_seconds": 2.58024525642395,
+      "split": {
+        "dev_items": 500,
+        "candidate_qa": 2738,
+        "candidate_families": 2641,
+        "all_train_families": 16540,
+        "selected_families": 500,
+        "excluded_counts": {
+          "missing_allowed_license_or_media": 14315,
+          "invalid_choice_options": 3
+        }
+      },
+      "outputs": {
+        "dev_jsonl_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "development_ledger_sha256": "909abd4546df864ac19cc1b6b6891f2b27aef6f94507b16164f01d7e207fde29",
+        "exclusion_ledger_sha256": "9286360d9016894141076e1f114e44aa64109b81b93b2010995279b2b1f2248b",
+        "media_manifest_sha256": "b0e8f3a7bc7d88b76f41e3f99d6528638bd22e6a7c48a518e0b0f36b0a1cde37"
+      },
+      "output_file_sha256": {
+        "dev.jsonl": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+        "dev-ledger.jsonl": "909abd4546df864ac19cc1b6b6891f2b27aef6f94507b16164f01d7e207fde29",
+        "exclusion.jsonl": "9286360d9016894141076e1f114e44aa64109b81b93b2010995279b2b1f2248b",
+        "media.jsonl": "b0e8f3a7bc7d88b76f41e3f99d6528638bd22e6a7c48a518e0b0f36b0a1cde37",
+        "report.json": "2622ee0cb8003ce08ec7a9d38bbb1d3580538d6fd1e2dda079b365b3bf109bcb"
+      },
+      "media_file_count": 500,
+      "media_tree_sha256": "ac886cb505010aea7be763949f89d79f65ae913850cfa8324712e5b4a20c4898",
+      "decode_stats": {
+        "count": 500,
+        "min_width": 253,
+        "max_width": 640,
+        "min_height": 151,
+        "max_height": 640,
+        "formats": [
+          "JPEG"
+        ],
+        "total_bytes": 86921274
+      }
+    }
+  },
+  "same_outputs": true,
+  "gpu_used": false,
+  "holdout_accessed": false
+}

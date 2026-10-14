@@ -1,10 +1,10 @@
 # 六类开发集来源合同与实际缺口
 
 Owner: main-session-gpu-transition
-Parent: s0:12
-State: partial; six complete dev cohorts not admitted
+Parent: s0:07（原12已合并）
+State: actual text/image/audio/video/crossmodal500 built; screenshot500 in progress; model quality pending
 
-ADR0009固定六评测cohort，每类500dev/1000holdout；物理输入仍四值。以下只规划公开TRAIN候选与自有程序真值，不读取validation/test/项目holdout。来源的下载、媒体数、原标签数均不等于开发题准入或人类κ。只有text已展开确定构建票s0:13；其他类别须先验证语义与选中媒体/来源。
+ADR0009固定六评测cohort，每类500dev/1000holdout；物理输入仍四值。以下只规划公开TRAIN候选与自有程序真值，不读取validation/test/项目holdout。来源的下载、媒体数、原标签数均不等于开发题准入或人类κ。当前五cohort实际构建见STATUS与reports；来源子项统一07，不再建单来源票。
 
 | cohort | 固定来源与实际候选 | family与池排除 | 首个合法题型/尚缺 |
 |---|---|---|---|
@@ -34,3 +34,5 @@ calibration不在本次构建中偷偷分配；将其family分配标pending，�
 证据来源：s0-data:01及reports/clinc-admission-corrected-001.json；reports/stage2-remote-completion-001.json、stage2-media-cpu-validation-001.json；reports/gui-odyssey-download-acceptance-001.json、gui-odyssey-full-decode-cpu-001.json；reports/clotho-aqa-audio-preparation-002.json、clotho-range-recovery-004.json；reports/clevrer-source-download-snapshot.json、clevrer-media-cpu.json。补充bounded source-map读取了公开TRAIN元数据/标注以核数量/schema，未读其他split/封存或教师预测；该审计未做模型推理、媒体decode或训练准入。
 
 2026-10-14小型官方TRAIN动作审计已取得：reports/gui-odyssey-step-annotation-audit-local-002.json。固定首episode16steps全部连续且16非空截图basename逐一对齐；CLICK12/TEXT2/SCROLL1/INCOMPLETE1，11CLICK有合法目标bbox/点击点几何一致，另一CLICK info为字符串。只有单target bbox，无完整候选元素集合；开放参数/INCOMPLETE含义及不泄漏输入规则未冻结。可继续审计粗动作类型Choice，或明确以bbox几何程序真值构造新任务，但不得把自行负例或粗动作类别当原完整GUI动作gold。仍只有1family，不是500或16独立family；001远端无网失败保留，002为Mac成功替代路径，未请求另外两份。
+
+2026-10-14当前实产物取代上表旧“未执行”描述：image原Choice500、video原exist Noul500已在6e9c467 Linux双遍实际decode/hash与整family排除通过；crossmodal image+audio合取Noul500已在c4ce657双遍通过，yes250/no250、1000媒体hash核验，引用原image/audio dev组件同池。三个acceptance报告分别reports/s0-{image,video,crossmodal}-development-acceptance-001.json。单primitive覆盖限制仍明确，不能据此宣称Score覆盖或质量通过。截图目标定位Choice500实际构建在进行。

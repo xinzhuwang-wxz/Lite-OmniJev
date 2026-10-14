@@ -19,12 +19,14 @@
 | s0:11 JevBench | 固定231公开题、可逆标签/官方计分、两遍构建hash相同；教师195口径未证实，oracle不是模型成绩；reports/jevbench-adapter-*.json。 |
 | s0:13 文本开发首批 | 原CLINC500dev/14750余train，family交集0、两遍字节相同，dev144intent；reports/s0-text-development-acceptance-001.json。仅intent Choice，旧15250全train已superseded。 |
 | s0:14 音频开发首批 | 原Clotho一致Noul500/500sound families，500WAV完整PCM验证、最长29.968秒，yes314/no186；973train family中500排除/473余；两遍字节相同。reports/s0-audio-development-acceptance-001.json。仅Noul，非真人κ。 |
+| 图像/视频开发首批 | 原AOK Choice500、CLEVRER exist Noul500，逐媒体decode/hash与整family排除；Linux两遍输出字节一致，reports/s0-{image,video}-development-acceptance-001.json。 |
+| 跨模态开发首批 | 图像+音频合取Noul500，yes250/no250；1000媒体hash通过、500组件配对、双构建一致；复用已在dev的组件并关联family，不虚增独立family。reports/s0-crossmodal-development-acceptance-001.json。 |
 | 六cohort gate工程 | ADR0009，dev3000合法gold/program truth、holdout6000×两人=12000判断，κ≥.7仅holdout；同item跨池漏洞已修复，合成CLI及独立CLEAR。真实资源未取得。 |
 
 ## 正在做与下一动作
-- s0:07 claimed：整合剩余image/screenshot/video/crossmodal开发500与必需同条件基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
-- 图像/视频builder已合入d23dc39；/tmp/lite-media-dev-001 executor在新冻结remote树执行image-a,b/video-a,b真实CPU500构建与输出hash核对（OMP2），不重复下载。/tmp/lite-gui-dev-001 executor推进GUI目标定位Choice500，限600份原TRAIN小标注，无新媒体/GPU。
-- 新实现已合入d23dc39并同步/root/autodl-tmp/s0-development-next-001；E4B preflight-002真实CPU通过（001仅源目录笔误失败保留）。E4B GPU双轮231题exit0，78.944秒，accuracy176/231=76.1905%，231对raw/conditional完全一致，reports/s0-public-baseline-e4b-001.json；E2B也已exit0，97.030秒，147/231=63.6364%，两遍231对完全一致，reports/s0-public-baseline-e2b-001.json。两作业均完成，当前没有自有GPU任务；每条记录增量JSONL留存。artifacts/public-baselines-001/{e4b,e2b}-run-001.{json,jsonl,log,exit}，先核实际状态，不重复启动。
+- s0:07 claimed：六cohort已有text/image/audio/video/crossmodal各500，剩余screenshot实际构建与必需同条件基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
+- 图像/视频实际Linux双遍已完成；crossmodal实际双遍也已完成，均每类500。/tmp/lite-gui-dev-001推进剩余截图目标定位Choice500，限600份原TRAIN小标注，无新媒体/GPU。
+- 新实现已合入d23dc39并同步/root/autodl-tmp/s0-development-next-001；E4B preflight-002真实CPU通过（001仅源目录笔误失败保留）。E4B GPU双轮231题exit0，78.944秒，accuracy176/231=76.1905%，231对raw/conditional完全一致，reports/s0-public-baseline-e4b-001.json；E2B也已exit0，97.030秒，147/231=63.6364%，两遍231对完全一致，reports/s0-public-baseline-e2b-001.json。E4B/E2B两作业均完成；新批OneJev/教师公开基线见下条；每条记录增量JSONL留存。artifacts/public-baselines-001/{e4b,e2b}-run-001.{json,jsonl,log,exit}，先核实际状态，不重复启动。
 - s0:04 done（ADR0010用户授权调整预估性能验收）：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，失败候选已停止。reports/s0-tf32x3-cache-result-001.json。
 - 原≤2未达到，现作为诊断目标；真实native/gateway on/off冷暖双测、KV命中及四概率<.001构成S0已通过基线，reports/s0-cache-measured-baseline-acceptance-001.json。停止S0性能调参，S6按实际产品候选校准性能标准；不宣称原目标或发布p95通过。
 - s0:08 ready但依赖未齐，不可认领。全部门槛通过后一次集成review、正式plan/handoff-日期-s0-complete.md及可复制启动词，再交新session进入S1。
@@ -43,4 +45,9 @@
 - 跨机重跑/S6真机/额外放量预算/生产运营到其实际节点再处理，不提前制造细票或默认采购。当前仍有可独立执行工作，goal不blocked、不complete。
 - 原005 runtime cost=0.0只是历史硬编码占位，真实费用未知null；未来runner已修null，3280.63秒仅最后一次resume外层时间，不冒称全项目GPU时间/账单。
 
-本轮新增并行：GUI目标定位Choice500（/tmp/lite-gui-dev-001），image+audio原标签合取crossmodal Noul500（/tmp/lite-crossmodal-dev-001），OneJev4B/27B固定公开JevBench实际runner扩展（/tmp/lite-public-baselines-001）。均在07内，无新增票/独立review，主会话统一整合。image真实首跑暴露allowlist无path字段，已按原schema最小修复6e9c467；CPU构建改在/root/autodl-tmp/s0-media-development-002冻结树继续，失败保留。
+## 当前活跃作业（接手先核实际状态）
+- GPU公共基线batch002：/root/autodl-tmp/s0-public-baselines-002 HEAD0f09482，supervisor287865；OneJev4B已exit0，142.934秒，175/231=75.7576%，231对概率精确一致；OneJev27B preflight已过、run执行中，之后Jev-Omni专用head公开231双轮。每run1200秒预算，逐条JSONL增量保存，先核exit/进程，勿重启活作业。
+- /tmp/lite-development-baselines-001：冻结六类dev500的通用官方processor/HF读出runner实现中，负责真实开发分数/token/时延；公开231不替代开发集分数。
+- /tmp/lite-public-baselines-001：Valen真实安全head/LoRA/visual组合adapter实现中。已找齐官方固定源码16小文件/59561B，四原固定SHA全匹配，artifacts/valen-source-audit-42a6-001/retrieval.json；安全转换权重原已存在，不重做转换、不执行上游pickle/module。
+- GUI子切片/tmp/lite-gui-dev-001继续；crossmodal子切片真实构建已完成，不重复执行。
+- image首跑无path字段KeyError保留；修复6e9c467实际双遍已通过，remote /root/autodl-tmp/s0-media-development-002。跨模态remote /root/autodl-tmp/s0-crossmodal-development-001 HEADc4ce657。

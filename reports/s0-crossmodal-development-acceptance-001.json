@@ -1,0 +1,72 @@
+{
+  "status": "passed_real_cpu_compositional_dev_build",
+  "errors": [],
+  "tree": "/root/autodl-tmp/s0-crossmodal-development-001",
+  "git_head": "c4ce65701a559faf7c8bb10c66ff7d584c39baf8",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "env": {
+    "OMP_NUM_THREADS": "2",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "commands": {
+    "build_a": "OMP_NUM_THREADS=2 CUDA_VISIBLE_DEVICES= /root/autodl-tmp/envs/root-main-offline-check/bin/python -m scripts.s0_crossmodal_dev --image-dev /root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/dev.jsonl --audio-dev /root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/dev.jsonl --image-media-root /root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/media --audio-media-root /root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002 --image-source-report /root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/report.json --audio-source-report /root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/report.json --dev-out artifacts/crossmodal-dev-001-a/dev.jsonl --dev-ledger-out artifacts/crossmodal-dev-001-a/dev-ledger.jsonl --component-ledger-out artifacts/crossmodal-dev-001-a/component-ledger.jsonl --media-manifest-out artifacts/crossmodal-dev-001-a/media-manifest.jsonl --media-out-dir artifacts/crossmodal-dev-001-a/media --report artifacts/crossmodal-dev-001-a/report.json --dev-count 500",
+    "build_b": "same command with crossmodal-dev-001-b output paths",
+    "verify": "custom Python verifier over a/b outputs, reports, component ledger, and copied media sha256"
+  },
+  "exit_codes": {
+    "build_a": 0,
+    "build_b": 0,
+    "verify": 0
+  },
+  "paths": {
+    "a": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a",
+    "b": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-b"
+  },
+  "output_hashes": {
+    "a/dev.jsonl": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+    "b/dev.jsonl": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+    "a/dev-ledger.jsonl": "af21b737633046dcddcf9a89d522b69e3fea756ac31f0fef77486f017c3a63c8",
+    "b/dev-ledger.jsonl": "af21b737633046dcddcf9a89d522b69e3fea756ac31f0fef77486f017c3a63c8",
+    "a/component-ledger.jsonl": "46890fc312dc994eb470163fa1e516ee97a0e1322609903b4f531874c237f521",
+    "b/component-ledger.jsonl": "46890fc312dc994eb470163fa1e516ee97a0e1322609903b4f531874c237f521",
+    "a/media-manifest.jsonl": "05e954cad7c7d975ff3abc60c5b605f7b25b41f1c9a73e423afb5c09193484e5",
+    "b/media-manifest.jsonl": "05e954cad7c7d975ff3abc60c5b605f7b25b41f1c9a73e423afb5c09193484e5"
+  },
+  "byte_equal_a_b": {
+    "dev.jsonl": true,
+    "dev-ledger.jsonl": true,
+    "component-ledger.jsonl": true,
+    "media-manifest.jsonl": true
+  },
+  "row_counts": {
+    "dev": 500,
+    "dev_ledger": 500,
+    "component_ledger": 500,
+    "media_manifest": 500
+  },
+  "label_distribution": {
+    "yes": 250,
+    "no": 250
+  },
+  "component_uniqueness": {
+    "pairs": 500,
+    "image_families": 500,
+    "audio_families": 500,
+    "crossmodal_families": 500
+  },
+  "media_sha_checks": 1000,
+  "source": {
+    "image_dev_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+    "audio_dev_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+    "image_source_report_sha256": "35f6eab1ab28e7931f0426ac9cf57d4e622ec185c431f6586e554ff30bd779a3",
+    "audio_source_report_sha256": "050812351d10f1a0bb79391b88f694ea0b8edc80365f66ba148b11d72f2090d8",
+    "source_mode": "compositional_from_image_choice_and_audio_noul_dev"
+  },
+  "reports": {
+    "a_sha256": "c92fe48c010fb639df928360046432e5f2f1f92a1118989276d561387d93f576",
+    "b_sha256": "b71f24742f8c074a768cf5f8890fc50ce9b797143109a5ec8fee9bd615ee3d3c"
+  },
+  "finished_at": 1791981610.7976208,
+  "scope": "500 image+audio program-truth Noul; not native crossmodal labels, full distribution, model quality or human kappa"
+}
