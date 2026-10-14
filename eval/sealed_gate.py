@@ -1,4 +1,4 @@
-"""Redacted sealed-set annotation summaries.
+"""Legacy v2 double-annotation canary (superseded for first release by ADR0012).
 
 The isolated gate reads raw double annotations for holdout cohorts and a
 redacted development ledger for dev cohorts. Development code can exercise this

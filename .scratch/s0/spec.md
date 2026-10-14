@@ -1,3 +1,5 @@
+> 当前执行覆盖：2026-10-15 S0已通过；ADR0012删除新增真人双标/κ，改现成可靠gold/自动gate。历史原句不再作为人标前置。正式入口plan/handoff-2026-10-15-s0-complete.md。
+
 # S0：可追溯基线与可信评测的下一批闭环
 
 ## Problem Statement

@@ -1,3 +1,17 @@
+# 现成gold封存与自动gate
+
+当前首发合同：ADR0012（2026-10-15用户明确删除新增真人标注）。使用现成可靠数据集gold/公开benchmark gold/可验证程序真值，无需两名真人、12000次判断、κ或用户提供外部gate账号。
+
+1. S1入训前冻结pool分配规则，预留未训练的holdout/calibration family；查历史dev union及完整实际训练账本，禁止事后挪已训练题。
+2. 六cohort各1000holdout，来源许可/revision/文件与媒体hash、真值映射和标签完整性必须有真实证据。已下载不等于已完成这套映射；dev500不能兼作独立最终评测。
+3. 自动gate独立作业读取封存内容，开发agent不读内容/逐题答案，只看汇总。模型封存评测只在S4/5/6触发。05负责实际工作流隔离/权限/日志拒绝工程，尚未实现前不宣称已通过；不把root同机chmod当外部安全隔离。
+4. 输出来源/数量/池间交集/缺标/非法标签、配置与代码hash、模型指标及退出码。κ为not_applicable，不能填1.0；来源不明/模型伪gold/实际隔离失败不得通过。
+5. S4放量和FINAL以05实际完成为前置。它是工程数据任务，不要求用户安排真人或外部账号。
+
+下面v2双标协议仅保留为历史工具兼容说明，不是当前首发验收要求。`eval.sealed_gate`/`scripts.sealed_gate`旧接口仍只实现该历史canary，不能将它当成新的自动gold gate已实现。
+
+---
+
 # Sealed Gate Runbook
 
 S0 sealed evidence is accepted only from an isolated gate that can read raw

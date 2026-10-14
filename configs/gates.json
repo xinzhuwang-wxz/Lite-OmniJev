@@ -12,9 +12,6 @@
       "hf_vllm_max_probability_delta": {
         "max_exclusive": 0.001
       },
-      "holdout_annotation_kappa": {
-        "min": 0.7
-      },
       "baseline_table_complete": {
         "min": 1
       },
@@ -93,6 +90,10 @@
       },
       "holdout_gate_pass": {
         "min": 1
+      },
+      "holdout_gold_provenance_verified": {
+        "min": 1,
+        "max": 1
       }
     },
     "S5": {
@@ -165,13 +166,23 @@
   },
   "approved_protocol_decisions": {
     "S0_teacher_mvbench": "docs/adr/0006-reproducible-public-video-baseline.md",
-    "measured_performance_targets": "docs/adr/0010-measured-performance-targets.md"
+    "measured_performance_targets": "docs/adr/0010-measured-performance-targets.md",
+    "existing_gold_without_new_human_labels": "docs/adr/0012-existing-gold-without-new-human-labeling.md"
   },
   "estimated_performance_targets": {
     "S0.prefix_10q_latency_ratio": {
       "max": 2,
       "blocking": false,
       "policy": "docs/adr/0010-measured-performance-targets.md"
+    }
+  },
+  "stage_entry_requirements": {
+    "S4": {
+      "tickets": [
+        "s0:05"
+      ],
+      "policy": "docs/adr/0012-existing-gold-without-new-human-labeling.md",
+      "required_before": "large_scale_training_or_holdout_evaluation"
     }
   }
 }
