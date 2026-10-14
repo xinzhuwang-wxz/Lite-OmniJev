@@ -333,6 +333,7 @@ def test_qwen_base_assets_verify_exact_manifest_path_and_architecture(tmp_path: 
         asset_manifest=manifest, base_model_dir=model_dir, model_root=root
     )
 
+    assert verify_qwen_base_assets(asset_manifest=manifest, base_model_dir=model_dir) == evidence
     assert evidence["revision"] == revision
     assert evidence["architecture"]["auto_map_absent"] is True
     with pytest.raises(ValenInferenceError, match="base model dir"):

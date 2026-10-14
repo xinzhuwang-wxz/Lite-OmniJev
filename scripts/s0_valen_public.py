@@ -65,7 +65,7 @@ def verify_qwen_base_assets(
     if model_id not in models:
         raise ValenInferenceError("asset manifest missing qwen3.5-2b-for-valen")
     model = models[model_id]
-    root = model_root if model_root is not None else base_model_dir.parents[2]
+    root = model_root if model_root is not None else base_model_dir.parents[1]
     expected_dir = model_dir(root, model)
     if base_model_dir.resolve() != expected_dir.resolve():
         raise ValenInferenceError("base model dir does not match pinned Qwen3.5-2B manifest path")
