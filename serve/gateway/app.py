@@ -64,7 +64,7 @@ class InputQuestion(BaseModel):
 class DecisionRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     state: JsonValue
-    media: list[Media] = Field(default_factory=list)
+    media: list[Media] = Field(default_factory=list, max_length=8)
     video_frames: Literal[8, 16] = 16
     model: Literal["jev-latest", "lite-omnijev-e4b-dev"] = "lite-omnijev-e4b-dev"
     questions: Annotated[dict[str, InputQuestion], Field(min_length=1, max_length=32)]
@@ -134,6 +134,14 @@ def create_app(
     runtime_processor = processor
     canonical_mode = settings.media_root is not None
     preparation_lock = asyncio.Semaphore(1)
+    preparation_jobs: set[asyncio.Task[Any]] = set()
+    shutting_down = False
+
+    def preparation_finished(job: asyncio.Task[Any]) -> None:
+        preparation_jobs.discard(job)
+        if not job.cancelled():
+            # Retrieve failures even when the HTTP waiter has disconnected; never log content.
+            job.exception()
 
     def trusted_root_configured() -> bool:
         root = settings.media_root
@@ -146,7 +154,7 @@ def create_app(
 
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
-        nonlocal runtime_tokenizer, runtime_processor
+        nonlocal runtime_tokenizer, runtime_processor, shutting_down
         if runtime_tokenizer is None and settings.model_dir and not canonical_mode:
             try:
                 runtime_tokenizer = OfficialTokenizerAdapter(settings.model_dir)
@@ -183,8 +191,20 @@ def create_app(
             try:
                 yield
             finally:
+                shutting_down = True
+                # Jobs own the CPU lock until their actual worker thread has finished.
+                shutdown_cancelled = False
+                if preparation_jobs:
+                    drain = asyncio.gather(*tuple(preparation_jobs), return_exceptions=True)
+                    while not drain.done():
+                        try:
+                            await asyncio.shield(drain)
+                        except asyncio.CancelledError:
+                            shutdown_cancelled = True
                 if chat_client is not None:
                     await chat_client.aclose()
+                if shutdown_cancelled:
+                    raise asyncio.CancelledError
 
     application = FastAPI(
         title="Lite-OmniJev local text gateway",
@@ -307,12 +327,21 @@ def create_app(
             finally:
                 one_timing["preprocess"] = time.perf_counter() - started
 
-        async with preparation_lock:
-            try:
-                prepared = await asyncio.to_thread(prepare)
-            finally:
-                timings["preprocess"] += one_timing["preprocess"]
-                timings["queue"] += one_timing["queue"]
+        async def preparation_job() -> Any:
+            async with preparation_lock:
+                try:
+                    return await asyncio.to_thread(prepare)
+                finally:
+                    timings["preprocess"] += one_timing["preprocess"]
+                    timings["queue"] += one_timing["queue"]
+
+        if shutting_down:
+            raise HTTPException(503, "Gateway is shutting down")
+        job = asyncio.create_task(preparation_job())
+        preparation_jobs.add(job)
+        job.add_done_callback(preparation_finished)
+        # Shield the lock-owning task, not merely the thread await inside a request-owned lock.
+        prepared = await asyncio.shield(job)
         upstream_started = time.perf_counter()
         try:
             raw = await application.state.chat_client.read_logprobs(prepared)

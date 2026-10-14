@@ -625,3 +625,165 @@ async def test_unconfigured_response_timing_headers_do_not_claim_inference() -> 
         )
     assert response.status_code == 503 and "PRIVATE" not in response.text
     assert_safe_timing(response)
+
+
+async def test_cancelled_request_keeps_cpu_lock_until_thread_finishes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    import asyncio
+    import threading
+    from types import SimpleNamespace
+
+    gateway = importlib.import_module("serve.gateway.app")
+    first_entered = threading.Event()
+    second_entered = threading.Event()
+    release = threading.Event()
+    active = 0
+    maximum_active = 0
+    calls = 0
+    guard = threading.Lock()
+
+    def blocked_prepare(*args: Any, **kwargs: Any) -> Any:
+        nonlocal active, maximum_active, calls
+        with guard:
+            calls += 1
+            ordinal = calls
+            active += 1
+            maximum_active = max(maximum_active, active)
+        try:
+            (first_entered if ordinal == 1 else second_entered).set()
+            assert release.wait(5), "test must release bounded worker"
+            raise ValueError("PRIVATE THIRD PARTY MEDIA ERROR")
+        finally:
+            with guard:
+                active -= 1
+
+    monkeypatch.setattr(gateway, "check_answer_tokens", lambda *args: {})
+    monkeypatch.setattr(gateway, "prepare_decision", blocked_prepare)
+    application = create_app(
+        Settings(
+            upstream_url="http://fixture",
+            raw_logprobs_confirmed=True,
+            media_root=tmp_path,
+        ),
+        processor=SimpleNamespace(tokenizer=object()),
+        transport=httpx.MockTransport(lambda request: pytest.fail("no upstream on bad media")),
+    )
+    payload = {"state": "PUBLIC CANCEL TEST", "questions": {"q": QUESTIONS["choice"]}}
+    async with application.router.lifespan_context(application):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=application), base_url="http://fixture"
+        ) as client:
+            first = asyncio.create_task(client.post("/v1/systemone", json=payload))
+            second = None
+            try:
+                assert await asyncio.to_thread(first_entered.wait, 2)
+                first.cancel()
+                with pytest.raises(asyncio.CancelledError):
+                    await first
+                second = asyncio.create_task(client.post("/v1/systemone", json=payload))
+                # Scheduling window detects overlap, not a performance threshold.
+                assert not await asyncio.to_thread(second_entered.wait, 0.1)
+                assert maximum_active == 1
+            finally:
+                release.set()
+                if second is not None:
+                    response = await asyncio.wait_for(second, 3)
+            assert response.status_code == 422 and "PRIVATE" not in response.text
+    assert active == 0 and calls == 2 and maximum_active == 1
+
+
+@pytest.mark.parametrize("cancel_shutdown", [False, True])
+async def test_shutdown_drains_cancelled_request_worker(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, cancel_shutdown: bool
+) -> None:
+    import asyncio
+    import threading
+    from types import SimpleNamespace
+
+    gateway = importlib.import_module("serve.gateway.app")
+    entered = threading.Event()
+    release = threading.Event()
+    finished = threading.Event()
+
+    def blocked_prepare(*args: Any, **kwargs: Any) -> Any:
+        entered.set()
+        try:
+            assert release.wait(5), "test must release bounded worker"
+            raise ValueError("PRIVATE DECODER FAILURE")
+        finally:
+            finished.set()
+
+    monkeypatch.setattr(gateway, "check_answer_tokens", lambda *args: {})
+    monkeypatch.setattr(gateway, "prepare_decision", blocked_prepare)
+    application = create_app(
+        Settings(upstream_url="http://fixture", raw_logprobs_confirmed=True, media_root=tmp_path),
+        processor=SimpleNamespace(tokenizer=object()),
+        transport=httpx.MockTransport(lambda request: pytest.fail("no upstream on bad media")),
+    )
+    lifespan = application.router.lifespan_context(application)
+    await lifespan.__aenter__()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=application), base_url="http://fixture"
+    ) as client:
+        request = asyncio.create_task(
+            client.post(
+                "/v1/systemone", json={"state": "PUBLIC", "questions": {"q": QUESTIONS["choice"]}}
+            )
+        )
+        shutdown = None
+        try:
+            assert await asyncio.to_thread(entered.wait, 2)
+            request.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await request
+            shutdown = asyncio.create_task(lifespan.__aexit__(None, None, None))
+            await asyncio.sleep(0)
+            assert not shutdown.done() and not finished.is_set()
+            if cancel_shutdown:
+                shutdown.cancel()
+                await asyncio.sleep(0)
+                assert not shutdown.done() and not finished.is_set()
+        finally:
+            release.set()
+            if shutdown is not None:
+                if cancel_shutdown:
+                    with pytest.raises(asyncio.CancelledError):
+                        await asyncio.wait_for(shutdown, 3)
+                else:
+                    await asyncio.wait_for(shutdown, 3)
+            else:
+                await lifespan.__aexit__(None, None, None)
+    assert finished.is_set()
+
+
+async def test_media_reference_budget_rejects_before_preparation_or_http(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from types import SimpleNamespace
+
+    gateway = importlib.import_module("serve.gateway.app")
+    monkeypatch.setattr(
+        gateway, "prepare_decision", lambda *args, **kwargs: pytest.fail("no CPU preparation")
+    )
+    application = create_app(
+        Settings(upstream_url="http://fixture", raw_logprobs_confirmed=True, media_root=tmp_path),
+        processor=SimpleNamespace(tokenizer=object()),
+        transport=httpx.MockTransport(lambda request: pytest.fail("no upstream")),
+    )
+    async with (
+        application.router.lifespan_context(application),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=application), base_url="http://fixture"
+        ) as client,
+    ):
+        response = await client.post(
+            "/v1/systemone",
+            json={
+                "state": "PRIVATE STATE",
+                "questions": QUESTIONS,
+                "media": [{"type": "image", "uri": "PRIVATE.png", "sha256": "0" * 64}] * 9,
+            },
+        )
+    assert response.status_code == 422 and "PRIVATE" not in response.text
+    assert_safe_timing(response)

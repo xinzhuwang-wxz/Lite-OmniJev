@@ -2,7 +2,8 @@
 
 `POST /v1/systemone` 保持原 state/model/questions 和概率读出。新增 `media`（`data.schema.Media`
 引用数组）与 `video_frames`（仅8/16，默认16）。引用必须是运维配置根内的相对常规文件，
-携带SHA256；HTTP/文件URL、绝对路径、逃逸、软链接、坏hash、空/超限/坏媒体均拒绝。
+携带SHA256；当前本地受控资源入口最多8个引用（含audio/video），超量在准备前422。
+这是S0资源limit，后续产品多媒体组合支持仍需单独验收。HTTP/文件URL、绝对路径、逃逸、软链接、坏hash、空/超限/坏媒体均拒绝。
 本接口没有上传或任意 URL 下载能力，也不接受调用者设置媒体根。
 
 配置：`LITE_MEDIA_ROOT`、固定 metadata 的 `LITE_MODEL_DIR`、`LITE_UPSTREAM_URL`、
@@ -43,7 +44,9 @@ browser smoke。`/health.mode` 明确返回 `canonical-chat` 或 `legacy-text-co
 
 canonical请求先校验全部问题契约，再逐题串行CPU prepare→HTTP→读出，避免多题同时
 保留大张量；CPU prepare由app级Semaphore(1)串行并放入线程。10题不会使用legacy的
-asyncio.gather。不同HTTP请求的上游调用可以重叠，本票没有性能或生产并发验收结论。
+asyncio.gather。CPU锁由受追踪后台准备任务持有到真实线程结束；HTTP等待者取消不会提前释放锁。
+任务完成后收集异常且不记录第三方原文，lifespan关闭前等待已提交准备任务收口。
+不同HTTP请求的上游调用可以重叠，本票没有性能或生产并发验收结论。
 每题上游完整指定答案加U，要求展开prompt IDs与HF逐位相同；条件答案分布归一化、
 p_insufficient独立，calibration=unfitted。usage.output_tokens=0保持产品语义，
 backend_usage.output_tokens记录真实上游生成计量，一题应为1。
@@ -79,3 +82,7 @@ backend_usage.output_tokens记录真实上游生成计量，一题应为1。
 local-only lifespan及负测。上游由MockTransport返回合成logprobs；未执行vLLM/GPU，
 不能把200响应称为真实模型/API产品验收。缺显式媒体环境时对应集成项会skip。
 小型汇总保存在专属 `reports/gateway-media-cpu-001.json`，旧报告不覆盖。
+
+取消回归使用ASGI请求与受控阻塞的真实线程：取消首请求后第二请求不能并行准备；
+释放线程后第二请求静态422，shutdown等待被取消请求遗留线程收口。此测试只证明
+取消下的CPU串行边界与线程清理，不代表强制终止processor或生产shutdown时限验收。
