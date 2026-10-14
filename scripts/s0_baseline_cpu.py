@@ -38,6 +38,7 @@ VALEN_BASE_ID = "qwen3.5-2b-for-valen"
 
 TokenFactory = Callable[[Path], Any]
 ProcessorFactory = Callable[[Path], Any]
+AssetPathMap = dict[str, Path]
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -171,6 +172,21 @@ def model_dir(root: Path, model: dict[str, Any]) -> Path:
     return root / repo_id.replace("/", "__") / revision
 
 
+def resolve_model_dir(
+    root: Path | None, model: dict[str, Any], asset_paths: AssetPathMap | None = None
+) -> Path | None:
+    model_id = str(model["id"])
+    if asset_paths and model_id in asset_paths:
+        return asset_paths[model_id]
+    if root is None:
+        return None
+    return model_dir(root, model)
+
+
+def format_model_dir(directory: Path | None) -> str | None:
+    return str(directory) if directory is not None else None
+
+
 def existing_metadata_hashes(directory: Path, files: Iterable[dict[str, Any]]) -> dict[str, str]:
     hashes: dict[str, str] = {}
     for file in files:
@@ -184,7 +200,10 @@ def existing_metadata_hashes(directory: Path, files: Iterable[dict[str, Any]]) -
 
 
 def build_subjects(
-    manifest: dict[str, Any], *, model_root: Path | None = None
+    manifest: dict[str, Any],
+    *,
+    model_root: Path | None = None,
+    asset_paths: AssetPathMap | None = None,
 ) -> list[dict[str, Any]]:
     models = model_by_id(manifest)
     subjects: list[dict[str, Any]] = []
@@ -200,7 +219,9 @@ def build_subjects(
                 "license": model.get("license"),
                 "role": model.get("role"),
                 "manifest_metadata_sha256": manifest_metadata_digest(model),
-                "local_model_dir": str(model_dir(model_root, model)) if model_root else None,
+                "local_model_dir": format_model_dir(
+                    resolve_model_dir(model_root, model, asset_paths)
+                ),
                 "probe_model_id": model_id,
                 "adapter": None,
                 "base": None,
@@ -223,13 +244,16 @@ def build_subjects(
                     "base": manifest_metadata_digest(base),
                 }
             ),
-            "local_model_dir": str(model_dir(model_root, base)) if model_root else None,
+            "local_model_dir": format_model_dir(resolve_model_dir(model_root, base, asset_paths)),
             "probe_model_id": VALEN_BASE_ID,
             "adapter": {
                 "repo_id": adapter.get("repo_id"),
                 "revision": adapter.get("revision"),
                 "license": adapter.get("license"),
                 "manifest_metadata_sha256": manifest_metadata_digest(adapter),
+                "local_model_dir": format_model_dir(
+                    resolve_model_dir(model_root, adapter, asset_paths)
+                ),
             },
             "base": {
                 "repo_id": base.get("repo_id"),
@@ -364,7 +388,21 @@ def probe_answer_mapping(tokenizer: Any) -> dict[str, Any]:
     }
 
 
-def probe_thinking(tokenizer: Any) -> dict[str, Any]:
+def _template_has_enable_thinking_false_branch(template: str | None) -> bool:
+    if not template:
+        return False
+    compact = " ".join(template.split())
+    return "enable_thinking is defined" in compact and "enable_thinking is false" in compact
+
+
+def _disabled_thinking_marker(off: str, on: str) -> str | None:
+    for marker in ("<think>\n\n</think>", "<think>\\n\\n</think>"):
+        if marker in off and marker not in on:
+            return marker
+    return None
+
+
+def probe_thinking(tokenizer: Any, template: str | None = None) -> dict[str, Any]:
     messages = [{"role": "user", "content": "Reply with exactly one decision token."}]
     try:
         off = tokenizer.apply_chat_template(
@@ -389,11 +427,27 @@ def probe_thinking(tokenizer: Any) -> dict[str, Any]:
         token for token in (think_token, "<|think|>", "<think>") if isinstance(token, str)
     ]
     matched = [token for token in candidates if token and token not in off and token in on]
+    disabled_marker = _disabled_thinking_marker(off, on)
+    template_false_branch = _template_has_enable_thinking_false_branch(template)
+    proved_by_template = off != on and template_false_branch and disabled_marker is not None
+    status = "proved_disabled" if matched or proved_by_template else "not_proved"
     return {
-        "status": "proved_disabled" if matched else "not_proved",
+        "status": status,
         "off_prompt_sha256": sha256_bytes(off.encode()),
         "on_prompt_sha256": sha256_bytes(on.encode()),
         "evidence_token_sha256": sha256_bytes(matched[0].encode()) if matched else None,
+        "evidence_kind": (
+            "token_absent_when_disabled"
+            if matched
+            else "template_enable_thinking_false_branch"
+            if proved_by_template
+            else None
+        ),
+        "disabled_marker_sha256": (
+            sha256_bytes(disabled_marker.encode())
+            if proved_by_template and disabled_marker
+            else None
+        ),
     }
 
 
@@ -489,13 +543,16 @@ def probe_subject(
     models: dict[str, dict[str, Any]],
     *,
     model_root: Path,
+    asset_paths: AssetPathMap | None,
     public_selection: dict[str, Any],
     public_asset_root: Path | None,
     tokenizer_factory: TokenFactory = default_tokenizer_factory,
     processor_factory: ProcessorFactory = default_processor_factory,
 ) -> dict[str, Any]:
     probe_model = models[str(subject["probe_model_id"])]
-    directory = model_dir(model_root, probe_model)
+    directory = resolve_model_dir(model_root, probe_model, asset_paths)
+    if directory is None:
+        raise ValueError("model_root or explicit asset path is required")
     result = dict(subject)
     result.update(
         {
@@ -523,7 +580,11 @@ def probe_subject(
     result["local_metadata_sha256"] = canonical_json_sha256(hashes)
     if subject.get("kind") == "adapter_plus_base_metadata_only":
         adapter = models[VALEN_ADAPTER_ID]
-        adapter_directory = model_dir(model_root, adapter)
+        adapter_directory = resolve_model_dir(model_root, adapter, asset_paths)
+        if adapter_directory is None:
+            result["blocker"] = "adapter_metadata_invalid"
+            result["adapter_metadata_error"] = {"type": "ValueError"}
+            return result
         try:
             adapter_hashes = verify_required_metadata(adapter_directory, adapter)
         except Exception as exc:  # noqa: BLE001
@@ -539,7 +600,7 @@ def probe_subject(
         tokenizer = tokenizer_factory(directory)
         template = template_source(tokenizer, directory)
         answer_readout = probe_answer_mapping(tokenizer)
-        thinking = probe_thinking(tokenizer)
+        thinking = probe_thinking(tokenizer, template)
         token_report: dict[str, Any] = {
             "status": "passed",
             "class": tokenizer_class_name(tokenizer),
@@ -623,9 +684,24 @@ def probe_subject(
     return result
 
 
-def validate_report(asset_manifest: Path, *, model_root: Path | None = None) -> dict[str, Any]:
+def validate_asset_paths(manifest: dict[str, Any], asset_paths: AssetPathMap | None) -> None:
+    if not asset_paths:
+        return
+    known = set(model_by_id(manifest))
+    unknown = sorted(set(asset_paths) - known)
+    if unknown:
+        raise ValueError(f"asset path override uses unknown model IDs: {unknown}")
+
+
+def validate_report(
+    asset_manifest: Path,
+    *,
+    model_root: Path | None = None,
+    asset_paths: AssetPathMap | None = None,
+) -> dict[str, Any]:
     manifest = load_asset_manifest(asset_manifest)
-    subjects = build_subjects(manifest, model_root=model_root)
+    validate_asset_paths(manifest, asset_paths)
+    subjects = build_subjects(manifest, model_root=model_root, asset_paths=asset_paths)
     return {
         "schema": "lite-omnijev.s0-baseline-cpu.v1",
         "mode": "validate",
@@ -633,6 +709,7 @@ def validate_report(asset_manifest: Path, *, model_root: Path | None = None) -> 
         "exit_code": 0,
         "asset_manifest": str(asset_manifest),
         "asset_manifest_sha256": file_hash(asset_manifest),
+        "asset_paths": {key: str(value) for key, value in sorted((asset_paths or {}).items())},
         "code_revision": git_revision(),
         "environment": {"python": platform.python_version(), "platform": platform.platform()},
         "cost": None,
@@ -648,6 +725,7 @@ def run_report(
     asset_manifest: Path,
     model_root: Path,
     *,
+    asset_paths: AssetPathMap | None = None,
     public_manifest: Path | None = None,
     public_asset_root: Path | None = None,
     allow_partial_public_manifest: bool = False,
@@ -656,17 +734,19 @@ def run_report(
 ) -> dict[str, Any]:
     started = time.monotonic()
     manifest = load_asset_manifest(asset_manifest)
+    validate_asset_paths(manifest, asset_paths)
     models = model_by_id(manifest)
     public_selection = select_public_cases(
         public_manifest, allow_partial=allow_partial_public_manifest
     )
     subjects = []
-    for subject in build_subjects(manifest, model_root=model_root):
+    for subject in build_subjects(manifest, model_root=model_root, asset_paths=asset_paths):
         subjects.append(
             probe_subject(
                 subject,
                 models,
                 model_root=model_root,
+                asset_paths=asset_paths,
                 public_selection=public_selection,
                 public_asset_root=public_asset_root,
                 tokenizer_factory=tokenizer_factory,
@@ -692,6 +772,7 @@ def run_report(
         "asset_manifest": str(asset_manifest),
         "asset_manifest_sha256": file_hash(asset_manifest),
         "model_root": str(model_root),
+        "asset_paths": {key: str(value) for key, value in sorted((asset_paths or {}).items())},
         "code_revision": git_revision(),
         "environment": {
             "python": platform.python_version(),
@@ -717,6 +798,18 @@ def _package_version(name: str) -> str | None:
         return None
 
 
+def parse_asset_paths(values: list[str] | None) -> AssetPathMap:
+    result: AssetPathMap = {}
+    for value in values or []:
+        model_id, sep, raw_path = value.partition("=")
+        if not sep or not model_id or not raw_path:
+            raise ValueError("--asset-path must use MODEL_ID=PATH")
+        if model_id in result:
+            raise ValueError(f"duplicate --asset-path for {model_id}")
+        result[model_id] = Path(raw_path)
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -725,12 +818,22 @@ def main(argv: list[str] | None = None) -> int:
         "--asset-manifest", type=Path, default=Path("configs/project-model-assets.json")
     )
     validate.add_argument("--model-root", type=Path)
+    validate.add_argument(
+        "--asset-path",
+        action="append",
+        help="explicit model asset path override as MODEL_ID=PATH; still hash-checked",
+    )
     validate.add_argument("--output", type=Path, required=True)
     run = sub.add_parser("run", help="probe local official tokenizer/processor metadata")
     run.add_argument(
         "--asset-manifest", type=Path, default=Path("configs/project-model-assets.json")
     )
     run.add_argument("--model-root", type=Path, required=True)
+    run.add_argument(
+        "--asset-path",
+        action="append",
+        help="explicit model asset path override as MODEL_ID=PATH; still hash-checked",
+    )
     run.add_argument("--public-manifest", type=Path)
     run.add_argument("--public-asset-root", type=Path)
     run.add_argument("--allow-partial-public-manifest", action="store_true")
@@ -750,12 +853,16 @@ def main(argv: list[str] | None = None) -> int:
     }
     write_json(args.output, report)
     try:
+        asset_paths = parse_asset_paths(args.asset_path)
         if args.command == "validate":
-            report = validate_report(args.asset_manifest, model_root=args.model_root)
+            report = validate_report(
+                args.asset_manifest, model_root=args.model_root, asset_paths=asset_paths
+            )
         else:
             report = run_report(
                 args.asset_manifest,
                 args.model_root,
+                asset_paths=asset_paths,
                 public_manifest=args.public_manifest,
                 public_asset_root=args.public_asset_root,
                 allow_partial_public_manifest=args.allow_partial_public_manifest,

@@ -117,6 +117,25 @@ class FakeTokenizer:
         return self.encode(rendered) if tokenize else rendered
 
 
+class FakeOfficialThinkingTokenizer(FakeTokenizer):
+    init_kwargs: dict[str, str] = {}
+
+    def apply_chat_template(
+        self,
+        messages: list[dict[str, Any]],
+        *,
+        tokenize: bool = False,
+        add_generation_prompt: bool = True,
+        enable_thinking: bool = False,
+    ) -> str | list[int]:
+        rendered = (
+            "<think>\n\n</think>\n\nassistant"
+            if enable_thinking is False
+            else "<think>\nassistant"
+        )
+        return self.encode(rendered) if tokenize else rendered
+
+
 class FakeTensor:
     dtype = "torch.int64"
 
@@ -290,6 +309,43 @@ def test_valen_adapter_directory_is_required_and_hash_checked(tmp_path: Path) ->
     assert valen["blocker"] == "adapter_metadata_invalid"
 
 
+def test_explicit_valen_asset_path_is_hash_checked_outside_model_root(tmp_path: Path) -> None:
+    value = manifest()
+    path = write_manifest(tmp_path, value)
+    root = tmp_path / "models"
+    make_model_dirs(root, value)
+    adapter = value["models"][5]
+    adapter_dir = root / str(adapter["repo_id"]).replace("/", "__") / str(adapter["revision"])
+    quarantine_dir = tmp_path / "quarantine" / "Valen-Team__Valen-Preview-0923" / str(
+        adapter["revision"]
+    )
+    quarantine_dir.parent.mkdir(parents=True)
+    adapter_dir.rename(quarantine_dir)
+
+    report = baseline.run_report(
+        path,
+        root,
+        asset_paths={"valen-preview-0923": quarantine_dir},
+        tokenizer_factory=lambda _: FakeTokenizer(),
+        processor_factory=lambda _: FakeProcessor(),
+    )
+
+    valen = next(
+        subject for subject in report["subjects"] if subject["id"] == "valen-2b-qwen3.5-base"
+    )
+    assert valen["adapter"]["local_model_dir"] == str(quarantine_dir)
+    assert valen["adapter_config_sha256"] == hashlib.sha256(
+        _content_for("config.json")
+    ).hexdigest()
+    assert valen.get("blocker") != "adapter_metadata_invalid"
+
+
+def test_unknown_explicit_asset_path_is_rejected(tmp_path: Path) -> None:
+    path = write_manifest(tmp_path)
+    with pytest.raises(ValueError, match="unknown model IDs"):
+        baseline.validate_report(path, asset_paths={"unknown": tmp_path})
+
+
 def test_thinking_not_proved_is_partial_and_nonzero(tmp_path: Path) -> None:
     value = manifest()
     path = write_manifest(tmp_path, value)
@@ -304,6 +360,25 @@ def test_thinking_not_proved_is_partial_and_nonzero(tmp_path: Path) -> None:
     assert report["status"] == "partial"
     assert report["exit_code"] == 1
     assert report["subjects"][0]["tokenizer"]["thinking"]["status"] == "not_proved"
+
+
+def test_official_enable_thinking_false_branch_proves_disabled() -> None:
+    report = baseline.probe_thinking(
+        FakeOfficialThinkingTokenizer(),
+        "{%- if enable_thinking is defined and enable_thinking is false %}"
+        "{{- '<think>\\n\\n</think>\\n\\n' }}{%- endif %}",
+    )
+    assert report["status"] == "proved_disabled"
+    assert report["evidence_kind"] == "template_enable_thinking_false_branch"
+    assert report["disabled_marker_sha256"]
+
+
+def test_prompt_difference_without_official_false_branch_does_not_prove_disabled() -> None:
+    report = baseline.probe_thinking(
+        FakeOfficialThinkingTokenizer(),
+        "{%- if some_other_flag is false %}{{- '<think>\\n\\n</think>\\n\\n' }}{%- endif %}",
+    )
+    assert report["status"] == "not_proved"
 
 
 def test_public_image_probe_uses_hash_checked_fixture_and_never_outputs_path(
