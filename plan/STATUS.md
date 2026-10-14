@@ -16,6 +16,10 @@
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
+- 教师005最新真实快照5422/5600、PID169823 Rl/48:27，未有exit，继续同作业。全5600后先最终报告/逐项门槛与独立review；活作业不重启。
+- s0:10剩余官方全类别CPU探针已交/tmp/lite-baseline-cpu-fix-15ea9ab两文件切片：image/screenshot/audio/video按固定metadata声明区分passed/blocked/unprobed/metadata_inconsistent，不能直接把Gemma专属tensor校验强套Qwen；父待整合后Linux004。text/image/token/thinking六主体003已通过。
+- 缓存下一必要候选协议已冻结.scratch/s0/cache-tf32x3-spec.md：教师完成后才单独GPU，隔离编译缓存，完整100精度/重复先于冷缓存比；一个候选900秒预算，失败不扩gateway/off或重复。尚未启动，旧性能fail不变。
+
 - s0:13已done：真实Linux两遍CLINC500dev/14750train，四输出字节相同，family交集0，全15250原数据除pool/version不变，dev144intent/train151；reports/s0-text-development-{build-001,build-002,acceptance-001}.json，10本票/54相关回归/83源mypy/302format/ruff/build通过。旧全train已superseded，未来训练必须绑定allocation和余train hash；仅intent Choice、非质量准入。接续s0-cohorts handoff已更新。
 - GUI local-002审计完成：真实TRAIN1episode16steps/16截图对齐，11CLICK有合法bbox、另1CLICK info字符串，TEXT/SCROLL开放参数/INCOMPLETE未明；没有全候选元素或500dev。001远端网络失败与002替代成功均保留。
 

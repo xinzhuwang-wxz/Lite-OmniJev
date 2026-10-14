@@ -21,3 +21,5 @@ s0:12的实际TRAIN候选、family单位、来源许可/语义缺口在.scratch/
 接手先读AGENTS、STATUS、docs/02-project.md、当前claimed票及本文；先核真实作业/代理，不重复下载、已完成CPU检查或失败GPU配置。S0全绿才执行s0:08并写正式s0-complete handoff和可复制新session启动词；本文不是阶段完成证明。goal仍active，不push、不自动付费/开关卡、不读取封存内容。
 
 GUI小审计local-002已完成：首episode16steps与16实际截图逐一对齐；CLICK12/TEXT2/SCROLL1/INCOMPLETE1，仅11CLICK合法目标bbox。报告reports/gui-odyssey-step-annotation-audit-local-002.json，只1family，没有全候选元素/开放参数语义或500dev准入。继续具体动作/候选任务协议，不把粗动作Choice替代原完整GUI任务。
+
+最新教师快照5422/5600、Rl/48:27、005.exit不存在。当前唯一活跃CPU子切片是/tmp/lite-baseline-cpu-fix-15ea9ab的全类别官方probe扩展，两文件范围不变；父须整合验证后Linux004，不能拿已通过003的text/image替代音视频。下一缓存候选规格.scratch/s0/cache-tf32x3-spec.md已冻结，但未启动；先教师完成，保持所有精度/重复/冷比阈值。
