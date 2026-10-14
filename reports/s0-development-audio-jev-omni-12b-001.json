@@ -33,9 +33,17 @@
   "dev_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
   "records_sha256": "1c50223e0ef4b443e3016ba8404df88e44940fec6d1cfbcd717c9d4b2e9a8215",
   "elapsed_seconds": 429.8078381642699,
-  "scope": "one completed real500x2 cohort within still-live teacher parent; parent final exit not yet available",
-  "parent_job_status": "in_progress",
-  "parent_final_exit_code": null,
+  "cohort_source": {
+    "name": "audio",
+    "data": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/dev.jsonl",
+    "report": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/report.json",
+    "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002"
+  },
+  "scope": "one complete real500x2 teacher development cohort; parent model actual exit0",
+  "parent_job_status": "complete",
+  "parent_final_exit_code": 0,
+  "parent_shell_controller_exit_code": 137,
+  "parent_exit_evidence": "reports/s0-teacher-deadline-handoff-001.json",
   "runner_sha256": "b1d7665c2e6437c9fda73535e6d0198aa8c855ee8cde33f16eff8333be53a964",
   "config_sha256": "7d0628e2b2a92a381a3c02da636a3fe5e235c66bb96584820fbace194a890064",
   "command": [
@@ -54,8 +62,22 @@
     "artifacts/teacher-development-001/result"
   ],
   "environment": {
-    "gpu": "NVIDIA H20",
-    "torch": "2.13.0+cu130"
+    "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+    "executable": "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "packages": {
+      "transformers": "5.17.0",
+      "torch": "2.13.0",
+      "safetensors": "0.8.0",
+      "pydantic": "2.14.1"
+    },
+    "critical_code_sha256s": {
+      "train/teacher_inference.py": "7f31cd4ce683e082a27deb7918c079d1ab174e7a2f91207641be74ef2ed7c9f4",
+      "scripts/s0_teacher_development.py": "b1d7665c2e6437c9fda73535e6d0198aa8c855ee8cde33f16eff8333be53a964",
+      "train/multimodal.py": "c9c3a6d59a42a9796a6f6211b9b9992fbd68d97a779a7b3c5d04f5d0bdd8ef6f",
+      "data/schema.py": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6",
+      "eval/metrics.py": "a7e4f0412add2106094e50c2cf9e78ff4d4d9732085ff23b7186d881151ecda8"
+    }
   },
   "cost_usd": null,
   "teacher_assets": {
@@ -68,17 +90,11 @@
   "no_holdout": true,
   "whole_s0_complete": false,
   "raw_report": {
-    "path": "artifacts/s0-teacher-development-gpu-001/parent-snapshot-001.json",
-    "sha256": "13b102c6789a53bfa5a6f2bbfd30ed068df9cce4f219621ef55aa9e1a0b25dcc"
+    "path": "artifacts/s0-teacher-development-gpu-001/parent-final-001.json",
+    "sha256": "1f33c29b3a6616fd3e868fcc58a6bc0c177ad1edadeb145ae78d4783631deec7"
   },
   "raw_records": {
     "path": "artifacts/s0-teacher-development-gpu-001/audio/records.jsonl",
     "sha256": "1c50223e0ef4b443e3016ba8404df88e44940fec6d1cfbcd717c9d4b2e9a8215"
-  },
-  "cohort_source": {
-    "name": "audio",
-    "data": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/dev.jsonl",
-    "report": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/report.json",
-    "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002"
   }
 }
