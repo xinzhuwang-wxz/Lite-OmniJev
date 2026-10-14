@@ -89,4 +89,4 @@ API 服务端目标：文本<40ms、截图<60ms、16帧视频<200ms；含网关/
 
 用户批准ADR-0006：S0教师MVBench仅改为固定公开9任务/1800题真实独立baseline，发布53.10仅未复现引用；MMAU63.10±2、两遍逐题一致性、其余S0及S3/S4门槛保留。CPU全行clip/16帧RGB hash验收先完成，GPU实际两遍仍待执行。
 
-开卡前统一入口与真实环境路径见 [before-gpu runbook](runbooks/before-gpu.md)。必需外部模型/数据/运行时票已完成不等于开卡就绪；native CPU processor与Linux视频资源验证缺口保持可见，最终开卡通知只认offline-prep:04汇总。
+开卡前统一入口与真实环境路径见 [before-gpu runbook](runbooks/before-gpu.md)。当前无卡模式可自主完成的准备已收口，offline-prep:04完成；模式切换判定见readiness002与plan/handoff-2026-10-14-gpu-transition.md。资源受限native CPU processor/Linux视频列为切换后首批检查，缺口与失败证据不隐藏；质量/训练/许可/人工身份门槛保持原状。

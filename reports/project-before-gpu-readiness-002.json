@@ -1,0 +1,317 @@
+{
+  "schema": "lite-omnijev.project-before-gpu-readiness.v2",
+  "recorded_utc": "2026-10-14T06:44:20.302468+00:00",
+  "status": "current_no_gpu_preparation_complete_ready_for_user_mode_switch",
+  "ready_to_switch_to_gpu_mode": true,
+  "ready_to_open_gpu": true,
+  "gpu_opening_authorized": false,
+  "gpu_used": false,
+  "release_or_stage_acceptance": false,
+  "definition": "User clarified: finish all autonomous preparation feasible in the current no-GPU instance; explicitly queue resource-limited validation after user mode switch. This is not a stage-gate waiver.",
+  "tested_executable_code_revision": "655a8385c6262c10e6ec4119e994c196e1e3a503",
+  "previous_cpu_snapshot": "36e51f845a9df5e464cb664b67e387799e7a9d6a",
+  "required_external_preparation": {
+    "models": "7 repositories,70 files,121094724397 bytes verified",
+    "data": "29-source disposition ledger audited; exclusions and training admission retained",
+    "runtimes": "locked offline closures and actual fresh builds/install/import probes evidenced"
+  },
+  "remaining_autonomous_work_feasible_in_current_no_gpu_environment": [],
+  "post_switch_first_checks": [
+    {
+      "item": "primary026 Linux HF full100 twice, same-host canonical reference",
+      "prior_result": "first run exit0/100; repeat exit137 after90; do not claim repeatability passed"
+    },
+    {
+      "item": "primary026 native normal initialization, six-case then full100 processor comparison",
+      "prior_result": "normal child SIGKILL; same-class diagnostic exit137 at processor creation, zero cases; cause unknown"
+    },
+    {
+      "item": "primary026 gateway real official processor video8/16, then six categories and fixed100",
+      "prior_result": "post tensor-release video batch exit137, no completion markers; fake backend only for CPU transport checks"
+    }
+  ],
+  "diagnostic_only_not_required_retry": "031 ARM/Docker alternate transport; complete wheel retained, incomplete base not installed. Do not restart this alternate if primary passes.",
+  "external_stage_requirements_not_mode_switch_conditions": [
+    "isolated gate identity",
+    "two independent real annotators and original kappa evidence",
+    "training license/provenance admission per source before mixing",
+    "S6 actual target device",
+    "authorized operational observation window"
+  ],
+  "future_generated_outputs": [
+    "admitted stage-derived datasets",
+    "qualified teacher soft labels",
+    "LoRA adapters",
+    "calibration",
+    "quantized models",
+    "three release packages"
+  ],
+  "unchanged_gates": [
+    "S0 before S1",
+    "strict HF/vLLM maxdelta<0.001; historical failures retained; D004 not approved",
+    "MMAU63.10±2 and ADR0006 fixed nine-task1800 baseline",
+    "all original S1–S6/FINAL thresholds"
+  ],
+  "remote_observation": {
+    "source": "/root/autodl-tmp/before-gpu-release-32fb559",
+    "source_clean": true,
+    "paths_checked": 7,
+    "all_present": true,
+    "memory_max_bytes": 2147483648,
+    "free_bytes": 420558426112,
+    "checkpoint_reserve_bytes": 150000000000,
+    "model_temp_reserve_bytes": 18164208659,
+    "gpu_query": "No devices found.",
+    "project_jobs_running": false
+  },
+  "evidence_hashes_verified": 61,
+  "evidence": {
+    "reports/project-model-offline-acceptance-001.json": {
+      "bytes": 677,
+      "sha256": "e47279dd636f1c1870d445262d35df4857104f3e2924110e3efaf073a7dbd64a"
+    },
+    "reports/project-data-offline-acceptance-001.json": {
+      "bytes": 19576,
+      "sha256": "d230cf715aa6f8b17411a9d0f33c241c4f1d6611fc3f8be4adde00fe9e17c4d2"
+    },
+    "reports/stage1-text-source-verification.json": {
+      "bytes": 6848,
+      "sha256": "deb556ce1086cbfa08625dd1d5d2f54c42a9b04746fece5b57cbfd7468c82c06"
+    },
+    "reports/valen-source-download-001.json": {
+      "bytes": 6004,
+      "sha256": "8c1ecbfe8fc316e8a8b0eaba536914a72614c127ba5d76c8dace7eb56d148232"
+    },
+    "reports/valen-checkpoint-conversion-010.json": {
+      "bytes": 4339,
+      "sha256": "6adc9a5b9e04f8a5c8e06e52649274755a5bf783fd5787d9d1164aaa346551b2"
+    },
+    "reports/stage2-remote-completion-001.json": {
+      "bytes": 6167,
+      "sha256": "24d52b682ae7530d90abd3a2d285a4b46b075473539b6481e2a0c4f383d2723a"
+    },
+    "reports/stage2-media-cpu-validation-001.json": {
+      "bytes": 20049,
+      "sha256": "c0d643670f941aa6febd54f0514a91a67c51fd0d1a64c87e69872246cba7769f"
+    },
+    "reports/docvqa-access.json": {
+      "bytes": 7488,
+      "sha256": "3249efee89fa6529289f888f01aad6242ad4a595923c1635c735fbcbe022f8ea"
+    },
+    "reports/docvqa-source-download-001.json": {
+      "bytes": 16701,
+      "sha256": "8754e954cb7a4413b76f2862fa6874fbd5fbe805d054f15f97fff0a879205a0d"
+    },
+    "reports/docvqa-annotation-metadata-private-001.json": {
+      "bytes": 573,
+      "sha256": "f0a941c040a9c09967d880e18bc07cd7ae393a8a413315292fa8fd8192651f98"
+    },
+    "reports/mind2web-source-download-002.json": {
+      "bytes": 11439,
+      "sha256": "f45f4fe20d4f05b4f60f876c015ca850081c3d669d567d6f266f4c114d1e65a0"
+    },
+    "reports/android-control-source-download-002.json": {
+      "bytes": 6875,
+      "sha256": "d4e415e0b5bbad4921ba821d595d1a0d8096b37e245ef1ad8c38364a519c0424"
+    },
+    "reports/gui-odyssey-download-acceptance-001.json": {
+      "bytes": 1308,
+      "sha256": "b861a09d4ea42f655b959a05b730d8d41672690c816e879b05557c0da13cb095"
+    },
+    "reports/gui-media-validator-linux-tests.json": {
+      "bytes": 1158,
+      "sha256": "8317de95dd4fabe2c4764466db05ef2477f90b328041e181f285bfd575f42a91"
+    },
+    "reports/gui-odyssey-full-decode-cpu-001.json": {
+      "bytes": 855,
+      "sha256": "2a42f73f5677692f4f0f4f87bcb45ff00e644e9468a5bff947bfe37778abde56"
+    },
+    "reports/public-eval-media-validation-001.json": {
+      "bytes": 14989,
+      "sha256": "3c7dce43eaea5f609917338dc20f2bd27aba9389563a67035235d2dea8d6ef46"
+    },
+    "reports/star-missing-source-recovery-001.json": {
+      "bytes": 11775,
+      "sha256": "1b067adf48cc3c580732c2c388b6ef275055e30f0b969b059271ae1621cf3442"
+    },
+    "reports/clevrer-source-download-snapshot.json": {
+      "bytes": 12301,
+      "sha256": "70b7093e51485c005893d8b69522c4e3bd2207abb9ecb0c0cf940a5c3a22b9e4"
+    },
+    "reports/clevrer-media-cpu.json": {
+      "bytes": 22776,
+      "sha256": "7e5a8517014d1f94d6d2df797af44aabfbbc05b82b2889c3d15412116dc410d6"
+    },
+    "reports/public-eval-archives-validation-002.json": {
+      "bytes": 15167,
+      "sha256": "83eca787cac624dba457b64870bc4b48335cd90c60e2fb6927bd66a3e0eb64b9"
+    },
+    "reports/clotho-aqa-audio-preparation-002.json": {
+      "bytes": 4070,
+      "sha256": "61e5b1b37f494ea829106f4fea948fb8a21726526467951d6649dc100999212b"
+    },
+    "reports/clotho-range-recovery-004.json": {
+      "bytes": 488,
+      "sha256": "2dd9b8e800e58aae490f500bff3b788d74cabd74d8fdd440d07cfd84d5353fb2"
+    },
+    "reports/commonvoice-cpu-prep.json": {
+      "bytes": 7374,
+      "sha256": "90bbfcb774fd63623cc81bd9649deda7cd3f924fc9928e7761f847fc609a7e89"
+    },
+    "reports/speech-kokoro-text-g2p-cpu-canary.json": {
+      "bytes": 8072,
+      "sha256": "da0b0e1489958015fa739e364671b2592b52a8282e3b16994a484118adb20345"
+    },
+    "reports/mdc-commonvoice-download-002.json": {
+      "bytes": 477,
+      "sha256": "f6ff785d3618bb1bfdb9b3e8b9df01608a176920ba3ce0c1d4751f987a4d29f2"
+    },
+    "reports/jev-omni-mvbench-protocol.json": {
+      "bytes": 56361,
+      "sha256": "dc2ec9fd0f445da2b3f4ae9e114082dbb3f24c853ae50338a0d83e81ac7be6b7"
+    },
+    "reports/public-video-protocol-freeze-001.json": {
+      "bytes": 99789,
+      "sha256": "a46a7619a06b3d1c9ea5004938842c045971bf7064768a3dfce832f2280bc2cd"
+    },
+    "reports/jevbench-public-source-verification.json": {
+      "bytes": 1630,
+      "sha256": "d003344b4a22787796d7ca490d9c48f817f9a9cb8f291ccbb6aa7dc3ce122e5f"
+    },
+    "reports/ragtruth-source-recovery-001.json": {
+      "bytes": 3020,
+      "sha256": "1671d05911e922eacfd9c5892222bf6beb19a654113da7a58554434706d72875"
+    },
+    "reports/routerbench-cpu.json": {
+      "bytes": 25188,
+      "sha256": "08da8d32c47c9de6db0500df933f54caffa6626c9f95b07148a3776e24956a75"
+    },
+    "reports/routerbench-security-review.json": {
+      "bytes": 1801,
+      "sha256": "7578058e708976149e7a661f06cc203ae4a5078f63ad041ff39a42a43d9e465c"
+    },
+    "reports/project-runtime-offline-acceptance-001.json": {
+      "bytes": 4254,
+      "sha256": "47ceb0f5ff50161e37f6dc5dc30a15a324f52c0558fe526b991faf48383c0be2"
+    },
+    "reports/offline-runtime-slice-summary.json": {
+      "bytes": 6371,
+      "sha256": "6546965f2b2e161851b86e1af45ee6bdcface197bc073eb6ae0af09905afba7d"
+    },
+    "reports/runtime-cpu-builds.json": {
+      "bytes": 15996,
+      "sha256": "c87f6d87089e300ee106e29c6e2011d7f7ddb8ce2836996154811b071eb9425c"
+    },
+    "reports/android-tools-preparation.json": {
+      "bytes": 3973,
+      "sha256": "679d3043dd3b90148789621182e7a14e831a81d9434408cde65f19484b8bddb7"
+    },
+    "reports/litert-lm-android-runtime-cache.json": {
+      "bytes": 4803,
+      "sha256": "1e1001b5cedd370029d668bc291b3a0dad3fe971e1c43cc84f8c4ca0b0090e34"
+    },
+    "reports/litert-lm-android-maven-cache.json": {
+      "bytes": 8274,
+      "sha256": "f7adf42d59ccb037bf23f588a692ae5b61d68c07fa231c0bdf655525b8a2445c"
+    },
+    "reports/litert-android-delivery-scope-audit-20261014.json": {
+      "bytes": 4682,
+      "sha256": "1547a4990777362f8aac1af677eba7aee9fe7d19056a3a88fc37981e8c6d098c"
+    },
+    "reports/root-main-training-dev-monitoring-offline-install.json": {
+      "bytes": 3572,
+      "sha256": "dd6b263fe1a218a828fbbdf6595ad45914be9997dfb79d76454b497910175553"
+    },
+    "reports/root-main-offline-pipeline-tests.json": {
+      "bytes": 1423,
+      "sha256": "50d0076ac98c1e8ad98a9783c42a494f33bd30b37d0b654afe237a4a32cd2aa3"
+    },
+    "reports/serve-next-vllm031-offline-install.json": {
+      "bytes": 1478,
+      "sha256": "cd54c095b0342f323f263d331cebe1d97a4b42f792f2aa8b612d02180a6039db"
+    },
+    "reports/before-gpu-teacher-job-fresh-001.json": {
+      "bytes": 8409,
+      "sha256": "72acb2131c757202f879ea3eb944b4772f512e0799572534015f51fa5abbed55"
+    },
+    "reports/frontend-registry-sources.json": {
+      "bytes": 17557,
+      "sha256": "2e105d0e55f2c9f5ed77740a8343649b3e73b355c8fac8f74d2d694bbeca9174"
+    },
+    "reports/frontend-registry-remote-offline-build-20261014-retry4.json": {
+      "bytes": 3736,
+      "sha256": "a7eda140a3be229def6387fb3cb6d43c428b14000b0b5a7a3a6eb9644b66aebc"
+    },
+    "reports/playwright-fresh-linux-launch.json": {
+      "bytes": 785,
+      "sha256": "cb4779d0649be3555761fcfaddf39361f230808b1502649ce610b9fe46770870"
+    },
+    "reports/before-gpu-cpu-validation-005.json": {
+      "bytes": 3742,
+      "sha256": "37e92de3baf9683c24b5faef98e33a385bc9b14c50f3c314098c8890304315f3"
+    },
+    "artifacts/primary026-linux-gateway-trim-002/exit.txt": {
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    "artifacts/primary026-linux-gateway-trim-002/memory-events-after.txt": {
+      "bytes": 42,
+      "sha256": "b2079be7b40e8bb88cff3c47850dfdad8a0afb6c8f286bac30161216268ebec6"
+    },
+    "artifacts/primary026-linux-gateway-trim-002/memory-events-before.txt": {
+      "bytes": 42,
+      "sha256": "b2079be7b40e8bb88cff3c47850dfdad8a0afb6c8f286bac30161216268ebec6"
+    },
+    "artifacts/primary026-linux-gateway-trim-002/pytest.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "artifacts/primary026-linux-gateway-trim-002/source.txt": {
+      "bytes": 41,
+      "sha256": "1c5ebe049a67fedcd71f1116bb20d4115f0ef73529eda2fc255c68a8c8de0cc9"
+    },
+    "reports/before-gpu-cpu-validation-004.json": {
+      "bytes": 6258,
+      "sha256": "4c4114ea4316088bb9ef19ffe82ca3df02cdfbd35aa904a19f112ffe1ae71854"
+    },
+    "reports/primary026-linux-cpu-acceptance-001.json": {
+      "bytes": 13681,
+      "sha256": "6a1d3d10e25d591ef1ec5d953af3f24baf58b34f7b72383b2403102de1a3ae61"
+    },
+    "reports/primary026-linux-gateway-cpu-001.json": {
+      "bytes": 6019,
+      "sha256": "da3c07ba979e0549e6943bf33e84fd5f3e781227896b93087046df46010877b5"
+    },
+    "reports/primary-transformers513-cpu-full100-comparison-001.json": {
+      "bytes": 40809,
+      "sha256": "df33fb4ab3b4e722ca5a5ebd0c2896c2f44355658b6d3d62215fb6fa57a2ce14"
+    },
+    "reports/s0-official-arm-cpu-alternate-003.json": {
+      "bytes": 14814,
+      "sha256": "d2b4bab7aaca9149f37010becdd447b348864b239167e248494aaf4f1049a8e1"
+    },
+    "reports/primary026-linux-hf-full100-a-001.json": {
+      "bytes": 413273,
+      "sha256": "1b93e9703a31a480e870974b32562d95f06c92c0cb1d26112c82d6037018db33"
+    },
+    "reports/primary026-linux-hf-full100-b-001.json": {
+      "bytes": 318830,
+      "sha256": "0fbd766c90842ee60fcc94eb1ffe796cfd62445f993793067d04e8003cb479cc"
+    },
+    "reports/primary026-native-cpu-001-checkpoint.json": {
+      "bytes": 1255,
+      "sha256": "11a697682b4d71a9845a2051e079c9fc3d937d838c7865243d78f14f4f442eb9"
+    },
+    "reports/primary026-native-cpu-001-exit.txt": {
+      "bytes": 4,
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c"
+    },
+    "reports/primary026-native-cpu-001-stdout.log": {
+      "bytes": 841,
+      "sha256": "185a9a36a84ed3142041ac1ad82255d989c17aa3ae6e8bfd4168dcef9eca9efe"
+    }
+  },
+  "historical_readiness_report": "reports/project-before-gpu-readiness-001.json remains immutable; v2 supersedes its operational switch decision, not its failure observations",
+  "handoff": "plan/handoff-2026-10-14-gpu-transition.md",
+  "cost": "No GPU used; existing rented storage/CPU billing not independently available, not claimed zero."
+}

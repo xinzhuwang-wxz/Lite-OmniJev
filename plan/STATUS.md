@@ -1,9 +1,9 @@
 # STATUS
 
-更新时间：2026-10-14。当前S0；P0工程冒烟完成，S0–S6/FINAL未完成。终局未完成，原生状态以get_goal为准；当前已证实外部资源阻塞。
+更新时间：2026-10-14。当前S0；P0工程冒烟完成，S0–S6/FINAL未完成。终局未完成，原生状态以get_goal为准；当前无卡可自主完成准备已收口，可由用户切换有卡；终局仍待真实GPU及外部阶段条件。
 
 ## 当前目标与决策
-- 用户已租实例，要求开卡前完成所有可做的模型/数据/依赖/CPU管线准备；未获开卡授权，保持无GPU作业。
+- 用户已租实例，要求完成当前无卡模式能做的所有准备后交接，再由用户转有卡；不是等待无卡环境通过一切资源受限检查。已完成此准备阶段；未获代开卡授权，保持无GPU作业。
 - 原方案、阶段顺序和门槛不变；5b/探索关闭，不换基座、不改引擎、不放宽阈值。
 - ADR-0004：AudioCaps首发省略，以Clotho/TTS补题量；ADR-0005：12k视频QA用CC0 CLEVRER，5k图题由允许教师在CC0/BY媒体生成，DocVQA仅研究隔离；NextQA/VGGSound/受限LLaVA仅候选，不下载1.28TB全量LLaVA。
 - ADR-0006用户已批准：仅将S0 MVBench发布53.10±2复现替换为固定9任务1800行独立baseline；MMAU63.10±2、S3≥90%、S4≥97%及其他门槛不变。
@@ -12,9 +12,9 @@
 
 ## 资源与版本
 - 远端 `root@region-42.seetacloud.com:48926`，原树 `/root/autodl-tmp/lite-omnijev`；用户已恢复SSH，主会话mux `/tmp/omnijev-ssh-root-final`，凭据不保存。
-- 最新带完整Git历史的隔离源码快照：`/root/autodl-tmp/before-gpu-release-4366197`，目录名是初始快照名，新隔离源码 `/root/autodl-tmp/before-gpu-release-32fb559` 实际代码HEAD655a838；旧目录HEAD3dbbe0d；后续每次核对真实HEAD，不推定目录名=版本。
+- 最新带完整Git历史的隔离源码快照：`/root/autodl-tmp/before-gpu-release-4366197`，目录名是初始快照名，新隔离源码 `/root/autodl-tmp/before-gpu-release-32fb559` 此前冻结HEAD36e51f8（执行代码655a838）；旧目录HEAD3dbbe0d；后续每次核对真实HEAD，不推定目录名=版本。
 - 最终CPU检查点bundle `artifacts/before-gpu-checkpoint-final.bundle`：冻结HEAD36e51f8、完整Git历史，已同步隔离源码32fb559目录并远端37报告hash/32票validate通过；`reports/before-gpu-source-sync-001.json`。本地后续仅此receipt/调度元数据，不覆盖原树或改远端分支。
-- 无卡cgroup2GiB RAM/0.5CPU，重作业锁 `/tmp/omnijev-cpu-heavy.lock`、数值线程1；不得按宿主机free调度。最新远端剩余430,532,730,880B；保留150GB checkpoint及18.16GB模型临时空间。
+- 无卡cgroup2GiB RAM/0.5CPU，重作业锁 `/tmp/omnijev-cpu-heavy.lock`、数值线程1；不得按宿主机free调度。最新远端只读核查剩余420,558,426,112B；保留150GB checkpoint及18.16GB模型临时空间。
 - vLLM0.26仍primary，0.31仅准备/诊断环境，不静默切换。026/031两套完整wheelhouse/fresh安装已实际通过CPU导入。
 - Mac24GiB内存，仅小型公开fixture/metadata，不搬大模型/原始包。只清理自己创建且无用的资源，不删权重缓存/用户容器。
 
@@ -23,7 +23,7 @@
 - offline-prep:01 done：7模型70文件121,094,724,397B，固定revision/许可/逐文件哈希通过；`reports/project-model-offline-acceptance-001.json`。
 - offline-prep:02 done：29来源/批准排除/未来生成/外部gate汇总；`reports/project-data-offline-acceptance-001.json`。原料准备不等于训练准入。
 - offline-prep:03 done：必需运行时外部依赖统一通过，`reports/project-runtime-offline-acceptance-001.json`；新版teacher/job入口空env fresh no-index重建224.9秒，mandatory imports/probes与pip check退出0。
-- offline-prep:04 blocked（无活跃owner），依赖01/02/03/s0:09；全项目 `ready_to_open_gpu=false`。native processor CPU验证及Linux真实网关视频资源验证尚未通过，不能隐入GPU-only。
+- offline-prep:04 done：当前无卡可自主完成准备已验收，`reports/project-before-gpu-readiness-002.json` ready_to_switch_to_gpu_mode=true；资源受限CPU检查显式列为切换后首批前置，失败证据不改写，S0门槛未通过。
 - offline-prep:05/06 done：pytest锁修复、真实Linux教师音频CPU适配。
 - s0:09 done：官方HF100题×2输入相同；4原始family变体不是100独立质量样本。`reports/s0-prepare-integrated-acceptance-002.json`，仅CPU输入。
 - s0:01 blocked（无活跃owner）：安全head/loader/teacher forward/benchmark runner代码与CPU控制已合入；全13文件23,955,723,321B已Linux校验；GPU真实概率/复现门槛pending，不关整票。
@@ -65,11 +65,13 @@
 - 所有监督句柄/子代理作业已结束；无活跃CPU/GPU/container作业。最终同步receipt随本批报告保存，不能重复启动失败配置。
 
 ## 待用户/外部条件
-- 当前不要开卡；真实native CPU processor与Linux视频在2GiB条件下仍无通过证据。用户已决定“继续保持当前实例”，不调整资源、不自动开卡/付费。更大无卡资源或其他解决路径需新的外部条件；不反复询问同一决定。
-- 真实gate身份、双人标注、S6真机及后续运营观测须安排；不阻塞其余本地准备，也不伪造终局门槛。
-- 未来LoRA/校准/量化/派生训练集是待生成产物，不是必需外部下载遗漏；S4放量预算须届时按实测重估。
+- 当前无卡可自主完成工作已完成，可由用户把现有实例切到有卡模式；不自动开卡/调资源/付费。已证实2GiB限制下未完成的CPU验证在切换后首批补验，不阻止模式切换，也不冒称已通过。
+- 真实gate身份、双人标注、S6真机及后续运营观测须安排；对应阶段门槛仍blocked，不伪造终局证据。
+- 数据许可/来源训练准入逐源执行，研究隔离照留；未来LoRA/校准/量化/阶段派生训练集待生成，S4放量预算届时按实测重估。
 
-## 下一步
-1. 当前可执行分支已收口，原始下载/环境/CPU测试不重复；需外部条件改变才恢复native/视频/重跑的资源受限CPU验收。
-2. 统一开卡判定 `reports/project-before-gpu-readiness-001.json` 仍false；模型/数据/运行时01–03 done，04blocked；不静默把CPU门槛移到开卡后。
-3. 当前plan/handoff仅CPU检查点；用户要求真正可开卡时写专用开卡交接，届时固定HEAD/资产与配置hash/环境/命令/预算/断点/失败恢复/关卡清单。S0/GPU/终局门槛仍待验。
+## 无卡阶段收尾与下一步
+1. 已审核32票无frontier/claim，三个离线总账及子回执逐SHA验证、远端7个必要路径存在/源码干净/无作业，资源与失败边界写入readiness002。当前无卡可自主执行剩余工作为空；不重复原始下载/环境安装/同2GiB失败配置。
+2. 专用接续文档 `plan/handoff-2026-10-14-gpu-transition.md`：精确环境/缓存/fixture、首批CPU资源补验、GPU小smoke、S0门槛、预算/断点/失败恢复与关卡通知；可复制新session启动词已写好。
+3. 最新源码同步用 `reports/before-gpu-transition-sync-001.json` 与远端同名侧车核对HEAD/完整Git bundle；此前source-sync001仅历史CPU检查点。后加receipt仅元数据，执行代码仍655a838。
+4. 用户切换后按交接先读资源，补同Linux HF100两遍/native正常六case与full100/网关视频8/16，再真实模型与S0。历史maxTV失败及D004未批准不变，S0全绿前禁止S1。
+5. 原生get_goal实际仍blocked，完整目标未完成；本次仅完成无卡准备和交接，不以此complete终局，不重建heartbeat。

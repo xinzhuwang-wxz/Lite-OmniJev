@@ -20,7 +20,7 @@ Blocked by: p0:04
 - [ ] 真实小样本推理报告完整概率/答案映射；覆盖错hash、损坏head、缺键拒绝行为；资产admitted与teacher_quality_admitted分开。
 
 ## Evidence
-尚未执行；本票仅冻结验收。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
+真实GPU验收未完成；CPU子集证据见下文，不能按最初冻结文字误判为缺代码。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
 
 ## Out of scope
 大规模教师打标、OneJev整库准入、替换学生或自增预算。
@@ -36,3 +36,5 @@ Blocked by: p0:04
 2026-10-14 CPU整合：94acfe7完整安全forward代码/13文件manifest绑定，真实Mac processor003通过、Linux完整23,955,723,321B SHA通过后CUDA gate阻塞（teacher-forward-cpu-005）。独立review两发现已关闭。完整GPU概率与原格式参考等价未做，本票仍claimed、不把CPU检查当教师效果准入。
 
 2026-10-14资源阻塞收口：真实教师大模型forward/规定概率/质量复现需获授权GPU；现有2GiB CPU处理器资源门槛仍待解决。当前无活跃本票作业，释放claim，保留所有代码与证据。
+
+2026-10-14模式切换收口：当前无卡可自主完成部分已整合并验证，见readiness002及GPU-transition交接。2GiB资源受限检查移入切换后首批前置，这是用户明确澄清的调度顺序；本票真实模型/概率/阶段验收仍blocked，未改变门槛。

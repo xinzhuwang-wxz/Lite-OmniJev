@@ -1,3 +1,5 @@
+> 历史CPU检查点。2026-10-14用户澄清模式切换条件后，操作结论由 `plan/handoff-2026-10-14-gpu-transition.md` 和 readiness002替代；下文历史false不再代表当前切换判定。
+
 # 开卡前准备恢复交接
 
 完整目标仍为原HTML的P0/S0–S6/FINAL，终局未完成，先get_goal核对原生实际状态；当前仅无卡准备，不自动开关卡/付费/生产/push。先读 `plan/STATUS.md`、`plan/LOOP.md`、`docs/02-project.md` 和当前票。
