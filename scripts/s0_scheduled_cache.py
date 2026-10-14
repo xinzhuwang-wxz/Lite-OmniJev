@@ -15,7 +15,12 @@ from typing import Any
 import httpx
 
 from eval.prefix_cache import CacheProtocol, CacheServer, digest
-from eval.scheduled_cache import ScheduledCacheRun, assess_scheduled, collect_scheduled
+from eval.scheduled_cache import (
+    ScheduledCacheRun,
+    assess_scheduled,
+    collect_scheduled,
+    validate_scheduled_launch,
+)
 
 
 def _code_hash(paths: list[Path]) -> str:
@@ -111,6 +116,7 @@ def main() -> int:
                 concurrency_limit=args.concurrency,
             )
             if args.action == "validate":
+                validate_scheduled_launch(server, args.concurrency)
                 report.update(status="validated-no-network", exit_code=0)
             else:
                 if server.evidence_kind != "gpu":

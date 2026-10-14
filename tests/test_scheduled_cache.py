@@ -381,3 +381,32 @@ def test_cli_validate_is_network_free_and_failure_safe(
     assert main() == 1
     assert "PRIVATE-SENTINEL" not in report_path.read_text()
     assert json.loads(report_path.read_text())["error_type"] == "ValidationError"
+
+
+def test_cli_validate_rejects_launch_that_cannot_fit_requested_concurrency(
+    tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from scripts.s0_scheduled_cache import main
+
+    p = tmp_path / "protocol.json"
+    s = tmp_path / "server.json"
+    r = tmp_path / "report.json"
+    p.write_text(protocol().model_dump_json())
+    s.write_text(server(True, max_num_seqs=2).model_dump_json())
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "cache",
+            "validate",
+            "--protocol",
+            str(p),
+            "--server-record",
+            str(s),
+            "--concurrency",
+            "10",
+            "--report",
+            str(r),
+        ],
+    )
+    assert main() == 1
+    assert json.loads(r.read_text())["status"] == "blocked"

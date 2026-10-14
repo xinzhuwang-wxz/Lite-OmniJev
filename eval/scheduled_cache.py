@@ -179,6 +179,15 @@ class _InflightCounter:
             self.current -= 1
 
 
+def validate_scheduled_launch(server: CacheServer, concurrency_limit: int) -> int:
+    if type(concurrency_limit) is not int or not 2 <= concurrency_limit <= 10:
+        raise ValueError("scheduled concurrency must be an integer between 2 and 10")
+    maximum = _launch_arg_int(server.launch_command, "--max-num-seqs")
+    if maximum is None or maximum < concurrency_limit:
+        raise ValueError("server --max-num-seqs must cover the configured concurrency")
+    return maximum
+
+
 async def collect_scheduled(
     protocol: CacheProtocol,
     server: CacheServer,
@@ -189,13 +198,9 @@ async def collect_scheduled(
     clock: Callable[[], float],
 ) -> ScheduledCacheRun:
     """Collect one bounded native run against an already-started exclusive GPU server."""
-    if type(concurrency_limit) is not int or not 2 <= concurrency_limit <= 10:
-        raise ValueError("scheduled concurrency must be an integer between 2 and 10")
+    max_num_seqs = validate_scheduled_launch(server, concurrency_limit)
     if not allow_reset or not server.exclusive_local_test:
         raise ValueError("explicit reset permission and exclusive test attestation required")
-    max_num_seqs = _launch_arg_int(server.launch_command, "--max-num-seqs")
-    if max_num_seqs is None or max_num_seqs < concurrency_limit:
-        raise ValueError("server --max-num-seqs must cover the configured concurrency")
     base = server.base_url.rstrip("/")
 
     async def reset() -> None:
