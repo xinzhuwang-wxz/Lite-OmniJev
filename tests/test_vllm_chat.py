@@ -214,6 +214,7 @@ async def test_one_extra_sampled_token_is_allowed() -> None:
     body = response_body()
     position = body["choices"][0]["logprobs"]["content"][0]
     position["token"] = "token_id:99"
+    position["logprob"] = -7.0
     position["top_logprobs"].append({"token": "token_id:99", "logprob": -7.0})
     async with VllmChatClient(
         "http://fixture",
@@ -441,6 +442,7 @@ async def test_changed_answer_mapping_cannot_send_request() -> None:
 
 async def test_raw_answer_mass_cannot_exceed_full_vocabulary_mass() -> None:
     body = response_body()
+    body["choices"][0]["logprobs"]["content"][0]["logprob"] = -0.1
     for entry in body["choices"][0]["logprobs"]["content"][0]["top_logprobs"]:
         entry["logprob"] = -0.1
     async with VllmChatClient(
@@ -450,4 +452,26 @@ async def test_raw_answer_mass_cannot_exceed_full_vocabulary_mass() -> None:
         transport=httpx.MockTransport(lambda _: httpx.Response(200, json=body)),
     ) as client:
         with pytest.raises(VllmChatProtocolError, match="probability_mass"):
+            await client.read_logprobs(prepared_fixture())
+
+
+@pytest.mark.parametrize("sampled_in_top", [False, True])
+async def test_rejects_sampled_probability_inconsistent_with_unique_raw_mass(
+    sampled_in_top: bool,
+) -> None:
+    import math
+
+    body = response_body()
+    position = body["choices"][0]["logprobs"]["content"][0]
+    for entry in position["top_logprobs"]:
+        entry["logprob"] = math.log(0.2)
+    position["token"] = "token_id:1" if sampled_in_top else "token_id:99"
+    position["logprob"] = math.log(0.9)
+    async with VllmChatClient(
+        "http://fixture",
+        "pinned-alias",
+        raw_logprobs_confirmed=True,
+        transport=httpx.MockTransport(lambda _: httpx.Response(200, json=body)),
+    ) as client:
+        with pytest.raises(VllmChatProtocolError):
             await client.read_logprobs(prepared_fixture())

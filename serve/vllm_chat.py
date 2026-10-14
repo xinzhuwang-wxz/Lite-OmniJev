@@ -78,7 +78,7 @@ def parse_chat_logprobs(
         if not isinstance(positions, list) or len(positions) != 1:
             raise VllmChatProtocolError("expected_one_generation_position")
         sampled_id = _token_id(positions[0]["token"])
-        _logprob(positions[0]["logprob"])
+        sampled_logprob = _logprob(positions[0]["logprob"])
         entries = positions[0]["top_logprobs"]
         if (
             not isinstance(entries, list)
@@ -95,7 +95,12 @@ def parse_chat_logprobs(
             raise VllmChatProtocolError("unexpected_unsolicited_token")
         if not set(answer_token_ids.values()).issubset(by_id):
             raise VllmChatProtocolError("missing_requested_token")
-        if math.fsum(math.exp(value) for value in by_id.values()) > 1 + 1e-6:
+        if sampled_id in by_id and not math.isclose(
+            by_id[sampled_id], sampled_logprob, rel_tol=0, abs_tol=1e-6
+        ):
+            raise VllmChatProtocolError("inconsistent_sampled_logprob")
+        known = {**by_id, sampled_id: sampled_logprob}
+        if math.fsum(math.exp(value) for value in known.values()) > 1 + 1e-6:
             raise VllmChatProtocolError("invalid_full_vocabulary_probability_mass")
         raw = {answer: by_id[token_id] for answer, token_id in answer_token_ids.items()}
     except VllmChatProtocolError:
