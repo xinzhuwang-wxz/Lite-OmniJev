@@ -75,6 +75,7 @@ class LoopConfig(Contract):
     modality: Literal["text"] = "text"
     midway_step: int | None = Field(default=None, ge=1)
     expected_data_version: str | None = None
+    checkpoint_every: int | None = Field(default=None, ge=1)
 
     @model_validator(mode="after")
     def validate_loop(self) -> LoopConfig:
@@ -385,19 +386,25 @@ def train_smoke(
                 }
             )
             write_json(output_dir / "run.json", report)
-        checkpoint_path = save_checkpoint(
-            output_dir,
-            step=report["steps_completed"],
-            config=config.model_dump(),
-            model_revision=report["model_revision"],
-            data_sha256=report["data_sha256"],
-            asset_hashes=report["asset_hashes"],
-            order=order,
-            losses=report["losses"],
-            model=model,
-            optimizer=optimizer,
-        )
-        report["checkpoint"] = str(checkpoint_path)
+        every = getattr(config, "checkpoint_every", None)
+        if (
+            every is None
+            or report["steps_completed"] % every == 0
+            or report["steps_completed"] == config.steps
+        ):
+            checkpoint_path = save_checkpoint(
+                output_dir,
+                step=report["steps_completed"],
+                config=config.model_dump(),
+                model_revision=report["model_revision"],
+                data_sha256=report["data_sha256"],
+                asset_hashes=report["asset_hashes"],
+                order=order,
+                losses=report["losses"],
+                model=model,
+                optimizer=optimizer,
+            )
+            report["checkpoint"] = str(checkpoint_path)
         write_json(output_dir / "run.json", report)
     model.save_pretrained(
         str(output_dir / "adapter"), safe_serialization=True, save_embedding_layers=False
