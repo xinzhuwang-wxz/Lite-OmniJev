@@ -4,10 +4,10 @@ ID: s0:07
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
-Blocked by: p0:04, 01, 02, 03, 04
+Execution: claimed
+Owner: main-session-gpu-transition
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
+Blocked by: p0:04, 01, 03
 
 ## What to build
 把教师/运行时实测结果变成余下模型和模态的session-sized基线票，避免预设未知实验已可执行。
@@ -30,3 +30,5 @@ Blocked by: p0:04, 01, 02, 03, 04
 
 现有研究不是完整基线表；本票刻意保留实测后再展开的边界，输出为本地规格/票据，非模型结果。
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
+
+2026-10-14依赖校正并认领：本票仅规划/冻结后续S0数据与基线闭环，02/04整票通过不是该规划的技术前置；01技术准入/03真实多模态概率与浏览器已完成、教师完整第一遍及MMAU两遍已有实测，已足以识别支持矩阵与剩余缺口。移除02/04对规划票的人工串行依赖，保留02/04为08的硬门槛，后续真实GPU/数据准入各票仍按实际前置冻结，不启S1、不改质量或性能阈值、不在规划票偷偷跑GPU。教师继续时并行准备此S0闭环，避免闲置等待。

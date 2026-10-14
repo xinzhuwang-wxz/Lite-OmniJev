@@ -42,3 +42,5 @@ Blocked by: p0:04, 01
 2026-10-14 resume003安全停在2610条/exit1，cache独占短测已结束；resume004监督167948/timeout167949/教师167950真实Rl，原冻结DF树/原records显式--resume，3600秒上限。质量和两遍门槛仍pending，未重复启动或丢弃已有题。
 
 2026-10-14第一遍完整2800题已完成：MMAU620/1000=62.0%在既定窗口内，固定九任务MVBench976/1800=54.222%（九组各200题，macro=micro），不与发布53.10异集比较。第二遍已有279对，预测与概率逐项精确一致；报告reports/teacher-first-pass-complete-001.json绑定完整前缀字节/hash、模型/数据binding、冻结DF源码。两遍仍未完成，质量不准入、不关票。
+
+2026-10-14 MMAU两遍完整验收通过：2000条、两次620/1000、1000对预测与概率完全相同，报告teacher-mmau-two-pass-complete-001.json；004安全停在3812/exit1以独占测async，随后005续跑MVBench第二遍，监督169821/timeout169822/教师169823已真实Rl推进，最多3600秒。整体两遍尚未完成，02仍claimed。

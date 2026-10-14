@@ -30,3 +30,9 @@
 教师第一遍完整2800题已完成：MMAU62.0%、九任务MVBench54.222%；第二遍279对预测/概率完全一致，完整第二遍未完，质量不准入。最新报告teacher-first-pass-complete-001.json，总3079/5600。
 
 用户要求：S0全部门槛验收完成后另写plan/handoff-日期-s0-complete.md及新session启动词，已加入s0:08验收。当前文档仅中途接续，不代表S0完成。
+
+当前更新：MMAU两遍完整1000对预测/概率精确、62.0%，单benchmark通过，reports/teacher-mmau-two-pass-complete-001.json；004安全停3812/exit1。async eager冷比2.3164/2.3335仍fail、四概率2.36e-7、并发9/KV288，169427已停，reports/s0-scheduled-native-async-canary-001.json；教师005监督169821/timeout169822/worker169823真实Rl续跑，最多3600秒，DF源码/records未改。
+
+S0规划07移除对02/04整票通过的人工串行依赖，08门槛不动；35票validate通过，新增10官方CPU模型兼容探针已派独立树/tmp/lite-baseline-cpu-a146042、所有权scripts/s0_baseline_cpu.py和对应tests；11JevBench适配协议已认领、只读结构/来源审计完成；12dev/holdout来源合同为frontier。见.scratch/s0/baseline-expansion-spec.md。07尚未完成，不因创建票就关。
+
+JevBench审计纠错：48easy行group是JSON null，旧group=easy措辞错误；147非空组、literal含null148，官方只36original对用于paraphrase consistency，不是195场景准确率。231行139Choice/18离散Score/74Noul均合法；Score实现argmax与注释roundedEV冲突按实际代码保真，source family是宏平均类别而非project sample family。gold来源为publisher运行前author/review声明、hard为模型作者，不充humanκ。报告jevbench-public-protocol-audit-001.json，config/docs已更正、历史receipt不改。

@@ -19,7 +19,7 @@
   },
   "teacher_card_target_groups": 195,
   "teacher_matched_protocol_verified": false,
-  "grouping_note": "Easy public file labels all48 rows with group=easy; group-field counting is not equivalent to the teacher claimed195 scenario groups. Do not infer the aggregation/exclusions from equal row counts.",
+  "grouping_note": "All48 easy rows have JSON null group, not the string easy. Distinct literal values including null total148; nonempty groups total147. Official metrics only use truthy groups with >=2 rows, hence36 original pairs for paraphrase consistency. Teacher195 scenario grouping is unverified; do not infer it from equal row counts.",
   "training_admitted": false,
   "jev_api_outputs_used": false,
   "private_or_imported_splits_downloaded": false,
@@ -65,5 +65,9 @@
       "sha256": "6aa17d212ea20a3eeb6876149367842e8462c11dcb54d73df062fb406368331e"
     }
   ],
-  "source_verification_report": "reports/jevbench-public-source-verification.json"
+  "source_verification_report": "reports/jevbench-public-source-verification.json",
+  "literal_group_values_include_null": true,
+  "nonempty_group_values": 147,
+  "null_group_rows": 48,
+  "protocol_audit_evidence": "reports/jevbench-public-protocol-audit-001.json"
 }

@@ -11,15 +11,17 @@
 - 验收native PID94918/18001与gateway PID130178/18000已发送TERM；本机转发55174→18000暂保留，服务不再保证可用。实时/proc+health绑定在artifacts/s0-parity-full100-20261014/live-process-binding-001.json，无签名remote attestation，不伪称独立签名证明。两服务仅开发数值验收，非生产。
 - 教师公开text/audio/video两遍真实forward通过/44.564秒；原tensor格式→safehead的GPU功能参考47.418秒exit0：四tensorhash、5counts边界及三类两遍logits/probs精确；31回归通过，s0:01原README声明/安全GPU链已获独立verifier PASS，已关闭；s0:02主会话认领效果复现。严禁正常进程加载pickle或执行上游module。
 - 教师benchmark原pilot900秒退出124，保留1397条；MMAU首遍1000题620正确/62.0%，在63.1±2pp内；MVBench首遍397题仅部分，不作完整baseline。两遍完整质量门槛仍pending。
-- 教师resume003已SIGINT安全停在2610/5600条/exit1，完成本轮cache独占测量后已启动resume004：监督167948/timeout167949/教师167950，最多3600秒；实时/proc确认167950 Rl，无终态exit文件；reports/teacher-benchmark-progress-004.json快照2645/5600、GPU仅教师24410MiB。最新报告reports/teacher-first-pass-complete-001.json：第一遍完整2800条、第二遍279对一致（共3079），不提前准入。冻结DF源码/相同输入与records路径不变，新日志teacher-benchmark-resume-004.log/exit/pid；不得并行重启或重算已有题。当前未完成两遍质量准入。
+- 教师resume004安全停于3812/5600条/exit1；MMAU两遍1000对预测/概率精确一致、均62.0%，单benchmark通过（reports/teacher-mmau-two-pass-complete-001.json），教师整体未准入。异步短测结束后启动resume005：监督169821/timeout169822/教师169823，实时Rl，reports/teacher-benchmark-progress-005.json快照4236/5600、GPU仅教师24794MiB，最多3600秒；同DF冻结源码和records显式续跑，无自有服务占卡。
 - 原生子代理：parity_verifier/teacher_reference均完成，临时树已清理；cache_protocol_review已交只读建议；cache_assessment已整合显式新policy（7949365）；34pass/1显式livefixture skip、ruff/mypy通过，架构只读review CLEAR。父会话统一票/STATUS/整合。
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
-- 01/03已关票；02教师resume004持续运行，最新first-pass-complete快照3079/5600：第一遍MMAU620/1000=62.0%、九任务MVBench976/1800=54.222%；第二遍279对预测/概率均精确一致，仍无完整质量准入。先核实时进程/exit，不重复启动；监督上限3600秒。
+- 01/03已关票；02教师resume005继续MVBench第二遍。MMAU两遍均620/1000且完全一致，MVBench第一遍976/1800；第二遍未完成，不关闭02。先核实际PID/exit，活作业不重启。
 - 04仍claimed/性能failed：旧顺序eager/graph失败保留；新scheduled eager冷比2.3469/2.3250，graph1024并发10为2.584/2.551、并发2为3.190/3.188、并发3为3.045/3.047。实际KV覆盖/并发与四概率均通过；未做失败配置gateway/off；两server已停、GPU交还教师。见reports/s0-scheduled-native-eager-canary-001.json及s0-scheduled-native-graph-canaries-001.json。
 - CPU候选已完成：Linux官方100题300次准备精确/40imagecache命中；失败CPUjob清理独立复核APPROVE。新网关并发adapter含实际ASGI wall/work分离、upstream输入/raw/API逐qid绑定、重复case拒绝及摘要JSON roundtrip；独立review APPROVE（reports/s0-scheduled-gateway-review-001.json）；48相关pass、78源mypy/lint/282format/build/32票validate通过，仅CPU准入。
-- 唯一下一GPU候选：eager仅启用官方async scheduling，保留FP32IEEE/maxseq10/mmcache1/chunked禁用；隔离树s0-scheduled-gpu-001已更新HEAD3a9a63d（旧GPU报告仍388ce87，教师DF树不变）；artifacts/async-eager-001中on/off启动文件与无网络validate均exit0，真实冻结qid的gateway validate也exit0，尚未启动。依据实际0.26源码，性能收益未证实，见reports/s0-next-async-candidate-preflight-001.json。保持教师占卡，待当前作业终态/稳定断点后安排独占native短测，有收益才扩展gateway/onoff，不盲扫配置。
+- async eager官方候选已测：冷比2.3164/2.3335仍fail、四概率max2.36e-7、并发9/KV288，启用日志/真实cmdline与env绑定；已停止server169427、不扩展gateway/off，见reports/s0-scheduled-native-async-canary-001.json。下一TF32x3仅官方安装源评估可用、尚未GPU准备（reports/s0-tf32x3-source-assessment-001.json含实际源码hash）；会改变部分数值实现，不能当IEEE相同，若做必须隔离编译缓存并重验完整100概率/重复，收益假设偏弱，先保持教师占卡。
+- s0:07已认领剩余基线/开发数据规格：移除02/04对纯CPU规划的人工串行依赖（08硬门槛不变），01/03实测充分。模型/协议事实已收集；10的CPU CLI切片正在独立树实现，父会话发现metadata应对expectedhash、partial退出码和Valen实际adapter目录等边界缺口，已要求先修并回归，不整合未通过版本；OneJev4/27、E2B和额外Valen仍缺基线forward，JevBench231/literal含null148（147非空groups）与教师195口径未证实，dev500不由100 parity fixture替代；规划见.scratch/s0/baseline-expansion-spec.md。
+- s0:10/11已认领，12为可执行frontier；35票validate通过。JevBench实际八文件/231行审计已完成，纠正easy group为JSON null而非easy字符串；官方36original对只用于paraphrase consistency，不能当195场景准确率；139Choice/18离散Score/74Noul都可适配，gold发布方声明非Jev API，但hard模型作者不充真人双标。见reports/jevbench-public-protocol-audit-001.json，下一实现合法adapter/官方计分语义。
 - 用户新要求：S0全绿后产出完整 `plan/handoff-日期-s0-complete.md` 及可复制的新session启动词；已加入s0:08验收，不把中途handoff当作S0完成。
 - 补充真实Linux官方processor+ASGI网关回放联调：已发现并修复测量器写死q0..q9的阻断，现保留真实cache-probe-*及顺序绑定；15回归先红后绿/mypy/ruff通过。官方CPU回放9.896秒exit0、8测量/44题/50回放调用、JSON摘要重载通过，reports/s0-scheduled-gateway-official-cpu-replay-001.json，明确无GPUforward/性能/真实KV证据。
 - 接续：plan/handoff-2026-10-14-scheduled-cache.md。05/06独立gate/真人资源仍外部条件；S0全绿前不启动S1，终局goal active。

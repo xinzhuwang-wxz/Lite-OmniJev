@@ -46,3 +46,5 @@ Blocked by: p0:04, 03
 2026-10-14 FULLgraph1024 GPU短测：并发10冷比2.584/2.551、2为3.190/3.188、3为3.045/3.047，均fail，四概率全部<.001；服务器已停止、教师resume004恢复，未做低收益gateway/off。报告s0-scheduled-native-graph-canaries-001.json。网关专用adapter已具备真实并发捕获/outerwall与work分离/API逐题概率绑定/拒绝重复case/JSON摘要roundtrip；48相关回归与78源mypy/lint/build通过，独立review中。只读调度定位之后才定下一GPU候选。
 
 2026-10-14官方CPU/真实ASGI联调准备发现新adapter写死q0..q9，与原冻结cache-probe-*不兼容；已先红后绿修复，显式保存完整qid序列并绑定测量和摘要，15回归及mypy/ruff通过。真实Linux官方processor+真实网关回放联调9.896秒exit0，8条件/44测量题/50含预热调用，输入/raw/API逐qid与JSON摘要保存通过；报告reports/s0-scheduled-gateway-official-cpu-replay-001.json明确synthetic HTTP envelope和cache metrics、无GPUforward/性能证据。候选树已在无自有服务时同步3a9a63d并真实冻结协议gateway validate exit0；教师DF源码不变。
+
+2026-10-14 async eager native GPU5.027秒短测完成，日志确认启用；两cold ratio2.3164/2.3335，四概率max2.36e-7、并发9/KV288覆盖媒体，仍fail；169427已TERM并把GPU交回教师005，不扩展gateway/off。报告s0-scheduled-native-async-canary-001.json。

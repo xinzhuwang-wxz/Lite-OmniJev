@@ -1,0 +1,96 @@
+{
+  "ratios": {
+    "cold": [
+      2.3164271445301194,
+      2.33347410207506
+    ],
+    "warm": [
+      7.0763554186865365,
+      8.239480977084728
+    ]
+  },
+  "max_distribution_differences_from_sequential": {
+    "raw_probabilities": 2.3597732778934954e-07,
+    "joint": 3.924759639910313e-09,
+    "conditional": 3.924774949481957e-09,
+    "p_U": 6.392766574959898e-10
+  },
+  "actual_max_inflight": 9,
+  "duration_seconds": 5.026758620515466,
+  "cached_tokens": [
+    0,
+    288,
+    352
+  ],
+  "s0_acceptance": false,
+  "status": "failed_native_on_latency_canary",
+  "exit_code": 1,
+  "ratio_threshold_inclusive": 2,
+  "probability_threshold_exclusive": 0.001,
+  "failures": [
+    "cold_ten_to_single_ratio_exceeds_two"
+  ],
+  "on_off_completed": false,
+  "gateway_completed": false,
+  "code_revision": "3a9a63daab17e2a7340823a83b8e12b1ee2997ef",
+  "decision": "Stopped async eager server169427; no expansion to gateway/off; resume teacher005 from3812",
+  "source_files": {
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/native-on-001.log": {
+      "sha256": "0cbbbc6ac74d95746f3fa6c5cdb9d6fcbeeaabaac0ae26dae963d533c7f15297",
+      "bytes": 57
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/native-on-001.json": {
+      "sha256": "c6b21d00b99fcbba1b6168c9ea7aec0acfa55cbab2fc8c00641675b2962b5104",
+      "bytes": 57755
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/server-on.pid": {
+      "sha256": "475c1ff9e9c0ef51fbe612afa5865efe734c0bfec2db604d6803bee78ef51c78",
+      "bytes": 7
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/server-on.log": {
+      "sha256": "7e9d27cd18b4a2452098e5185d21fbafe460bd87174582290eca155584a2c9b8",
+      "bytes": 28491
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/native-on-001.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/start-on.sh": {
+      "sha256": "3872f3ffed73295611b43415592c92edc9e0f3f991483b18a1e05f2fc7ca84dc",
+      "bytes": 1419
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/start-off.sh": {
+      "sha256": "d9aa1436604046eb154678eb35fcfe95ab8bc59be35140108ed04370e3372e7d",
+      "bytes": 1422
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/server-on.json": {
+      "sha256": "13473984590f955ea36773c000bbc2a01b7582b60cd974c1a0d5ddc9a8376088",
+      "bytes": 1862
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/gateway-validate-on-001.json": {
+      "sha256": "ad1a693735546a4172727d660ae3766e9f0a39ff03739011e3130c46af02b0ac",
+      "bytes": 1842
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/server-off.json": {
+      "sha256": "592092ea7512729ee4570220c3738c5cbe9874dbd6761e1a72f772824203a2bd",
+      "bytes": 1867
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/validate-on.json": {
+      "sha256": "ba838e354c4609b31a4cefd2679524eb09091c24f740327e09b086f626aa61e6",
+      "bytes": 650
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/live-binding-on-001.json": {
+      "sha256": "574f97c9adc20034f5af9a42c3a1ea0475b6a1f7345083d84588b77c7878c770",
+      "bytes": 1721
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/canary-summary-001.json": {
+      "sha256": "2242c456c751f11ffd456dcf6d51230d8dbf57b3b1c7abe9eb48b08ad5869d25",
+      "bytes": 524
+    },
+    "artifacts/s0-cache-scheduled-20261014/async-eager-001/validate-off.json": {
+      "sha256": "c426157cba5594cff08f5ce9aedb39283905a3c78f61cf199bb7b2f0598657e7",
+      "bytes": 650
+    }
+  },
+  "cost_usd": null
+}
