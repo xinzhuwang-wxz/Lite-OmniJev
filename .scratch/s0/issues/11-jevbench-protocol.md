@@ -20,6 +20,7 @@ Blocked by: p0:04, 01, 03
 - [x] 定向行为测试与ruff/mypy通过；输出后续模型实跑依赖和阻断，不在本票运行GPU。
 
 ## Evidence
+Evidence: reports/jevbench-adapter-validation-001.json; reports/jevbench-adapter-build-001.json; reports/jevbench-adapter-build-002.json; reports/jevbench-adapter-oracle-001.json
 已执行；规格见 `.scratch/s0/baseline-expansion-spec.md`。固定种子、源码/配置/数据hash、命令/退出码/耗时/成本必须留证；缺项不能pass。
 
 ## Out of scope
@@ -28,7 +29,7 @@ Blocked by: p0:04, 01, 03
 ## Comments
 2026-10-14主会话由s0:07展开：01/03技术前置已实测，02/04仍是S0总出口门槛但不阻塞该CPU独立闭环；用户已授权按原方案自主技术安排。与现有票概念核对后新增，不复制s0-data:01或05/06的人类/身份工作。
 
-2026-10-14已核八文件SHA和231行结构：139Choice/18离散Score/74Noul，全部合法数量与非空gold，35object state应确定性JSON呈现；无媒体引用。发现旧元数据误把48easy的group=null写成easy；已更正当前config/doc，旧收据不覆盖。147非空group、literal含null148，官方仅36original双行组用于paraphrase consistency，不是195场景准确率；Score实现argmax与docstring冲突已记录。来源为发布方运行前编写/审核声明，hard含模型作者不充人工双标。审计reports/jevbench-public-protocol-audit-001.json；输入适配/计分程序尚未实现，本票仍claimed。
+2026-10-14已核八文件SHA和231行结构：139Choice/18离散Score/74Noul，全部合法数量与非空gold，35object state应确定性JSON呈现；无媒体引用。发现旧元数据误把48easy的group=null写成easy；已更正当前config/doc，旧收据不覆盖。147非空group、literal含null148，官方仅36original双行组用于paraphrase consistency，不是195场景准确率；Score实现argmax与docstring冲突已记录。来源为发布方运行前编写/审核声明，hard含模型作者不充人工双标。审计reports/jevbench-public-protocol-audit-001.json；当时输入适配/计分程序未实现；本轮已由下列闭环完成。
 
 2026-10-14 CPU闭环完成：data/jevbench.py、eval/jevbench.py、scripts/s0_jevbench.py及7行为回归已整合。父会话使用已核八文件的公开源执行validate、build两遍及oracle score，均exit0；两遍231行SHA均11223d982606c0d26eadee412d4f1fbadfe29f1eeae8d9d75df8d446d803c75d。证据reports/jevbench-adapter-{validation,build,oracle}-001.json及build-002.json。oracle为公开expected生成的计分测试输入，100%只验证scorer，不是模型成绩；未用GPU。7 tests、ruff/format、82源mypy、uv build通过。
 后续实际模型基线须依赖s0:10兼容探针、固定全部231题输入/标签映射及相同模型模板/参数；每模型保存完整原始非U概率和pU再还原source labels计分。195场景教师口径仍未证实，不作为本票阻断或虚报匹配；此票完成的是独立公开协议，模型forward和质量准入留s0:07/08后续依赖。接续plan/handoff-2026-10-14-jevbench-cpu.md。
