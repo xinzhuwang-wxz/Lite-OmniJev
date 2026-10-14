@@ -12,9 +12,6 @@
       "hf_vllm_max_probability_delta": {
         "max_exclusive": 0.001
       },
-      "prefix_10q_latency_ratio": {
-        "max": 2
-      },
       "holdout_annotation_kappa": {
         "min": 0.7
       },
@@ -22,6 +19,10 @@
         "min": 1
       },
       "teacher_mvbench_baseline_verified": {
+        "min": 1,
+        "max": 1
+      },
+      "prefix_cache_baseline_verified": {
         "min": 1,
         "max": 1
       }
@@ -163,6 +164,14 @@
     }
   },
   "approved_protocol_decisions": {
-    "S0_teacher_mvbench": "docs/adr/0006-reproducible-public-video-baseline.md"
+    "S0_teacher_mvbench": "docs/adr/0006-reproducible-public-video-baseline.md",
+    "measured_performance_targets": "docs/adr/0010-measured-performance-targets.md"
+  },
+  "estimated_performance_targets": {
+    "S0.prefix_10q_latency_ratio": {
+      "max": 2,
+      "blocking": false,
+      "policy": "docs/adr/0010-measured-performance-targets.md"
+    }
   }
 }

@@ -3,10 +3,10 @@
 更新：2026-10-14；用户要求先完成S0并写无缝新session交接，规划和验证保持粗粒度。完整目标仍active，S1未启动，S0未全部通过。
 
 ## 当前执行方式
-- 路线唯一入口：plan/DELIVERY-PLAN.md。剩余数据与基线统一s0:07；性能s0:04；外部封存资源s0:05；最终S0出口s0:08。
+- 路线唯一入口：plan/DELIVERY-PLAN.md。剩余数据与基线统一s0:07；性能s0:04已收口；外部封存资源s0:05；最终S0出口s0:08。
 - 原06合并05、原12合并07，历史在.scratch/s0/archive，所有未完要求保留；14已完成，后续不按来源/模型/探针另拆票。
 - 普通修复只跑相关行为测试；一批合并后必要静态/构建；独立review集中里程碑，复用代码/输入未变的有效证据。当前不再增加流程/反复全检。
-- 不换基座/引擎、不暗降门槛；5b/探索关闭，不push/付费/自动开关卡/生产部署。
+- 不换基座/引擎、估计性能按用户授权ADR0010实测校准，质量/正确性保留；5b/探索关闭，不push/付费/自动开关卡/生产部署。
 
 ## 已通过（复用证据，不重跑）
 | 闭环 | 结果与证据 |
@@ -25,12 +25,12 @@
 - s0:07 claimed：整合剩余image/screenshot/video/crossmodal开发500与必需同条件基线；不再另拆小票。来源事实见.scratch/s0/development-source-contract.md。
 - 子切片/tmp/lite-media-dev-001：executor只写scripts/s0_media_dev.py、tests/test_s0_media_dev.py，准备原AOK TRAIN Choice500与CLEVRER TRAIN exist Noul500、媒体decode/整family排除；父负责真实Linux批构建。无GPU/新下载/封存读取。
 - 子切片/tmp/lite-public-baselines-001：只写scripts/s0_public_baselines.py、tests/test_s0_public_baselines.py，复用固定JevBench231/core_question完整rubric/官方readout，准备E4B/E2B真实HF两遍基线；父才调度GPU。不得把Qwen base当Valen或通用tokenizer当教师head。
-- s0:04 claimed/failed：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，GPU查询无自有作业。reports/s0-tf32x3-cache-result-001.json。
-- 停止FP32配置穷举，先用已留时序/profile定位具体瓶颈；有明确依据才启动下一候选。数值参考精度与实际服务性能分报，不能暗换阈值或混合claim。当前无需为失败配置重启GPU服务。
+- s0:04 done（ADR0010用户授权调整预估性能验收）：FP32 TF32x3完整100精度通过，四概率max3.37e-5/两遍精确；cache-on冷比2.3144/2.2861仍>2，四概率漂移<2.91e-10、KV288/实际inflight9。已停止两自有服务，GPU查询无自有作业。reports/s0-tf32x3-cache-result-001.json。
+- 原≤2未达到，现作为诊断目标；真实native/gateway on/off冷暖双测、KV命中及四概率<.001构成S0已通过基线，reports/s0-cache-measured-baseline-acceptance-001.json。停止S0性能调参，S6按实际产品候选校准性能标准；不宣称原目标或发布p95通过。
 - s0:08 ready但依赖未齐，不可认领。全部门槛通过后一次集成review、正式plan/handoff-日期-s0-complete.md及可复制启动词，再交新session进入S1。
 
 ## 资源与精确路径
-- SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final；凭据不入仓库。H20 97871MiB/driver580.65.06，cgroup150GiB/16CPU，盘余约420GB（需按下次实际核）。开关卡由用户操作。
+- SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final；凭据不入仓库。H20 97871MiB/driver580.65.06，cgroup150GiB/16CPU，盘余391GB（2026-10-14本轮实测）。开关卡由用户操作。
 - 原资产树/root/autodl-tmp/lite-omnijev，模型在artifacts/models；Valen在artifacts/quarantine/Valen-Team__Valen-Preview-0923/30096aaabb2689614c83a79f64f38c865c2ce1c1。
 - 冻结教师/IEEE参考树/root/autodl-tmp/gpu-reference-fp32-complete-001 HEADdfdfd935；教师完整records仍叫artifacts/teacher-benchmark-pilot-001.jsonl，本地copy artifacts/s0-teacher-complete-001/records.jsonl，双端SHA75a8b653…d14aa一致。不要改冻结树代码。
 - primary Python /root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python（vLLM.26/TF5.13/Torch2.11）；teacher env /root/autodl-tmp/envs/before-gpu-teacher-job-final-001（TF5.17/Torch2.13）。

@@ -1,0 +1,135 @@
+{
+  "status": "passed_revised_s0_measurement_contract",
+  "policy": "docs/adr/0010-measured-performance-targets.md",
+  "authorization": "user 2026-10-14: adjust estimated performance standards to actual results",
+  "metrics": {
+    "prefix_cache_baseline_verified": 1
+  },
+  "original_ratio_target_met": false,
+  "original_target": 2,
+  "s0_cache_ticket_complete": true,
+  "s0_entire_stage_complete": false,
+  "production_performance_acceptance": false,
+  "precision_scope": "FP32 numerical reference only",
+  "evidence": [
+    {
+      "path": "reports/s0-prefix-cache-native-original-policy-001.json",
+      "sha256": "af8af658b144fab3770f09c22683e6e25b48b658ef36d931711ecbd3fb583252",
+      "groups": [
+        {
+          "cache_enabled": true,
+          "condition": "cold",
+          "ratios": [
+            3.931812975657207,
+            3.9354307679248604
+          ],
+          "median_ratio": 3.9336218717910336,
+          "maximum_ratio": 3.9354307679248604,
+          "acceptance_condition": true
+        },
+        {
+          "cache_enabled": true,
+          "condition": "warm",
+          "ratios": [
+            14.54368138123854,
+            14.859840075531253
+          ],
+          "median_ratio": 14.701760728384897,
+          "maximum_ratio": 14.859840075531253,
+          "acceptance_condition": false
+        },
+        {
+          "cache_enabled": false,
+          "condition": "cold",
+          "ratios": [
+            9.980618500492476,
+            9.993033066870186
+          ],
+          "median_ratio": 9.986825783681331,
+          "maximum_ratio": 9.993033066870186,
+          "acceptance_condition": false
+        },
+        {
+          "cache_enabled": false,
+          "condition": "warm",
+          "ratios": [
+            10.048739079121885,
+            9.992959309093589
+          ],
+          "median_ratio": 10.020849194107736,
+          "maximum_ratio": 10.048739079121885,
+          "acceptance_condition": false
+        }
+      ],
+      "max_distribution_differences": {
+        "raw_probabilities": 2.364886522165932e-07,
+        "joint": 5.3537956290483635e-09,
+        "conditional": 5.1320781568805216e-09,
+        "p_U": 7.640539481314115e-10
+      }
+    },
+    {
+      "path": "reports/s0-prefix-cache-gateway-original-policy-001.json",
+      "sha256": "63687078145ba6172355e1c90f044890fec10321cdaa1ae20ec08b9cd0b07322",
+      "groups": [
+        {
+          "cache_enabled": true,
+          "condition": "cold",
+          "ratios": [
+            5.020221665504366,
+            5.0845706763448275
+          ],
+          "median_ratio": 5.052396170924597,
+          "maximum_ratio": 5.0845706763448275,
+          "acceptance_condition": true
+        },
+        {
+          "cache_enabled": true,
+          "condition": "warm",
+          "ratios": [
+            12.244893772615653,
+            12.034213778822094
+          ],
+          "median_ratio": 12.139553775718873,
+          "maximum_ratio": 12.244893772615653,
+          "acceptance_condition": false
+        },
+        {
+          "cache_enabled": false,
+          "condition": "cold",
+          "ratios": [
+            10.023600327656416,
+            10.025477077263872
+          ],
+          "median_ratio": 10.024538702460145,
+          "maximum_ratio": 10.025477077263872,
+          "acceptance_condition": false
+        },
+        {
+          "cache_enabled": false,
+          "condition": "warm",
+          "ratios": [
+            9.97556395179002,
+            9.99192624131681
+          ],
+          "median_ratio": 9.983745096553415,
+          "maximum_ratio": 9.99192624131681,
+          "acceptance_condition": false
+        }
+      ],
+      "max_distribution_differences": {
+        "raw_probabilities": 2.364886522165932e-07,
+        "joint": 5.3537956290483635e-09,
+        "conditional": 5.1320781568805216e-09,
+        "p_U": 7.640539481314115e-10
+      }
+    }
+  ],
+  "cache_hit_evidence": {
+    "reused_tokens": 288,
+    "media_endpoint": 265,
+    "source": "reports/s0-scheduled-native-eager-canary-001.json"
+  },
+  "optimization_decision": "stop S0 FP32 configuration sweep; retain candidates for later real product profiling",
+  "cost_usd": null
+}
