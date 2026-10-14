@@ -1,0 +1,112 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "blocker": null,
+  "command": [
+    "/root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python",
+    "-m",
+    "scripts.s0_gui_dev",
+    "--plan",
+    "/root/autodl-tmp/lite-omnijev/source-audit/stage3-source-audit/gui-odyssey/app-split-train-media-plan-under-19_5gb.json",
+    "--annotation-root",
+    "/root/autodl-tmp/s0-gui-dev-001/artifacts/annotations",
+    "--media-root",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb",
+    "--dev-out",
+    "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-b/dev.jsonl",
+    "--dev-ledger-out",
+    "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-b/dev-ledger.jsonl",
+    "--exclusion-ledger-out",
+    "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-b/exclusion.jsonl",
+    "--media-manifest-out",
+    "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-b/media.jsonl",
+    "--provenance-out",
+    "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-b/provenance.jsonl",
+    "--receipts-out",
+    "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-b/receipts.json",
+    "--report",
+    "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-b/report.json",
+    "--dev-count",
+    "500",
+    "--max-annotation-downloads",
+    "630"
+  ],
+  "protocol": "s0-gui-dev-v2",
+  "config": {
+    "protocol": "s0-gui-dev-v2",
+    "seed": 42,
+    "allocation_prefix": "s0-gui-dev-v1:42:",
+    "max_negative_attempts": 2000,
+    "max_packing_nodes": 10000,
+    "dev_count": 500,
+    "max_annotation_downloads": 630,
+    "max_download_workers": 8,
+    "download_timeout_seconds": 20,
+    "source_dataset": "hflqf88888/GUIOdyssey",
+    "source_revision": "61632d0f3f4d51d7e9561ce4f84347dd06b2019d",
+    "data_version": "gui-odyssey-train-screenshot-choice4-dev-v2",
+    "license": "CC-BY-4.0",
+    "config_sha256": "ca65fc2af1db85a21592f09f41d449d0c13cf4bfd8323d48b2ce7665ec6553b5"
+  },
+  "primitive_scope": {
+    "choice4_target_localization_only": true,
+    "score_covered": false,
+    "noul_covered": false,
+    "full_gui_action_generation_covered": false
+  },
+  "training_admitted": false,
+  "quality_gate": "not_run",
+  "gpu_used": false,
+  "holdout_accessed": false,
+  "cost": null,
+  "source": {
+    "media_plan_sha256": "661a56214ee442ae0c694b21c41b374fc02dad0ea1a962bb8d9638b3d393c0c4",
+    "annotation_receipts": {
+      "present": 630
+    },
+    "annotation_url_prefix": "https://huggingface.co/datasets/hflqf88888/GUIOdyssey/resolve/61632d0f3f4d51d7e9561ce4f84347dd06b2019d/annotations",
+    "source_dataset": "hflqf88888/GUIOdyssey",
+    "source_revision": "61632d0f3f4d51d7e9561ce4f84347dd06b2019d",
+    "license": "CC-BY-4.0",
+    "attribution": "hflqf88888/GUIOdyssey annotations and screenshots"
+  },
+  "split": {
+    "dev_items": 500,
+    "selected_gui_families": 500,
+    "all_train_gui_families": 1679,
+    "candidate_episodes_with_eligible_click": 500,
+    "scanned_episode_limit": 630,
+    "excluded_counts": {
+      "click_outside_bbox": 61,
+      "illegal_bbox": 84,
+      "insufficient_negative_boxes": 7,
+      "invalid bbox": 93,
+      "invalid click point": 10
+    },
+    "target_token_counts": {
+      "A": 127,
+      "B": 116,
+      "C": 127,
+      "D": 130
+    }
+  },
+  "outputs": {
+    "dev_jsonl_sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2",
+    "development_ledger_sha256": "50e5acbef525afc6b7f1facb1430f5da84042bf0d40239c5b1de047a679806aa",
+    "exclusion_ledger_sha256": "8419d9ee63882279f13d5668fa7de74fefde2e54dd07e1453d0179caabd58a78",
+    "media_manifest_sha256": "4d152e1843936f9413259a30dcd5ad0e83c65a3a8af096742f70c786fcddaa97",
+    "provenance_jsonl_sha256": "f6f664e1c2dcf6d6536e7a141ac707a4d87ebe2879cf278aec931911d492457c",
+    "download_receipts_sha256": "f6c2f761b4b7027f2407c6ec6a3a99cabc0d5ff9bd77e07deb0e91bd1ea575a3"
+  },
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "git_head": null,
+    "script_sha256": "2167a04d0d096ce2fefbbf144ecfc6415eb518d809461557a7ff92cdabdf0eb9"
+  },
+  "timing": {
+    "started_at": 1791990817.3846304,
+    "finished_at": 1791990847.5824976,
+    "duration_seconds": 30.197867155075073
+  }
+}

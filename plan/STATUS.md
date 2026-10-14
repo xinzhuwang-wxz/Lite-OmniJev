@@ -22,22 +22,20 @@
 | 六cohort gate工程 | ADR0009，dev3000合法gold/program truth、holdout6000×两人=12000判断，κ≥.7仅holdout；同item跨池漏洞已修复，合成CLI及独立CLEAR。真实资源未取得。 |
 
 ## s0:07当前完成与剩余
-- 六cohort各500已真实双构建/媒体验证通过：文本CLINC Choice、图像AOK Choice、截图GUI目标Choice4、音频Clotho一致Noul、视频CLEVRER exist Noul、跨模态image+audio合取Noul。均首primitive切片，不冒称所有任务分布。
+- 五cohort各500已真实双构建/媒体验证通过；截图v1因坐标捷径撤回，v2双构建exit0、哈希一致/500原family相同。原数据切片：文本CLINC Choice、图像AOK Choice、截图GUI目标Choice4、音频Clotho一致Noul、视频CLEVRER exist Noul、跨模态image+audio合取Noul。均首primitive切片，不冒称所有任务分布。
 - 截图固定前600标注仅497合法，补30固定TRAIN小标注达到500；筛选基于许可/格式/几何，不看模型分数。RGB实际decode通过。
 - 六公开模型JevBench231各双遍完成，reports/s0-public-baselines-table-001.json：E4B76.1905%、E2B63.6364%、OneJev4 75.7576%、27B83.1169%、教师85.7143%、Valen47.1861%。低成绩原样保留；专用head无U则null。
-- 开发GPU已核23/30支持对，另6个音频不支持组合明确unsupported且不填零。精确完成/剩余清单与分数唯一入口reports/s0-development-baselines-table-001.json；剩余7运行或排队。
+- 开发GPU已核24/24非截图支持对，六截图支持对待v2重测，另6个音频不支持组合明确unsupported。唯一矩阵入口reports/s0-development-baselines-table-001.json；旧截图成绩superseded。
 - 教师六cohort全部完成，各500×2精确；完整6000记录/3000对、model.exit=0及kernel收据，reports/s0-teacher-development-complete-001.json。
-- 统一dev排除清单两遍SHA相同：3000family节点/2500原始family/2000组件。跨模态复用原image/audio同池，未来train同时查family和媒体SHA。reports/s0-development-bundle-{001,002}.json；calibration/holdout分配仍pending。
+- v1历史统一dev排除清单继续生效，v2须追加并同时查两份，不得删除旧媒体别名。原清单两遍SHA相同：3000family节点/2500原始family/2000组件。跨模态复用原image/audio同池，未来train同时查family和媒体SHA。reports/s0-development-bundle-{001,002}.json；calibration/holdout分配仍pending。
 - s0:04 done：完整真实native/gateway cache-on/off冷暖双测、实际KV命中及四概率<.001；原≤2按ADR0010仅诊断目标。FP32 TF32x3失败候选停止，停止S0性能搜索，原失败证据保留；不宣称最终p95通过。
 - 07收拢后仍须全部S0依赖通过再认领08，一次集成验收及正式s0-complete交接；当前接续文档plan/handoff-2026-10-14-s0-cohorts.md。
 
-## 活跃作业（接手先核实际进程和终态）
-| 作业 | 控制与路径 | 判定边界 |
-|---|---|---|
-| 教师六cohort | /root/autodl-tmp/s0-development-final-001 HEAD0aec3eb；artifacts/teacher-development-001/result；model675330与watchdog48305已终止 | 六类6000记录/3000对精确；实际model.exit=0/kernel0，原timer控制退出137保留且注明。完整report passed，不重启。 |
-| 剩余学生video/crossmodal | 同树892905/run-development-queue-fla-002.py；artifacts/development-baselines-fla-002；27B video当前由watchdog765745临时接管上限3000秒，其余每job1800秒 | 旧scheduler391342已结束、当前E4B video正常exit0，500对精确/55.6%；kernel收据reports/s0-development-scheduler-handoff-001.json。当前27B child684037继续，892905仅暂停未来派发；实际median forward1.6336秒加媒体准备，1000题预计超原1800秒。watchdog在模型终态后恢复原scheduler正常采集退出并继续crossmodal，不覆盖原report/exit。新队列完成才写旧supervisor.finished；失败写旧queue-blocked。不要重启旧队列。 |
-| Valen开发 | /root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45；artifacts/valen-development-001/finished、video.exit=0及kernel收据齐全，原796345与227700均结束 | 四支持类各500×2已核：text35.8%、image66.4%、screenshot73.2%、video54.0%；audio/crossmodal明确unsupported。不重启。 |
-| 截图四学生 | 同树queue43477/run-screenshot-queue-003.py；artifacts/screenshot-baselines-003 | 教师退出释放显存，前三模型已提前与27B视频并行，启动前free≥24GiB；27B截图等free≥65GiB。原60167仅等待/无GPU记录已替换；各job1200秒，全部共享GPU质量专用。 |
+## 当前作业与恢复入口
+- 非截图学生队列892905已完成finished；E2B crossmodal50.4%、1000记录/500对精确已核。教师/Valen/video全部结束，不重启。
+- 截图v1结构捷径：无图无指令坐标规则497/500=99.4%，reports/s0-gui-coordinate-shortcut-v1-001.json。旧六模型截图成绩全部撤出当前矩阵，保留证据。queue43477及child343447已结束。
+- scripts/s0_gui_dev.py v2随机合法坐标修复7相关tests/ruff/mypy通过。真实CPU双构建/root/autodl-tmp/s0-gui-dev-v2-001/build.sh已exit0；产物artifacts/run-{a,b}逐字节一致，500原family保留、498原题/2题因合法几何重选；冻结旧坐标规则19/500=3.8%。630标注/媒体复用，无下载。
+- 核对后只重测六截图模型，其他模态不重跑；重绑cohort配置与统一dev排除账本。s0:07首条暂撤勾。
 
 - 所有共享GPU作业仅质量评测，耗时是诊断数据，不当隔离发布性能。
 - 官方FLA0.5.2单候选231×2质量/重复通过，warm诊断约2.505倍，reports/s0-qwen-fla-candidate-result-001.json。只在后续OneJev作业显式profile/固定wheelSHA启用，primary环境不变，旧baseline保留；不用较弱backend降低目标。
@@ -63,14 +61,3 @@
 - ADR0011仅proposal，等待用户明确答复：保持6000封存/12000真人判断/逐类κ≥.7与隔离不变，是否仅将资源截止S0移至S4放量前。未批准仍按S0硬门，不把性能授权当真人豁免。
 - 跨机/S6真机/额外预算/生产运营在对应节点处理，不提前制造细票或默认采购。GPU用完记录资源并通知用户关卡。
 - 历史详细状态在plan/archive/STATUS-before-matrix-consolidation-2026-10-14.md及更早归档，只作历史，不作当前调度源。
-
-
-OneJev4 video显式FLA profile已完整exit0，500×2实际输入/原始概率精确一致，86.2%，reports/s0-development-video-onejev-4b-fla-002.json；只作为本配置质量基线，不外推隔离时延。阶段0新增源码一次集中只读review在/tmp/lite-s0-review-001进行，与剩余GPU计算重叠，不逐子项审查。
-
-集中技术review已完成并关闭唯一P2（Valen模板TypeError回退），reports/s0-technical-code-review-001.md；历史3462条Valen记录全部显式关闭thinking，复用不重跑。修复后34相关tests、全仓ruff/335格式、95源码mypy、wheel/sdist均通过。后续仅新改动/失败扩大验证，不重复全检。
-
-原HTML规划复核：每模态3–5k校准集属于S5，不在S0提前建完整S5数据。07首条已澄清为当前train/dev账本及四池隔离、真实holdout依赖05；未来校准必须选择未训练family并查完整训练账本，不能事后删记录制造隔离。原S0真人门与S5数量均保留。
-
-新增E2B video49.8%/776.936秒、Valen video54.0%/1295.249秒，各500×2精确通过。Valen视频1000记录全部显式关闭thinking；四支持类别已全部完成。剩余9支持对：教师video/crossmodal、OneJev27 video、E4B/E2B crossmodal、四学生screenshot。
-
-教师完整开发成绩：text93.8%、image78.6%、screenshot89.8%、audio38.0%、video69.8%、crossmodal59.2%；对应六份cohort报告已附完整父作业退出0和实际TF5.17/Torch2.13环境。剩余7：27B video、E4B/E2B crossmodal、四学生screenshot。

@@ -1,6 +1,7 @@
 import binascii
 import hashlib
 import json
+import random
 import struct
 import zlib
 from pathlib import Path
@@ -241,6 +242,63 @@ def test_reports_blocker_when_not_enough_eligible_gui_items(
     assert report["blocker"].startswith("eligible GUI dev items")
 
 
-def test_negative_box_generation_stops_at_three_for_tiny_boxes() -> None:
-    boxes = gui_dev.candidate_negative_boxes((50, 50, 51, 51), (50, 50), width=200, height=200)
-    assert boxes == [(0, 0, 1, 1), (1, 0, 2, 1), (2, 0, 3, 1)]
+def assert_legal_negatives(
+    true_box: gui_dev.Box, point: gui_dev.Point, width: int, height: int
+) -> list[gui_dev.Box]:
+    boxes = gui_dev.candidate_negative_boxes(true_box, point, width=width, height=height)
+    assert len(boxes) == 3
+    assert boxes == gui_dev.candidate_negative_boxes(true_box, point, width=width, height=height)
+    for index, box in enumerate(boxes):
+        assert gui_dev.box_is_legal(box, width=width, height=height)
+        assert box[2] - box[0] == true_box[2] - true_box[0]
+        assert box[3] - box[1] == true_box[3] - true_box[1]
+        assert not gui_dev.contains(box, point)
+        assert not gui_dev.intersects(box, true_box)
+        assert all(not gui_dev.intersects(box, other) for other in boxes[:index])
+    return boxes
+
+
+def test_negative_box_generation_is_bounded_for_tiny_boxes(monkeypatch: Any) -> None:
+    calls = 0
+    original = random.Random.randint
+
+    def counted(self: random.Random, a: int, b: int) -> int:
+        nonlocal calls
+        calls += 1
+        return original(self, a, b)
+
+    monkeypatch.setattr(random.Random, "randint", counted)
+    assert_legal_negatives((50, 50, 51, 51), (50, 50), 10**9, 10**9)
+    assert calls <= 4 * gui_dev.MAX_NEGATIVE_ATTEMPTS
+
+
+def test_negative_boxes_do_not_share_the_old_origin_lattice() -> None:
+    rng = random.Random(731)
+    unique_off_lattice_gold = 0
+    all_negatives_on_lattice = 0
+    for _ in range(200):
+        bw, bh = rng.randint(5, 35), rng.randint(5, 35)
+        x, y = rng.randint(0, 200 - bw), rng.randint(0, 200 - bh)
+        true_box = (x, y, x + bw, y + bh)
+        boxes = assert_legal_negatives(true_box, (x + bw // 2, y + bh // 2), 200, 200)
+        aligned = [box[0] % bw == 0 and box[1] % bh == 0 for box in boxes]
+        all_negatives_on_lattice += all(aligned)
+        unique_off_lattice_gold += all(aligned) and (x % bw != 0 or y % bh != 0)
+    assert all_negatives_on_lattice == 0
+    assert unique_off_lattice_gold == 0
+
+
+def test_tight_packings_have_a_bounded_fallback(monkeypatch: Any) -> None:
+    monkeypatch.setattr(gui_dev, "MAX_NEGATIVE_ATTEMPTS", 0)
+    assert_legal_negatives((0, 0, 10, 10), (5, 5), 20, 20)
+    assert gui_dev.candidate_negative_boxes((5, 5, 15, 15), (10, 10), width=20, height=20) == []
+    assert gui_dev.candidate_negative_boxes((0, 0, 40, 40), (25, 25), width=60, height=60) == []
+
+
+def test_packing_budget_exhaustion_is_explicit(monkeypatch: Any) -> None:
+    import pytest
+
+    monkeypatch.setattr(gui_dev, "MAX_NEGATIVE_ATTEMPTS", 0)
+    monkeypatch.setattr(gui_dev, "MAX_PACKING_NODES", 0)
+    with pytest.raises(gui_dev.GuiDevError, match="packing_search_budget_exhausted"):
+        gui_dev.candidate_negative_boxes((0, 0, 10, 10), (5, 5), width=20, height=20)

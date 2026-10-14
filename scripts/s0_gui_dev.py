@@ -26,7 +26,10 @@ from eval.sealed_gate import DevelopmentRecord
 from scripts.gui_odyssey_media import REPO_ID, REVISION
 
 DATASET = REPO_ID
-DATA_VERSION = "gui-odyssey-train-screenshot-choice4-dev-v1"
+DATA_VERSION = "gui-odyssey-train-screenshot-choice4-dev-v2"
+PROTOCOL = "s0-gui-dev-v2"
+MAX_NEGATIVE_ATTEMPTS = 2000
+MAX_PACKING_NODES = 10000
 SEED = 42
 DEV_COUNT = 500
 MAX_ANNOTATION_DOWNLOADS = 630
@@ -323,24 +326,73 @@ def candidate_negative_boxes(true_box: Box, point: Point, *, width: int, height:
     box_height = true_box[3] - true_box[1]
     if box_width <= 0 or box_height <= 0 or box_width > width or box_height > height:
         return []
-    xs = list(range(0, width - box_width + 1, max(1, box_width)))
-    ys = list(range(0, height - box_height + 1, max(1, box_height)))
-    if xs[-1] != width - box_width:
-        xs.append(width - box_width)
-    if ys[-1] != height - box_height:
-        ys.append(height - box_height)
+    if width * height < 4 * box_width * box_height:
+        return []
+    seed = sha256_bytes(canonical_json([PROTOCOL, SEED, true_box, point, width, height]).encode())
+    rng = random.Random(int(seed, 16))
+    max_x, max_y = width - box_width, height - box_height
     boxes: list[Box] = []
-    for y in ys:
-        for x in xs:
-            box = (x, y, x + box_width, y + box_height)
-            if contains(box, point) or intersects(box, true_box):
-                continue
-            if any(intersects(box, existing) for existing in boxes):
-                continue
-            boxes.append(box)
-            if len(boxes) == 3:
-                return boxes
-    return boxes
+    for _ in range(MAX_NEGATIVE_ATTEMPTS):
+        x, y = rng.randint(0, max_x), rng.randint(0, max_y)
+        box = (x, y, x + box_width, y + box_height)
+        if contains(box, point) or intersects(box, true_box):
+            continue
+        if any(intersects(box, existing) for existing in boxes):
+            continue
+        boxes.append(box)
+        if len(boxes) == 3:
+            return boxes
+
+    # Tight packings can have only a few legal integer origins. Search the
+    # boundaries of free origin rectangles, never the screenshot's pixel grid.
+    def free_origins(placed: list[Box]) -> list[Box]:
+        regions = [(0, 0, max_x, max_y)]  # Inclusive origin bounds.
+        forbidden = [
+            (b[0] - box_width + 1, b[1] - box_height + 1, b[2] - 1, b[3] - 1)
+            for b in [true_box, *placed]
+        ]
+        forbidden.append((point[0] - box_width, point[1] - box_height, *point))
+        for fx1, fy1, fx2, fy2 in forbidden:
+            remaining = []
+            for x1, y1, x2, y2 in regions:
+                ix1, iy1 = max(x1, fx1), max(y1, fy1)
+                ix2, iy2 = min(x2, fx2), min(y2, fy2)
+                if ix1 > ix2 or iy1 > iy2:
+                    remaining.append((x1, y1, x2, y2))
+                    continue
+                for region in (
+                    (x1, y1, ix1 - 1, y2),
+                    (ix2 + 1, y1, x2, y2),
+                    (ix1, y1, ix2, iy1 - 1),
+                    (ix1, iy2 + 1, ix2, y2),
+                ):
+                    if region[0] <= region[2] and region[1] <= region[3]:
+                        remaining.append(region)
+            regions = remaining
+        return regions
+
+    nodes = 0
+
+    def pack(placed: list[Box]) -> list[Box] | None:
+        nonlocal nodes
+        if len(placed) == 3:
+            return placed
+        nodes += 1
+        if nodes > MAX_PACKING_NODES:
+            raise GuiDevError("negative_box_packing_search_budget_exhausted")
+        origins: set[Point] = set()
+        for x1, y1, x2, y2 in free_origins(placed):
+            origins.update(((x1, y1), (x1, y2), (x2, y1), (x2, y2)))
+            origins.add((rng.randint(x1, x2), rng.randint(y1, y2)))
+        ordered_origins = sorted(origins)
+        rng.shuffle(ordered_origins)
+        for x, y in ordered_origins:
+            result = pack([*placed, (x, y, x + box_width, y + box_height)])
+            if result is not None:
+                return result
+        return None
+
+    return pack([]) or []
 
 
 def option_order(episode_id: str, step: int, boxes: list[Box]) -> tuple[list[Box], str]:
@@ -617,7 +669,7 @@ def build_report(
         "exit_code": exit_code,
         "blocker": blocker,
         "command": command,
-        "protocol": "s0-gui-dev-v1",
+        "protocol": PROTOCOL,
         "config": {**config, "config_sha256": sha256_bytes(canonical_json(config).encode())},
         "primitive_scope": {
             "choice4_target_localization_only": True,
@@ -649,9 +701,11 @@ def build_report(
 
 def config_payload(*, dev_count: int, max_annotation_downloads: int) -> dict[str, Any]:
     return {
-        "protocol": "s0-gui-dev-v1",
+        "protocol": PROTOCOL,
         "seed": SEED,
         "allocation_prefix": ALLOCATION_PREFIX,
+        "max_negative_attempts": MAX_NEGATIVE_ATTEMPTS,
+        "max_packing_nodes": MAX_PACKING_NODES,
         "dev_count": dev_count,
         "max_annotation_downloads": max_annotation_downloads,
         "max_download_workers": MAX_DOWNLOAD_WORKERS,

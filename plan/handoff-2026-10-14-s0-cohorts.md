@@ -1,3 +1,5 @@
+> 最新覆盖：截图v1坐标捷径497/500，旧截图成绩superseded；43477/343447已结束。v2双构建exit0待核，入口plan/STATUS.md；只重跑六截图模型，其余24支持对已完成不重跑。
+
 # S0接续入口（尚未完成）
 
 2026-10-14更新。先读AGENTS.md、plan/STATUS.md、plan/DELIVERY-PLAN.md和.scratch/s0/issues/07-expand-baselines.md。STATUS是最新调度事实，保留全部历史失败，不重跑有效证据。

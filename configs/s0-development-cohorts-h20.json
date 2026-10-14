@@ -15,8 +15,8 @@
     },
     {
       "name": "screenshot",
-      "data": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/dev.jsonl",
-      "report": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/report.json",
+      "data": "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/dev.jsonl",
+      "report": "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/report.json",
       "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots"
     },
     {
