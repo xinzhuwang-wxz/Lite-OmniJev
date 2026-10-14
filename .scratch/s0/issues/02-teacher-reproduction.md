@@ -4,9 +4,9 @@ ID: s0:02
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: main-session-gpu-transition
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04, 01
 
 ## What to build
@@ -36,3 +36,5 @@ Blocked by: p0:04, 01
 2026-10-14：公开视频1606媒体/1800行/27997唯一帧PNG完整CPU冻结通过，reports/public-video-protocol-freeze-001.json；不含GPU预测/质量。正在补teacher runner/恢复/分母/两遍逐行一致CPU可测代码，真实两遍评测仍pending。
 
 2026-10-14 CPU准备收口：固定teacher runner及真实官方CPU样本、严格分母/两遍/resume/code与模型hash绑定已合入；reports/s0-teacher-eval-official-processor-001.json和TF5.17比较报告仅CPU。真实benchmark两遍/质量门槛尚未运行。
+
+2026-10-14：01技术准入独立验收通过，主会话认领完整效果复现。pilot已保留1653条，两遍完整5600条尚未完成；首遍MMAU1000/620正确62.0%在原窗口内，其余部分不判质量。先暂停作业作独占缓存短测，再按同源码/配置/记录显式--resume；不丢弃失败题、不改分母。

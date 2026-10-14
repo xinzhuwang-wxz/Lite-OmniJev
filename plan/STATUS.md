@@ -9,13 +9,13 @@
 - primary026/TF5.13/Torch2.11，audio extra已完整锁定/pip check0。视频官方归一化参数及同Linuxprocessor/HF100逐字节输入等价已通过。FP32仅数值参考；BF16训练不变，最终服务精度/性能另验。
 - 原BF16两遍raw漂移0.091862、HF/native差0.136941失败仍留；FP32仅官方config副本四个dtype字段，TRITON_F32_DEFAULT=ieee和TF32关闭解决参考误差，不更改原权重/模板/阈值。
 - 验收native PID94918/18001与gateway PID130178/18000已发送TERM；本机转发55174→18000暂保留，服务不再保证可用。实时/proc+health绑定在artifacts/s0-parity-full100-20261014/live-process-binding-001.json，无签名remote attestation，不伪称独立签名证明。两服务仅开发数值验收，非生产。
-- 教师公开text/audio/video两遍真实forward通过/44.564秒；原tensor格式→safehead的GPU功能参考正在补，s0:01仍未关。严禁正常进程加载pickle或执行上游module。
+- 教师公开text/audio/video两遍真实forward通过/44.564秒；原tensor格式→safehead的GPU功能参考47.418秒exit0：四tensorhash、5counts边界及三类两遍logits/probs精确；31回归通过，s0:01原README声明/安全GPU链已获独立verifier PASS，已关闭；s0:02主会话认领效果复现。严禁正常进程加载pickle或执行上游module。
 - 教师benchmark原pilot900秒退出124，保留1397条；MMAU首遍1000题620正确/62.0%，在63.1±2pp内；MVBench首遍397题仅部分，不作完整baseline。两遍完整质量门槛仍pending。
-- 已从1397记录显式--resume继续，PID145623，timeout监督145622/最多3600秒；脚本DF树artifacts/resume-teacher-002.sh，日志teacher-benchmark-resume-002.log/exit，输出仍teacher-benchmark-pilot-001.json及.jsonl。不得启动第二份或改冻结源码，不重算已有题。
-- 原生子代理：parity_verifier已完成03只读复核，树/tmp/lite-s0-parity-verifier-0ca8ff1；teacher_reference仅独立参考脚本，树/tmp/lite-teacher-head-reference-0ca8ff1。父会话统一票/STATUS/整合。
+- 已从1397记录显式--resume续到1653条后主会话SIGINT安全暂停（exit1），原PID145623已退出；脚本DF树artifacts/resume-teacher-002.sh，日志teacher-benchmark-resume-002.log/exit，输出仍teacher-benchmark-pilot-001.json及.jsonl。不得启动第二份或改冻结源码，不重算已有题。
+- 原生子代理：parity_verifier已完成03只读复核，树/tmp/lite-s0-parity-verifier-0ca8ff1；teacher_reference已交付独立参考脚本，树/tmp/lite-teacher-head-reference-0ca8ff1。父会话统一票/STATUS/整合。
 - 当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
-下一步：03已关票；s0:04已认领/同Linux协议freeze通过，仅等待独占GPU测量；执行安全head GPU参考；教师断点作业结束后独占GPU测cache-on/off及真实网关顺序10题。未知费用填null，不冒称时延/质量或最终Playground达标。
+下一步：03已关票；s0:04已认领/同Linux协议freeze通过，已暂停教师并独占GPU启动cache-on PID146066；接着native/gateway on/off顺序10题，然后从1653教师断点恢复。safehead GPU参考已通过。未知费用填null，不冒称时延/质量或最终Playground达标。
 
 ## 当前目标与决策
 - 用户已完成开卡，原无卡准备收口；现在复用现有模型、数据、环境及P0产物推进真实GPU闭环，不代开关卡或改租赁。
@@ -41,7 +41,7 @@
 - offline-prep:04 done：当前无卡可自主完成准备已验收，`reports/project-before-gpu-readiness-002.json` ready_to_switch_to_gpu_mode=true；资源受限CPU检查显式列为切换后首批前置，失败证据不改写，S0门槛未通过。
 - offline-prep:05/06 done：pytest锁修复、真实Linux教师音频CPU适配。
 - s0:09 done：官方HF100题×2输入相同；4原始family变体不是100独立质量样本。`reports/s0-prepare-integrated-acceptance-002.json`，仅CPU输入。
-- s0:01 blocked（无活跃owner）：安全head/loader/teacher forward/benchmark runner代码与CPU控制已合入；全13文件23,955,723,321B已Linux校验；GPU真实概率/复现门槛pending，不关整票。
+- s0:01 done：13文件23,955,723,321B/原README声明/隔离转换/真实GPU原值功能参考/安全拒绝回归/独立复核全部通过，仅技术准入。s0:02 claimed：完整效果复现待两遍5600条，当前1653条checkpoint。
 - s0:03 done：真实FP32/IEEE正式100、网关100和模型浏览器及独立复核通过；历史BF16失败保留，门槛不变。
 - s0:05/06 blocked：独立封存gate身份及两真人6000题/12000判断、κ≥.7资源缺口。不得agent自标/合成κ。
 - S0全绿前禁止S1；delivery:01未完成，原生goal不complete。
@@ -77,7 +77,7 @@
 - primary026 LinuxHF完整100题首次通过exit0/94.092秒；第二遍到90/100后137，未通过Linux重跑；native官方类诊断creating_processor137/零cases。`reports/primary026-linux-cpu-acceptance-001.json`，Mac/Linux60case有编码/张量摘要差异照留，不冒充跨机器模型等价。
 - 原生网关向HTTP后端发包前释放已完成摘要的大HF媒体Tensor，保留精确input IDs/canonical bytes/summary绑定；真实weakref先红后绿、94网关/client测试与独立review通过。此改进不解决2GiB全部资源门槛；新两视频batch137，无完成标记。
 - FFmpeg stdin消费真实复现并修复：probe/decode子进程DEVNULL，实时q输入视频先红后绿，26媒体测试通过；不让SSH管线下一行命令被吞。
-- 无卡收尾时作业均结束；当前有卡活跃作业以顶部本节为准，禁止重复启动。
+- 无卡收尾时作业均结束；当前有卡活跃作业以顶部接续节为准，禁止重复启动。
 
 ## 待用户/外部条件
 - 用户已完成切换；2GiB历史资源阻塞已按首批补验通过，不再要求切换或重跑无卡路径。独立gate/真人标注仍需外部条件。

@@ -1,0 +1,66 @@
+{
+  "schema": "lite-omnijev.teacher-technical-admission.v1",
+  "recorded_at": "2026-10-14T09:51:15.694366+00:00",
+  "status": "asset_technical_admitted",
+  "teacher_quality_admitted": false,
+  "s0_stage_acceptance": false,
+  "source_repo": "akhilaaa3/Jev-Omni",
+  "revision": "5addda86ddee081a68fb067477ea100c221b8917",
+  "publisher_declaration": {
+    "source": "artifacts/teacher-technical-admission-001/README.md",
+    "sha256": "42995cac5590c55bc79bdedd427ccfb0d717ed1d183ddf402a7e8d6ea3dc0aa9",
+    "weight_license": "apache-2.0",
+    "base_model": "google/gemma-4-12B-it",
+    "fine_tuning_questions": 30000,
+    "declares_independent_of_TypeSafe_AI": true,
+    "declares_not_trained_on_Jev_output": true,
+    "full_training_source_list_published": false,
+    "scope": "Publisher model-card declaration only; not independently audited training data provenance or per-source training license clearance. No Jev API/JEV-27B assets used by project."
+  },
+  "model_asset_readiness": "13 required files, 23955723321 bytes verified in prior CPU record and again by actual GPU safe loader before from_pretrained",
+  "reference_method": "isolated tensor-only original conversion => four tensor bytehash equality => independent audited original formula under identical BF16 autocast => actual GPU head and probabilities exact",
+  "direct_raw_pickle_gpu_reference": false,
+  "normal_runtime_pickle_load": false,
+  "upstream_module_execution": false,
+  "real_forward": {
+    "report": "reports/teacher-head-reference-gpu-001.json",
+    "exit_code": 0,
+    "elapsed_seconds": 47.418,
+    "modalities": [
+      "text",
+      "audio",
+      "video"
+    ],
+    "passes": 2,
+    "logits_and_probabilities_exact": true,
+    "boundary_counts": [
+      2,
+      3,
+      4,
+      20,
+      256
+    ]
+  },
+  "rejection_regression": {
+    "command": "CUDA_VISIBLE_DEVICES=empty teacher/job/python -m pytest tests/test_teacher_head.py tests/test_teacher_inference.py -q --tb=short",
+    "passed": 31,
+    "seconds": 1.39,
+    "exit_code": 0
+  },
+  "independent_review": {
+    "agent": "/root/parity_verifier",
+    "verdict": "PASS to close s0:01 asset/security technical admission; GPU reference and original README artifact independently inspected",
+    "blocking_gaps": []
+  },
+  "cost_usd": null,
+  "evidence_sha256": {
+    "reports/teacher-head-conversion.json": "0249a9a9b9eef1b5c5e7f2c5e1d00b27667d8ffb0be771b23b69649fa213d40d",
+    "reports/teacher-head-isolation.json": "aaa0a4400043f7ce76031b991c9fe3d9d1b06e10d5d8f51c7b7cbe5381718489",
+    "reports/teacher-head-security-closure.md": "122a711f2e1c329eea1ac798a15132ea43cabe1c65b1fba3621e515d426ea56d",
+    "reports/teacher-forward-cpu-005.json": "867eb50047cc2a66dc2aea89a783874b51cecc1f5be03c109d7e34660285c3d3",
+    "reports/teacher-head-reference-gpu-001.json": "6ed41e00e64b14a6fd0db9ed344cf3aabc1032c00d5afd28636d52edc418362a",
+    "configs/project-model-assets.json": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac",
+    "artifacts/teacher-technical-admission-001/teacher-regression-001.log": "2e5575aa6015c233ab534afd98e8f2211618ec71965afd5ed39978fe89d11c2c",
+    "artifacts/teacher-technical-admission-001/README.md": "42995cac5590c55bc79bdedd427ccfb0d717ed1d183ddf402a7e8d6ea3dc0aa9"
+  }
+}

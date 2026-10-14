@@ -4,8 +4,8 @@ ID: s0:01
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: main-session-gpu-transition
+Execution: done
+Owner: none
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04
 
@@ -13,14 +13,15 @@ Blocked by: p0:04
 将 Jev-Omni 的已固定来源核验、完整权重和 head 转换连成可审计加载闭环；本票通过仅表示技术/来源准入，效果资格等待02。
 
 ## Acceptance criteria
-- [ ] 核对固定 revision、LICENSE/NOTICE、发布者训练来源声明和逐文件SHA；未知许可、缺必需head、禁止模型/标签来源拒绝并报告。
-- [ ] 独立教师环境锁定，不覆盖学生环境；保存实际文件/磁盘/显存估算，超已有资源或预算先阻塞，不自动付费。
-- [ ] 隔离无网络、无密钥环境审计 tensor-only head；禁止任意pickle执行/unsafe globals，受限转换保存输入输出哈希与工具版本，核对键/shape/dtype/有限值及逐tensor数值等价。
-- [ ] 正常推理只加载safetensors，经适配器小样本比较原格式受控参考与转换后输出等价；不得跳head、改变教师结构或给学生加head。无法安全完成则保留blocked/ADR待决策。
-- [ ] 真实小样本推理报告完整概率/答案映射；覆盖错hash、损坏head、缺键拒绝行为；资产admitted与teacher_quality_admitted分开。
+- [x] 核对固定 revision、LICENSE/NOTICE、发布者训练来源声明和逐文件SHA；未知许可、缺必需head、禁止模型/标签来源拒绝并报告。
+- [x] 独立教师环境锁定，不覆盖学生环境；保存实际文件/磁盘/显存估算，超已有资源或预算先阻塞，不自动付费。
+- [x] 隔离无网络、无密钥环境审计 tensor-only head；禁止任意pickle执行/unsafe globals，受限转换保存输入输出哈希与工具版本，核对键/shape/dtype/有限值及逐tensor数值等价。
+- [x] 正常推理只加载safetensors，经适配器小样本比较原格式受控参考与转换后输出等价；不得跳head、改变教师结构或给学生加head。无法安全完成则保留blocked/ADR待决策。
+- [x] 真实小样本推理报告完整概率/答案映射；覆盖错hash、损坏head、缺键拒绝行为；资产admitted与teacher_quality_admitted分开。
 
 ## Evidence
-真实GPU验收未完成；CPU子集证据见下文，不能按最初冻结文字误判为缺代码。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
+Evidence: reports/teacher-technical-admission-gpu-001.json；reports/teacher-head-reference-gpu-001.json。以下为保留历史，最终结论见末条。
+早期真实GPU验收未完成；现已完成本票技术准入，教师质量仍由02判定。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
 
 ## Out of scope
 大规模教师打标、OneJev整库准入、替换学生或自增预算。
@@ -40,3 +41,5 @@ Blocked by: p0:04
 2026-10-14模式切换收口：当前无卡可自主完成部分已整合并验证，见readiness002及GPU-transition交接。2GiB资源受限检查移入切换后首批前置，这是用户明确澄清的调度顺序；本票真实模型/概率/阶段验收仍blocked，未改变门槛。
 
 2026-10-14有卡：主会话认领GPU技术准入收口。真实公开text/audio/video两遍forward/完整有限归一化概率通过；下一验证以隔离转换原tensor哈希链和独立原公式验证safehead实际GPU输出，不在正常进程加载原pickle，不执行上游module。教师效果仍由02独立判定。
+
+2026-10-14技术准入关闭：真实GPU受控原值hash链+审计公式与safehead输出完全一致（47.418秒/exit0，text/audio/video各两遍、counts2/3/4/20/256），没有rawpickle GPU载入或上游module执行；31项CPU安全/拒绝回归通过。固定README原文SHA42995cac...，发布者Apache2/Gemma4-12B-it/30k fine-tuning及非Jev输出声明已独立复核；未发布完整训练源，不因此放行原始数据许可。独立verifier最终PASS资产/安全技术准入，teacher_quality_admitted=false、S0整体不通过；效果由02完整两遍benchmark判定。

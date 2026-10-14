@@ -1,0 +1,523 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "exit_code": 0,
+  "started_utc": "2026-10-14T09:47:57.777614+00:00",
+  "scope": "Converted Jev-Omni teacher head GPU equivalence against a controlled formula reference; not a benchmark or quality gate",
+  "method_limits": {
+    "raw_pickle_loaded": false,
+    "direct_raw_pickle_gpu_reference": false,
+    "upstream_module_executed": false,
+    "claim": "The original-value side is the isolated conversion report's tensor bytehash chain plus the audited formula, not a direct GPU load of head.pt."
+  },
+  "seed": 0,
+  "offline": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "tf32_disabled": true,
+  "selected_manifest_indices": [
+    0,
+    60,
+    80
+  ],
+  "model_forward_run": true,
+  "model_backbone_loaded": true,
+  "student_head_used": false,
+  "trust_remote_code": false,
+  "local_files_only": true,
+  "runtime": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "safetensors": "0.8.0"
+  },
+  "gpu_environment": {
+    "cuda_available": true,
+    "torch_cuda": "13.0",
+    "device_count": 1,
+    "current_device": 0,
+    "device_name": "NVIDIA H20",
+    "capability": [
+      9,
+      0
+    ],
+    "nvidia_smi_exit_code": 0,
+    "nvidia_smi": [
+      "580.65.06, NVIDIA H20, 97871"
+    ]
+  },
+  "cost_usd": null,
+  "code_version": "1f3c14065d362ec7b0ac226732d43e7a81f5f161",
+  "script_sha256": "7a58806ab95ed216197c3f46f7c33de5f1e1064da24d34c2f47db42433448c7a",
+  "manifest_sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+  "provenance": {
+    "manifest": {
+      "path": "configs/project-model-assets.json",
+      "sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac"
+    },
+    "conversion_report": {
+      "path": "/root/autodl-tmp/lite-omnijev/reports/teacher-head-conversion.json",
+      "sha256": "0249a9a9b9eef1b5c5e7f2c5e1d00b27667d8ffb0be771b23b69649fa213d40d"
+    },
+    "head_spec": {
+      "path": "configs/teacher-head-jev-omni-spec.json",
+      "sha256": "4c0ce3a5056eea90ef320e4642456622aa6cdebb0a6c7cf53092da5f6aaed89b"
+    },
+    "model_config": {
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/models/akhilaaa3__Jev-Omni/5addda86ddee081a68fb067477ea100c221b8917/config.json",
+      "sha256": "346145528d5ee228965be07212dc3ef1bc442629b12ba71b92528ea57540faa5"
+    },
+    "decision_config": {
+      "path": "/root/autodl-tmp/lite-omnijev/artifacts/quarantine/teacher/5addda86ddee081a68fb067477ea100c221b8917/decision_config.json",
+      "sha256": "2cf5e5781871ed86be130abe0fccda8dbad35f32c6deebe08cd8f92f5f452200"
+    }
+  },
+  "head_hash_chain": {
+    "source_repo": "akhilaaa3/Jev-Omni",
+    "source_revision": "5addda86ddee081a68fb067477ea100c221b8917",
+    "source_path": "/input/head.pt",
+    "source_size": 3966079,
+    "source_sha256": "8c81edecd733f7db327604803c14cf9ecbee53d2af055eeb09f78b64bcbf2638",
+    "output_sha256": "e1e3e2b65281f5694c345613a278d561bc0d9faf389a5c81b95dd60f66cdf9a3",
+    "jev_omni.py_sha256": "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0",
+    "decision_config.json_sha256": "2cf5e5781871ed86be130abe0fccda8dbad35f32c6deebe08cd8f92f5f452200",
+    "tensors": {
+      "linear.bias": {
+        "shape": [
+          256
+        ],
+        "dtype": "torch.float32",
+        "sha256": "64fc4d7415e749ede5eb9d15d4a6be3f23791275e371bdeb6ca4017fee2ff8a7"
+      },
+      "linear.weight": {
+        "shape": [
+          256,
+          3840
+        ],
+        "dtype": "torch.float32",
+        "sha256": "77d888094e18126a43ececd4160a08031c636d20c27eb4607afe42e3818e0ea1"
+      },
+      "mu": {
+        "shape": [
+          1,
+          3840
+        ],
+        "dtype": "torch.float32",
+        "sha256": "100aa1863b2aa4b4822a7d6972e0640adf484fbe54ab716ca2ce16a26c963b53"
+      },
+      "sd": {
+        "shape": [
+          1,
+          3840
+        ],
+        "dtype": "torch.float32",
+        "sha256": "347e5b5b79d3a91fa8cad72702a3185812e4f45f2aad31dba49f5e1fbc3130a9"
+      }
+    },
+    "raw_pickle_loaded_by_this_script": false,
+    "upstream_module_executed_by_this_script": false,
+    "load_file_device": "cpu"
+  },
+  "source_formula_reference": {
+    "jev_omni.py_sha256": "11d761b0b6cefc8aac29757f43af4b2b02af8f9b6c6dad19834c0b14538180f0",
+    "formula": "F.linear((features.float()-mu)/sd, linear.weight, linear.bias) then mask arange(256)>=counts with -1e30",
+    "source_audit_scope": "formula supplied by main session read-only source audit; this script does not execute upstream custom code"
+  },
+  "head_loaded_with": "safetensors.torch.load_file",
+  "boundary_checks": [
+    {
+      "count": 2,
+      "shape": [
+        1,
+        256
+      ],
+      "visible_all_finite": true,
+      "masked_all_sentinel": true,
+      "actual_head_vs_reference": {
+        "shape": [
+          1,
+          256
+        ],
+        "dtype": "torch.bfloat16",
+        "exact_equal": true,
+        "max_finite_abs_delta": 0.0,
+        "actual_sha256": "d8015977e76b645c84b4fe4d81d64bf7de707489675eb5c31dd4445a4c8ae326",
+        "reference_sha256": "d8015977e76b645c84b4fe4d81d64bf7de707489675eb5c31dd4445a4c8ae326"
+      }
+    },
+    {
+      "count": 3,
+      "shape": [
+        1,
+        256
+      ],
+      "visible_all_finite": true,
+      "masked_all_sentinel": true,
+      "actual_head_vs_reference": {
+        "shape": [
+          1,
+          256
+        ],
+        "dtype": "torch.bfloat16",
+        "exact_equal": true,
+        "max_finite_abs_delta": 0.0,
+        "actual_sha256": "8ada7492f0ed3b4042ecc6e508c904b302f3f96420bf78c57638a4b32577f60d",
+        "reference_sha256": "8ada7492f0ed3b4042ecc6e508c904b302f3f96420bf78c57638a4b32577f60d"
+      }
+    },
+    {
+      "count": 4,
+      "shape": [
+        1,
+        256
+      ],
+      "visible_all_finite": true,
+      "masked_all_sentinel": true,
+      "actual_head_vs_reference": {
+        "shape": [
+          1,
+          256
+        ],
+        "dtype": "torch.bfloat16",
+        "exact_equal": true,
+        "max_finite_abs_delta": 0.0,
+        "actual_sha256": "66852a2a795d0ccd11f377a29b81215af6cf7129c7d557f49edd45929046b6c5",
+        "reference_sha256": "66852a2a795d0ccd11f377a29b81215af6cf7129c7d557f49edd45929046b6c5"
+      }
+    },
+    {
+      "count": 20,
+      "shape": [
+        1,
+        256
+      ],
+      "visible_all_finite": true,
+      "masked_all_sentinel": true,
+      "actual_head_vs_reference": {
+        "shape": [
+          1,
+          256
+        ],
+        "dtype": "torch.bfloat16",
+        "exact_equal": true,
+        "max_finite_abs_delta": 0.0,
+        "actual_sha256": "a85a631464e809d89449b2bcaed77902d8c5fee4cb893f6882d3e4cd80e4cf73",
+        "reference_sha256": "a85a631464e809d89449b2bcaed77902d8c5fee4cb893f6882d3e4cd80e4cf73"
+      }
+    },
+    {
+      "count": 256,
+      "shape": [
+        1,
+        256
+      ],
+      "visible_all_finite": true,
+      "masked_all_sentinel": true,
+      "actual_head_vs_reference": {
+        "shape": [
+          1,
+          256
+        ],
+        "dtype": "torch.bfloat16",
+        "exact_equal": true,
+        "max_finite_abs_delta": 0.0,
+        "actual_sha256": "87a66283e2269bef1409b5e0b2e154f868132d8f930c6971d5d2a06f48c338f0",
+        "reference_sha256": "87a66283e2269bef1409b5e0b2e154f868132d8f930c6971d5d2a06f48c338f0"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "public-prepare-text-00",
+      "modality": "text",
+      "source_primitive": "choice",
+      "option_count": 2,
+      "iterations": [
+        {
+          "iteration": 0,
+          "prediction_index": 0,
+          "probabilities": [
+            0.9989515542984009,
+            0.001048469333909452
+          ],
+          "reference_probabilities": [
+            0.9989515542984009,
+            0.001048469333909452
+          ],
+          "probability_metrics": {
+            "actual": [
+              0.9989515542984009,
+              0.001048469333909452
+            ],
+            "reference": [
+              0.9989515542984009,
+              0.001048469333909452
+            ],
+            "exact_equal": true,
+            "max_abs_delta": 0.0,
+            "sum_actual": 1.0000000236323103,
+            "sum_reference": 1.0000000236323103,
+            "all_finite": true
+          },
+          "logit_metrics": {
+            "shape": [
+              1,
+              256
+            ],
+            "dtype": "torch.bfloat16",
+            "exact_equal": true,
+            "max_finite_abs_delta": 0.0,
+            "actual_sha256": "b7fd13af56eef444bc6be0448af79d1412d7f08714078ddfdcd9cbcc8b1c8caa",
+            "reference_sha256": "b7fd13af56eef444bc6be0448af79d1412d7f08714078ddfdcd9cbcc8b1c8caa"
+          },
+          "feature_sha256": "5cfda0c5e61ec72eec935fab76039b9d94028d5820069812b3f0820cca2d996b",
+          "counts": [
+            2
+          ]
+        },
+        {
+          "iteration": 1,
+          "prediction_index": 0,
+          "probabilities": [
+            0.9989515542984009,
+            0.001048469333909452
+          ],
+          "reference_probabilities": [
+            0.9989515542984009,
+            0.001048469333909452
+          ],
+          "probability_metrics": {
+            "actual": [
+              0.9989515542984009,
+              0.001048469333909452
+            ],
+            "reference": [
+              0.9989515542984009,
+              0.001048469333909452
+            ],
+            "exact_equal": true,
+            "max_abs_delta": 0.0,
+            "sum_actual": 1.0000000236323103,
+            "sum_reference": 1.0000000236323103,
+            "all_finite": true
+          },
+          "logit_metrics": {
+            "shape": [
+              1,
+              256
+            ],
+            "dtype": "torch.bfloat16",
+            "exact_equal": true,
+            "max_finite_abs_delta": 0.0,
+            "actual_sha256": "b7fd13af56eef444bc6be0448af79d1412d7f08714078ddfdcd9cbcc8b1c8caa",
+            "reference_sha256": "b7fd13af56eef444bc6be0448af79d1412d7f08714078ddfdcd9cbcc8b1c8caa"
+          },
+          "feature_sha256": "5cfda0c5e61ec72eec935fab76039b9d94028d5820069812b3f0820cca2d996b",
+          "counts": [
+            2
+          ]
+        }
+      ],
+      "exact_repeatability": true
+    },
+    {
+      "id": "public-prepare-audio-00",
+      "modality": "audio",
+      "source_primitive": "noul",
+      "option_count": 2,
+      "iterations": [
+        {
+          "iteration": 0,
+          "prediction_index": 1,
+          "probabilities": [
+            0.028007520362734795,
+            0.9719924926757812
+          ],
+          "reference_probabilities": [
+            0.028007520362734795,
+            0.9719924926757812
+          ],
+          "probability_metrics": {
+            "actual": [
+              0.028007520362734795,
+              0.9719924926757812
+            ],
+            "reference": [
+              0.028007520362734795,
+              0.9719924926757812
+            ],
+            "exact_equal": true,
+            "max_abs_delta": 0.0,
+            "sum_actual": 1.000000013038516,
+            "sum_reference": 1.000000013038516,
+            "all_finite": true
+          },
+          "logit_metrics": {
+            "shape": [
+              1,
+              256
+            ],
+            "dtype": "torch.bfloat16",
+            "exact_equal": true,
+            "max_finite_abs_delta": 0.0,
+            "actual_sha256": "f3408b329bde28c78db5c363b618c4663547dffe1266acc2c28dcb5f05448d8c",
+            "reference_sha256": "f3408b329bde28c78db5c363b618c4663547dffe1266acc2c28dcb5f05448d8c"
+          },
+          "feature_sha256": "78567762592e70f7ecb42c46b1aae5460bb922ecc061f00ae7c8dee97e9a10d6",
+          "counts": [
+            2
+          ]
+        },
+        {
+          "iteration": 1,
+          "prediction_index": 1,
+          "probabilities": [
+            0.028007520362734795,
+            0.9719924926757812
+          ],
+          "reference_probabilities": [
+            0.028007520362734795,
+            0.9719924926757812
+          ],
+          "probability_metrics": {
+            "actual": [
+              0.028007520362734795,
+              0.9719924926757812
+            ],
+            "reference": [
+              0.028007520362734795,
+              0.9719924926757812
+            ],
+            "exact_equal": true,
+            "max_abs_delta": 0.0,
+            "sum_actual": 1.000000013038516,
+            "sum_reference": 1.000000013038516,
+            "all_finite": true
+          },
+          "logit_metrics": {
+            "shape": [
+              1,
+              256
+            ],
+            "dtype": "torch.bfloat16",
+            "exact_equal": true,
+            "max_finite_abs_delta": 0.0,
+            "actual_sha256": "f3408b329bde28c78db5c363b618c4663547dffe1266acc2c28dcb5f05448d8c",
+            "reference_sha256": "f3408b329bde28c78db5c363b618c4663547dffe1266acc2c28dcb5f05448d8c"
+          },
+          "feature_sha256": "78567762592e70f7ecb42c46b1aae5460bb922ecc061f00ae7c8dee97e9a10d6",
+          "counts": [
+            2
+          ]
+        }
+      ],
+      "exact_repeatability": true
+    },
+    {
+      "id": "public-prepare-video-00",
+      "modality": "video",
+      "source_primitive": "score",
+      "option_count": 3,
+      "iterations": [
+        {
+          "iteration": 0,
+          "prediction_index": 0,
+          "probabilities": [
+            0.986470639705658,
+            0.007186890114098787,
+            0.006342408247292042
+          ],
+          "reference_probabilities": [
+            0.986470639705658,
+            0.007186890114098787,
+            0.006342408247292042
+          ],
+          "probability_metrics": {
+            "actual": [
+              0.986470639705658,
+              0.007186890114098787,
+              0.006342408247292042
+            ],
+            "reference": [
+              0.986470639705658,
+              0.007186890114098787,
+              0.006342408247292042
+            ],
+            "exact_equal": true,
+            "max_abs_delta": 0.0,
+            "sum_actual": 0.9999999380670488,
+            "sum_reference": 0.9999999380670488,
+            "all_finite": true
+          },
+          "logit_metrics": {
+            "shape": [
+              1,
+              256
+            ],
+            "dtype": "torch.bfloat16",
+            "exact_equal": true,
+            "max_finite_abs_delta": 0.0,
+            "actual_sha256": "0c213b77d7ee47aaf0fd82420032da36514b63099a983d21ad0e68529e3531c3",
+            "reference_sha256": "0c213b77d7ee47aaf0fd82420032da36514b63099a983d21ad0e68529e3531c3"
+          },
+          "feature_sha256": "285671af7d1fe7b4c3a4607432064fb1839cc3812289d63ed198e4717e637f24",
+          "counts": [
+            3
+          ]
+        },
+        {
+          "iteration": 1,
+          "prediction_index": 0,
+          "probabilities": [
+            0.986470639705658,
+            0.007186890114098787,
+            0.006342408247292042
+          ],
+          "reference_probabilities": [
+            0.986470639705658,
+            0.007186890114098787,
+            0.006342408247292042
+          ],
+          "probability_metrics": {
+            "actual": [
+              0.986470639705658,
+              0.007186890114098787,
+              0.006342408247292042
+            ],
+            "reference": [
+              0.986470639705658,
+              0.007186890114098787,
+              0.006342408247292042
+            ],
+            "exact_equal": true,
+            "max_abs_delta": 0.0,
+            "sum_actual": 0.9999999380670488,
+            "sum_reference": 0.9999999380670488,
+            "all_finite": true
+          },
+          "logit_metrics": {
+            "shape": [
+              1,
+              256
+            ],
+            "dtype": "torch.bfloat16",
+            "exact_equal": true,
+            "max_finite_abs_delta": 0.0,
+            "actual_sha256": "0c213b77d7ee47aaf0fd82420032da36514b63099a983d21ad0e68529e3531c3",
+            "reference_sha256": "0c213b77d7ee47aaf0fd82420032da36514b63099a983d21ad0e68529e3531c3"
+          },
+          "feature_sha256": "285671af7d1fe7b4c3a4607432064fb1839cc3812289d63ed198e4717e637f24",
+          "counts": [
+            3
+          ]
+        }
+      ],
+      "exact_repeatability": true
+    }
+  ],
+  "finished_utc": "2026-10-14T09:48:45.195392+00:00",
+  "elapsed_seconds": 47.418
+}
