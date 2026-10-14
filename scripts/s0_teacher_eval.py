@@ -9,15 +9,23 @@ loaded in ``--mode real-forward`` and remains CUDA-gated by
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
+import os
+import platform
+import time
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from eval.teacher_benchmarks import (
+    MMAU_EXPECTED_ROWS,
     BenchmarkExample,
+    MVBench_EXPECTED_ROWS,
     build_benchmark_processor_inputs,
+    canonical_json,
     file_sha256,
     load_mmau_examples,
     load_mvbench_examples,
@@ -27,10 +35,24 @@ from eval.teacher_benchmarks import (
 )
 from scripts.assets import write_json
 from train.teacher_inference import (
+    DEFAULT_HEAD_CONVERSION_REPORT,
+    DEFAULT_HEAD_SPEC,
+    DEFAULT_MODEL_ASSET_MANIFEST,
+    DEFAULT_MODEL_DIR,
+    DEFAULT_SAFE_HEAD,
+    DEFAULT_SOURCE_DIR,
     PreparedTeacherInput,
     TeacherForwardResult,
     load_teacher_forward_bundle,
+    teacher_forward_readiness_report,
 )
+
+ERROR_CODES: dict[type[BaseException], str] = {
+    FileExistsError: "report_exists_without_resume",
+    ValueError: "validation_failed",
+    RuntimeError: "runtime_failed",
+    OSError: "io_failed",
+}
 
 
 class _FakeTensor:
@@ -47,7 +69,7 @@ class FakeProcessor:
             "return_tensors": "pt",
             "enable_thinking": False,
         }:
-            raise ValueError("unexpected teacher processor call shape")
+            raise ValueError("unexpected_teacher_processor_call_shape")
         content = messages[0]["content"]
         media_parts = sum(1 for part in content if part["type"] != "text")
         return {"input_ids": _FakeTensor(), "media_parts": [None] * media_parts}
@@ -64,7 +86,7 @@ class FakeTeacherForward:
         options: Sequence[str],
     ) -> TeacherForwardResult:
         if len(options) != prepared.option_count:
-            raise ValueError("fake forward option count mismatch")
+            raise ValueError("fake_forward_option_count_mismatch")
         weights = [float(index + 1) for index in range(len(options))]
         total = sum(weights)
         probabilities = [value / total for value in weights]
@@ -110,7 +132,46 @@ def _all_examples(groups: dict[str, list[BenchmarkExample]]) -> list[BenchmarkEx
 
 def _refuse_report_overwrite(path: Path, *, resume: bool) -> None:
     if path.exists() and not resume:
-        raise FileExistsError(f"refusing to overwrite existing report: {path}")
+        raise FileExistsError("report_exists_without_resume")
+
+
+def _runtime_metadata(started: float) -> dict[str, Any]:
+    return {
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "machine": platform.machine(),
+        "processor": platform.processor(),
+        "hardware": {
+            "cpu_count": os.cpu_count(),
+            "machine": platform.machine(),
+            "processor": platform.processor(),
+        },
+        "pid": os.getpid(),
+        "elapsed_seconds": round(time.monotonic() - started, 3),
+        "cost_usd": 0.0,
+    }
+
+
+def _sha256_or_missing(path: Path) -> str:
+    return file_sha256(path) if path.exists() else "missing"
+
+
+def _code_hashes() -> dict[str, str]:
+    paths = {
+        "runner": Path(__file__),
+        "eval_teacher_benchmarks": Path("eval/teacher_benchmarks.py"),
+        "train_teacher_inference": Path("train/teacher_inference.py"),
+        "train_teacher_media": Path("train/teacher_media.py"),
+        "eval_public_video_protocol": Path("eval/public_video_protocol.py"),
+    }
+    return {name: _sha256_or_missing(path) for name, path in paths.items()}
+
+
+def _sanitize_error(error: BaseException) -> dict[str, str]:
+    return {
+        "error_type": type(error).__name__,
+        "error_code": ERROR_CODES.get(type(error), "unhandled_exception"),
+    }
 
 
 def _preflight_media_samples(
@@ -124,6 +185,8 @@ def _preflight_media_samples(
     forward = FakeTeacherForward()
     report: dict[str, Any] = {
         "fake_processor_used": True,
+        "processor_fixture": "fake_processor_control_flow_only",
+        "official_processor_used": False,
         "model_forward_run": False,
         "samples": {},
     }
@@ -164,13 +227,116 @@ def _preflight_media_samples(
     return report
 
 
-def _write_final_report(path: Path, report: dict[str, Any]) -> None:
+def _write_final_report(path: Path, report: dict[str, Any], *, started_monotonic: float) -> None:
     report["finished_utc"] = datetime.now(UTC).isoformat()
+    report["runtime"].update(_runtime_metadata(started_monotonic))
     write_json(path, report)
     print(json.dumps({"status": report["status"], "exit_code": report["exit_code"]}))
 
 
+def _enforce_real_forward_guards(
+    args: argparse.Namespace, examples: dict[str, list[BenchmarkExample]]
+) -> None:
+    if args.benchmark != "all":
+        raise ValueError("real_forward_requires_all_benchmarks")
+    if args.limit_mmau or args.limit_mvbench:
+        raise ValueError("real_forward_requires_full_denominators")
+    if not math.isfinite(args.probability_tolerance) or args.probability_tolerance != 0.0:
+        raise ValueError("real_forward_requires_exact_probability_match")
+    if len(examples.get("mmau", [])) != MMAU_EXPECTED_ROWS:
+        raise ValueError("real_forward_mmau_denominator_mismatch")
+    if len(examples.get("mvbench", [])) != MVBench_EXPECTED_ROWS:
+        raise ValueError("real_forward_mvbench_denominator_mismatch")
+
+
+def _teacher_binding(args: argparse.Namespace, *, report: dict[str, Any]) -> dict[str, Any]:
+    preprocess = {
+        "seed": 0,
+        "dtype_policy": "cuda_bfloat16_backbone_float32_head_probability_float64_json",
+        "thinking_disabled": True,
+        "audio_pcm_sample_rate": 16000,
+        "video_source": "canonical_png_16_frames_no_linux_mp4_redecode",
+        "probability_tolerance": args.probability_tolerance,
+    }
+    if args.mode == "fake-forward":
+        return {
+            "mode": "fake-forward",
+            "fake_forward_version": "deterministic_index_weighted_v2",
+            "shared_code_hashes": _code_hashes(),
+            "preprocess": preprocess,
+        }
+    kwargs = {
+        "protocol_source_dir": args.protocol_source_dir or DEFAULT_SOURCE_DIR,
+        "model_dir": args.model_dir or DEFAULT_MODEL_DIR,
+        "model_asset_manifest": args.model_asset_manifest or DEFAULT_MODEL_ASSET_MANIFEST,
+        "head_path": args.head or DEFAULT_SAFE_HEAD,
+        "spec_path": args.head_spec or DEFAULT_HEAD_SPEC,
+        "conversion_report": args.head_conversion_report or DEFAULT_HEAD_CONVERSION_REPORT,
+    }
+    readiness = teacher_forward_readiness_report(
+        protocol_source_dir=kwargs["protocol_source_dir"],
+        model_dir=kwargs["model_dir"],
+        model_asset_manifest=kwargs["model_asset_manifest"],
+        head_path=kwargs["head_path"],
+        spec_path=kwargs["spec_path"],
+        conversion_report=kwargs["conversion_report"],
+    )
+    report["teacher_readiness"] = {
+        key: readiness.get(key)
+        for key in (
+            "status",
+            "exit_code",
+            "model_forward_run",
+            "model_backbone_loaded",
+            "trust_remote_code",
+            "local_files_only",
+            "use_safetensors_for_model",
+            "use_safetensors_for_head",
+            "cuda_available",
+        )
+        if key in readiness
+    }
+    model_assets = readiness.get("model_assets", {}) if isinstance(readiness, Mapping) else {}
+    protocol_source = readiness.get("protocol_source", {}) if isinstance(readiness, Mapping) else {}
+    head = readiness.get("head", {}) if isinstance(readiness, Mapping) else {}
+    return {
+        "mode": "real-forward",
+        "model_dir": str(kwargs["model_dir"]),
+        "model_asset_manifest": str(kwargs["model_asset_manifest"]),
+        "model_source_revision": model_assets.get("source_revision"),
+        "model_asset_sha256": hashlib.sha256(
+            canonical_json(model_assets.get("files", {}))
+        ).hexdigest(),
+        "model_asset_bytes_verified": model_assets.get("bytes_verified"),
+        "head_path": str(kwargs["head_path"]),
+        "head_sha256": head.get("sha256"),
+        "teacher_source_revision": protocol_source.get("source_revision"),
+        "teacher_source_sha256": hashlib.sha256(
+            canonical_json(protocol_source.get("files", {}))
+        ).hexdigest(),
+        "shared_code_hashes": _code_hashes(),
+        "preprocess": preprocess,
+    }
+
+
+def _load_real_forward(args: argparse.Namespace) -> Any:
+    kwargs = {
+        key: value
+        for key, value in {
+            "protocol_source_dir": args.protocol_source_dir,
+            "model_dir": args.model_dir,
+            "model_asset_manifest": args.model_asset_manifest,
+            "head_path": args.head,
+            "spec_path": args.head_spec,
+            "conversion_report": args.head_conversion_report,
+        }.items()
+        if value is not None
+    }
+    return load_teacher_forward_bundle(**kwargs)
+
+
 def main(argv: list[str] | None = None) -> int:
+    started_monotonic = time.monotonic()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--mode", choices=["cpu-preflight", "fake-forward", "real-forward"], required=True
@@ -210,32 +376,44 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--head-conversion-report", type=Path)
     args = parser.parse_args(argv)
 
-    _refuse_report_overwrite(args.output, resume=args.resume)
-    config = json.loads(args.config.read_text())
-    args.mmau_parquet = args.mmau_parquet or _default_mmau_parquet(config)
-    examples = _load_examples(args, config)
-    all_examples = _all_examples(examples)
-
     report = report_preamble(mode=args.mode)
     report.update(
         {
             "status": "running",
             "exit_code": 1,
             "benchmark": args.benchmark,
-            "config_sha256": file_sha256(args.config),
-            "runner_code_sha256": file_sha256(Path(__file__)),
-            "example_sets": {name: summarize_examples(rows) for name, rows in examples.items()},
-            "total_rows_selected": len(all_examples),
-            "limits": {"mmau": args.limit_mmau, "mvbench": args.limit_mvbench},
-            "full_denominator_available": {
-                "mmau": len(examples.get("mmau", [])) in {0, 1000},
-                "mvbench": len(examples.get("mvbench", [])) in {0, 1800},
+            "runtime": {
+                "started_monotonic_seconds": started_monotonic,
+                "seed": 0,
+                "hardware": {},
             },
+            "code_sha256": _code_hashes(),
+            "release_or_stage_acceptance": False,
             "report_contains_prompt_option_or_label_text": False,
         }
     )
-
+    forward: Any | None = None
     try:
+        _refuse_report_overwrite(args.output, resume=args.resume)
+        config = json.loads(args.config.read_text())
+        args.mmau_parquet = args.mmau_parquet or _default_mmau_parquet(config)
+        examples = _load_examples(args, config)
+        all_examples = _all_examples(examples)
+        report.update(
+            {
+                "config_sha256": file_sha256(args.config),
+                "runner_code_sha256": file_sha256(Path(__file__)),
+                "example_sets": {name: summarize_examples(rows) for name, rows in examples.items()},
+                "total_rows_selected": len(all_examples),
+                "limits": {"mmau": args.limit_mmau, "mvbench": args.limit_mvbench},
+                "full_denominator_available": {
+                    "mmau": len(examples.get("mmau", [])) in {0, MMAU_EXPECTED_ROWS},
+                    "mvbench": len(examples.get("mvbench", [])) in {0, MVBench_EXPECTED_ROWS},
+                },
+            }
+        )
+        if args.mode == "real-forward":
+            _enforce_real_forward_guards(args, examples)
         if args.mode == "cpu-preflight":
             report["media_preflight"] = _preflight_media_samples(
                 examples=examples,
@@ -244,26 +422,17 @@ def main(argv: list[str] | None = None) -> int:
                 sample_video=args.sample_video,
                 ffmpeg_binary=args.ffmpeg_binary,
             )
-            report["status"] = "passed_cpu_preflight_no_model_forward"
+            report["status"] = "passed_cpu_preflight_no_model_forward_fake_processor"
             report["exit_code"] = 0
         else:
             if args.mode == "fake-forward":
-                forward: Any = FakeTeacherForward()
-                report["forward"] = {"mode": "fake", "model_forward_run": False}
-            else:
-                kwargs = {
-                    key: value
-                    for key, value in {
-                        "protocol_source_dir": args.protocol_source_dir,
-                        "model_dir": args.model_dir,
-                        "model_asset_manifest": args.model_asset_manifest,
-                        "head_path": args.head,
-                        "spec_path": args.head_spec,
-                        "conversion_report": args.head_conversion_report,
-                    }.items()
-                    if value is not None
+                forward = FakeTeacherForward()
+                report["forward"] = {
+                    "mode": "fake",
+                    "model_forward_run": False,
+                    "release_or_stage_acceptance": False,
                 }
-                forward = load_teacher_forward_bundle(**kwargs)
+            else:
                 report["gpu_seconds"] = "measured_by_outer_runner"
                 report["forward"] = {"mode": "real_cuda"}
             binding = {
@@ -277,8 +446,11 @@ def main(argv: list[str] | None = None) -> int:
                 "mmau_parquet_sha256": file_sha256(args.mmau_parquet)
                 if args.benchmark in {"mmau", "all"}
                 else None,
-                "runner_code_sha256": file_sha256(Path(__file__)),
+                "teacher": _teacher_binding(args, report=report),
             }
+            if args.mode == "real-forward":
+                forward = _load_real_forward(args)
+            assert forward is not None
             forward_summary = run_two_pass_forward(
                 forward=forward,
                 examples=all_examples,
@@ -287,20 +459,36 @@ def main(argv: list[str] | None = None) -> int:
                 binding=binding,
                 probability_tolerance=args.probability_tolerance,
                 ffmpeg_binary=args.ffmpeg_binary,
+                resume=args.resume,
+                release_or_stage_candidate=args.mode == "real-forward",
             )
             report["two_pass"] = forward_summary
-            report["status"] = (
-                "passed_two_pass_teacher_eval"
-                if forward_summary["two_pass_identical"]
-                else "failed_two_pass_teacher_eval"
+            report["release_or_stage_acceptance"] = bool(
+                forward_summary["release_or_stage_acceptance"]
             )
-            report["exit_code"] = 0 if forward_summary["two_pass_identical"] else 1
+            if args.mode == "fake-forward":
+                report["status"] = "passed_fake_forward_control_flow_not_acceptance"
+                report["exit_code"] = 0 if forward_summary["two_pass_identical"] else 1
+            else:
+                report["status"] = (
+                    "passed_real_forward_release_gate"
+                    if report["release_or_stage_acceptance"]
+                    else "failed_real_forward_release_gate"
+                )
+                report["exit_code"] = 0 if report["release_or_stage_acceptance"] else 1
     except Exception as error:
         report["status"] = "failed"
         report["exit_code"] = 1
-        report["error_type"] = type(error).__name__
-        report["reason"] = str(error)[:400]
-    _write_final_report(args.output, report)
+        report.update(_sanitize_error(error))
+    finally:
+        close = getattr(forward, "close", None)
+        if callable(close):
+            try:
+                close()
+                report["forward_closed"] = True
+            except Exception:
+                report["forward_closed"] = False
+        _write_final_report(args.output, report, started_monotonic=started_monotonic)
     return int(report["exit_code"])
 
 

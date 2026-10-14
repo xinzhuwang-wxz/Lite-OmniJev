@@ -19,6 +19,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
+from eval.public_video_protocol import REFERENCE_SHA as PUBLIC_MVBENCH_REFERENCE_SHA256
+from eval.public_video_protocol import TASKS as PUBLIC_MVBENCH_TASKS
+from eval.public_video_protocol import references as public_video_references
 from train.teacher_inference import (
     PreparedTeacherInput,
     TeacherForwardResult,
@@ -29,20 +32,17 @@ from train.teacher_inference import (
 )
 
 SCHEMA_VERSION = 1
-MVBECH_REFERENCE_SHA256 = "4530b25b34e464958d26d3f4b01abd73a4ebe53aa287702c5206048524e43efb"
+MVBECH_REFERENCE_SHA256 = PUBLIC_MVBENCH_REFERENCE_SHA256
+MVBench_REFERENCE_SHA256 = PUBLIC_MVBENCH_REFERENCE_SHA256
 MMAU_EXPECTED_ROWS = 1000
+MMAU_SCORE_TARGET = 0.631
+MMAU_SCORE_TOLERANCE = 0.02
 MVBench_EXPECTED_ROWS = 1800
-MVBench_TASKS = (
-    "Action Sequence",
-    "Action Prediction",
-    "Unexpected Action",
-    "Object Interaction",
-    "Object Shuffle",
-    "Action Localization",
-    "Action Count",
-    "State Change",
-    "Character Order",
-)
+MVBench_TASKS = PUBLIC_MVBENCH_TASKS
+EXPECTED_ROWS_BY_BENCHMARK = {
+    "mmau-test-mini": MMAU_EXPECTED_ROWS,
+    "mvbench-public-9task": MVBench_EXPECTED_ROWS,
+}
 
 
 class TeacherForward(Protocol):
@@ -178,6 +178,60 @@ def _task_metadata_paths(config: Mapping[str, Any], metadata_dir: Path) -> dict[
     return result
 
 
+def _manifest_rows_by_reference(
+    *, config: Mapping[str, Any], metadata_dir: Path, manifest_rows: Sequence[Mapping[str, Any]]
+) -> tuple[list[dict[str, Any]], str]:
+    expected = public_video_references(dict(config), metadata_dir)
+    if len(expected) != len(manifest_rows):
+        raise ValueError("mvbench_manifest_reference_count_mismatch")
+    bound = []
+    for expected_row, manifest_row in zip(expected, manifest_rows, strict=True):
+        row_index_value = manifest_row.get("row_index")
+        if not isinstance(row_index_value, int):
+            raise ValueError("mvbench_row_index_missing")
+        identity = {
+            "task_json_sha256": manifest_row.get("task_json_sha256"),
+            "row_index": row_index_value,
+            "video": manifest_row.get("video"),
+        }
+        if "start" in expected_row or "end" in expected_row:
+            identity["start"] = manifest_row.get("start")
+            identity["end"] = manifest_row.get("end")
+        if identity != expected_row:
+            raise ValueError("mvbench_manifest_reference_identity_mismatch")
+        frames = manifest_row.get("frames")
+        if not isinstance(frames, list) or len(frames) != 16:
+            raise ValueError("mvbench_requires_exactly_16_frames")
+        indices = [int(frame.get("index")) for frame in frames]
+        if list(manifest_row.get("indices", indices)) != indices:
+            raise ValueError("mvbench_frame_indices_mismatch")
+        for frame in frames:
+            if not isinstance(frame.get("png"), str) or not frame["png"]:
+                raise ValueError("mvbench_frame_png_path_missing")
+            for field in ("png_sha256", "RGB24_sha256"):
+                value = frame.get(field)
+                if not isinstance(value, str) or len(value) != 64:
+                    raise ValueError("mvbench_frame_hash_missing")
+        source_sha256 = manifest_row.get("source_sha256")
+        if not isinstance(source_sha256, str) or len(source_sha256) != 64:
+            raise ValueError("mvbench_source_sha256_missing")
+        bound.append(
+            {
+                "task": manifest_row.get("task"),
+                "public_row_id": manifest_row.get("public_row_id"),
+                "reference": expected_row,
+                "media": manifest_row.get("media"),
+                "source_sha256": source_sha256,
+                "width": manifest_row.get("width"),
+                "height": manifest_row.get("height"),
+                "frame_indices": indices,
+                "frame_png_sha256": [frame["png_sha256"] for frame in frames],
+                "frame_rgb24_sha256": [frame["RGB24_sha256"] for frame in frames],
+            }
+        )
+    return expected, hashlib.sha256(canonical_json(bound)).hexdigest()
+
+
 def load_mvbench_examples(
     *,
     frame_manifest: Path,
@@ -185,12 +239,15 @@ def load_mvbench_examples(
     config_path: Path,
 ) -> list[BenchmarkExample]:
     manifest = json.loads(frame_manifest.read_text())
-    if manifest.get("reference_sha256") != MVBECH_REFERENCE_SHA256:
+    if manifest.get("reference_sha256") != MVBench_REFERENCE_SHA256:
         raise ValueError("mvbench_reference_hash_mismatch")
     rows = manifest.get("rows")
     if not isinstance(rows, list) or len(rows) != MVBench_EXPECTED_ROWS:
         raise ValueError("mvbench_manifest_row_count_mismatch")
     config = json.loads(config_path.read_text())
+    expected_reference, binding_sha256 = _manifest_rows_by_reference(
+        config=config, metadata_dir=metadata_dir, manifest_rows=rows
+    )
     metadata_paths = _task_metadata_paths(config, metadata_dir)
     metadata: dict[str, list[dict[str, Any]]] = {}
     for sha, path in metadata_paths.items():
@@ -202,15 +259,17 @@ def load_mvbench_examples(
         metadata[sha] = task_rows
     examples = []
     seen_ids: set[str] = set()
-    for row in rows:
+    for row, expected_row in zip(rows, expected_reference, strict=True):
         task = row["task"]
         if task not in MVBench_TASKS:
             raise ValueError("unexpected_mvbench_task")
         public_row_id = row["public_row_id"]
         if public_row_id in seen_ids:
             raise ValueError("duplicate_mvbench_public_row_id")
+        if row["task_json_sha256"] != expected_row["task_json_sha256"]:
+            raise ValueError("mvbench_task_json_identity_mismatch")
         original = metadata[row["task_json_sha256"]][int(row["row_index"])]
-        if original["video"] != row["video"]:
+        if original["video"] != row["video"] or original["video"] != expected_row["video"]:
             raise ValueError("mvbench_video_identity_mismatch")
         options = tuple(original["candidates"])
         label_index = parse_prefixed_answer_index(original["answer"], options)
@@ -223,8 +282,6 @@ def load_mvbench_examples(
             )
             for frame in row["frames"]
         )
-        if len(frames) != 16:
-            raise ValueError("mvbench_requires_exactly_16_frames")
         examples.append(
             BenchmarkExample(
                 benchmark="mvbench-public-9task",
@@ -246,6 +303,8 @@ def load_mvbench_examples(
         counts[example.group] += 1
     if any(count != 200 for count in counts.values()):
         raise ValueError("mvbench_task_denominator_mismatch")
+    if not binding_sha256:
+        raise ValueError("mvbench_manifest_binding_hash_missing")
     return examples
 
 
@@ -259,6 +318,9 @@ def summarize_examples(examples: Sequence[BenchmarkExample]) -> dict[str, Any]:
         "row_id_manifest_sha256": hashlib.sha256(
             canonical_json([example.row_id for example in examples])
         ).hexdigest(),
+        "mvbench_reference_sha256": MVBench_REFERENCE_SHA256
+        if any(example.benchmark == "mvbench-public-9task" for example in examples)
+        else None,
         "source_manifest_sha256": hashlib.sha256(
             canonical_json(
                 [
@@ -371,6 +433,57 @@ def _probabilities_by_index(result: TeacherForwardResult, options: Sequence[str]
     return [float(result.probabilities[option]) for option in options]
 
 
+def example_source_identity(example: BenchmarkExample) -> dict[str, Any]:
+    return {
+        "benchmark": example.benchmark,
+        "row_id": example.row_id,
+        "row_hash": example.report_id,
+        "group": example.group,
+        "modality": example.modality,
+        "option_count": len(example.options),
+        "label_index": example.label_index,
+        "source_sha256": example.source_sha256,
+        "media_bytes_sha256": example.media_bytes_sha256,
+        "video_frame_indices": [frame.index for frame in example.video_frames],
+        "video_frame_png_sha256": [frame.png_sha256 for frame in example.video_frames],
+        "video_frame_rgb24_sha256": [frame.rgb24_sha256 for frame in example.video_frames],
+        "width": example.width,
+        "height": example.height,
+    }
+
+
+def source_identity_sha256(example: BenchmarkExample) -> str:
+    return hashlib.sha256(canonical_json(example_source_identity(example))).hexdigest()
+
+
+def processor_identity_sha256(
+    processor_summary: Mapping[str, Any], media_summary: Mapping[str, Any]
+) -> str:
+    identity = {
+        "processor_summary": processor_summary,
+        "media_summary": media_summary,
+        "preprocess_contract": {
+            "official_chat_template_path": True,
+            "thinking_disabled": True,
+            "canonical_png_rgb_verified": media_summary.get("canonical_png_verified", False),
+            "audio_pcm_adapter_used": media_summary.get("prepared_pcm_adapter_used", False),
+        },
+    }
+    return hashlib.sha256(canonical_json(identity)).hexdigest()
+
+
+def _validate_probability_vector(values: Sequence[Any], *, expected_length: int) -> list[float]:
+    probabilities = [float(value) for value in values]
+    if len(probabilities) != expected_length or not all(
+        math.isfinite(value) and value >= 0 for value in probabilities
+    ):
+        raise ValueError("teacher_probabilities_not_finite")
+    total = sum(probabilities)
+    if not math.isfinite(total) or abs(total - 1.0) > 1e-4:
+        raise ValueError("teacher_probabilities_not_normalized")
+    return probabilities
+
+
 def prediction_record(
     *,
     example: BenchmarkExample,
@@ -379,16 +492,13 @@ def prediction_record(
     processor_summary: Mapping[str, Any],
     media_summary: Mapping[str, Any],
 ) -> dict[str, Any]:
-    probabilities = _probabilities_by_index(result, example.options)
-    if len(probabilities) != len(example.options) or not all(
-        math.isfinite(value) and value >= 0 for value in probabilities
-    ):
-        raise ValueError("teacher_probabilities_not_finite")
-    total = sum(probabilities)
-    if not math.isfinite(total) or abs(total - 1.0) > 1e-4:
-        raise ValueError("teacher_probabilities_not_normalized")
+    probabilities = _validate_probability_vector(
+        _probabilities_by_index(result, example.options), expected_length=len(example.options)
+    )
     if not 0 <= result.prediction_index < len(example.options):
         raise ValueError("teacher_prediction_index_outside_options")
+    if not math.isfinite(float(result.confidence)):
+        raise ValueError("teacher_confidence_not_finite")
     return {
         "schema_version": SCHEMA_VERSION,
         "pass": pass_name,
@@ -398,6 +508,8 @@ def prediction_record(
         "group": example.group,
         "modality": example.modality,
         "option_count": len(example.options),
+        "source_identity_sha256": source_identity_sha256(example),
+        "processor_identity_sha256": processor_identity_sha256(processor_summary, media_summary),
         "prediction_index": int(result.prediction_index),
         "confidence": float(result.confidence),
         "probabilities": probabilities,
@@ -408,11 +520,67 @@ def prediction_record(
     }
 
 
+def _validate_existing_record(
+    record: Mapping[str, Any],
+    *,
+    expected_examples: Mapping[tuple[str, str], BenchmarkExample],
+    binding_sha256: str,
+    seen: set[tuple[str, str, str]],
+) -> dict[str, Any]:
+    if record.get("schema_version") != SCHEMA_VERSION:
+        raise ValueError("resume_record_schema_mismatch")
+    if record.get("binding_sha256") != binding_sha256:
+        raise ValueError("resume_binding_mismatch")
+    pass_name = str(record.get("pass"))
+    if pass_name not in {"first", "second"}:
+        raise ValueError("resume_record_unknown_pass")
+    key = (str(record.get("benchmark")), str(record.get("row_id")))
+    example = expected_examples.get(key)
+    if example is None:
+        raise ValueError("resume_record_not_in_current_cohort")
+    full_key = (key[0], key[1], pass_name)
+    if full_key in seen:
+        raise ValueError("resume_record_duplicate_pass")
+    seen.add(full_key)
+    if record.get("row_hash") != example.report_id:
+        raise ValueError("resume_record_row_hash_mismatch")
+    if record.get("group") != example.group or record.get("modality") != example.modality:
+        raise ValueError("resume_record_source_identity_mismatch")
+    if int(record.get("option_count", -1)) != len(example.options):
+        raise ValueError("resume_record_option_count_mismatch")
+    if record.get("source_identity_sha256") != source_identity_sha256(example):
+        raise ValueError("resume_record_source_identity_mismatch")
+    prediction_index = int(record.get("prediction_index", -1))
+    if not 0 <= prediction_index < len(example.options):
+        raise ValueError("resume_record_prediction_index_mismatch")
+    if bool(record.get("correct")) != (prediction_index == example.label_index):
+        raise ValueError("resume_record_correct_tampered")
+    if not math.isfinite(float(record.get("confidence", float("nan")))):
+        raise ValueError("resume_record_confidence_not_finite")
+    _validate_probability_vector(
+        record.get("probabilities", []), expected_length=len(example.options)
+    )
+    processor_summary = record.get("processor_summary")
+    media_summary = record.get("media_summary")
+    if not isinstance(processor_summary, Mapping) or not isinstance(media_summary, Mapping):
+        raise ValueError("resume_record_processor_identity_missing")
+    if processor_summary.get("contains_payload_values") is not False:
+        raise ValueError("resume_record_processor_payload_leak")
+    if processor_summary.get("thinking_disabled") is not True:
+        raise ValueError("resume_record_processor_identity_mismatch")
+    if record.get("processor_identity_sha256") != processor_identity_sha256(
+        processor_summary, media_summary
+    ):
+        raise ValueError("resume_record_processor_identity_mismatch")
+    return dict(record)
+
+
 def compare_two_pass_records(
     records: Sequence[Mapping[str, Any]],
     *,
     expected_rows: int,
     probability_tolerance: float = 0.0,
+    benchmark: str | None = None,
 ) -> dict[str, Any]:
     by_key: dict[tuple[str, str], dict[str, Mapping[str, Any]]] = defaultdict(dict)
     failures = []
@@ -453,18 +621,73 @@ def compare_two_pass_records(
         group: (group_correct[group] / total if total else 0.0)
         for group, total in sorted(group_totals.items())
     }
+    score = correct / expected_rows if expected_rows else 0.0
+    gate: dict[str, Any]
+    if benchmark == "mmau-test-mini":
+        lower = MMAU_SCORE_TARGET - MMAU_SCORE_TOLERANCE
+        upper = MMAU_SCORE_TARGET + MMAU_SCORE_TOLERANCE
+        gate = {
+            "kind": "mmau_teacher_accuracy",
+            "target": MMAU_SCORE_TARGET,
+            "tolerance": MMAU_SCORE_TOLERANCE,
+            "lower_bound": lower,
+            "upper_bound": upper,
+            "passed": lower <= score <= upper,
+        }
+    elif benchmark == "mvbench-public-9task":
+        gate = {
+            "kind": "mvbench_recorded_real_baseline_only",
+            "accuracy_target": None,
+            "compared_to_adr_0006_0_531": False,
+            "passed": True,
+        }
+    else:
+        gate = {"kind": "control_flow_only", "passed": True}
+    identical = not failures and not mismatches and len(by_key) == expected_rows
     return {
+        "benchmark": benchmark,
         "expected_rows": expected_rows,
         "observed_rows": len(by_key),
         "record_count": len(records),
         "failures": failures,
         "two_pass_mismatches": mismatches,
-        "two_pass_identical": not failures and not mismatches and len(by_key) == expected_rows,
+        "two_pass_identical": identical,
         "micro_correct": correct,
         "micro_total": expected_rows,
-        "micro_score": correct / expected_rows if expected_rows else 0.0,
+        "micro_score": score,
         "macro_scores": macro_scores,
         "macro_score": sum(macro_scores.values()) / len(macro_scores) if macro_scores else 0.0,
+        "fixed_denominator_preserved": True,
+        "gate": {**gate, "passed": bool(gate["passed"] and identical)},
+    }
+
+
+def compare_benchmark_records(
+    records: Sequence[Mapping[str, Any]],
+    *,
+    expected_rows_by_benchmark: Mapping[str, int],
+    probability_tolerance: float = 0.0,
+    release_or_stage_candidate: bool = False,
+) -> dict[str, Any]:
+    by_benchmark: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
+    for record in records:
+        by_benchmark[str(record["benchmark"])].append(record)
+    benchmarks: dict[str, dict[str, Any]] = {}
+    for benchmark, expected_rows in expected_rows_by_benchmark.items():
+        benchmarks[benchmark] = compare_two_pass_records(
+            by_benchmark.get(benchmark, []),
+            expected_rows=expected_rows,
+            probability_tolerance=probability_tolerance,
+            benchmark=benchmark,
+        )
+    unknown = sorted(set(by_benchmark) - set(expected_rows_by_benchmark))
+    all_gates_passed = not unknown and all(item["gate"]["passed"] for item in benchmarks.values())
+    return {
+        "benchmarks": benchmarks,
+        "unknown_benchmarks": unknown,
+        "two_pass_identical": all(item["two_pass_identical"] for item in benchmarks.values())
+        and not unknown,
+        "release_or_stage_acceptance": bool(release_or_stage_candidate and all_gates_passed),
         "fixed_denominator_preserved": True,
     }
 
@@ -479,18 +702,33 @@ def run_two_pass_forward(
     probability_tolerance: float = 0.0,
     temp_parent: Path | None = None,
     ffmpeg_binary: str = "ffmpeg",
+    resume: bool = False,
+    release_or_stage_candidate: bool = False,
 ) -> dict[str, Any]:
     records_path.parent.mkdir(parents=True, exist_ok=True)
+    if records_path.exists() and not resume:
+        raise ValueError("records_path_exists_without_explicit_resume")
+    if not math.isfinite(probability_tolerance) or probability_tolerance < 0:
+        raise ValueError("invalid_probability_tolerance")
     binding_sha = hashlib.sha256(canonical_json(binding)).hexdigest()
+    expected_examples = {(example.benchmark, example.row_id): example for example in examples}
+    if len(expected_examples) != len(examples):
+        raise ValueError("duplicate_examples_in_current_cohort")
     records: list[dict[str, Any]] = []
+    seen: set[tuple[str, str, str]] = set()
     if records_path.exists():
         for line in records_path.read_text().splitlines():
             if not line.strip():
                 continue
             record = json.loads(line)
-            if record.get("binding_sha256") != binding_sha:
-                raise ValueError("resume_binding_mismatch")
-            records.append(record)
+            records.append(
+                _validate_existing_record(
+                    record,
+                    expected_examples=expected_examples,
+                    binding_sha256=binding_sha,
+                    seen=seen,
+                )
+            )
     done = {(record["benchmark"], record["row_id"], record["pass"]) for record in records}
     with records_path.open("a", encoding="utf-8") as stream:
         for pass_name in ("first", "second"):
@@ -520,11 +758,19 @@ def run_two_pass_forward(
                 stream.flush()
                 records.append(record)
                 done.add(key)
-    summary = compare_two_pass_records(
-        records, expected_rows=len(examples), probability_tolerance=probability_tolerance
+    expected_rows_by_benchmark = {
+        benchmark: sum(1 for example in examples if example.benchmark == benchmark)
+        for benchmark in sorted({example.benchmark for example in examples})
+    }
+    summary = compare_benchmark_records(
+        records,
+        expected_rows_by_benchmark=expected_rows_by_benchmark,
+        probability_tolerance=probability_tolerance,
+        release_or_stage_candidate=release_or_stage_candidate,
     )
     summary["records_path"] = str(records_path)
     summary["binding_sha256"] = binding_sha
+    summary["resume_used"] = resume
     return summary
 
 

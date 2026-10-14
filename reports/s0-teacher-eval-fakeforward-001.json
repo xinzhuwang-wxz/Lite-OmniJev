@@ -1,16 +1,41 @@
 {
   "schema_version": 1,
   "mode": "fake-forward",
-  "started_utc": "2026-10-14T00:23:02.120684+00:00",
+  "started_utc": "2026-10-14T00:34:44.251455+00:00",
   "gpu_seconds": 0,
   "sealed_data_read": false,
   "payload_values_exported": false,
   "fixed_denominator_policy": "failures remain in denominator; no row filtering",
-  "status": "passed_two_pass_teacher_eval",
+  "status": "passed_fake_forward_control_flow_not_acceptance",
   "exit_code": 0,
   "benchmark": "all",
+  "runtime": {
+    "started_monotonic_seconds": 911902.1095255,
+    "seed": 0,
+    "hardware": {
+      "cpu_count": 10,
+      "machine": "arm64",
+      "processor": "arm"
+    },
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "pid": 72298,
+    "elapsed_seconds": 3.786,
+    "cost_usd": 0.0
+  },
+  "code_sha256": {
+    "runner": "d4864675aa10319ce8ebab5bdd2b40b3599ae9aa8aacc5fcaefec2f47f60b7d2",
+    "eval_teacher_benchmarks": "5774b8934e4e872a9bcb7e993261018f920aba26a0a5518e5b8a720b91e4627e",
+    "train_teacher_inference": "7f31cd4ce683e082a27deb7918c079d1ab174e7a2f91207641be74ef2ed7c9f4",
+    "train_teacher_media": "5e06b6eed623baa15958d3351c3a0c29c07d245c50f83ef9f0ccc2c4998c8d3b",
+    "eval_public_video_protocol": "11c958caf4f195e4bc673390385942c446b200d15adaacc65cc1ec904e36222e"
+  },
+  "release_or_stage_acceptance": false,
+  "report_contains_prompt_option_or_label_text": false,
   "config_sha256": "06276c83040a68684db2275604049fc316adf489de0dc97670e21a847416f4b1",
-  "runner_code_sha256": "b97616a6b8ab6fd1fbef36212ea0c7ba89045a7ca68f23962f3d3a0dfc959259",
+  "runner_code_sha256": "d4864675aa10319ce8ebab5bdd2b40b3599ae9aa8aacc5fcaefec2f47f60b7d2",
   "example_sets": {
     "mmau": {
       "rows": 2,
@@ -18,6 +43,7 @@
         "sound": 2
       },
       "row_id_manifest_sha256": "e932913e5cb3de41ffd79987ba4048f916c12d11eaaaa996e2acccb7f6042eef",
+      "mvbench_reference_sha256": null,
       "source_manifest_sha256": "65c2f7ce9950e4ef3fd0e028b881381ed8f1b2ff71bc786cf0cac3a78837d4f3"
     },
     "mvbench": {
@@ -26,6 +52,7 @@
         "Action Sequence": 1
       },
       "row_id_manifest_sha256": "9eb43f73cc5dfbac27a073f7b7dc78c75cbb506723625c7a71af0fb1cbfb8d12",
+      "mvbench_reference_sha256": "4530b25b34e464958d26d3f4b01abd73a4ebe53aa287702c5206048524e43efb",
       "source_manifest_sha256": "448d2beeada22fec47163e2c1b83d74e0e5882397514f0957684a39695be4b2b"
     }
   },
@@ -38,29 +65,69 @@
     "mmau": false,
     "mvbench": false
   },
-  "report_contains_prompt_option_or_label_text": false,
   "forward": {
     "mode": "fake",
-    "model_forward_run": false
+    "model_forward_run": false,
+    "release_or_stage_acceptance": false
   },
   "two_pass": {
-    "expected_rows": 3,
-    "observed_rows": 3,
-    "record_count": 6,
-    "failures": [],
-    "two_pass_mismatches": [],
-    "two_pass_identical": true,
-    "micro_correct": 0,
-    "micro_total": 3,
-    "micro_score": 0.0,
-    "macro_scores": {
-      "Action Sequence": 0.0,
-      "sound": 0.0
+    "benchmarks": {
+      "mmau-test-mini": {
+        "benchmark": "mmau-test-mini",
+        "expected_rows": 2,
+        "observed_rows": 2,
+        "record_count": 4,
+        "failures": [],
+        "two_pass_mismatches": [],
+        "two_pass_identical": true,
+        "micro_correct": 0,
+        "micro_total": 2,
+        "micro_score": 0.0,
+        "macro_scores": {
+          "sound": 0.0
+        },
+        "macro_score": 0.0,
+        "fixed_denominator_preserved": true,
+        "gate": {
+          "kind": "mmau_teacher_accuracy",
+          "target": 0.631,
+          "tolerance": 0.02,
+          "lower_bound": 0.611,
+          "upper_bound": 0.651,
+          "passed": false
+        }
+      },
+      "mvbench-public-9task": {
+        "benchmark": "mvbench-public-9task",
+        "expected_rows": 1,
+        "observed_rows": 1,
+        "record_count": 2,
+        "failures": [],
+        "two_pass_mismatches": [],
+        "two_pass_identical": true,
+        "micro_correct": 0,
+        "micro_total": 1,
+        "micro_score": 0.0,
+        "macro_scores": {
+          "Action Sequence": 0.0
+        },
+        "macro_score": 0.0,
+        "fixed_denominator_preserved": true,
+        "gate": {
+          "kind": "mvbench_recorded_real_baseline_only",
+          "accuracy_target": null,
+          "compared_to_adr_0006_0_531": false,
+          "passed": true
+        }
+      }
     },
-    "macro_score": 0.0,
+    "unknown_benchmarks": [],
+    "two_pass_identical": true,
+    "release_or_stage_acceptance": false,
     "fixed_denominator_preserved": true,
-    "records_path": "artifacts/s0-teacher-eval/fakeforward-002.jsonl",
-    "binding_sha256": "74a46e5b244c28a77f3e3929547a0af92fd672493ba79856784b2fbca4650d28"
+    "records_path": "/tmp/lite-omnijev-video-eval/artifacts/s0-teacher-eval/fakeforward-review-001.jsonl",
+    "binding_sha256": "fc03ab002fb7f76b45d86ba1688951530d4f10c516a945ca448fb6e7a3279e0d",
+    "resume_used": true
   },
-  "finished_utc": "2026-10-14T00:23:02.830141+00:00"
+  "finished_utc": "2026-10-14T00:34:48.018857+00:00"
 }

@@ -119,7 +119,9 @@ def _write_mvbench_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     return metadata, config, manifest
 
 
-def test_mvbench_manifest_mapping_keeps_fixed_denominators(tmp_path: Path) -> None:
+def test_mvbench_manifest_mapping_keeps_fixed_denominators(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     metadata, config, manifest = _write_mvbench_fixture(tmp_path)
     rows = json.loads(manifest.read_text())["rows"]
     for row in rows:
@@ -133,6 +135,20 @@ def test_mvbench_manifest_mapping_keeps_fixed_denominators(tmp_path: Path) -> No
             for index in range(16)
         ]
     manifest.write_text(json.dumps({"reference_sha256": MVBECH_REFERENCE_SHA256, "rows": rows}))
+    import eval.teacher_benchmarks as module
+
+    monkeypatch.setattr(
+        module,
+        "public_video_references",
+        lambda _config, _metadata: [
+            {
+                "task_json_sha256": row["task_json_sha256"],
+                "row_index": row["row_index"],
+                "video": row["video"],
+            }
+            for row in rows
+        ],
+    )
 
     examples = load_mvbench_examples(
         frame_manifest=manifest, metadata_dir=metadata, config_path=config
@@ -229,7 +245,8 @@ def test_two_pass_records_are_resumable_and_payload_light(tmp_path: Path) -> Non
         module.build_benchmark_processor_inputs = original
 
     assert summary["two_pass_identical"] is True
-    assert summary["micro_score"] == 1.0
+    assert summary["benchmarks"]["fixture"]["micro_score"] == 1.0
+    assert summary["release_or_stage_acceptance"] is False
     text = (tmp_path / "records.jsonl").read_text()
     assert "secret prompt text" not in text
     assert "right" not in text
@@ -297,3 +314,101 @@ def test_mmau_loader_validates_public_denominator(tmp_path: Path) -> None:
     assert len(examples) == 1000
     assert examples[0].label_index == 1
     assert examples[0].modality == "audio"
+
+
+def test_records_require_explicit_resume_and_validate_probabilities(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    example = BenchmarkExample(
+        benchmark="fixture",
+        row_id="row-1",
+        group="group",
+        question="payload must not persist",
+        options=("wrong", "right"),
+        label_index=1,
+        modality="audio",
+        source_sha256="a" * 64,
+        media_bytes=b"not-real-audio",
+        media_bytes_sha256="b" * 64,
+    )
+
+    def fake_build(*_args, **_kwargs):
+        return SimpleNamespace(
+            prepared=SimpleNamespace(modality="audio", option_count=2),
+            inputs={"input_ids": FakeTensor()},
+            processor_summary={
+                "contains_payload_values": False,
+                "thinking_disabled": True,
+            },
+            media_summary={"prepared_pcm_adapter_used": True},
+        )
+
+    import eval.teacher_benchmarks as module
+
+    monkeypatch.setattr(module, "build_benchmark_processor_inputs", fake_build)
+    records = tmp_path / "records.jsonl"
+    run_two_pass_forward(
+        forward=FakeForward(),
+        examples=[example],
+        video_cache_root=None,
+        records_path=records,
+        binding={"fixture": True},
+    )
+    with pytest.raises(ValueError, match="records_path_exists_without_explicit_resume"):
+        run_two_pass_forward(
+            forward=FakeForward(),
+            examples=[example],
+            video_cache_root=None,
+            records_path=records,
+            binding={"fixture": True},
+        )
+
+    lines = [json.loads(line) for line in records.read_text().splitlines()]
+    lines[0]["probabilities"] = [float("nan"), 1.0]
+    records.write_text("\n".join(json.dumps(line) for line in lines) + "\n")
+    with pytest.raises(ValueError, match="teacher_probabilities_not_finite"):
+        run_two_pass_forward(
+            forward=FakeForward(),
+            examples=[example],
+            video_cache_root=None,
+            records_path=records,
+            binding={"fixture": True},
+            resume=True,
+        )
+
+
+def test_real_forward_limit_guard_writes_static_failure_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import scripts.s0_teacher_eval as runner
+
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"mmau": {"file": {}}, "mvbench": {"tasks": []}}))
+    parquet = tmp_path / "mmau.parquet"
+    parquet.write_bytes(b"placeholder")
+    output = tmp_path / "report.json"
+    monkeypatch.setattr(runner, "_load_examples", lambda _args, _config: {})
+
+    exit_code = runner.main(
+        [
+            "--mode",
+            "real-forward",
+            "--benchmark",
+            "all",
+            "--config",
+            str(config),
+            "--mmau-parquet",
+            str(parquet),
+            "--limit-mmau",
+            "1",
+            "--output",
+            str(output),
+        ]
+    )
+
+    report = json.loads(output.read_text())
+    assert exit_code == 1
+    assert report["status"] == "failed"
+    assert report["error_code"] == "validation_failed"
+    assert "reason" not in report
+    assert report["release_or_stage_acceptance"] is False

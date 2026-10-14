@@ -1,16 +1,41 @@
 {
   "schema_version": 1,
   "mode": "cpu-preflight",
-  "started_utc": "2026-10-14T00:22:58.651247+00:00",
+  "started_utc": "2026-10-14T00:34:40.628373+00:00",
   "gpu_seconds": 0,
   "sealed_data_read": false,
   "payload_values_exported": false,
   "fixed_denominator_policy": "failures remain in denominator; no row filtering",
-  "status": "passed_cpu_preflight_no_model_forward",
+  "status": "passed_cpu_preflight_no_model_forward_fake_processor",
   "exit_code": 0,
   "benchmark": "all",
+  "runtime": {
+    "started_monotonic_seconds": 911898.486505458,
+    "seed": 0,
+    "hardware": {
+      "cpu_count": 10,
+      "machine": "arm64",
+      "processor": "arm"
+    },
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "pid": 72306,
+    "elapsed_seconds": 3.474,
+    "cost_usd": 0.0
+  },
+  "code_sha256": {
+    "runner": "d4864675aa10319ce8ebab5bdd2b40b3599ae9aa8aacc5fcaefec2f47f60b7d2",
+    "eval_teacher_benchmarks": "5774b8934e4e872a9bcb7e993261018f920aba26a0a5518e5b8a720b91e4627e",
+    "train_teacher_inference": "7f31cd4ce683e082a27deb7918c079d1ab174e7a2f91207641be74ef2ed7c9f4",
+    "train_teacher_media": "5e06b6eed623baa15958d3351c3a0c29c07d245c50f83ef9f0ccc2c4998c8d3b",
+    "eval_public_video_protocol": "11c958caf4f195e4bc673390385942c446b200d15adaacc65cc1ec904e36222e"
+  },
+  "release_or_stage_acceptance": false,
+  "report_contains_prompt_option_or_label_text": false,
   "config_sha256": "06276c83040a68684db2275604049fc316adf489de0dc97670e21a847416f4b1",
-  "runner_code_sha256": "b97616a6b8ab6fd1fbef36212ea0c7ba89045a7ca68f23962f3d3a0dfc959259",
+  "runner_code_sha256": "d4864675aa10319ce8ebab5bdd2b40b3599ae9aa8aacc5fcaefec2f47f60b7d2",
   "example_sets": {
     "mmau": {
       "rows": 1000,
@@ -20,6 +45,7 @@
         "speech": 333
       },
       "row_id_manifest_sha256": "7871611423023cdb8c908a76ce433a72a830eb5f11d286bbd7b5b2b1b549c142",
+      "mvbench_reference_sha256": null,
       "source_manifest_sha256": "d49d7a2341cfcb5c19718f22aba15df45ed79323314a6232e759643be4d09566"
     },
     "mvbench": {
@@ -36,6 +62,7 @@
         "Unexpected Action": 200
       },
       "row_id_manifest_sha256": "42eb2ba65f0dbd0529e26c1b2354482a0862c04eac89ff9104b2220083c4ce4d",
+      "mvbench_reference_sha256": "4530b25b34e464958d26d3f4b01abd73a4ebe53aa287702c5206048524e43efb",
       "source_manifest_sha256": "8682339ab64460fe27f20bedd1864ade4fa6c15a9726f3e440f3f4fa7b6812d5"
     }
   },
@@ -48,9 +75,10 @@
     "mmau": true,
     "mvbench": true
   },
-  "report_contains_prompt_option_or_label_text": false,
   "media_preflight": {
     "fake_processor_used": true,
+    "processor_fixture": "fake_processor_control_flow_only",
+    "official_processor_used": false,
     "model_forward_run": false,
     "samples": {
       "mmau_audio": [
@@ -176,5 +204,5 @@
       ]
     }
   },
-  "finished_utc": "2026-10-14T00:22:58.839882+00:00"
+  "finished_utc": "2026-10-14T00:34:44.085714+00:00"
 }
