@@ -1,0 +1,28 @@
+Error in inspecting model architecture 'Gemma4ForConditionalGeneration'
+Traceback (most recent call last):
+  File "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/vllm/model_executor/models/registry.py", line 1550, in _run_in_subprocess
+    returned.check_returncode()
+  File "/root/autodl-tmp/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/subprocess.py", line 502, in check_returncode
+    raise CalledProcessError(self.returncode, self.args, self.stdout,
+subprocess.CalledProcessError: Command '['/root/autodl-tmp/envs/serve-next-vllm031-offline-check/bin/python', '-m', 'vllm.model_executor.models.registry']' died with <Signals.SIGKILL: 9>.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/vllm/model_executor/models/registry.py", line 1108, in _try_inspect_model_cls
+    return model.inspect_model_cls()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/vllm/logging_utils/log_time.py", line 18, in _wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/vllm/model_executor/models/registry.py", line 1069, in inspect_model_cls
+    mi = _run_in_subprocess(
+         ^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/envs/serve-next-vllm031-offline-check/lib/python3.11/site-packages/vllm/model_executor/models/registry.py", line 1553, in _run_in_subprocess
+    raise RuntimeError(
+RuntimeError: Error raised in subprocess:
+<frozen runpy>:128: RuntimeWarning: 'vllm.model_executor.models.registry' found in sys.modules after import of package 'vllm.model_executor.models', but prior to execution of 'vllm.model_executor.models.registry'; this may result in unpredictable behaviour
+Failed to import from vllm._C: ModuleNotFoundError("No module named 'vllm._C'")
+W1014 08:27:03.932000 52186 torch/utils/cpp_extension.py:178] No CUDA runtime is found, using CUDA_HOME='/usr/local/cuda'
+
+{"status": "blocked", "exit_code": 1, "complete_100_cases": false}
