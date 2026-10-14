@@ -1,0 +1,176 @@
+{
+  "status": "failed_gpu_latency_candidates",
+  "s0_acceptance": false,
+  "exit_code": 1,
+  "code_revision": "388ce87e19e45883f569189adc97fc77822906a4",
+  "evidence_kind": "gpu",
+  "precision": "FP32 IEEE",
+  "compilation_config": {
+    "mode": 0,
+    "cudagraph_mode": "FULL",
+    "cudagraph_capture_sizes": [
+      32,
+      64,
+      128,
+      256,
+      384,
+      512,
+      768,
+      1024
+    ]
+  },
+  "ratio_threshold_inclusive": 2,
+  "probability_threshold_exclusive": 0.001,
+  "candidates": [
+    {
+      "path": "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c2-on-001.json",
+      "concurrency_limit": 2,
+      "ratios": {
+        "cold": [
+          3.1901870672873525,
+          3.187788180252926
+        ],
+        "warm": [
+          12.360658995341899,
+          12.029623154358749
+        ]
+      },
+      "max_distribution_differences_from_sequential": {
+        "raw_probabilities": 2.3661021497645152e-07,
+        "joint": 3.3486306657518495e-09,
+        "conditional": 3.3486585726549833e-09,
+        "p_U": 6.28317519998353e-10
+      },
+      "actual_max_inflight": 2,
+      "duration_seconds": 4.621142216026783,
+      "exit_code": 0,
+      "latency_gate_passed": false
+    },
+    {
+      "path": "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c3-on-001.json",
+      "concurrency_limit": 3,
+      "ratios": {
+        "cold": [
+          3.0451875946299474,
+          3.046815063834599
+        ],
+        "warm": [
+          11.565370168548183,
+          11.504638519136021
+        ]
+      },
+      "max_distribution_differences_from_sequential": {
+        "raw_probabilities": 2.3661021497645152e-07,
+        "joint": 8.03977195928951e-09,
+        "conditional": 7.81259179571947e-09,
+        "p_U": 7.267844356616699e-10
+      },
+      "actual_max_inflight": 3,
+      "duration_seconds": 4.473879959434271,
+      "exit_code": 0,
+      "latency_gate_passed": false
+    },
+    {
+      "path": "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-on-001.json",
+      "concurrency_limit": 10,
+      "ratios": {
+        "cold": [
+          2.5843431601134252,
+          2.551233503971405
+        ],
+        "warm": [
+          9.007685326131247,
+          9.095169101814827
+        ]
+      },
+      "max_distribution_differences_from_sequential": {
+        "raw_probabilities": 2.3661021497645152e-07,
+        "joint": 5.2687940677031975e-09,
+        "conditional": 4.88254947583755e-09,
+        "p_U": 5.209380625201059e-10
+      },
+      "actual_max_inflight": 9,
+      "duration_seconds": 5.157418418675661,
+      "exit_code": 0,
+      "latency_gate_passed": false
+    }
+  ],
+  "on_off_completed": false,
+  "gateway_completed": false,
+  "cost_usd": null,
+  "decision": "Stopped graph server167657 after three short candidates failed; resume teacher from2610; CPU prepare next scheduler hypothesis before additional GPU allocation",
+  "source_files": {
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c2-on-001.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c2-on-001.json": {
+      "sha256": "6d533f77ed7f49d2daeeacdfc6b58e832562f7c4a815caa86a434801491023aa",
+      "bytes": 57953
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-on-001.log": {
+      "sha256": "0cbbbc6ac74d95746f3fa6c5cdb9d6fcbeeaabaac0ae26dae963d533c7f15297",
+      "bytes": 57
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-on-001.json": {
+      "sha256": "779c5c83361ac50bace040dd9cf0d4f3ef86d317754f17a4034dd5cc93c85026",
+      "bytes": 57951
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/server-on.pid": {
+      "sha256": "1eb7826e1b74d595ad64b88fd825a270c9a9ece5bdb22f37d5318f985e7c657a",
+      "bytes": 7
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/server-on.log": {
+      "sha256": "2d214412b2f33ccda406360e0162d7d319549498e95bd80d59ef018b71bb7d03",
+      "bytes": 50633
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-on-001.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/start-on.sh": {
+      "sha256": "133e4b4e621bd0560643efb8ef172ad4e22a8f91447f9bb76df40a17bfc72cf3",
+      "bytes": 1523
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/start-off.sh": {
+      "sha256": "013acfbea3cc7cd3049a4a59118803d2a6feda4aafc09364d4560fc6e62ce3e4",
+      "bytes": 1526
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c3-on-001.log": {
+      "sha256": "0cbbbc6ac74d95746f3fa6c5cdb9d6fcbeeaabaac0ae26dae963d533c7f15297",
+      "bytes": 57
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/server-on.json": {
+      "sha256": "db96751df1a8c243b3eda2c260d2c702da787f0f92dd6feb8fb5f306f2d57904",
+      "bytes": 1977
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c3-on-001.json": {
+      "sha256": "b1ade7442c251f469ac2c389ac73a5f03f40fdc656731cf9a7ae40cfa718b244",
+      "bytes": 57985
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c3-on-001.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-on-canary-summary-001.json": {
+      "sha256": "968c3ec12adec414f7cc5896225bb43f360ff1ee9aae90c8cd376e34b4499c6a",
+      "bytes": 623
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/server-off.json": {
+      "sha256": "4740fcdaced1918b749a7ed3a7756d0e837ac841809ea9ff2487655ee85460cf",
+      "bytes": 1982
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/validate-on.json": {
+      "sha256": "d94d191d11227dd0f12a0e88e248ad6bdcd7d0c19b688e856db7585c4e375bee",
+      "bytes": 650
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/native-c2-on-001.log": {
+      "sha256": "0cbbbc6ac74d95746f3fa6c5cdb9d6fcbeeaabaac0ae26dae963d533c7f15297",
+      "bytes": 57
+    },
+    "artifacts/s0-cache-scheduled-20261014/graph1024-001/live-binding-on-001.json": {
+      "sha256": "a37060d7bc6a59659a1119eac4b1b30ec11a60479e627c486bed52ea48ba7681",
+      "bytes": 1704
+    }
+  }
+}
