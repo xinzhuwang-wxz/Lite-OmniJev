@@ -1,0 +1,143 @@
+{
+  "schema": "lite-omnijev.s0_gateway_parity.report.v1",
+  "action": "synthetic-control",
+  "started_at": "2026-10-14T00:54:00+00:00",
+  "finished_at": "2026-10-14T00:54:00+00:00",
+  "elapsed_seconds": 0.001504,
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "executable": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
+    "pid": 77093,
+    "cwd": "/private/tmp/lite-omnijev-s0-teacher",
+    "packages": {
+      "httpx": "0.28.1",
+      "pydantic": "2.14.1",
+      "fastapi": "0.143.0",
+      "starlette": "1.8.0",
+      "torch": "2.14.1",
+      "transformers": "5.19.0"
+    }
+  },
+  "source": {
+    "repo_root": "/private/tmp/lite-omnijev-s0-teacher",
+    "git": {
+      "commit": "43965c9a1b13cd2729e016ef8580b0ca9be83d68",
+      "branch": "codex/s0-gateway-parity",
+      "dirty": "?? docs/runbooks/s0-gateway-parity.md\n?? scripts/s0_gateway_parity.py\n?? tests/test_s0_gateway_parity.py"
+    },
+    "code_hashes": {
+      "scripts/s0_gateway_parity.py": "cce25d0556ccf4774a880e906f94f5557b3b0d94b98be3a2c6ee78e9cba423b6",
+      "scripts/s0_parity.py": "40a8a9bc4914b0ddc5c7182c3b41a9abc8cc7c7fa3ab7e97e6a6c85b29ece800",
+      "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+      "serve/gateway/app.py": "df520b2361c74d4ba45dd27f9018ae44cbd0c738a02d29fb6459c06eb7a5daf1",
+      "serve/vllm_chat.py": "407468b49cc9e4129cdb87b157567698bf2053d7e2f5b7aa73925bed120a8bc4",
+      "data/schema.py": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6",
+      "train/multimodal.py": "dfe8b907ce509a6c4a9060e002afedbe0e0b0002cdc0777a69728610c80dce5a",
+      "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b"
+    }
+  },
+  "seed": 42,
+  "cost": {
+    "new_paid_resources": 0,
+    "gpu_started_by_this_cli": false
+  },
+  "release_or_stage_acceptance": false,
+  "status": "passed",
+  "exit_code": 0,
+  "health": {
+    "status": "ok",
+    "mode": "canonical-chat",
+    "inference_configured": true,
+    "model_version": "synthetic-gateway-v1",
+    "model_quality_verified": false
+  },
+  "comparison": {
+    "status": "passed",
+    "passed": true,
+    "threshold_exclusive": 0.001,
+    "max_differences": {
+      "conditional": 0.0,
+      "p_insufficient": 0.0
+    },
+    "samples": 3,
+    "details_sha256": "49c4ed283aa0ac5e48d6a1909625a4228787c712d4658c1c025d9ede90bc0d46",
+    "details": [
+      {
+        "case_id_sha256": "05442dec4e6cdad02b776384f73f1fa591cee21cc9d6053ec4e064225b325387",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 10,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "2df942a171f823be145fa9ad6d70039ba8fa641e6b032f42e67d0eed83248f78",
+        "category": "text",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.3
+        },
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 10,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "33c33802ffcc9894c75aa95cbdf658e59bdebcefd7c62ccb476705a1aa1631cf",
+        "category": "text",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.7
+        },
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 10,
+          "output_tokens": 1
+        }
+      }
+    ],
+    "raw_or_k_plus_one_validated_by_gateway": false
+  },
+  "repeatability": {
+    "status": "passed",
+    "passed": true
+  },
+  "synthetic_non_gpu_acceptance": false,
+  "raw_or_k_plus_one_validated_by_gateway": false,
+  "scope": "Synthetic CPU transport only; validates gateway parity control flow, not real HF/vLLM/gateway acceptance."
+}
