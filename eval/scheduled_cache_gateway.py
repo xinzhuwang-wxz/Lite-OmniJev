@@ -48,8 +48,6 @@ class ScheduledGatewayProtocol(Contract):
             for question in parsed
         ):
             raise ValueError("gateway legal answer sets must match")
-        if list(questions) != [f"q{index}" for index in range(10)]:
-            raise ValueError("gateway scheduled evidence requires stable q0..q9 question IDs")
         if self.native.seed != 42:
             raise ValueError("gateway native client has a fixed seed of 42")
         return self
@@ -76,12 +74,17 @@ class ScheduledGatewayAnswerDigest(Contract):
 
 
 class ScheduledGatewayMeasurement(ScheduledMeasurement):
+    question_ids: list[str]
     api_answer_sha256_by_qid: dict[str, Sha256]
     api_answers_sha256: Sha256
 
     @model_validator(mode="after")
     def answer_digest_matches_rows(self) -> Self:
-        expected_qids = [f"q{row.case_index}" for row in self.observations]
+        expected_qids = self.question_ids
+        if len(expected_qids) != len(self.observations) or len(set(expected_qids)) != len(
+            expected_qids
+        ):
+            raise ValueError("measured question IDs must be unique and complete")
         if list(self.api_answer_sha256_by_qid) != expected_qids:
             raise ValueError("API answer digests must follow measured qid order")
         if self.api_answers_sha256 != digest(self.api_answer_sha256_by_qid):
@@ -129,6 +132,7 @@ def parse_scheduled_server_timing(header: str) -> ScheduledGatewayTiming:
 
 
 class ScheduledGatewayRun(ScheduledCacheRun):
+    gateway_question_ids: list[str] = Field(min_length=10, max_length=10)
     gateway_request_sha256: Sha256
     gateway_configuration_sha256: Sha256
     scheduled_gateway_timings: list[ScheduledGatewayTiming]
@@ -137,6 +141,8 @@ class ScheduledGatewayRun(ScheduledCacheRun):
 
     @model_validator(mode="after")
     def timing_count_matches_measurements(self) -> Self:
+        if len(set(self.gateway_question_ids)) != 10:
+            raise ValueError("gateway question IDs must be unique")
         if len(self.scheduled_gateway_timings) != len(self.measurements):
             raise ValueError("missing scheduled gateway timing rows")
         if len(self.api_answer_digests) != len(self.measurements):
@@ -144,7 +150,9 @@ class ScheduledGatewayRun(ScheduledCacheRun):
         for measurement, answer_digest in zip(
             self.measurements, self.api_answer_digests, strict=True
         ):
-            expected_qids = [f"q{row.case_index}" for row in measurement.observations]
+            expected_qids = [
+                self.gateway_question_ids[row.case_index] for row in measurement.observations
+            ]
             if list(answer_digest.api_answer_sha256_by_qid) != expected_qids:
                 raise ValueError("API answer digests must follow measured qid order")
         return self
@@ -347,6 +355,7 @@ async def collect_scheduled_gateway(
                 ),
                 actual_max_inflight=_measurement_max_inflight(rows),
                 observations=rows,
+                question_ids=expected_qids,
                 api_answer_sha256_by_qid=api_answer_sha256_by_qid,
                 api_answers_sha256=digest(api_answer_sha256_by_qid),
             ),
@@ -388,6 +397,7 @@ async def collect_scheduled_gateway(
         gateway_configuration_sha256=protocol.gateway_configuration_sha256,
         scheduled_gateway_timings=timings,
         api_answer_digests=api_answer_digests,
+        gateway_question_ids=list(protocol.request["questions"]),
     )
 
 
@@ -410,6 +420,7 @@ def assess_scheduled_gateway(
 ) -> dict[str, Any]:
     if (
         on.gateway_configuration_sha256 != off.gateway_configuration_sha256
+        or on.gateway_question_ids != off.gateway_question_ids
         or on.gateway_request_sha256 != off.gateway_request_sha256
         or on.transport_scope != off.transport_scope
     ):

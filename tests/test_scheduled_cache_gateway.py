@@ -151,8 +151,23 @@ class Backend:
         )
 
 
-async def collect(enabled: bool, defect: str | None = None) -> tuple[Any, Backend]:
+async def collect(
+    enabled: bool, defect: str | None = None, *, frozen_qids: bool = False
+) -> tuple[Any, Backend]:
     frozen = gateway_protocol()
+    if frozen_qids:
+        frozen = ScheduledGatewayProtocol.model_validate(
+            {
+                **frozen.model_dump(),
+                "request": {
+                    **frozen.request,
+                    "questions": {
+                        f"cache-probe-{index}": item
+                        for index, item in enumerate(frozen.request["questions"].values())
+                    },
+                },
+            }
+        )
     record = server(enabled)
     backend = Backend(enabled)
     capture = ScheduledCaptureTransport(
@@ -170,7 +185,7 @@ async def collect(enabled: bool, defect: str | None = None) -> tuple[Any, Backen
             items = list(body["questions"].items())
 
             async def one(qid: str) -> None:
-                index = int(qid[1:])
+                index = list(frozen.request["questions"]).index(qid)
                 response = await client.post(
                     record.base_url + "/v1/chat/completions",
                     json=frozen.native.payload(record.model, index),
@@ -259,6 +274,19 @@ def test_gateway_run_json_roundtrip_preserves_and_validates_api_answer_digests()
     data = json.loads(run.model_dump_json())
     data["api_answer_digests"][1]["api_answers_sha256"] = "0" * 64
     with pytest.raises(ValueError, match="API answer digest mismatch"):
+        ScheduledGatewayRun.model_validate(data)
+
+
+def test_real_frozen_question_ids_survive_collection_and_roundtrip() -> None:
+    run, _ = asyncio.run(collect(True, frozen_qids=True))
+    reloaded = ScheduledGatewayRun.model_validate_json(run.model_dump_json())
+    assert reloaded.gateway_question_ids == [f"cache-probe-{i}" for i in range(10)]
+    assert list(reloaded.api_answer_digests[1].api_answer_sha256_by_qid) == (
+        reloaded.gateway_question_ids
+    )
+    data = json.loads(run.model_dump_json())
+    data["gateway_question_ids"] = list(reversed(data["gateway_question_ids"]))
+    with pytest.raises(ValueError, match="qid order"):
         ScheduledGatewayRun.model_validate(data)
 
     data = json.loads(run.model_dump_json())
