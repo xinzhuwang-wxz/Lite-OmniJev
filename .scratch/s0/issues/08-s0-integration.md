@@ -3,14 +3,14 @@
 ID: s0:08
 Milestone: S0
 Category: enhancement
-Status: needs-triage
+Status: ready-for-agent
 Execution: open
 Owner: none
 Worktree: none
-Blocked by: p0:04, 01, 02, 03, 04, 05, 06, 07, 10, 11, 12, 13, 14
+Blocked by: p0:04, 01, 02, 03, 04, 05, 07, 10, 11, 13, 14
 
 ## What to build
-预留最终S0集成票；07必须补入所有新增基线依赖并完成triage后才可认领，以数据→推理→评测→服务的完整链决定是否进入S1。
+最终S0集成票；剩余数据与全部基线统一由07闭环交付，硬依赖完成后才可认领，以数据→推理→评测→服务的完整链决定是否进入S1。
 
 ## Acceptance criteria
 - [ ] 每模态500开发/1k人工封存、五模型基线表、各模态token/时延预算均有完整可复现证据；缺失或不可用的必需能力保持blocked。
@@ -31,3 +31,5 @@ Blocked by: p0:04, 01, 02, 03, 04, 05, 06, 07, 10, 11, 12, 13, 14
 
 预留集成出口，07尚未建立剩余具体依赖，因此保持needs-triage且不属于可认领frontier。
 未发现同概念已完成实现或既有拒绝决定；复用现有资产/schema/parity/gate边界。技术票虽可ready-for-agent，全部仍受p0:04及其余Blocked by门控，不表示已启动或通过。
+
+2026-10-14规划收敛：06人工证明并入05，12数据合同并入07，验收职责完整承接且历史记录保留。其余小来源/模型步骤不新拆票。出口验收已冻结，ready-for-agent仅表示范围明确，依赖未通过仍不可认领/进入S1。

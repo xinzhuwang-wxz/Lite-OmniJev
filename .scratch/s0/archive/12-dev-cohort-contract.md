@@ -1,12 +1,14 @@
+<!-- 2026-10-14用户要求规划收敛：本票合并至s0:07，历史验收/证据保留，未完成要求由目标票承接；不代表done或免除门槛。 -->
+
 # 12: 收口开发集与封存集cohort和来源合同
 
 ID: s0:12
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: main-session-gpu-transition
-Worktree: /Users/bamboo/Githubs/Lite-OmniJev
+Execution: open
+Owner: none
+Worktree: none
 Blocked by: p0:04, 01, 03
 
 ## What to build

@@ -1,4 +1,4 @@
-# 07: 依据前沿实测展开剩余S0基线闭环
+# 07: 完成开发数据与同条件基线闭环
 
 ID: s0:07
 Milestone: S0
@@ -7,20 +7,20 @@ Status: ready-for-agent
 Execution: claimed
 Owner: main-session-gpu-transition
 Worktree: /Users/bamboo/Githubs/Lite-OmniJev
-Blocked by: p0:04, 01, 03
+Blocked by: p0:04, 01, 02, 03, 10, 11, 13
 
 ## What to build
-把教师/运行时实测结果变成余下模型和模态的session-sized基线票，避免预设未知实验已可执行。
+在一个闭环内完成剩余六类开发数据、整family训练排除、同条件必需模型基线和预算/支持表。来源/模型/探针仅作为本票内执行清单；不再每个小步骤另建票。s0:12数据合同已合并至本票，原记录在archive保留。已认领14继续完成，不另起替代实现。
 
 ## Acceptance criteria
-- [ ] 确认五模型（Jev-Omni-12B、OneJev-4B/27B、E4B/E2B）的固定revision/许可/资产与模态支持矩阵，逐项标实测/缺证据，不支持项不伪填。
-- [ ] 按原设计冻结每模态500开发题与JevBench/MMAU/MVBench公开子集的同条件评测manifest、帧数/时长/token预算、评分器、重复一致和跨机器复跑条件；JevBench匹配195groups/231decisions口径须核实。
-- [ ] 对尚缺的资产/开发数据/各模型基线分别创建可独立验收的垂直票；复用s0-data:01，不把CLINC151类强行塞进单组Choice。
-- [ ] 每张新增票明确预算/现有授权、输出完整证据和失败退出条件；没有许可、预算或精确split则保留对应阻塞。
-- [ ] 更新08的完整直接依赖，只有全部基线与数据闭环验收冻结后才将08从needs-triage转ready-for-agent；S1仍不得启动。
+- [ ] 六评测cohort各500dev，合法原gold/程序真值、版本/许可/来源/媒体hash、确定性构建和train/dev/calibration/holdout family分配/排除完整；截图/跨模态不被省略。封存只接收隔离汇总。
+- [ ] 固定五核心及额外Valen的真实支持/未证实矩阵、官方模板/答案/专用教师读出；CPU支持证据复用10，不重复探针或以Qwen base冒充Valen完整模型。
+- [ ] 在冻结开发集和JevBench231/MMAU1000/MVBench九任务1800协议上完成必需同条件真实基线，原标签、选项顺序、帧数/时长/token预算/原始概率与pU边界、重复与跨机条件可复现；195教师口径未证实保持独立。
+- [ ] 精确代码/配置/模型/数据hash、环境/命令/退出码/耗时/实际未知费用边界及token/时延/评分表齐全，不用合成或CPU代GPU质量，不按模型成绩改集/分母。
+- [ ] 本闭环批量完成后一次相关验证与一次集成结果汇总，交08验收；不为来源调查/小探针反复加review、全量测试或handoff。
 
 ## Evidence
-尚未执行；本票仅冻结验收。所有实跑证据必须包含命令/退出码、代码版本、数据与配置哈希、环境、耗时、成本；失败也保留。
+部分已完成：01/02教师、03数值/网关浏览器、10官方CPU支持矩阵、11公开评分协议、13文本500与训练排除都已有冻结证据；14音频构建实现已交，待父会话实际Linux两遍。详细事实复用baseline-support-matrix.md、development-source-contract.md和对应reports，未完成项保持未勾选。用户2026-10-14要求不细拆/不过度验证，故合并12而非继续增加单模型/来源票。
 
 ## Out of scope
 在规划票偷偷实跑/租卡、S1–S6提前细拆、把未知门槛改成可选。
