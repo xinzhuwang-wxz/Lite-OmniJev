@@ -1,0 +1,74 @@
+{
+  "status": "blocked_dependency_contract_before_processor_load",
+  "exit_code": 1,
+  "code_version": "3dbbe0d68fec6768bd3cd4d8ef92fe06dd179102",
+  "scope": "Bounded Mac CPU diagnostic of primary026 Transformers5.13 source; no environment modification, weights, forward, GPU or native service execution",
+  "wheel": {
+    "name": "transformers-5.13.0-py3-none-any.whl",
+    "sha256": "8adbc1d20bd5463cd6876b2eb7cb31971e1065788e7dc6bc12bab597a7c504b7",
+    "bytes": 11503730,
+    "extracted_bytes": 46647833,
+    "total_new_bytes": 58151563,
+    "expected_sha_manifest": "reports/serve-vllm026-wheelhouse-manifest.json",
+    "sha_match": true,
+    "license": "Apache-2.0"
+  },
+  "source_sha256": {
+    "transformers/dependency_versions_check.py": "523dcce519f7f0c0e32e0e6af43033d931a739dbe4743a70ad2af11a356e9103",
+    "transformers/dependency_versions_table.py": "266dcc52c047ee86ecfddb02e494b3584908644ee8d7afd1b7c19ced7f623ac3",
+    "transformers/models/gemma4/video_processing_gemma4.py": "b06ebf896bf96d99c9c2e95e76bba6e72fff530a8664b5c12a3afd40c32cfc8e",
+    "transformers/models/gemma4/processing_gemma4.py": "b39a9ca831029332010ca0f47c9077a1745c92469f389ffbdd342e8a27903ce9"
+  },
+  "execution": {
+    "command": "PYTHONPATH=artifacts/transformers513-cpu-diag/target:artifacts/mac-media-libs OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false root-existing-python -m scripts.s0_prepare --manifest artifacts/transformers513-cpu-diag/sixcases.json --asset-root artifacts/s0-prepare-local/media --model-dir artifacts/s0-prepare-local/model --output reports/primary-transformers513-cpu-001.json --allow-partial --profile canonical_http",
+    "selected_public_case_indices": [
+      0,
+      20,
+      40,
+      60,
+      80,
+      90
+    ],
+    "selected_categories": [
+      "text",
+      "image",
+      "screenshot",
+      "audio",
+      "video8",
+      "video16"
+    ],
+    "completed_cases": 0,
+    "elapsed_seconds": 0.333,
+    "exception_type": "ImportError",
+    "sanitized_exception": "tokenizers>=0.22.0,<=0.23.0 required; found tokenizers==0.23.3",
+    "phase": "loading_official_processor",
+    "raw_report": "reports/primary-transformers513-cpu-001.json"
+  },
+  "official_static_evidence": {
+    "transformers_version": "5.13.0",
+    "declared_tokenizers": "<=0.23.0,>=0.22.0",
+    "video_model_input_names": [
+      "pixel_values_videos",
+      "video_position_ids"
+    ],
+    "num_frames_per_video_returned": false,
+    "source_observation_only": true
+  },
+  "comparison_to_519": {
+    "status": "pending_no_runtime_outputs",
+    "expanded_id_differences": null,
+    "tensor_sha_differences": null,
+    "do_not_interpret_as_native_parity": true
+  },
+  "minimum_next_requirement": "Isolated Mac compatible tokenizers binary wheel matching an admitted <=0.23.0 release; do not bypass official dependency check or modify current env",
+  "cost": {
+    "new_paid_resources": 0,
+    "gpu_used": false,
+    "weights_loaded": false
+  },
+  "pending": [
+    "six realCPU case compilation and comparison to5.19",
+    "primary026 Torch2.11/actualLinux service execution",
+    "native vLLM/GPU and numerical probability gates"
+  ]
+}

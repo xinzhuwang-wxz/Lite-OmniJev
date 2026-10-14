@@ -1,0 +1,39 @@
+{
+  "status": "blocked",
+  "input_profile": "canonical-http-v1",
+  "exit_code": 1,
+  "complete_100_cases": false,
+  "pending_vllm_processor_and_transport": true,
+  "scope": "CPU processor only; no weights, forward, GPU, labels or quality acceptance",
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit"
+  },
+  "cost": {
+    "new_paid_resources": 0
+  },
+  "cases": [],
+  "manifest_sha256": "081b168b36f11dace622df259fbc10db078cc92bc6fe43ddaa55063390968aa6",
+  "excluded_training_families": [
+    "arithmetic",
+    "clevrer-train-00000",
+    "clotho-corneille_city01.wav",
+    "gui-train-0000628297785099"
+  ],
+  "source_sha256": {
+    "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+    "train/multimodal.py": "f1516eea7fe6fc1487a7d5456bb5519207d455f89611f1ce09b728ab6ff44fee"
+  },
+  "code_version": "3dbbe0d68fec6768bd3cd4d8ef92fe06dd179102",
+  "model_files": {
+    "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+    "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+    "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+    "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+    "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5"
+  },
+  "phase": "loading_official_processor",
+  "error_type": "ImportError",
+  "elapsed_seconds": 0.341
+}

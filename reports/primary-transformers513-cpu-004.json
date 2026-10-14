@@ -1,0 +1,790 @@
+{
+  "status": "partial",
+  "input_profile": "canonical-http-v1",
+  "exit_code": 0,
+  "complete_100_cases": false,
+  "pending_vllm_processor_and_transport": true,
+  "scope": "CPU processor only; no weights, forward, GPU, labels or quality acceptance",
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "transformers": "5.13.0",
+    "packages": {
+      "torch": "2.14.1",
+      "torchvision": "0.29.0",
+      "pillow": "11.3.0",
+      "numpy": "2.4.6"
+    }
+  },
+  "cost": {
+    "new_paid_resources": 0
+  },
+  "cases": [
+    {
+      "input_profile": "canonical-http-v1",
+      "configuration": {
+        "max_bytes": 67108864,
+        "max_media_items": 8,
+        "max_total_image_pixels": 40000000,
+        "max_audio_seconds": 30,
+        "max_video_seconds": 60,
+        "video_frames": 8,
+        "truncation": false,
+        "enable_thinking": false,
+        "add_special_tokens": false
+      },
+      "prompt_sha256": "5ec787cb01e4b3abf5fee4016b01e5b8ea088a87da8527fa75a7524729ece6cc",
+      "payload_sha256": "27e708617dd83938f3a8a176a345fcb85990be70a33cd3da20e9560ca254e7f3",
+      "media_sha256": [],
+      "video_metadata": [],
+      "decoded_video_frame_sha256": [],
+      "answer_count_including_u": 3,
+      "answer_token_mapping_sha256": "7c94e39bb7ed2fed2d0696a28fd683b47633c946f6769bc6624cd542a47ba4b5",
+      "generation_boundary": "passed",
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            1,
+            65
+          ],
+          "dtype": "torch.int64",
+          "sha256": "6fa7cac4a3b4ca1448f763ebd3462dd18121d2d3aaefc51a9ed70b960e421561"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            65
+          ],
+          "dtype": "torch.int64",
+          "sha256": "5c040bd77ac66ba94a9ff16f0df8b775142b1d212e907a71ff6d6663c1dca251"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            65
+          ],
+          "dtype": "torch.int64",
+          "sha256": "20aa497d9bd4c19e851e3df6e386700faada213db38acf7679f6365832830b3d"
+        }
+      },
+      "canonical_media": [],
+      "http_messages_sha256": "a79e3c9a2283828350e8c90bd5c1a89c3df4a4e6b5f9c0a0bbf84e429b2bc476",
+      "http_media_io_kwargs_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "id": "public-prepare-text-00",
+      "category": "text",
+      "primitive": "choice",
+      "provenance": {
+        "modality": [
+          "text"
+        ],
+        "source_dataset": "programmatic-arithmetic",
+        "source_revision": "v1",
+        "source_sha256": "c28c5cbf0ac9f78ae3b10c74bb2f094ee4d7e576b645202685b0fddf1bcf0059",
+        "license": "CC0-1.0",
+        "usage": "research",
+        "pool": "dev",
+        "family_id": "arithmetic",
+        "data_version": "s0-cpu-public-001"
+      }
+    },
+    {
+      "input_profile": "canonical-http-v1",
+      "configuration": {
+        "max_bytes": 67108864,
+        "max_media_items": 8,
+        "max_total_image_pixels": 40000000,
+        "max_audio_seconds": 30,
+        "max_video_seconds": 60,
+        "video_frames": 8,
+        "truncation": false,
+        "enable_thinking": false,
+        "add_special_tokens": false
+      },
+      "prompt_sha256": "8d0e8dd0935f1ce3fbd681fa826e1e7bc1adf8cfd39104b2f5217eaca25315bf",
+      "payload_sha256": "100390dd60d113e46c92ce5be772f0096808cfe31fe5d86efef720bfa2d37e50",
+      "media_sha256": [
+        "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef"
+      ],
+      "video_metadata": [],
+      "decoded_video_frame_sha256": [],
+      "answer_count_including_u": 3,
+      "answer_token_mapping_sha256": "b373962ddf54b7996455c1eabb52d37583dc3f07d48d2aeb894c8aeff4be8c63",
+      "generation_boundary": "passed",
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            1,
+            339
+          ],
+          "dtype": "torch.int64",
+          "sha256": "acd53859908eba72bd87c04424850edd0c57ba94127282b6928d2c15d6193536"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            339
+          ],
+          "dtype": "torch.int64",
+          "sha256": "b92b7656ae4a9d78b736aeea6bb9727d1076c9aeb10d3508b088d3abcbba5f40"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            339
+          ],
+          "dtype": "torch.int64",
+          "sha256": "c29cb73bbcaba1bb4d798faa684c859f5edad4a14efd7553ce0172a1b810f912"
+        },
+        "pixel_values": {
+          "shape": [
+            1,
+            2520,
+            768
+          ],
+          "dtype": "torch.float32",
+          "sha256": "baeefdfe112b05d8d806fb2026e23c292fcb29ef90ddc150f5e24a687307d390"
+        },
+        "image_position_ids": {
+          "shape": [
+            1,
+            2520,
+            2
+          ],
+          "dtype": "torch.int64",
+          "sha256": "2b43746b5b51c7effad4d6b2102bb337dddb82689e3869b02b6abdaf37af77ff"
+        }
+      },
+      "canonical_media": [
+        {
+          "type": "image",
+          "encoding": "RGB PNG compress_level=6 optimize=false",
+          "source_rgb_sha256": "83362db9c5512e01fd90c205de1ae40a1a6534c5b204239a997d497cf8f6d5fe",
+          "canonical_bytes_sha256": "01a7535d3547a774574b6f77ab4ba7f07467862ba4248d77295a02c3a51dff86",
+          "canonical_rgb_sha256": "83362db9c5512e01fd90c205de1ae40a1a6534c5b204239a997d497cf8f6d5fe"
+        }
+      ],
+      "http_messages_sha256": "d8b8ff9abeb9fc5c1da52be411d29a57e5e04888a7f38e35bf33f8021bf36edc",
+      "http_media_io_kwargs_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "id": "public-prepare-image-00",
+      "category": "image",
+      "primitive": "noul",
+      "provenance": {
+        "modality": [
+          "image"
+        ],
+        "source_dataset": "https://data.csail.mit.edu/clevrer/videos/train/video_train.zip",
+        "source_revision": "archive-sha256:c7401bc86f7ff230bda3b193619f41a79828bed1f0890948b16dd57c89dfdd3f",
+        "source_sha256": "db19e3da9a38d6707e5c5c05e901b3c3c871b5feab70d123ab9b962ee64539ef",
+        "license": "CC0-1.0",
+        "usage": "research",
+        "pool": "dev",
+        "family_id": "clevrer-train-00000",
+        "data_version": "s0-cpu-public-001"
+      }
+    },
+    {
+      "input_profile": "canonical-http-v1",
+      "configuration": {
+        "max_bytes": 67108864,
+        "max_media_items": 8,
+        "max_total_image_pixels": 40000000,
+        "max_audio_seconds": 30,
+        "max_video_seconds": 60,
+        "video_frames": 8,
+        "truncation": false,
+        "enable_thinking": false,
+        "add_special_tokens": false
+      },
+      "prompt_sha256": "4792bc9e57c7b13de5abb6a7f295f156f8f1ac6d511b94d8bca1cbbb2040f85f",
+      "payload_sha256": "aad0eecdc237f59312e2717f08846fc6b48732d618ada7b0844f1eb26262c232",
+      "media_sha256": [
+        "fb6db515e4432c3e7799742458d208a15ba9c8bae76ccc104ee3f0cdbb8ae87e"
+      ],
+      "video_metadata": [],
+      "decoded_video_frame_sha256": [],
+      "answer_count_including_u": 3,
+      "answer_token_mapping_sha256": "b373962ddf54b7996455c1eabb52d37583dc3f07d48d2aeb894c8aeff4be8c63",
+      "generation_boundary": "passed",
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            1,
+            346
+          ],
+          "dtype": "torch.int64",
+          "sha256": "a9b76aeaf1099aedf92fe3f748c8e24b1be4c558659241d10acfa4decdac6ab2"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            346
+          ],
+          "dtype": "torch.int64",
+          "sha256": "9c383520d3aa93ee26c4982376dd573ae6315356eef17631d12c5a06e76568a3"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            346
+          ],
+          "dtype": "torch.int64",
+          "sha256": "f6586614ade3bc45974c488f4242f60bc157378fccbd389d5ca5c8eec8d1cf7d"
+        },
+        "pixel_values": {
+          "shape": [
+            1,
+            2520,
+            768
+          ],
+          "dtype": "torch.float32",
+          "sha256": "a0d56affdf6fb03b8d05b81c6ef318f513c963f5f00b1b5996acd1dc65642c0e"
+        },
+        "image_position_ids": {
+          "shape": [
+            1,
+            2520,
+            2
+          ],
+          "dtype": "torch.int64",
+          "sha256": "0daeda80cb08f8ce4edc23ccbaf974dbaf89c21d243064c0252bbc29f3d75e80"
+        }
+      },
+      "canonical_media": [
+        {
+          "type": "image",
+          "encoding": "RGB PNG compress_level=6 optimize=false",
+          "source_rgb_sha256": "5fa549667529b09b10190220b9fbd2e689975339e937df049303989481fa59b8",
+          "canonical_bytes_sha256": "2972045a6d36656c4a33e11bee5341a9e6e0f3b2ab296adb503f2688ce284d6f",
+          "canonical_rgb_sha256": "5fa549667529b09b10190220b9fbd2e689975339e937df049303989481fa59b8"
+        }
+      ],
+      "http_messages_sha256": "95da064748dae87bdfc9186d547f17562a125c4933db9bff2e70dcb9d2c217e0",
+      "http_media_io_kwargs_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "id": "public-prepare-screenshot-00",
+      "category": "screenshot",
+      "primitive": "noul",
+      "provenance": {
+        "modality": [
+          "image"
+        ],
+        "source_dataset": "hflqf88888/GUIOdyssey",
+        "source_revision": "61632d0f3f4d51d7e9561ce4f84347dd06b2019d",
+        "source_sha256": "fb6db515e4432c3e7799742458d208a15ba9c8bae76ccc104ee3f0cdbb8ae87e",
+        "license": "CC-BY-4.0",
+        "usage": "research",
+        "pool": "dev",
+        "family_id": "gui-train-0000628297785099",
+        "data_version": "s0-cpu-public-001"
+      }
+    },
+    {
+      "input_profile": "canonical-http-v1",
+      "configuration": {
+        "max_bytes": 67108864,
+        "max_media_items": 8,
+        "max_total_image_pixels": 40000000,
+        "max_audio_seconds": 30,
+        "max_video_seconds": 60,
+        "video_frames": 8,
+        "truncation": false,
+        "enable_thinking": false,
+        "add_special_tokens": false
+      },
+      "prompt_sha256": "3fbdd1c86831a8958359df31928f762c78a2284a85b15d68efefdd573f37fb45",
+      "payload_sha256": "fd753b9db8bbeee914e0bfb586bab2fac1df32e672947d6f16df37684c909e2f",
+      "media_sha256": [
+        "e8d97e6b735bd7ba76b130e4629ae85e6d125a51d952867e8585ed1bddeb1002"
+      ],
+      "video_metadata": [],
+      "decoded_video_frame_sha256": [],
+      "answer_count_including_u": 3,
+      "answer_token_mapping_sha256": "b373962ddf54b7996455c1eabb52d37583dc3f07d48d2aeb894c8aeff4be8c63",
+      "generation_boundary": "passed",
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            1,
+            500
+          ],
+          "dtype": "torch.int64",
+          "sha256": "fc9ed3cb01c05813070e875307efe954a3539569ba7b7e6087a62cc767157bdb"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            500
+          ],
+          "dtype": "torch.int64",
+          "sha256": "d30c63f71fc66842b8b2c450afedc8c5b3b3498b8b43a602cda3533eba488c48"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            500
+          ],
+          "dtype": "torch.int64",
+          "sha256": "127621d6a9cfa7c276a21ede7fb171ac1269a0131fc193504a94dfa748f4a07a"
+        },
+        "input_features": {
+          "shape": [
+            1,
+            1693,
+            128
+          ],
+          "dtype": "torch.float32",
+          "sha256": "a64fa953662f85f9a2e6f8ff73688a0b38808987cd274b3024ac8bbfe18c24cf"
+        },
+        "input_features_mask": {
+          "shape": [
+            1,
+            1693
+          ],
+          "dtype": "torch.bool",
+          "sha256": "81d13155e6dc442859588feae1787bb99e23f65ed6a098907b9f401c62986784"
+        }
+      },
+      "canonical_media": [
+        {
+          "type": "audio",
+          "encoding": "mono 16000Hz PCM16 WAV; round(clip(float,-1,1)*32767)",
+          "sample_rate": 16000,
+          "frames": 270865,
+          "source_float32_sha256": "13a26d0b1426d488b38940c2c2d18fdbf9a79109afc9d06cd8455ed01e1f9762",
+          "canonical_bytes_sha256": "c54a54c5a7578e5b0786c02c464651c4cc4f186d5dfb647ca15460c8b9d87f11",
+          "canonical_pcm16_sha256": "7c495ed00ba7758b98287f0b7bbf21145ec73463761976c615cdb3c851b5765e",
+          "canonical_float32_sha256": "42c9893ea51fa05cb9227058c79a86063757f1f1ca41409313d8eab66af55caa"
+        }
+      ],
+      "http_messages_sha256": "cbde5faa83849bff5791a3d78368b4b43a097b13e3715ee38eb8bd7909c3c93a",
+      "http_media_io_kwargs_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "id": "public-prepare-audio-00",
+      "category": "audio",
+      "primitive": "noul",
+      "provenance": {
+        "modality": [
+          "audio"
+        ],
+        "source_dataset": "https://zenodo.org/records/6473207",
+        "source_revision": "6473207",
+        "source_sha256": "e8d97e6b735bd7ba76b130e4629ae85e6d125a51d952867e8585ed1bddeb1002",
+        "license": "CC0-1.0",
+        "usage": "research",
+        "pool": "dev",
+        "family_id": "clotho-corneille_city01.wav",
+        "data_version": "s0-cpu-public-001"
+      }
+    },
+    {
+      "input_profile": "canonical-http-v1",
+      "configuration": {
+        "max_bytes": 67108864,
+        "max_media_items": 8,
+        "max_total_image_pixels": 40000000,
+        "max_audio_seconds": 30,
+        "max_video_seconds": 60,
+        "video_frames": 8,
+        "truncation": false,
+        "enable_thinking": false,
+        "add_special_tokens": false
+      },
+      "prompt_sha256": "462b9bec8bb3c8f84f53d0d0a7277c5bd69f5919f2f88d07454ef9859e32d82d",
+      "payload_sha256": "d63bcf7b5175abce243d006e371e781b28b2e041e272212c5e5cc72fb33ae40b",
+      "media_sha256": [
+        "0fa71e14a9f5d1852bbba270808037ee29f329090189c38dea11844e2b31c060"
+      ],
+      "video_metadata": [
+        {
+          "fps": 25.0,
+          "total_num_frames": 128,
+          "duration": 5.12,
+          "frames_indices": [
+            0,
+            18,
+            36,
+            54,
+            73,
+            91,
+            109,
+            127
+          ],
+          "video_backend": "canonical_jpeg",
+          "width": 640,
+          "height": 427
+        }
+      ],
+      "decoded_video_frame_sha256": [
+        [
+          "7ac194d497b10e5119191b2476c9c3abb5731a78503bdb36867ddfffa50059ee",
+          "07f4c0883d10c203e9668789f7588efc15c30e1361795fd4ed2c8ab677edc311",
+          "452945c74efe57b73c880dc1c3d37d40bb1a1111e601af088f1adc6db4a7bf67",
+          "d048b8c264c6258134c95ea7d7eb279f7da9eba00fbb7b534569d393b20493af",
+          "809c6c541de768a053591ee5e3689c4f0655216ff1934bf62d15865569abab6f",
+          "99c4e83fa8edccb3fd43762facab2c8ab4e91b85608b71d6671b3ee1f3931d07",
+          "ace4c400e143ff659eb77c90a7be4bfbe423f65c1200e3b9723ce61517165fc8",
+          "de0e3de17a27f729c250f798d908aaa1ac2e4ac96f5913f6eb44a91acc73b1ab"
+        ]
+      ],
+      "answer_count_including_u": 4,
+      "answer_token_mapping_sha256": "ef6b0db0ad1d3094b327b17e225e14c2bc8be18c57d2d623e73d0a4eb457edd7",
+      "generation_boundary": "passed",
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            1,
+            638
+          ],
+          "dtype": "torch.int64",
+          "sha256": "b5da0d9a0becde31c25d47218b8294596f2ce23fea271763fd180a6df00d5b5a"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            638
+          ],
+          "dtype": "torch.int64",
+          "sha256": "4f789dbb6f2f77fb9f2347f58d1dbf702d9982b085781f627f10ce1e64033aef"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            638
+          ],
+          "dtype": "torch.int64",
+          "sha256": "79137296fcd9ad867d32a83d5a91e1c7f86445353170956325b8ba4328f62c5e"
+        },
+        "pixel_values_videos": {
+          "shape": [
+            1,
+            8,
+            630,
+            768
+          ],
+          "dtype": "torch.float32",
+          "sha256": "a3156bfda82c2154ddd3676cfff6696cd75d8cedf726fdf6c62b82ae279d107e"
+        },
+        "video_position_ids": {
+          "shape": [
+            1,
+            8,
+            630,
+            2
+          ],
+          "dtype": "torch.int64",
+          "sha256": "e8e5149840ddfe8c86e606272909f2e2d766061a726ac0e616e0adbe78f98163"
+        }
+      },
+      "canonical_media": [
+        {
+          "type": "video",
+          "encoding": "RGB JPEG quality=95 subsampling=0 optimize=false progressive=false",
+          "source_rgb_sha256": [
+            "dbfec1852caf67aca5b04f5672fcff76c7880c151040c438526ff03def327a7d",
+            "a5a222cb7bd6513b44206e24d4c26e7a303bbdff20716d6fccb8a994a6036f23",
+            "5a91fb13dce2f9cbd61f2a781eea9368b76f98d1264247273b176153755b0c91",
+            "44dcaa8df5b5835bfb06bf88d47559ed548e6162f343933054990512c9544656",
+            "ac6781d44391087d49c0fb294bda5eefb604635474ca0b3b26160ccf399fac9a",
+            "ad83eedc11ae63f63919c1d248443f469b28c8b48a39d17785af34ee48932af0",
+            "30192cecc27087d30276fb0c1945c341f6c1f9d27e7e6c23bc28d7c83a88635f",
+            "720012368bb5f981ae4c06038599ab81766ee2c60d3ddd4e5a17953166d0ffb8"
+          ],
+          "canonical_frame_bytes_sha256": [
+            "652897bf430bc4f8aecbcecd4a8298f5a28999b97e8906e743c018905b48390a",
+            "107be1016e8669e2693fa0ef0cd4aea3bcabefad6835d547f0fc070675a06c3f",
+            "413718476502038dbf0b45a44e30decb6cba04d5b076c6982087533fb498d09b",
+            "aa13657720c8b018e360a21824b3d84e1ddbf720b6b2439ddc572b86eaf2f603",
+            "853281f42893623056e26390feb24e08bb24a974f888f05ead46bdb885317afb",
+            "fbb22ec29b2d2a9837063eff1226d3dc1a6decddb7021e814484936f5b4cf03f",
+            "efa9a1e701bed3fa542f8bd84bfb0b667b65d4e958b536e6062c4e7e9bab9bf8",
+            "f9e4c81e7415c1de6cc2b6b886a968fd3f266ba97d7881ab8f6b91bb5b9da26a"
+          ],
+          "canonical_rgb_sha256": [
+            "7ac194d497b10e5119191b2476c9c3abb5731a78503bdb36867ddfffa50059ee",
+            "07f4c0883d10c203e9668789f7588efc15c30e1361795fd4ed2c8ab677edc311",
+            "452945c74efe57b73c880dc1c3d37d40bb1a1111e601af088f1adc6db4a7bf67",
+            "d048b8c264c6258134c95ea7d7eb279f7da9eba00fbb7b534569d393b20493af",
+            "809c6c541de768a053591ee5e3689c4f0655216ff1934bf62d15865569abab6f",
+            "99c4e83fa8edccb3fd43762facab2c8ab4e91b85608b71d6671b3ee1f3931d07",
+            "ace4c400e143ff659eb77c90a7be4bfbe423f65c1200e3b9723ce61517165fc8",
+            "de0e3de17a27f729c250f798d908aaa1ac2e4ac96f5913f6eb44a91acc73b1ab"
+          ],
+          "metadata": {
+            "fps": 25.0,
+            "frames_indices": [
+              0,
+              18,
+              36,
+              54,
+              73,
+              91,
+              109,
+              127
+            ],
+            "total_num_frames": 128,
+            "duration": 5.12,
+            "do_sample_frames": false
+          }
+        }
+      ],
+      "http_messages_sha256": "893b16c5ba087fd8aed7b5aa1914fddf4e9673dd10a75868d70c26d3eb69bbeb",
+      "http_media_io_kwargs_sha256": "97f4e62da81dbead203c66f004f7e45557d6cf4a96057ab19159c2c25ed51ff1",
+      "id": "public-prepare-video-00",
+      "category": "video",
+      "primitive": "score",
+      "provenance": {
+        "modality": [
+          "video"
+        ],
+        "source_dataset": "https://data.csail.mit.edu/clevrer/videos/train/video_train.zip",
+        "source_revision": "archive-sha256:c7401bc86f7ff230bda3b193619f41a79828bed1f0890948b16dd57c89dfdd3f",
+        "source_sha256": "0fa71e14a9f5d1852bbba270808037ee29f329090189c38dea11844e2b31c060",
+        "license": "CC0-1.0",
+        "usage": "research",
+        "pool": "dev",
+        "family_id": "clevrer-train-00000",
+        "data_version": "s0-cpu-public-001"
+      }
+    },
+    {
+      "input_profile": "canonical-http-v1",
+      "configuration": {
+        "max_bytes": 67108864,
+        "max_media_items": 8,
+        "max_total_image_pixels": 40000000,
+        "max_audio_seconds": 30,
+        "max_video_seconds": 60,
+        "video_frames": 16,
+        "truncation": false,
+        "enable_thinking": false,
+        "add_special_tokens": false
+      },
+      "prompt_sha256": "be40371ddfcd59d708616c804640f35edcea4983a42045453dea45705e5beea4",
+      "payload_sha256": "0774bb0dba53f73214c388b88ec46a50c46ba61e18571da83fe05286c51849b0",
+      "media_sha256": [
+        "0fa71e14a9f5d1852bbba270808037ee29f329090189c38dea11844e2b31c060"
+      ],
+      "video_metadata": [
+        {
+          "fps": 25.0,
+          "total_num_frames": 128,
+          "duration": 5.12,
+          "frames_indices": [
+            0,
+            8,
+            17,
+            25,
+            34,
+            42,
+            51,
+            59,
+            68,
+            76,
+            85,
+            93,
+            102,
+            110,
+            119,
+            127
+          ],
+          "video_backend": "canonical_jpeg",
+          "width": 640,
+          "height": 427
+        }
+      ],
+      "decoded_video_frame_sha256": [
+        [
+          "7ac194d497b10e5119191b2476c9c3abb5731a78503bdb36867ddfffa50059ee",
+          "677ab45a6f2ea6cdd3063711ae9c37cd2ecf2bcb6e621537bccfdfa9d93c0550",
+          "cb503ee00e56ca187a6a8d6664a67dcc0a9e2e249feef9ce8a8ba4261baac061",
+          "03feac31307986b9460e31ca1db2d309eef308756931c228c78296cb598403af",
+          "317bfdc728718c049c1a4d28a665c3086e70c8f836417dde03044d0b4300f885",
+          "8433e68c3a085af5a21fa481abce4b1f0a8567b9a094214f97f2c7c49e683afd",
+          "5b1a6ab7b7c62fba83d03df450c814f50554670cb8522a4546f53d68c9aa322d",
+          "df0c0a116db469c1ae10b834cc99b3c87dd4249b54f35b96f0bf8f782d0db0fd",
+          "73f842a2fc02d8081c23f809a2f0402caa98ab3c0eb3c285f068fd59ced84678",
+          "d3a01fb6d8a0b693d726fe5157dce6242862190212dea369930f8be97198e1b1",
+          "0aa6a01f1712c187c52cd36b6bcb0e1db1bd9b5cfe3acf122e8f85708d59fa00",
+          "f31aeb4fb0383f25fa2add14d36363fb0f6107e5280415301f4fc7bd136eb9a0",
+          "671d06781d0fcb703e9dab2ea22262599f491204ccf7e75805b1b35c7c517a15",
+          "09478a1dfb5cb26a9e14f16abe60c057d994314567010896617fc9b949bb0c31",
+          "cb2862e871568f0ef7be6471328b049fdedba9c3dbefd950d5b55dcdd418702e",
+          "de0e3de17a27f729c250f798d908aaa1ac2e4ac96f5913f6eb44a91acc73b1ab"
+        ]
+      ],
+      "answer_count_including_u": 4,
+      "answer_token_mapping_sha256": "ef6b0db0ad1d3094b327b17e225e14c2bc8be18c57d2d623e73d0a4eb457edd7",
+      "generation_boundary": "passed",
+      "tensors": {
+        "input_ids": {
+          "shape": [
+            1,
+            1190
+          ],
+          "dtype": "torch.int64",
+          "sha256": "0a575878b02796639cae6bb2d0deaeb9ccb1e52946bb92e0a49e30c7e83e84db"
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            1190
+          ],
+          "dtype": "torch.int64",
+          "sha256": "3d3c44bcee403e70b004f1b55a6e5f5df180686f1a99fd097150c4c2e852783e"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            1190
+          ],
+          "dtype": "torch.int64",
+          "sha256": "6bcc6d80a66d3422d1879ac39b17ab83f032523098cacc897fe545f4ec62aeba"
+        },
+        "pixel_values_videos": {
+          "shape": [
+            1,
+            16,
+            630,
+            768
+          ],
+          "dtype": "torch.float32",
+          "sha256": "3f8ab6ec675c8c717a11a180d5eb4880fbf23a0c55230f5140197f6837790739"
+        },
+        "video_position_ids": {
+          "shape": [
+            1,
+            16,
+            630,
+            2
+          ],
+          "dtype": "torch.int64",
+          "sha256": "84d644f241a28c0299f9c61036dd56bba6aa8d247e865f0c4d7be44e118c661a"
+        }
+      },
+      "canonical_media": [
+        {
+          "type": "video",
+          "encoding": "RGB JPEG quality=95 subsampling=0 optimize=false progressive=false",
+          "source_rgb_sha256": [
+            "dbfec1852caf67aca5b04f5672fcff76c7880c151040c438526ff03def327a7d",
+            "26d8182d156c92f391fd7876ce1dd3de698e42e9783067c15eec73458d37f2fc",
+            "e27af454f247813ecb576f31d0187315331e6fc713ef4e9bdbd30cd3f7f39016",
+            "5d90685fb67bd8adc87175459b6296365c3f3f1592c485334b2c488276b7aade",
+            "0980e1be7a7b3d54a94abaafe153782a5f114c90dcab0dc2abd0b50df9f6a6f8",
+            "51ecbbfc39bbefed3622e093a707fb8e5d705b89819f72644978501e1243cc66",
+            "b55dabfbe5482602461452bf47d4ffe6a2e2435e604b45176c30bc331dd795ca",
+            "45982b4befa7a2d4f2f364b5a32b844a78a90048c64cffa23b73e18bea143560",
+            "5c004096a1f71030bfe2ad2d1cdf36e4f6445c37445879b93aaf4cc68911e9c3",
+            "d01c63285099f35639df7fd9733bb779b57f091faf46ba642ada402c878d9324",
+            "c65e79e9bf6e4eedb9e1b4cad7a7d671a20366976c383bcb5d214da2d378cecf",
+            "4ee833da8ad3b680c01afda9970052a2de4389f7431f57fa4f621ae61ace0d2d",
+            "3fb49f6a79745a27cbb73840501792c980d1124857d597fda7f8a4843e61edb5",
+            "e88be6552055e825a26e02054de02929913d4cc39ab2d1dea285b9fbce63e4d2",
+            "b1e8bf180da9adfe42c193143f08a6a3d549cb9d9921d38370a45a0a59ee68a0",
+            "720012368bb5f981ae4c06038599ab81766ee2c60d3ddd4e5a17953166d0ffb8"
+          ],
+          "canonical_frame_bytes_sha256": [
+            "652897bf430bc4f8aecbcecd4a8298f5a28999b97e8906e743c018905b48390a",
+            "f8fadf99cd83538fa1f8365e833de2b7941d8b6301353a81d0ae4447beb7f65f",
+            "1652fdeadd16f70d15b67dd58ff483985d3ed5166c72bdc887178f07f7dab59f",
+            "a9e9e5f64e633871b9dc8d5ea420c0ff7864817e8a77b09b2f087e3e3a67d6ef",
+            "45082763ab0cc010afd15fa14791204d79a7e16293a56b534c42442a63793272",
+            "8eda61fb881d605769eab1ea6b090817290b24dc41b22dbd80c8d9fc1a068277",
+            "40e2c0c7f96e9b1ff88d242ad8144ad3ec9201a1118b4d17c98ab91c8fc354f0",
+            "7f0eec143d0f0c96dca961d530b65c279c384055fe3389eaa280e7f072a8ee15",
+            "bdac2203025927d6f9efcd6ffedc3e33869cc117a320a8c4f9d2620aceb25077",
+            "addae2859d0312e18cb354991c2957a5b5608411a197074a25c38431f83a65c2",
+            "ec4304a55e803e2f62ea0838dbf2b4701485663f468c98b6ce787965eae925bd",
+            "a7a44a29030d9b0121673d0e2aee5e4d608cc05b96ebf34ebf29dca23ddbe243",
+            "71eb52a311247ba01b2feb63aa7a6926b80aeeaa7a2ad1681f9f9218838d3dbe",
+            "7ed50fc236580f264245427b8092bfe3fad105a984b59363c5ac7b6b865621c6",
+            "8e6a9f2b1f18c064165e89a11fc9a6945100e4edea7abdc5ef864ea0db49a755",
+            "f9e4c81e7415c1de6cc2b6b886a968fd3f266ba97d7881ab8f6b91bb5b9da26a"
+          ],
+          "canonical_rgb_sha256": [
+            "7ac194d497b10e5119191b2476c9c3abb5731a78503bdb36867ddfffa50059ee",
+            "677ab45a6f2ea6cdd3063711ae9c37cd2ecf2bcb6e621537bccfdfa9d93c0550",
+            "cb503ee00e56ca187a6a8d6664a67dcc0a9e2e249feef9ce8a8ba4261baac061",
+            "03feac31307986b9460e31ca1db2d309eef308756931c228c78296cb598403af",
+            "317bfdc728718c049c1a4d28a665c3086e70c8f836417dde03044d0b4300f885",
+            "8433e68c3a085af5a21fa481abce4b1f0a8567b9a094214f97f2c7c49e683afd",
+            "5b1a6ab7b7c62fba83d03df450c814f50554670cb8522a4546f53d68c9aa322d",
+            "df0c0a116db469c1ae10b834cc99b3c87dd4249b54f35b96f0bf8f782d0db0fd",
+            "73f842a2fc02d8081c23f809a2f0402caa98ab3c0eb3c285f068fd59ced84678",
+            "d3a01fb6d8a0b693d726fe5157dce6242862190212dea369930f8be97198e1b1",
+            "0aa6a01f1712c187c52cd36b6bcb0e1db1bd9b5cfe3acf122e8f85708d59fa00",
+            "f31aeb4fb0383f25fa2add14d36363fb0f6107e5280415301f4fc7bd136eb9a0",
+            "671d06781d0fcb703e9dab2ea22262599f491204ccf7e75805b1b35c7c517a15",
+            "09478a1dfb5cb26a9e14f16abe60c057d994314567010896617fc9b949bb0c31",
+            "cb2862e871568f0ef7be6471328b049fdedba9c3dbefd950d5b55dcdd418702e",
+            "de0e3de17a27f729c250f798d908aaa1ac2e4ac96f5913f6eb44a91acc73b1ab"
+          ],
+          "metadata": {
+            "fps": 25.0,
+            "frames_indices": [
+              0,
+              8,
+              17,
+              25,
+              34,
+              42,
+              51,
+              59,
+              68,
+              76,
+              85,
+              93,
+              102,
+              110,
+              119,
+              127
+            ],
+            "total_num_frames": 128,
+            "duration": 5.12,
+            "do_sample_frames": false
+          }
+        }
+      ],
+      "http_messages_sha256": "dd1e3e1b71e8d3463d1563c78621a78f646c9532a8e4366b7ddcdfa75ae23131",
+      "http_media_io_kwargs_sha256": "96358068733a48b5c9a06b1703171160d239d6095bb638995928df764fc337d9",
+      "id": "public-prepare-video-10",
+      "category": "video",
+      "primitive": "score",
+      "provenance": {
+        "modality": [
+          "video"
+        ],
+        "source_dataset": "https://data.csail.mit.edu/clevrer/videos/train/video_train.zip",
+        "source_revision": "archive-sha256:c7401bc86f7ff230bda3b193619f41a79828bed1f0890948b16dd57c89dfdd3f",
+        "source_sha256": "0fa71e14a9f5d1852bbba270808037ee29f329090189c38dea11844e2b31c060",
+        "license": "CC0-1.0",
+        "usage": "research",
+        "pool": "dev",
+        "family_id": "clevrer-train-00000",
+        "data_version": "s0-cpu-public-001"
+      }
+    }
+  ],
+  "manifest_sha256": "081b168b36f11dace622df259fbc10db078cc92bc6fe43ddaa55063390968aa6",
+  "excluded_training_families": [
+    "arithmetic",
+    "clevrer-train-00000",
+    "clotho-corneille_city01.wav",
+    "gui-train-0000628297785099"
+  ],
+  "source_sha256": {
+    "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+    "train/multimodal.py": "f1516eea7fe6fc1487a7d5456bb5519207d455f89611f1ce09b728ab6ff44fee"
+  },
+  "code_version": "3dbbe0d68fec6768bd3cd4d8ef92fe06dd179102",
+  "model_files": {
+    "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+    "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+    "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+    "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+    "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5"
+  },
+  "phase": "finished",
+  "weights_loaded": false,
+  "gpu_used": false,
+  "elapsed_seconds": 6.184
+}

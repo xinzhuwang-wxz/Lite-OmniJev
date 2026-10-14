@@ -139,3 +139,26 @@ TOKENIZERS_PARALLELISM=false /path/to/existing/python -m scripts.s0_prepare \
 证据见 `reports/linux-video-processor-compat-001.json`：Mac5.19真实8/16帧网关CPU通过；
 Linux5.17修复前诊断定位明确，修复后有界网关batch仍exit137，Linux真实网关CPU验收
 保持pending。未发现FFmpeg subprocess失败，未据猜测调整线程参数，未重跑已知OOM。
+
+## 主服务026的Transformers5.13诊断
+
+`reports/primary-transformers513-cpu-diagnostic-001.json`记录一次独立Mac target检查：
+既有026官方pure-Python wheel的SHA与wheelhouse manifest一致；wheel加解包58.15MB。
+`PYTHONPATH`先放该target、再放只读媒体target、最后由现有Python使用原site-packages，
+没有安装包或覆盖环境。六个公开case选text/image/screenshot/audio/video8/video16。
+
+初次运行在processor加载前阻断：官方5.13要求tokenizers>=0.22.0且<=0.23.0，
+Mac现有0.23.3不满足。保留CLI失败报告`primary-transformers513-cpu-001.json`至
+`primary-transformers513-cpu-003.json`，未绕过官方依赖校验。
+
+后续通过既有SSH mux中转取得官方macOS arm64 `tokenizers-0.22.2` wheel，
+大小2,981,472字节，SHA256 `1e418a55456beedca4621dbab65a318981467a2b188e982a23e117f115ce5001`，
+解包进同一隔离target；root环境未改。`reports/primary-transformers513-cpu-004.json`
+是真实CPU canonical_http六case结果，状态为partial（显式六case，不是100题验收），exit 0。
+`reports/primary-transformers513-cpu-comparison-001.json`与旧5.19参考逐case比较：答案映射、HTTP
+messages hash与input_ids hash全部一致；两条视频case唯一字段差异是5.13缺少`num_frames_per_video`。
+这与5.17诊断一致：视频必要字段仍是`pixel_values_videos`和`video_position_ids`，实际帧数
+由冻结`frames_indices`/解码摘要约束。
+
+该结果只证明Mac CPU官方processor 5.13在六个公开canonical_http输入上可加载并与5.19参考的
+IDs/HTTP绑定一致；不声称native vLLM processor、Linux Torch2.11、GPU forward、概率门槛或生产服务通过。
