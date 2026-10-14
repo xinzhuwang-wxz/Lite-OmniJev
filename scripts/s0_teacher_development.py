@@ -180,7 +180,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     started = time.perf_counter()
     try:
-        import torch
+        torch = __import__("torch")
 
         torch.manual_seed(42)
         torch.cuda.manual_seed_all(42)
