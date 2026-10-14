@@ -36,7 +36,7 @@
 |---|---|---|
 | 教师六cohort | /root/autodl-tmp/s0-development-final-001 HEAD0aec3eb；model675330；watchdog48305/run-teacher-deadline-handoff-001.py；artifacts/teacher-development-001/result | 实测video约3秒/题，原timer675329暂停，同一模型持续，总模型上限5400秒。最终认model.exit、deadline-handoff-001.json kernel退出码及完整report；原shell控制退出137保留，不误当模型失败或成功。 |
 | 剩余学生video/crossmodal | 同树892905/run-development-queue-fla-002.py；artifacts/development-baselines-fla-002；27B video当前由watchdog765745临时接管上限3000秒，其余每job1800秒 | 旧scheduler391342已结束、当前E4B video正常exit0，500对精确/55.6%；kernel收据reports/s0-development-scheduler-handoff-001.json。当前27B child684037继续，892905仅暂停未来派发；实际median forward1.6336秒加媒体准备，1000题预计超原1800秒。watchdog在模型终态后恢复原scheduler正常采集退出并继续crossmodal，不覆盖原report/exit。新队列完成才写旧supervisor.finished；失败写旧queue-blocked。不要重启旧队列。 |
-| Valen开发 | /root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45；原queue796345已暂停未来控制；当前video由watchdog227700/run-video-deadline-handoff-001.py保留同一模型运行；artifacts/valen-development-001；video实际1.40秒/题，按实测上限1800秒 | 原torch fallback，真实head/LoRA/visual；text35.8%、image66.4%、screenshot73.2%已核；视频继续；audio/crossmodal明确unsupported。 |
+| Valen开发 | /root/autodl-tmp/s0-valen-development-final-002 HEAD18b5b45；artifacts/valen-development-001/finished、video.exit=0及kernel收据齐全，原796345与227700均结束 | 四支持类各500×2已核：text35.8%、image66.4%、screenshot73.2%、video54.0%；audio/crossmodal明确unsupported。不重启。 |
 | 截图四学生 | /root/autodl-tmp/s0-development-final-001；queue60167/run-screenshot-queue-002.py；artifacts/screenshot-baselines-002 | 等前两主队列终态及teacher finished，每GPU job1200秒、等待7500秒。原692449只等待无GPU任务，已终止并留证据，不重启。 |
 
 - 所有共享GPU作业仅质量评测，耗时是诊断数据，不当隔离发布性能。
@@ -64,7 +64,6 @@
 - 跨机/S6真机/额外预算/生产运营在对应节点处理，不提前制造细票或默认采购。GPU用完记录资源并通知用户关卡。
 - 历史详细状态在plan/archive/STATUS-before-matrix-consolidation-2026-10-14.md及更早归档，只作历史，不作当前调度源。
 
-Valen视频完成认video.exit与video-deadline-handoff-001.json kernel退出码，watchdog将补crossmodal unsupported及finished；原queue在当前模型终止后结束，不重启。
 
 OneJev4 video显式FLA profile已完整exit0，500×2实际输入/原始概率精确一致，86.2%，reports/s0-development-video-onejev-4b-fla-002.json；只作为本配置质量基线，不外推隔离时延。阶段0新增源码一次集中只读review在/tmp/lite-s0-review-001进行，与剩余GPU计算重叠，不逐子项审查。
 
