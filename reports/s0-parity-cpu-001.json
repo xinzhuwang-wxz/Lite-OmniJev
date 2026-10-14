@@ -1,15 +1,47 @@
 {
   "schema": "lite-omnijev.s0_parity.report.v1",
   "action": "synthetic-control",
-  "started_at": "2026-10-14T00:20:27+00:00",
-  "finished_at": "2026-10-14T00:20:27+00:00",
-  "elapsed_seconds": 0.006464,
+  "started_at": "2026-10-14T00:29:20+00:00",
+  "finished_at": "2026-10-14T00:29:20+00:00",
+  "elapsed_seconds": 0.025341,
   "environment": {
     "python": "3.11.14",
     "platform": "macOS-26.5.1-arm64-arm-64bit",
     "executable": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
-    "pid": 68828,
-    "cwd": "/private/tmp/lite-omnijev-s0-teacher"
+    "pid": 71128,
+    "cwd": "/private/tmp/lite-omnijev-s0-teacher",
+    "packages": {
+      "torch": "2.14.1",
+      "transformers": "5.19.0",
+      "peft": "0.21.2",
+      "httpx": "0.28.1",
+      "pydantic": "2.14.1"
+    },
+    "cuda": {
+      "torch_importable": true,
+      "torch_version": "2.14.1",
+      "cuda_version": null,
+      "available": false
+    }
+  },
+  "source": {
+    "repo_root": "/private/tmp/lite-omnijev-s0-teacher",
+    "git": {
+      "commit": "34945e28379bd4fcdf940bc1fdb2dec655576700",
+      "branch": "codex/s0-parity-review-fixes",
+      "dirty": "M docs/runbooks/s0-parity.md\n M reports/s0-parity-cpu-001.json\n M scripts/s0_parity.py\n M tests/test_s0_parity.py"
+    },
+    "code_hashes": {
+      "scripts/s0_parity.py": "40a8a9bc4914b0ddc5c7182c3b41a9abc8cc7c7fa3ab7e97e6a6c85b29ece800",
+      "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+      "scripts/assets.py": "245ac6e6a93e7c4d4f750793b872c6e3fe01afe0fdbe903c10f9977e7976d5a5",
+      "train/multimodal.py": "dfe8b907ce509a6c4a9060e002afedbe0e0b0002cdc0777a69728610c80dce5a",
+      "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+      "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+      "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
+      "serve/vllm_chat.py": "407468b49cc9e4129cdb87b157567698bf2053d7e2f5b7aa73925bed120a8bc4",
+      "eval/multimodal_parity.py": "cca59f21b6567987316682125dca1bd2a79a9b43d9e7203c97a80e6bb2befe82"
+    }
   },
   "provenance": {
     "version": "s0-parity-v1",
@@ -17,13 +49,28 @@
     "synthetic_non_gpu_control": true,
     "threshold_exclusive": 0.001,
     "cohort_size": 100,
-    "code_hashes": {
-      "/private/tmp/lite-omnijev-s0-teacher/scripts/s0_parity.py": "3839a13cbac55f3ae15b31a81a58a4af5b01c9c08058657678b814be445fabed",
-      "train/multimodal.py": "88ee750ce297b8cd1aed9044bc391d2e465c57c234efa331a19a583e11a7baac",
-      "serve/vllm_chat.py": "7bcaacd81a8e2c1e288afacdc10365a0af4728b463d89f5ca4465e81c97bad52",
-      "eval/multimodal_parity.py": "cca59f21b6567987316682125dca1bd2a79a9b43d9e7203c97a80e6bb2befe82",
-      "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
-      "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c"
+    "execution_config": {
+      "seed": 42,
+      "tf32_allowed": false
+    },
+    "source": {
+      "repo_root": "/private/tmp/lite-omnijev-s0-teacher",
+      "git": {
+        "commit": "34945e28379bd4fcdf940bc1fdb2dec655576700",
+        "branch": "codex/s0-parity-review-fixes",
+        "dirty": "M docs/runbooks/s0-parity.md\n M reports/s0-parity-cpu-001.json\n M scripts/s0_parity.py\n M tests/test_s0_parity.py"
+      },
+      "code_hashes": {
+        "scripts/s0_parity.py": "40a8a9bc4914b0ddc5c7182c3b41a9abc8cc7c7fa3ab7e97e6a6c85b29ece800",
+        "scripts/s0_prepare.py": "8f7a97938f13f515a2a6e3961a667d2a407d3d9ae55abd56720ba56eb4ac088c",
+        "scripts/assets.py": "245ac6e6a93e7c4d4f750793b872c6e3fe01afe0fdbe903c10f9977e7976d5a5",
+        "train/multimodal.py": "dfe8b907ce509a6c4a9060e002afedbe0e0b0002cdc0777a69728610c80dce5a",
+        "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+        "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+        "train/trainer.py": "4e00255231be375fca1b6ba8acd345dcbafbe2bab8ec99adac0f2ff81f35d7dd",
+        "serve/vllm_chat.py": "407468b49cc9e4129cdb87b157567698bf2053d7e2f5b7aa73925bed120a8bc4",
+        "eval/multimodal_parity.py": "cca59f21b6567987316682125dca1bd2a79a9b43d9e7203c97a80e6bb2befe82"
+      }
     }
   },
   "cost": {

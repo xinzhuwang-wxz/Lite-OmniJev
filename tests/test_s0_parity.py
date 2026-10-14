@@ -43,6 +43,10 @@ def _sha(value):
     ).hexdigest()
 
 
+def _mapping_sha(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
+
+
 def _prepared(i: int):
     messages = [{"role": "user", "content": [{"type": "text", "text": f"case {i}"}]}]
     media_kwargs = {}
@@ -57,10 +61,8 @@ def _prepared(i: int):
             "prompt_sha256": f"prompt-{i}",
             "http_messages_sha256": _sha(messages),
             "http_media_io_kwargs_sha256": _sha(media_kwargs),
-            "input_tensors": {
-                "input_ids": {"sha256": f"ids-{i}", "shape": [1, 2], "dtype": "int64"}
-            },
-            "answer_token_mapping_sha256": _sha(answer_token_ids),
+            "tensors": {"input_ids": {"sha256": f"ids-{i}", "shape": [1, 2], "dtype": "int64"}},
+            "answer_token_mapping_sha256": _mapping_sha(answer_token_ids),
             "media_sha256": f"media-{i}",
             "canonical_media": [],
         },
@@ -110,25 +112,45 @@ def _response_for(request: httpx.Request) -> httpx.Response:
     )
 
 
-def test_row_from_prepared_binds_input_media_and_k_plus_u_probabilities():
+def test_row_from_prepared_binds_real_tensors_key_and_probabilities():
     case = _case(1)
     prepared = _prepared(1)
     row = s0_parity.row_from_prepared(case, prepared, {11: -2.0, 22: -3.0, 33: -4.0})
+
+    original_hash = row.input_sha256
+    prepared.summary["tensors"]["input_ids"]["sha256"] = "changed"
 
     assert row.token_ids == [11, 22, 33]
     assert len(row.joint) == 3
     assert sum(row.joint) == pytest.approx(1.0)
     assert row.p_U == row.joint[2]
-    assert row.input_sha256 == s0_parity.prepared_input_hash(prepared)
+    assert original_hash != s0_parity.prepared_input_hash(prepared)
     assert row.media_sha256 == s0_parity.prepared_media_hash(prepared)
 
 
-def test_row_json_round_trip_preserves_media_list():
+def test_row_json_round_trip_strictly_validates_saved_derived_fields():
     row = s0_parity.row_from_prepared(_case(2), _prepared(2), {11: -2.0, 22: -3.0, 33: -4.0})
-    restored = s0_parity.row_from_json(s0_parity.row_to_json(row))
+    saved = s0_parity.row_to_json(row)
+    restored = s0_parity.row_from_json(saved)
 
     assert restored == row
     assert isinstance(restored.media_sha256, list)
+
+    tampered = {**saved, "raw_probabilities": [0.0, *saved["raw_probabilities"][1:]]}
+    with pytest.raises(s0_parity.S0ParityError, match="strict derived"):
+        s0_parity.row_from_json(tampered)
+
+    with_extra = {**saved, "extra": "not allowed"}
+    with pytest.raises(s0_parity.S0ParityError, match="strict parity schema"):
+        s0_parity.row_from_json(with_extra)
+
+    bool_coerce = {**saved, "raw_logprobs": [True, *saved["raw_logprobs"][1:]]}
+    with pytest.raises(s0_parity.S0ParityError, match="strict list of floats"):
+        s0_parity.row_from_json(bool_coerce)
+
+    int_coerce = {**saved, "raw_logprobs": [-2, *saved["raw_logprobs"][1:]]}
+    with pytest.raises(s0_parity.S0ParityError, match="strict list of floats"):
+        s0_parity.row_from_json(int_coerce)
 
 
 def test_validate_reference_rows_rejects_current_input_mismatch():
@@ -141,7 +163,7 @@ def test_validate_reference_rows_rejects_current_input_mismatch():
     def changed_prepare(case, processor, asset_root):
         index = int(case.id.rsplit("-", 1)[1])
         prepared = _prepared(index)
-        prepared.summary["prompt_sha256"] = "tampered"
+        prepared.summary["tensors"]["input_ids"]["sha256"] = "tampered"
         return prepared
 
     with pytest.raises(s0_parity.S0ParityError, match="canonical_http prepared inputs"):
@@ -154,22 +176,33 @@ def test_validate_reference_rows_rejects_current_input_mismatch():
         )
 
 
-def test_validate_server_record_requires_operator_attested_and_matching_provenance():
-    provenance = {"version": "x"}
+def test_validate_server_record_requires_launch_dtype_and_logprobs_mode():
+    provenance = {"version": "x", "dtype": "bfloat16"}
     with pytest.raises(s0_parity.S0ParityError, match="operator_attested"):
         s0_parity.validate_server_record({"provenance": provenance}, provenance=provenance)
 
-    valid = s0_parity.validate_server_record(
-        {
-            "operator_attested": True,
-            "raw_logprobs_confirmed": True,
-            "served_model": "local-model",
-            "provenance": provenance,
-        },
-        provenance=provenance,
-    )
+    base = {
+        "operator_attested": True,
+        "raw_logprobs_confirmed": True,
+        "served_model": "local-model",
+        "provenance": provenance,
+        "dtype": "bfloat16",
+        "logprobs_mode": "raw_logprobs",
+        "launch_command": "vllm serve local-model --dtype bfloat16",
+    }
+    valid = s0_parity.validate_server_record(base, provenance=provenance)
     assert valid["remote_attestation"] is False
     assert valid["server_startup"] == "not_performed_by_this_cli"
+    assert valid["launch_command_present"] is True
+
+    bad = {**base, "logprobs_mode": "top_logprobs"}
+    with pytest.raises(s0_parity.S0ParityError, match="logprobs_mode"):
+        s0_parity.validate_server_record(bad, provenance=provenance)
+
+    missing_launch = dict(base)
+    missing_launch.pop("launch_command")
+    with pytest.raises(s0_parity.S0ParityError, match="launch_command"):
+        s0_parity.validate_server_record(missing_launch, provenance=provenance)
 
 
 def test_run_vllm_pass_uses_canonical_prepared_inputs(monkeypatch):
@@ -222,6 +255,36 @@ def test_hf_pass_refuses_no_cuda_before_model_load(monkeypatch):
             ),
             dtype_name="bfloat16",
         )
+
+
+def test_hf_reference_writes_blocked_report_for_cpu_gate(monkeypatch, tmp_path):
+    report = tmp_path / "hf-blocked.json"
+    monkeypatch.setattr(s0_parity, "build_provenance", lambda paths, dtype: {"dtype": dtype})
+    monkeypatch.setattr(s0_parity, "load_cases", lambda manifest: [])
+    monkeypatch.setattr(s0_parity, "load_official_processor", lambda model_dir: object())
+
+    def blocked(**kwargs):
+        raise s0_parity.S0ParityError("cuda_required_before_model_load")
+
+    monkeypatch.setattr(s0_parity, "run_hf_pass", blocked)
+    args = SimpleNamespace(
+        manifest=Path("manifest.json"),
+        asset_root=Path("assets"),
+        model_dir=Path("model"),
+        asset_manifest=Path("manifest-assets.json"),
+        adapter_dir=None,
+        dtype="bfloat16",
+        report=report,
+    )
+
+    assert s0_parity.run_hf_reference(args) == 2
+    data = json.loads(report.read_text())
+    assert data["status"] == "blocked"
+    assert data["exit_code"] == 2
+    assert data["error"]["type"] == "S0ParityError"
+    assert data["environment"]["packages"]
+    assert data["source"]["git"]["commit"]
+    assert data["cost"] == {"new_paid_resources": 0, "gpu_started_by_this_cli": False}
 
 
 def test_synthetic_control_refuses_overwrite(tmp_path):

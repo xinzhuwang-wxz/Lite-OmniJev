@@ -11,19 +11,22 @@ import argparse
 import asyncio
 import hashlib
 import importlib
+import importlib.metadata
 import json
 import math
 import os
 import platform
+import subprocess
 import sys
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import httpx
+from pydantic import ValidationError
 
 from eval.multimodal_parity import RawReadout, compare_rows, make_row
 from scripts.assets import write_json
@@ -33,10 +36,35 @@ from train.multimodal import PreparationCase, PreparedDecision, prepare_case
 from train.trainer import runtime_requirements, verified_assets
 
 S0_PARITY_VERSION = "s0-parity-v1"
+SEED = 42
+TF32_ALLOWED = False
 THRESHOLD = 0.001
 REQUIRED_COHORT_SIZE = 100
 ALLOWED_DTYPES = {"bfloat16", "float16"}
-CANONICAL_HTTP_PROFILE = "canonical_http"
+CANONICAL_HTTP_PROFILE: Literal["canonical_http"] = "canonical_http"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+REQUIRED_SOURCE_FILES = (
+    "scripts/s0_parity.py",
+    "scripts/s0_prepare.py",
+    "scripts/assets.py",
+    "train/multimodal.py",
+    "train/template.py",
+    "train/readout.py",
+    "train/trainer.py",
+    "serve/vllm_chat.py",
+    "eval/multimodal_parity.py",
+)
+ROW_JSON_KEYS = {
+    "id_sha256",
+    "input_sha256",
+    "media_sha256",
+    "token_ids",
+    "raw_logprobs",
+    "raw_probabilities",
+    "joint_k_plus_u",
+    "conditional_without_u",
+    "p_U",
+}
 
 
 class S0ParityError(RuntimeError):
@@ -65,7 +93,8 @@ def sha256_bytes(data: bytes) -> str:
 
 
 def sha256_json(value: Any) -> str:
-    return sha256_bytes(json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+    encoded = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return sha256_bytes(encoded)
 
 
 def sha256_file(path: Path) -> str:
@@ -87,6 +116,64 @@ def now_iso() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
 
+def git_revision() -> dict[str, str | None]:
+    def run(*args: str) -> str | None:
+        try:
+            result = subprocess.run(
+                ["git", *args],
+                cwd=REPO_ROOT,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+            )
+        except (OSError, subprocess.CalledProcessError):
+            return None
+        return result.stdout.strip() or None
+
+    return {
+        "commit": run("rev-parse", "HEAD"),
+        "branch": run("rev-parse", "--abbrev-ref", "HEAD"),
+        "dirty": run("status", "--short"),
+    }
+
+
+def package_versions() -> dict[str, str | None]:
+    packages = ("torch", "transformers", "peft", "httpx", "pydantic")
+    versions: dict[str, str | None] = {}
+    for package in packages:
+        try:
+            versions[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            versions[package] = None
+    return versions
+
+
+def cuda_summary() -> dict[str, Any]:
+    try:
+        torch = importlib.import_module("torch")
+    except Exception:
+        return {"torch_importable": False, "available": False}
+    summary: dict[str, Any] = {
+        "torch_importable": True,
+        "torch_version": getattr(torch, "__version__", None),
+        "cuda_version": getattr(getattr(torch, "version", None), "cuda", None),
+        "available": bool(torch.cuda.is_available()),
+    }
+    if summary["available"]:
+        index = torch.cuda.current_device()
+        props = torch.cuda.get_device_properties(index)
+        summary.update(
+            {
+                "current_device": int(index),
+                "device_name": torch.cuda.get_device_name(index),
+                "capability": list(torch.cuda.get_device_capability(index)),
+                "total_memory_bytes": int(props.total_memory),
+            }
+        )
+    return summary
+
+
 def environment_summary() -> dict[str, Any]:
     return {
         "python": sys.version.split()[0],
@@ -94,19 +181,27 @@ def environment_summary() -> dict[str, Any]:
         "executable": sys.executable,
         "pid": os.getpid(),
         "cwd": str(Path.cwd()),
+        "packages": package_versions(),
+        "cuda": cuda_summary(),
     }
 
 
 def code_hashes() -> dict[str, str]:
-    files = [
-        Path(__file__),
-        Path("train/multimodal.py"),
-        Path("serve/vllm_chat.py"),
-        Path("eval/multimodal_parity.py"),
-        Path("train/trainer.py"),
-        Path("scripts/s0_prepare.py"),
-    ]
-    return {str(path): sha256_file(path) for path in files if path.exists()}
+    hashes: dict[str, str] = {}
+    for relative in REQUIRED_SOURCE_FILES:
+        path = REPO_ROOT / relative
+        if not path.is_file():
+            raise S0ParityError(f"required source file is missing: {relative}")
+        hashes[relative] = sha256_file(path)
+    return hashes
+
+
+def source_identity() -> dict[str, Any]:
+    return {
+        "repo_root": str(REPO_ROOT),
+        "git": git_revision(),
+        "code_hashes": code_hashes(),
+    }
 
 
 def adapter_evidence(adapter_dir: Path | None) -> AdapterEvidence | None:
@@ -150,6 +245,7 @@ def build_provenance(paths: ParityPaths, *, dtype: str) -> dict[str, Any]:
         "cohort_size": REQUIRED_COHORT_SIZE,
         "threshold_exclusive": THRESHOLD,
         "dtype": dtype,
+        "execution_config": {"seed": SEED, "tf32_allowed": TF32_ALLOWED},
         "manifest": {
             "path": str(paths.manifest),
             "sha256": sha256_file(paths.manifest),
@@ -162,14 +258,13 @@ def build_provenance(paths: ParityPaths, *, dtype: str) -> dict[str, Any]:
         },
         "model_files": model_files,
         "adapter": asdict(adapter) if adapter else None,
-        "code_hashes": code_hashes(),
+        "source": source_identity(),
     }
 
 
 def load_official_processor(model_dir: Path) -> Any:
     transformers = importlib.import_module("transformers")
-    processor_cls = transformers.AutoProcessor
-    return processor_cls.from_pretrained(
+    return transformers.AutoProcessor.from_pretrained(
         str(model_dir),
         local_files_only=True,
         trust_remote_code=False,
@@ -187,7 +282,7 @@ def prepared_input_hash(prepared: PreparedDecision) -> str:
             "prompt_sha256": prepared.summary.get("prompt_sha256"),
             "http_messages_sha256": prepared.summary.get("http_messages_sha256"),
             "http_media_io_kwargs_sha256": prepared.summary.get("http_media_io_kwargs_sha256"),
-            "input_tensors": prepared.summary.get("input_tensors"),
+            "tensors": prepared.summary.get("tensors"),
             "answer_token_ids": prepared.answer_token_ids,
             "answer_token_mapping_sha256": prepared.summary.get("answer_token_mapping_sha256"),
         }
@@ -206,7 +301,7 @@ def prepared_media_hash(prepared: PreparedDecision) -> list[str]:
 
 
 def _logprobs_by_token(
-    prepared: PreparedDecision, raw_logprobs: Mapping[int | str, float] | Sequence[float]
+    prepared: PreparedDecision, raw_logprobs: Mapping[Any, float] | Sequence[float]
 ) -> list[float]:
     token_ids = list(prepared.answer_token_ids.values())
     if not isinstance(raw_logprobs, Mapping):
@@ -228,19 +323,19 @@ def _logprobs_by_token(
     missing = [token for token in token_ids if token not in by_token]
     if missing:
         raise S0ParityError(f"missing raw logprobs for answer token ids: {missing}")
-    values: list[float] = []
+    mapped_values: list[float] = []
     for token in token_ids:
         value = by_token[token]
         if not math.isfinite(value) or value <= -9999.0 or value > 0.0:
             raise S0ParityError(f"inadmissible raw logprob for token {token}: {value}")
-        values.append(value)
-    return values
+        mapped_values.append(value)
+    return mapped_values
 
 
 def row_from_prepared(
     case: PreparationCase,
     prepared: PreparedDecision,
-    raw_logprobs: Mapping[int | str, float] | Sequence[float],
+    raw_logprobs: Mapping[Any, float] | Sequence[float],
 ) -> RawReadout:
     token_ids = list(prepared.answer_token_ids.values())
     return make_row(
@@ -266,14 +361,51 @@ def row_to_json(row: RawReadout) -> dict[str, Any]:
     }
 
 
+def _require_float_list(name: str, values: Any) -> list[float]:
+    if not isinstance(values, list) or any(type(value) is not float for value in values):
+        raise S0ParityError(f"saved row {name} must be a strict list of floats")
+    return values
+
+
+def _require_int_list(name: str, values: Any) -> list[int]:
+    if not isinstance(values, list) or any(type(value) is not int for value in values):
+        raise S0ParityError(f"saved row {name} must be a strict list of ints")
+    return values
+
+
+def _require_sha_list(name: str, values: Any) -> list[str]:
+    if not isinstance(values, list) or any(type(value) is not str for value in values):
+        raise S0ParityError(f"saved row {name} must be a strict list of sha strings")
+    return values
+
+
 def row_from_json(value: Mapping[str, Any]) -> RawReadout:
-    return make_row(
-        id_sha256=str(value["id_sha256"]),
-        input_sha256=str(value["input_sha256"]),
-        media_sha256=[str(item) for item in value["media_sha256"]],
-        token_ids=[int(token) for token in value["token_ids"]],
-        raw_logprobs=[float(v) for v in value["raw_logprobs"]],
-    )
+    if set(value) != ROW_JSON_KEYS:
+        raise S0ParityError("saved row schema keys do not match the strict parity schema")
+    try:
+        if type(value["id_sha256"]) is not str or type(value["input_sha256"]) is not str:
+            raise S0ParityError("saved row identity hashes must be strict strings")
+        if type(value["p_U"]) is not float:
+            raise S0ParityError("saved row p_U must be a strict float")
+        return RawReadout.model_validate(
+            {
+                "id_sha256": value["id_sha256"],
+                "input_sha256": value["input_sha256"],
+                "media_sha256": _require_sha_list("media_sha256", value["media_sha256"]),
+                "token_ids": _require_int_list("token_ids", value["token_ids"]),
+                "raw_logprobs": _require_float_list("raw_logprobs", value["raw_logprobs"]),
+                "raw_probabilities": _require_float_list(
+                    "raw_probabilities", value["raw_probabilities"]
+                ),
+                "joint": _require_float_list("joint_k_plus_u", value["joint_k_plus_u"]),
+                "conditional": _require_float_list(
+                    "conditional_without_u", value["conditional_without_u"]
+                ),
+                "p_U": value["p_U"],
+            }
+        )
+    except ValidationError as exc:
+        raise S0ParityError("saved row fails strict derived probability validation") from exc
 
 
 def rows_from_json(values: Sequence[Mapping[str, Any]]) -> list[RawReadout]:
@@ -363,14 +495,25 @@ def validate_server_record(
         raise S0ParityError("server record provenance does not match current run")
     if record.get("raw_logprobs_confirmed") is not True:
         raise S0ParityError("server record must confirm raw_logprobs_confirmed=true")
+    if record.get("dtype") != provenance.get("dtype"):
+        raise S0ParityError("server record dtype does not match provenance")
+    if record.get("logprobs_mode") != "raw_logprobs":
+        raise S0ParityError("server record logprobs_mode must be raw_logprobs")
+    launch_command = record.get("launch_command")
+    if not isinstance(launch_command, str) or not launch_command.strip():
+        raise S0ParityError("server record must include launch_command")
     served_model = record.get("served_model")
-    if not isinstance(served_model, str) or not served_model:
+    if not isinstance(served_model, str) or not served_model.strip():
         raise S0ParityError("server record must include served_model")
     return {
         "served_model": served_model,
         "operator_attested": True,
         "remote_attestation": False,
         "raw_logprobs_confirmed": True,
+        "dtype": record["dtype"],
+        "logprobs_mode": record["logprobs_mode"],
+        "launch_command_present": True,
+        "launch_command_sha256": sha256_bytes(launch_command.encode()),
         "server_startup": "not_performed_by_this_cli",
         "record_sha256": sha256_json(record),
     }
@@ -381,6 +524,16 @@ def ensure_cuda_available() -> Any:
     if not torch.cuda.is_available():
         raise S0ParityError("cuda_required_before_model_load: refusing to load backbone on CPU")
     return torch
+
+
+def configure_torch_runtime(torch: Any) -> None:
+    torch.manual_seed(SEED)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(SEED)
+    if hasattr(torch.backends, "cuda") and hasattr(torch.backends.cuda, "matmul"):
+        torch.backends.cuda.matmul.allow_tf32 = TF32_ALLOWED
+    if hasattr(torch.backends, "cudnn"):
+        torch.backends.cudnn.allow_tf32 = TF32_ALLOWED
 
 
 def _tensor_to_device(value: Any, *, torch: Any, dtype: Any) -> Any:
@@ -413,44 +566,53 @@ def run_hf_pass(
     dtype_name: str,
 ) -> list[RawReadout]:
     torch = ensure_cuda_available()
+    configure_torch_runtime(torch)
     dtype = _torch_dtype(torch, dtype_name)
     runtime_requirements()
     transformers = importlib.import_module("transformers")
-    model_cls = transformers.Gemma4ForConditionalGeneration
-    model = model_cls.from_pretrained(
-        str(paths.model_dir),
-        local_files_only=True,
-        trust_remote_code=False,
-        use_safetensors=True,
-        torch_dtype=dtype,
-        attn_implementation="sdpa",
-    )
-    if paths.adapter_dir is not None:
-        peft = importlib.import_module("peft")
-        peft_model = peft.PeftModel
-        model = peft_model.from_pretrained(model, str(paths.adapter_dir), is_trainable=False)
-    model.requires_grad_(False)
-    model.eval()
-    model.to("cuda")
-    rows: list[RawReadout] = []
-    with torch.inference_mode():
-        for case in cases:
-            prepared = prepare_case(
-                case, processor, paths.asset_root, profile=CANONICAL_HTTP_PROFILE
+    model = None
+    try:
+        model_cls = transformers.Gemma4ForConditionalGeneration
+        model = model_cls.from_pretrained(
+            str(paths.model_dir),
+            local_files_only=True,
+            trust_remote_code=False,
+            use_safetensors=True,
+            torch_dtype=dtype,
+            attn_implementation="sdpa",
+        )
+        if paths.adapter_dir is not None:
+            peft = importlib.import_module("peft")
+            model = peft.PeftModel.from_pretrained(
+                model, str(paths.adapter_dir), is_trainable=False
             )
-            inputs = {
-                k: _tensor_to_device(v, torch=torch, dtype=dtype)
-                for k, v in prepared.inputs.items()
-            }
-            output = model(**inputs, use_cache=False, logits_to_keep=1, return_dict=True)
-            logits = output.logits[0, -1].float()
-            logprobs = torch.nn.functional.log_softmax(logits, dim=-1)
-            token_ids = list(prepared.answer_token_ids.values())
-            raw = {int(token): float(logprobs[int(token)].item()) for token in token_ids}
-            rows.append(row_from_prepared(case, prepared, raw))
-            del inputs, output, logits, logprobs, prepared
+        model.requires_grad_(False)
+        model.eval()
+        model.to("cuda")
+        rows: list[RawReadout] = []
+        with torch.inference_mode():
+            for case in cases:
+                prepared = prepare_case(
+                    case, processor, paths.asset_root, profile=CANONICAL_HTTP_PROFILE
+                )
+                inputs = {
+                    k: _tensor_to_device(v, torch=torch, dtype=dtype)
+                    for k, v in prepared.inputs.items()
+                }
+                output = model(**inputs, use_cache=False, logits_to_keep=1, return_dict=True)
+                logits = output.logits[0, -1].float()
+                logprobs = torch.nn.functional.log_softmax(logits, dim=-1)
+                token_ids = list(prepared.answer_token_ids.values())
+                raw = {int(token): float(logprobs[int(token)].item()) for token in token_ids}
+                rows.append(row_from_prepared(case, prepared, raw))
+                del inputs, output, logits, logprobs, prepared
+                torch.cuda.empty_cache()
+        return rows
+    finally:
+        if model is not None:
+            del model
+        if torch.cuda.is_available():
             torch.cuda.empty_cache()
-    return rows
 
 
 async def run_vllm_pass(
@@ -482,7 +644,11 @@ async def run_vllm_pass(
 
 
 def report_base(
-    action: str, *, provenance: Mapping[str, Any], started_at: str, elapsed_seconds: float
+    action: str,
+    *,
+    provenance: Mapping[str, Any] | None,
+    started_at: str,
+    elapsed_seconds: float,
 ) -> dict[str, Any]:
     return {
         "schema": "lite-omnijev.s0_parity.report.v1",
@@ -491,6 +657,7 @@ def report_base(
         "finished_at": now_iso(),
         "elapsed_seconds": round(elapsed_seconds, 6),
         "environment": environment_summary(),
+        "source": source_identity(),
         "provenance": provenance,
         "cost": {"new_paid_resources": 0, "gpu_started_by_this_cli": False},
     }
@@ -501,16 +668,54 @@ def write_report(path: Path, report: Mapping[str, Any]) -> None:
     write_json(path, report)
 
 
+def failure_report(
+    action: str,
+    *,
+    report_path: Path,
+    started_at: str,
+    started: float,
+    provenance: Mapping[str, Any] | None,
+    error: BaseException,
+) -> int:
+    report = report_base(
+        action,
+        provenance=provenance,
+        started_at=started_at,
+        elapsed_seconds=time.monotonic() - started,
+    )
+    report.update(
+        {
+            "status": "blocked",
+            "exit_code": 2,
+            "error": {"type": type(error).__name__, "message": str(error)},
+            "acceptance": {"release_or_stage_acceptance": False},
+        }
+    )
+    write_report(report_path, report)
+    return 2
+
+
 def run_hf_reference(args: argparse.Namespace) -> int:
     existing_output_error(args.report)
     started = time.monotonic()
     started_at = now_iso()
-    paths = args_to_paths(args)
-    provenance = build_provenance(paths, dtype=args.dtype)
-    cases = load_cases(paths.manifest)
-    processor = load_official_processor(paths.model_dir)
-    rows_a = run_hf_pass(cases=cases, processor=processor, paths=paths, dtype_name=args.dtype)
-    rows_b = run_hf_pass(cases=cases, processor=processor, paths=paths, dtype_name=args.dtype)
+    provenance: Mapping[str, Any] | None = None
+    try:
+        paths = args_to_paths(args)
+        provenance = build_provenance(paths, dtype=args.dtype)
+        cases = load_cases(paths.manifest)
+        processor = load_official_processor(paths.model_dir)
+        rows_a = run_hf_pass(cases=cases, processor=processor, paths=paths, dtype_name=args.dtype)
+        rows_b = run_hf_pass(cases=cases, processor=processor, paths=paths, dtype_name=args.dtype)
+    except S0ParityError as exc:
+        return failure_report(
+            "hf-reference",
+            report_path=args.report,
+            started_at=started_at,
+            started=started,
+            provenance=provenance,
+            error=exc,
+        )
     repeat = compare_exact("hf_reference_repeatability", rows_a, rows_b)
     status = "reference-ready" if repeat["passed"] else "failed"
     report = report_base(
@@ -640,7 +845,8 @@ def synthetic_control_report(args: argparse.Namespace) -> int:
         "synthetic_non_gpu_control": True,
         "threshold_exclusive": THRESHOLD,
         "cohort_size": REQUIRED_COHORT_SIZE,
-        "code_hashes": code_hashes(),
+        "execution_config": {"seed": SEED, "tf32_allowed": TF32_ALLOWED},
+        "source": source_identity(),
     }
     passed = bool(repeat["passed"] and parity["passed"])
     report = report_base(
