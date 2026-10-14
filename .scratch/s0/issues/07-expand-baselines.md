@@ -4,9 +4,9 @@ ID: s0:07
 Milestone: S0
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: main-session-gpu-transition
-Worktree: /Users/bamboo/Githubs/Lite-OmniJev
+Execution: done
+Owner: none
+Worktree: none
 Blocked by: p0:04, 01, 02, 03, 10, 11, 13
 
 ## What to build
@@ -15,11 +15,12 @@ Blocked by: p0:04, 01, 02, 03, 10, 11, 13
 ## Acceptance criteria
 - [x] 六评测cohort各500dev，合法原gold/程序真值、版本/许可/来源/媒体hash、确定性构建和已建train/dev的family分配/排除完整，四池隔离机制与训练账本可追溯；截图/跨模态不被省略。真实holdout分配/人工依赖05，只接收隔离汇总；S5校准候选必须拒绝已用训练/dev family。
 - [x] 固定五核心及额外Valen的真实支持/未证实矩阵、官方模板/答案/专用教师读出；CPU支持证据复用10，不重复探针或以Qwen base冒充Valen完整模型。
-- [ ] 在冻结开发集和JevBench231/MMAU1000/MVBench九任务1800协议上完成必需同条件真实基线，原标签、选项顺序、帧数/时长/token预算/原始概率与pU边界、同机双轮重复与完整运行条件可复现（跨机留到发布兼容性节点）；195教师口径未证实保持独立。
-- [ ] 精确代码/配置/模型/数据hash、环境/命令/退出码/耗时/实际未知费用边界及token/时延/评分表齐全，不用合成或CPU代GPU质量，不按模型成绩改集/分母。
-- [ ] 本闭环批量完成后一次相关验证与一次集成结果汇总，交08验收；不为来源调查/小探针反复加review、全量测试或handoff。
+- [x] 在冻结开发集和JevBench231/MMAU1000/MVBench九任务1800协议上完成必需同条件真实基线，原标签、选项顺序、帧数/时长/token预算/原始概率与pU边界、同机双轮重复与完整运行条件可复现（跨机留到发布兼容性节点）；195教师口径未证实保持独立。
+- [x] 精确代码/配置/模型/数据hash、环境/命令/退出码/耗时/实际未知费用边界及token/时延/评分表齐全，不用合成或CPU代GPU质量，不按模型成绩改集/分母。
+- [x] 本闭环批量完成后一次相关验证与一次集成结果汇总，交08验收；不为来源调查/小探针反复加review、全量测试或handoff。
 
 ## Evidence
+Evidence: reports/s0-baseline-expansion-acceptance-001.json；reports/s0-baseline-summary.md；reports/s0-development-compute-budgets-001.json。
 部分已完成：01/02教师、03数值/网关浏览器、10官方CPU支持矩阵、11公开评分协议、13文本500与训练排除都已有冻结证据；14音频500已完成实际Linux双构建/排除/媒体验收。缓存04按ADR0010实测基线已收口，原≤2保留诊断目标。详细事实复用baseline-support-matrix.md、development-source-contract.md和对应reports，未完成项保持未勾选。用户2026-10-14要求不细拆/不过度验证，故合并12而非继续增加单模型/来源票。
 
 ## Out of scope
@@ -54,3 +55,5 @@ v2真实双构建exit0且六输出字节一致；原500family保留，498题完�
 截图v2 OneJev4已exit0并核500双轮输入/raw_logprobs/条件概率/pU/预测完全一致，当前28/30支持对。E2B自动开始，27B同一进程经实测有界watchdog继续，控制时间上限4500秒，题量/质量要求不变。
 
 截图v2 E2B26.0%/224.412秒、exit0，500双轮输入/原始概率/预测精确已核，累计29/30。原队列三模型exit0且未来27B派发已停止，无重复GPU加载；watcher因zombie显存查询安全暂停的控制问题已核实收口，保留日志/SHA。只剩独立27B同一模型进程。
+
+2026-10-15闭环完成：30/30支持对+6明确unsupported，六模型公开231双轮、教师MMAU/MVBench复用；30000开发记录/15000精确对，每cohort源hash全模型一致，完整token/耗时汇总。报告reports/s0-baseline-expansion-acceptance-001.json及s0-baseline-summary.md。27B截图81.2%/2507.207秒、kernel/原parent exit0，最后job完成；显存0MiB、无计算进程，已通知用户关卡。本票done不代表05人工/08出口通过，S1未启动。

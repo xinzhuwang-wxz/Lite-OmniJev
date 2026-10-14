@@ -1,16 +1,10 @@
 {
-  "status": "partial",
-  "matrix_sha256": "fc9c225990f840e2849df515d366d879f4e9b197552cd3b27549cbc256a3e172",
+  "status": "complete",
+  "matrix_sha256": "9eeb5e50076acd58f411fde2e79d3f85d941b0cce15241583aeb3969867f22df",
   "summarizer_sha256": "bb705388486cf7c28c1c3740130680b06b18fadb8d70188e9d3e14c831e56e36",
-  "verified_supported_pairs": 29,
+  "verified_supported_pairs": 30,
   "expected_supported_pairs": 30,
-  "pending": [
-    {
-      "cohort": "screenshot",
-      "model": "onejev-27b",
-      "reason": "corrected GUI v2 baseline required"
-    }
-  ],
+  "pending": [],
   "rows": [
     {
       "cohort": "audio",
@@ -1120,6 +1114,46 @@
         "max": 0.137868
       },
       "job_elapsed_seconds": 224.41171,
+      "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-27b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-onejev-27b-v2-001.json",
+      "runtime_profile": "Official FLA0.5.2 explicit overlay; shared then exclusive H20 quality measurement",
+      "count": 500,
+      "accuracy": 0.812,
+      "ece15": 0.06497376002912622,
+      "brier": 0.27791040442251963,
+      "coverage_at_error": 0.576,
+      "max_error": 0.05,
+      "report_sha256": "d087832d9c995b4346311381ebae7d60473f978006ccad4a3f8689ea3a72fca2",
+      "records": "artifacts/s0-screenshot-v2-gpu-001/onejev-27b.json.records.jsonl",
+      "records_sha256": "e804cb9a7b6a0b86d11a9f180ad8d6161c72bf296c4d4da74d67cfc0d3ce3bea",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 1077,
+        "p50": 4205,
+        "p95": 4621,
+        "max": 4645
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.510778,
+        "p50": 2.254486,
+        "p95": 2.562424,
+        "max": 2.571568
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.030348,
+        "p50": 0.214901,
+        "p95": 0.267142,
+        "max": 0.554756
+      },
+      "job_elapsed_seconds": 2507.20732,
       "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
     }
   ],

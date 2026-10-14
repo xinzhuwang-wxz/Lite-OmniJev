@@ -1,9 +1,12 @@
 {
-  "status": "running_same_model",
+  "status": "terminal_kernel_observed",
   "parent": 344403,
   "child": 344408,
   "original_estimated_limit_seconds": 2400,
   "measured_limit_seconds": 4500,
   "reason": "Observed shared-GPU forward ~3.8s/item plus preparation and startup for1000 records; retain exact existing run, no quality/denominator change.",
-  "cost_usd": null
+  "cost_usd": null,
+  "kernel_wait_status": 0,
+  "kernel_exit_code": 0,
+  "elapsed_seconds": 2509.1399999987334
 }

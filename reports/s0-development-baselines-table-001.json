@@ -1,5 +1,5 @@
 {
-  "status": "partial_real_measurements",
+  "status": "complete_real_measurements",
   "rows": [
     {
       "cohort": "audio",
@@ -380,6 +380,20 @@
       "brier": 1.4196153592554441,
       "coverage_at_error": 0.002,
       "max_error": 0.05
+    },
+    {
+      "cohort": "screenshot",
+      "model": "onejev-27b",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-onejev-27b-v2-001.json",
+      "runtime_profile": "Official FLA0.5.2 explicit overlay; shared then exclusive H20 quality measurement",
+      "count": 500,
+      "accuracy": 0.812,
+      "ece15": 0.06497376002912622,
+      "brier": 0.27791040442251963,
+      "coverage_at_error": 0.576,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -425,14 +439,8 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 29,
-  "pending_supported_pairs": [
-    {
-      "cohort": "screenshot",
-      "model": "onejev-27b",
-      "reason": "corrected GUI v2 baseline required"
-    }
-  ],
+  "verified_supported_pairs": 30,
+  "pending_supported_pairs": [],
   "superseded_rows": [
     {
       "cohort": "screenshot",

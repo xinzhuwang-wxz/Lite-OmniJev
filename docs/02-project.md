@@ -2,7 +2,7 @@
 
 原始方案：[最终版](Lite-OmniJev设计方案-最终版.html)。此文负责执行顺序、命令和验收入口；原方案中的性能/资源估值按用户授权与ADR-0010用实测校准，调整有据可查。
 范围：单步多模态判断的 API、单卡包、E2B 端侧包；阶段 5b 和第十一节探索默认不启用。
-版本、成本、准确率、时延均需实测；P0工程闭环已完成（reports/p0-engineering-acceptance.md）。当前S0：FP32/IEEE真实100题跨引擎概率/网关/浏览器已通过（s0:03）；教师完整复现与缓存实测基线已完成，数据/基线与人工/gate等门槛仍待验，S1禁止启动，不能宣称模型质量或最终服务性能达标。
+版本、成本、准确率、时延均需实测；P0工程闭环已完成（reports/p0-engineering-acceptance.md）。当前S0：教师复现、数值/网关/真实浏览器、缓存实测、六开发cohort/全部30支持基线与预算汇总已完成；只剩真实人工封存/gate及依赖其的阶段出口，S1未启动。见plan/STATUS.md与plan/handoff-2026-10-15-s0-technical-complete.md；技术基线不代表训练产品质量或最终性能达标。
 
 ## 当前基线与栈
 
@@ -88,6 +88,6 @@ P0 包含 CPU 子集和 GPU 真模型闭环；M0 完成绝不自动把 P0/S0 标
 
 已批准ADR-0005：阶段3视频QA 1.2万用CC0 CLEVRER train，原LLaVA 0.5万题由允许教师在CC0/BY媒体生成；NExT-QA/VidOR、VGGSound与受限LLaVA原媒体仅未来候选，STAR/Charades仅研究评测。DocVQA原图仅隔离研究，商用文档训练用自有/许可明确来源；保持各tranche题量与family隔离，质量门槛不减。用户已具体接受DocVQA-SP和NDK r28b SDK协议，仍需下载/哈希/CPU证据。
 
-用户批准ADR-0006：S0教师MVBench仅改为固定公开9任务/1800题真实独立baseline，发布53.10仅未复现引用；MMAU63.10±2、两遍逐题一致性、其余S0及S3/S4门槛保留。CPU全行clip/16帧RGB hash验收先完成，GPU实际两遍仍待执行。
+用户批准ADR-0006：S0教师MVBench仅改为固定公开9任务/1800题真实独立baseline，发布53.10仅未复现引用；MMAU63.10±2、两遍逐题一致性、其余S0及S3/S4门槛保留。CPU全行clip/16帧RGB hash与GPU实际两遍均已完成，复用s0-teacher-complete-acceptance-001.json。
 
 开卡前统一入口与真实环境路径见 [before-gpu runbook](runbooks/before-gpu.md)。当前无卡模式可自主完成的准备已收口，offline-prep:04完成；模式切换判定见readiness002与plan/handoff-2026-10-14-gpu-transition.md。资源受限native CPU processor/Linux视频列为切换后首批检查，缺口与失败证据不隐藏；质量/训练/许可/人工身份门槛保持原状。
