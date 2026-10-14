@@ -224,8 +224,16 @@ def _state_messages(state: str) -> list[dict[str, Any]]:
     return [{"role": "user", "content": state}]
 
 
+def _messages_for_state(state: str | Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    if isinstance(state, str):
+        return _state_messages(state)
+    return [dict(message) for message in state]
+
+
 def _base_from_processor(
-    processor: Processor, state: str, media_kwargs: Mapping[str, Any] | None
+    processor: Processor,
+    state: str | Sequence[Mapping[str, Any]],
+    media_kwargs: Mapping[str, Any] | None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], bool]:
     kwargs = dict(
         tokenize=True,
@@ -236,11 +244,13 @@ def _base_from_processor(
     )
     try:
         base = dict(
-            processor.apply_chat_template(_state_messages(state), enable_thinking=False, **kwargs)
+            processor.apply_chat_template(
+                _messages_for_state(state), enable_thinking=False, **kwargs
+            )
         )
         thinking_false = True
     except TypeError:
-        base = dict(processor.apply_chat_template(_state_messages(state), **kwargs))
+        base = dict(processor.apply_chat_template(_messages_for_state(state), **kwargs))
         thinking_false = False
     media: list[dict[str, Any]] = []
     base.pop("video_metadata", None)
@@ -262,7 +272,7 @@ def _append_suffix(suffix: list[int], tokenizer: Tokenizer, text: str) -> None:
 def compile_qwen_question(
     *,
     processor: Processor,
-    state: str,
+    state: str | Sequence[Mapping[str, Any]],
     question: Question,
     max_length: int = MAX_LENGTH,
     media_kwargs: Mapping[str, Any] | None = None,
