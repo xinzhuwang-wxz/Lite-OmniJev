@@ -367,6 +367,19 @@
       "brier": 0.5492247294877142,
       "coverage_at_error": 0.14,
       "max_error": 0.05
+    },
+    {
+      "cohort": "screenshot",
+      "model": "gemma4-e2b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-gemma4-e2b-it-v2-001.json",
+      "count": 500,
+      "accuracy": 0.26,
+      "ece15": 0.7003022134743405,
+      "brier": 1.4196153592554441,
+      "coverage_at_error": 0.002,
+      "max_error": 0.05
     }
   ],
   "unsupported_pairs": [
@@ -412,13 +425,8 @@
   "cost_usd": null,
   "expected_supported_pairs": 30,
   "expected_unsupported_pairs": 6,
-  "verified_supported_pairs": 28,
+  "verified_supported_pairs": 29,
   "pending_supported_pairs": [
-    {
-      "cohort": "screenshot",
-      "model": "gemma4-e2b-it",
-      "reason": "corrected GUI v2 baseline required"
-    },
     {
       "cohort": "screenshot",
       "model": "onejev-27b",

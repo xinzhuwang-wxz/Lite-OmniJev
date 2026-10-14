@@ -1,15 +1,10 @@
 {
   "status": "partial",
-  "matrix_sha256": "03342e3df6b62c722f8aba20a16fbde4bf50ddfb69781ee78f29d8f546ea57c6",
+  "matrix_sha256": "fc9c225990f840e2849df515d366d879f4e9b197552cd3b27549cbc256a3e172",
   "summarizer_sha256": "bb705388486cf7c28c1c3740130680b06b18fadb8d70188e9d3e14c831e56e36",
-  "verified_supported_pairs": 28,
+  "verified_supported_pairs": 29,
   "expected_supported_pairs": 30,
   "pending": [
-    {
-      "cohort": "screenshot",
-      "model": "gemma4-e2b-it",
-      "reason": "corrected GUI v2 baseline required"
-    },
     {
       "cohort": "screenshot",
       "model": "onejev-27b",
@@ -1086,6 +1081,45 @@
         "max": 0.545661
       },
       "job_elapsed_seconds": 1222.074671,
+      "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
+    },
+    {
+      "cohort": "screenshot",
+      "model": "gemma4-e2b-it",
+      "status": "passed",
+      "repeat_exact": true,
+      "report": "reports/s0-development-screenshot-gemma4-e2b-it-v2-001.json",
+      "count": 500,
+      "accuracy": 0.26,
+      "ece15": 0.7003022134743405,
+      "brier": 1.4196153592554441,
+      "coverage_at_error": 0.002,
+      "max_error": 0.05,
+      "report_sha256": "a9dc0758ebfa4a23d5f522a70eac113f8faf4c3530fa078b6104cce73d777231",
+      "records": "artifacts/s0-screenshot-v2-gpu-001/gemma4-e2b-it.json.records.jsonl",
+      "records_sha256": "75af53cb726c67a3509eb1de45f566b229a73f0d6e7e01940eaafff3e18cf2ad",
+      "warm_prompt_compute_tokens": {
+        "count": 500,
+        "min": 461,
+        "p50": 474,
+        "p95": 494,
+        "max": 516
+      },
+      "warm_forward_seconds": {
+        "count": 500,
+        "min": 0.060572,
+        "p50": 0.132976,
+        "p95": 0.136363,
+        "max": 0.145708
+      },
+      "warm_prepare_seconds": {
+        "count": 500,
+        "min": 0.022593,
+        "p50": 0.074282,
+        "p95": 0.111377,
+        "max": 0.137868
+      },
+      "job_elapsed_seconds": 224.41171,
       "code_commit": "7b4f3824c027adf479fc4e9d4a8aee77abff316f"
     }
   ],

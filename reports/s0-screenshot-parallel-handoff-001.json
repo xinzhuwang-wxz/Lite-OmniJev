@@ -1,0 +1,25 @@
+{
+  "status": "original future dispatch superseded; completed jobs retained",
+  "original_parent": 343888,
+  "model_exit_codes": {
+    "gemma4-e4b-it": 0,
+    "onejev-4b": 0,
+    "gemma4-e2b-it": 0
+  },
+  "original_27b_not_started": true,
+  "parallel27b_child": 344408,
+  "parallel_output": "/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/screenshot-27b-parallel-v2-001",
+  "watcher_issue": "nvidia-smi resource query child was treated as unexpected; parent safely paused before duplicate27B dispatch",
+  "inspection_children": [
+    {
+      "pid": 344862,
+      "state": "Z",
+      "command": "",
+      "kernel_exit_code": 0
+    }
+  ],
+  "watcher_error_log": "/root/autodl-tmp/s0-screenshot-v2-final-001/parallel-handoff-supervisor.log",
+  "watcher_error_log_sha256": "820de7cb336de0d9e6177cd113d3b940d2ef377e45c9fecd8ed59f9575b04204",
+  "recovery": "verified only zombie resource-query child and three kernel exit files0; terminate original future dispatcher; same parallel27B untouched",
+  "cost_usd": null
+}
