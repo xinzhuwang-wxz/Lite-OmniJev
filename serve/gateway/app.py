@@ -87,6 +87,12 @@ class Settings:
     model_dir: Path | None = None
     raw_logprobs_confirmed: bool = False
     media_root: Path | None = None
+    question_concurrency: int = 1
+    request_image_reuse: bool = False
+
+    def __post_init__(self) -> None:
+        if type(self.question_concurrency) is not int or not 1 <= self.question_concurrency <= 10:
+            raise ValueError("question_concurrency must be an integer from 1 to 10")
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -99,6 +105,8 @@ class Settings:
             model_dir=Path(directory) if directory else None,
             raw_logprobs_confirmed=os.getenv("LITE_RAW_LOGPROBS_CONFIRMED") == "1",
             media_root=Path(media_root) if media_root else None,
+            question_concurrency=int(os.getenv("LITE_QUESTION_CONCURRENCY", "1")),
+            request_image_reuse=os.getenv("LITE_REQUEST_IMAGE_REUSE") == "1",
         )
 
 
@@ -221,10 +229,15 @@ def create_app(
         request.state.timings = {"preprocess": 0.0, "upstream": 0.0, "queue": 0.0}
         response = await call_next(request)
         phases = {**request.state.timings, "total": time.perf_counter() - started}
+        scheduled = getattr(request.state, "execution_mode", None) == "bounded-scheduled-v1"
         response.headers["Server-Timing"] = ", ".join(
-            f"{label};dur={max(0.0, phases[label]) * 1000:.3f}"
+            f"{label + '_work' if scheduled and label != 'total' else label};dur="
+            f"{max(0.0, phases[label]) * 1000:.3f}"
             for label in ("preprocess", "upstream", "total", "queue")
         )
+        if scheduled:
+            response.headers["X-Lite-Execution-Mode"] = "bounded-scheduled-v1"
+            response.headers["X-Lite-Question-Concurrency"] = str(settings.question_concurrency)
         return response
 
     @application.exception_handler(RequestValidationError)
@@ -293,7 +306,9 @@ def create_app(
         prefix: Prefix,
         video_frames: Literal[8, 16],
         timings: dict[str, float],
+        selected_processor: Any = None,
     ) -> tuple[str, dict[str, Any], int, int]:
+        selected_processor = runtime_processor if selected_processor is None else selected_processor
         question, labels = core_question(qid, item)
         media_root = settings.media_root
         assert media_root is not None
@@ -306,7 +321,7 @@ def create_app(
             one_timing["queue"] = started - queued_at
             try:
                 try:
-                    check_answer_tokens(runtime_processor.tokenizer, question)
+                    check_answer_tokens(selected_processor.tokenizer, question)
                 except Exception:
                     raise HTTPException(
                         503, "Official processor/tokenizer preflight unavailable"
@@ -315,7 +330,7 @@ def create_app(
                     prepared = prepare_decision(
                         prefix,
                         question,
-                        runtime_processor,
+                        selected_processor,
                         media_root,
                         profile="canonical_http",
                         video_frames=video_frames,
@@ -450,13 +465,52 @@ def create_app(
             # Validate all question contracts before making any upstream request.
             for qid, item in request.questions.items():
                 core_question(qid, item)
-            results = []
-            for qid, item in request.questions.items():
-                results.append(
-                    await decide_canonical(
-                        qid, item, prefix, request.video_frames, http_request.state.timings
-                    )
+            selected_processor = runtime_processor
+            if (
+                settings.request_image_reuse
+                and len(request.questions) > 1
+                and prefix.media
+                and all(media.type == "image" for media in prefix.media)
+            ):
+                try:
+                    factory = importlib.import_module("train.request_media_cache")
+                    selected_processor = factory.request_image_processor(runtime_processor)
+                except (ImportError, ValueError, TypeError):
+                    raise HTTPException(503, "Request image reuse is unavailable") from None
+
+            async def one(qid: str, item: InputQuestion) -> tuple[str, dict[str, Any], int, int]:
+                return await decide_canonical(
+                    qid,
+                    item,
+                    prefix,
+                    request.video_frames,
+                    http_request.state.timings,
+                    selected_processor,
                 )
+
+            items = list(request.questions.items())
+            if settings.question_concurrency == 1:
+                results = [await one(qid, item) for qid, item in items]
+            else:
+                http_request.state.execution_mode = "bounded-scheduled-v1"
+                # Finish one question before fanout so the native engine can reuse its KV.
+                results = [await one(*items[0])]
+                slots = asyncio.Semaphore(settings.question_concurrency)
+
+                async def bounded(
+                    qid: str, item: InputQuestion
+                ) -> tuple[str, dict[str, Any], int, int]:
+                    async with slots:
+                        return await one(qid, item)
+
+                tasks = [asyncio.create_task(bounded(qid, item)) for qid, item in items[1:]]
+                try:
+                    results.extend(await asyncio.gather(*tasks))
+                except BaseException:
+                    for task in tasks:
+                        task.cancel()
+                    await asyncio.gather(*tasks, return_exceptions=True)
+                    raise
         else:
             results = await asyncio.gather(
                 *(
