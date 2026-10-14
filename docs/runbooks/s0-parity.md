@@ -16,6 +16,12 @@ The command verifies the fixed model asset manifest before any forward pass, ref
 
 The reference report is ready only when both HF passes are exactly repeatable and every row contains complete finite raw logprobs for all answer tokens plus `U`. The report remains a pre-release gate artifact; it is not stage acceptance by itself.
 
+### Numerical reference precision
+
+The H20/primary0.26 six-case diagnostic found large BF16 differences and prefix-cache-dependent repeats. FP32 with `NVIDIA_TF32_OVERRIDE=0`, `TRITON_F32_DEFAULT=ieee`, eager execution and prefix caching disabled restores exact native repeats and HF/native maxima below 0.001 in the six-case canary. The formal runner also accepts `--dtype float32`; this is a numerical reference configuration, not final serving performance acceptance or a change to BF16 LoRA training.
+
+Native Gemma4 audio/vision towers initialize from nested HF configs. For FP32, use the supported `--hf-config-path` to a copy of the original config with only root/audio/text/vision `dtype` changed to `float32`; bind original/copy hashes and changed fields in the server record. Original checkpoint files and dimensions stay fixed. Set an explicit 4GiB `--kv-cache-memory-bytes` for the single-sequence/8192-token canary, and do not overlap other GPU initialization with automatic memory profiling. Formal100 results, cache-enabled correctness/performance and final BF16/FP8 release quality still require their own evidence.
+
 ## vLLM comparison
 
 After a separately launched vLLM server is ready, create a server record containing the exact provenance from the HF reference report plus `operator_attested=true`, `raw_logprobs_confirmed=true`, `logprobs_mode="raw_logprobs"`, matching `dtype`, a nonempty `launch_command`, and the served model name. Then run:

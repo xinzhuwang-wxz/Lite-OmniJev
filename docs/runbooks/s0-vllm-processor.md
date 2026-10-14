@@ -1,6 +1,6 @@
 # S0 native vLLM processor CPU check
 
-This CLI compares the installed vLLM 0.31 processor with the frozen canonical HTTP HF reference. It creates `ModelConfig` and the official `MULTIMODAL_REGISTRY` processor only: no `LLM`, engine, backbone constructor, weights, generation or CUDA forward. A processor pass is not service, raw-probability, quality or release acceptance.
+This CLI compares the installed primary vLLM 0.26 processor with the frozen canonical HTTP HF reference (0.31 remains diagnostic only). It creates `ModelConfig` and the official `MULTIMODAL_REGISTRY` processor only: no `LLM`, engine, backbone constructor, weights, generation or CUDA forward. A processor pass is not service, raw-probability, quality or release acceptance.
 
 Run against the complete existing local checkpoint metadata and the public fixture media. Disable network access through the HF offline settings; use the shared heavy-CPU lock and one thread on the 2 GiB / 0.5 CPU host:
 
@@ -28,8 +28,8 @@ Comparisons require exact expanded prompt IDs, frozen HF input hashes, and these
 | `image_position_ids` | `pixel_position_ids` | Exact shape, dtype and bytes |
 | `input_features` | `input_features_padded` | HF valid mask frames, matching native per-item unpadding |
 | `input_features_mask` | `input_features_mask` | HF valid mask frames |
-| `pixel_values_videos` | `pixel_values_videos` | Exact shape, dtype and bytes |
-| `video_position_ids` | `pixel_position_ids_videos` | Exact shape, dtype and bytes |
+| `pixel_values_videos` | `pixel_values_videos` | A single HF video batch `[1,F,P,D]` maps to native flat frames `[F,P,D]`; exact dtype and bytes |
+| `video_position_ids` | `pixel_position_ids_videos` | Same single-video batch translation; exact dtype and bytes |
 | `num_frames_per_video` | `video_frame_counts` | Exact shape, dtype and bytes |
 | Frame indices / fps | `video_timestamps` | Exact numerical timestamps |
 
@@ -44,3 +44,9 @@ Official interfaces: [Gemma4 processor tests](https://github.com/vllm-project/vl
 Both bounded Linux attempts are blocked with zero cases. Normal initialization exited 1 after the lazy architecture-inspection child received SIGKILL. The separate in-process official-class diagnostic constructed `ModelConfig` on `UnspecifiedPlatform`, then exited 137 while creating the native processor. Its last checkpoint RSS was 1,338,568 KiB. The post-failure cgroup was near its 2 GiB limit, but `oom=0` and `oom_kill=0`; neither the killer nor CPU-platform incompatibility is established. No full-100 run was attempted and no further retry is scheduled.
 
 The original checkpoint files are preserved, including the second file's interrupted `running` status; its separate exit record establishes failure. The first archived snapshot discovered the ancestor remote repository's Git HEAD when reporting its revision. The summary records this limitation and the real snapshot base plus exact source hashes; the CLI now honors an explicit `S0_CODE_VERSION` for non-Git snapshots. See `reports/s0-native-vllm-processor-summary-001.json` for the evidence hashes and remaining gates.
+
+## H20 resource recovery, 2026-10-14
+
+Primary 0.26 normal initialization, six cases and full100 now pass on the 150GiB/16CPU host. The official pinned checkpoint config has image `do_normalize=false` and video `do_normalize=true` (identity mean/std). Native 0.26 processes video frames through its image processor. Its default caused a maximum pixel difference of 5.96e-8. The supported per-request `mm_processor_kwargs={"images_kwargs":{"do_normalize":true}}` restores the official video normalization for video-only requests; image requests retain their defaults. HF preparation binds these kwargs by SHA, and both native comparison and actual HTTP transport use them. No engine patch or numerical tolerance is used. A one-ULP changed-pixel regression still fails.
+
+Reports: `reports/gpu-transition-input-and-hf-acceptance-001.json`; full raw evidence on the persistent remote tree `/root/autodl-tmp/gpu-transition-ba4b22a/artifacts/input-acceptance-001`. New references must come from the same installed processor/runtime, not historical Mac summaries. For the gateway fixed100 test, set `S0_CANONICAL_REFERENCE` to the new passed `hf-a.json`; the test validates its cohort manifest hash. This CPU input result is separate from live HF/vLLM probability acceptance.

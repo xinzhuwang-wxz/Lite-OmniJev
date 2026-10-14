@@ -1,21 +1,23 @@
 # STATUS
 
-## 当前会话接续（2026-10-14）
-- 最新：SSH认证恢复，用户已完成开卡并要求推进。只读实测H20/97871MiB显存、driver580.65.06、CUDA驱动13.0；cgroup memory.max=161061273600（150GiB）、cpu.max=1600000 100000（16CPU）；持久盘可用420546093056B。远端HEAD764ee500干净，GPU无进程。
-- s0:03主会话认领资源前置；已启动同Linux primary026 HF100两遍→正常native六case，输出artifacts/gpu-transition-20261014-0717，监督句柄50399；CUDA_VISIBLE_DEVICES为空、离线、单线程+重锁，不加载权重。阶段和真实概率门槛未通过。下方旧阻塞记录保留历史；原生工具仍显示blocked，不因此阻止用户已授权的接续工作。
-- 用户已确认开卡。首次接续SSH已可到达，但BatchMode认证返回Permission denied (publickey,password)/exit255；尚未获得GPU/内存/驱动新实测，未启动作业。旧会话复用连接已失效，需要用户恢复SSH认证；不索要或保存密码，恢复后执行既定资源前置。原生get_goal仍为blocked。
-- 当前原生goal已标blocked：连续三轮均无法进入有卡验收（首次无GPU，后两次SSH Connection refused/exit255）；无可认领独立票或活跃作业可等待。需要用户完成开卡并恢复SSH，地址变化时提供新入口。完整终局目标保留，未标complete。
-- 用户已重新发起原终局 `/goal`，本会话 `get_goal` 实际为 active；下文“原生blocked”仅描述旧会话，不代表本会话状态。终局仍未通过。
-- 用户表示准备开卡，已读 GPU-transition 交接及 s0:01/03；开卡由用户操作，尚未启动 GPU 作业。
-- 本轮SSH只读核查成功：`nvidia-smi -L` 仍为 No devices found，cgroup memory.max=2147483648、cpu.max=50000 100000；持久盘可用420546080768B。未重复资源受限失败配置。
-- 远端隔离源码HEAD=764ee5007dcca9171f8c297ed6fdd1ca30b507b9、工作树干净，与本地/远端transition-sync001侧车一致。
-- 下一步：用户完成模式切换后先核验GPU/内存/驱动，再按交接补HF100两遍、native六case→100、网关视频前置，随后最小GPU smoke；S0全绿前不进S1。
-- 后续接续核查：本地loop validate/list均valid，32票、frontier/claimed均空；SSH端口48926返回Connection refused（exit255）。这是连接状态变化，尚不能证明已开卡或GPU可用；没有远端作业句柄，不启动重复作业、不持续轮询。待用户切换完成、SSH恢复后继续只读资源核验；若连接地址变化，使用用户提供的新入口。
+## 当前会话接续（2026-10-14，有卡）
+- 用户已开卡并授权主会话按原方案自主安排参数/调度、减少GPU时间；不重复P0训练，不擅自更换基座/降低门槛，不代开关卡/付费/生产部署。
+- H20/97871MiB显存、driver580.65.06、CUDA13.0；cgroup150GiB/16CPU，盘余约420GB。SSH socket `/tmp/omnijev-ssh-root-final` 可复用，密码未保存到仓库/报告。
+- 执行源码 `/root/autodl-tmp/gpu-transition-ba4b22a`，HEAD ba4b22a；独立CPU测试树 `/root/autodl-tmp/gpu-gateway-reference-001`（a909a37）。原用户树和冻结764ee500树保留，不覆盖。
+- s0:03主会话claimed。primary026同Linux HF100输入两遍完全一致；native正常六case及full100精确通过。官方视频归一化已通过请求参数对齐，仍逐字节比较。独立review无具体阻断发现。
+- E4B六类GPU forward两遍通过/18.76秒；正式BF16 HF100两遍原始概率完全一致/112.18秒。真实媒体传输及gateway完整100输入同Linux参考共16测试通过/56.91秒。
+- BF16真实Chromium→网关→模型6类×3primitive通过、坏媒体422，30.895秒；截图/trace/report在artifacts/browser/s0-live-gpu-001。功能通过，不当作模型质量或时延达标。
+- BF16原生HTTP100两遍完成/130.49秒，但重跑最大raw差0.091862、HF/native最大raw差0.136941，S0严格门槛failed。六case逐请求cache_salt诊断重跑精确，提示缓存复用因素；其HF差仍存在，不关概率票。
+- 0.26音频extra已补齐：AV/SoundFile/SciPy/soxr，pip check0、官方audio extra缺项0、PCM WAV逐值精确；Torch2.11/TF5.13保持。serve锁同步audio extra。PyAV整数PCM fallback未归一化保留为边界，canonical路径用SoundFile。首轮缺audio依赖失败和旧CLI日志flag错误均保留。
+- 教师真实文本/音频/视频两遍均成功、有限概率归一化和重跑精确/44.564秒；artifacts/teacher-public-canary-003.json，脚本.scratch/s0/teacher-public-canary.py。前两次临时记录脚本错误已留失败报告，不当作模型问题；尚未做完整MMAU/MVBench或原格式GPU参考，不关s0:01。
+- FP32 HF六case两遍精确/23.881秒；native首次自动KV预算不足，显式4GiB后音频子配置仍BF16导致dtype错误。当前用官方hf-config-path副本仅同步audio/root/text/vision四处dtype，原权重/配置未改；006子配置对齐后仍有TF32误差；现007服务PID94918、artifacts/vllm-007-ieee.log，TRITON_F32_DEFAULT=ieee，六case两遍精确、全部分布最大差0.0000323通过/14.234秒。正式100尚待执行。不得复用005失败配置。全局GPU当前无其它作业。
+- 网关旧PID68701仍在18000，但上游旧BF16 alias需随新服务重置。SSH本地转发55174→远端18000，仅本机。暂不声称当前网关可推理。
+- 原生goal上次工具状态blocked；用户已明确继续，实际工作持续推进，终局未complete。人工独立gate/双人标注及S6真机缺口保持，S0全绿前不进S1。
 
-更新时间：2026-10-14。当前S0；P0工程冒烟完成，S0–S6/FINAL未完成。终局未完成，原生状态以get_goal为准；当前无卡可自主完成准备已收口，可由用户切换有卡；终局仍待真实GPU及外部阶段条件。
+更新时间：2026-10-14。当前S0；P0工程闭环已完成，S0–S6/FINAL未完成。下一步以已通过的FP32/IEEE配置执行正式100和网关/浏览器，不重复失败配置。其后教师限时benchmark估算/断点、缓存性能等独立门槛。
 
 ## 当前目标与决策
-- 用户已租实例，要求完成当前无卡模式能做的所有准备后交接，再由用户转有卡；不是等待无卡环境通过一切资源受限检查。已完成此准备阶段；未获代开卡授权，保持无GPU作业。
+- 用户已完成开卡，原无卡准备收口；现在复用现有模型、数据、环境及P0产物推进真实GPU闭环，不代开关卡或改租赁。
 - 原方案、阶段顺序和门槛不变；5b/探索关闭，不换基座、不改引擎、不放宽阈值。
 - ADR-0004：AudioCaps首发省略，以Clotho/TTS补题量；ADR-0005：12k视频QA用CC0 CLEVRER，5k图题由允许教师在CC0/BY媒体生成，DocVQA仅研究隔离；NextQA/VGGSound/受限LLaVA仅候选，不下载1.28TB全量LLaVA。
 - ADR-0006用户已批准：仅将S0 MVBench发布53.10±2复现替换为固定9任务1800行独立baseline；MMAU63.10±2、S3≥90%、S4≥97%及其他门槛不变。

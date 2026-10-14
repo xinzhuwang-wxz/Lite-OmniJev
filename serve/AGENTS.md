@@ -4,3 +4,5 @@
 - Score legend被包成对象会破坏SDK语义 → 原值本身就是Entry → 保留调用方criteria值，confidence差异按ADR明确标识。
 - max_tokens=1仍有后端生成成本 → 产品output_tokens=0只表示不返回生成文本 → backend_usage记录真实上游计量。
 - 已准备对象内dict仍可变 → 合法token ID交换会错贴答案概率 → HTTP前校验答案映射与准备hash绑定，和媒体payload一起拒绝篡改。
+- 基础vLLM导入不证明音频HTTP可用 → 官方audio extra另含解码依赖，0.26 PyAV整数PCM fallback未归一化 → 服务锁包含audio extra，canonical WAV须由SoundFile精确解码并实跑HTTP。
+- Gemma4仅设全局FP32可使音频塔混合dtype → native AutoModel读取子配置仍为BF16 → 精度诊断使用官方hf-config-path副本同步四处dtype，记录diff/hash，保留原checkpoint配置和权重。

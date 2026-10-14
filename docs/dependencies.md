@@ -11,6 +11,10 @@
 Transformers/PEFT/torch/vLLM/SwanLab/Data-Juicer 等在对应票中于 Linux 环境精确锁定和 smoke 验证；macOS 的 uv.lock 不证明 CUDA 组合有效。
 不复制无许可代码；新库/源码复用在对应票记来源、license、用途。
 
+## S0 原生音频HTTP依赖
+
+真实H20服务暴露0.26基础环境未安装其官方audio extra的问题。服务锁显式启用 `vllm[audio]`，固定已缓存的PyAV15.1.0和SoundFile0.13.1，不升级Torch/Transformers。SoundFile复用官方PCM WAV解码（BSD-3-Clause，Linux wheel内libsndfile为LGPL）；PyAV复用FFmpeg解码（BSD-3-Clause wrapper，FFmpeg许可见wheel随附文件）。已有canonical PCM16 WAV必须经SoundFile得到精确float32样本；实测0.26的PyAV整数PCM fallback未归一化，不能用该fallback冒充同输入。服务重建必须包含audio extra，导入成功不足以证明真实音频HTTP可用。
+
 ## 可选训练环境
 `uv sync --frozen --extra training --group dev` 安装torch、Transformers、PEFT、Accelerate、safetensors；具体版本在uv.lock。它是本地CPU损失/入口验证环境，不代表Linux CUDA兼容性已通过。safetensors用于权重与adapter，PEFT复用LoRA实现，不自建训练框架。
 

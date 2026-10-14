@@ -1,0 +1,69 @@
+{
+  "schema": "lite-omnijev.gpu-transition-acceptance.v1",
+  "status": "input_and_hf_gpu_reference_passed_vllm_http_pending",
+  "code_revision": "ba4b22a",
+  "hf_reference": {
+    "status": "reference-ready",
+    "exit_code": 0,
+    "samples": 100,
+    "repeatability": {
+      "label": "hf_reference_repeatability",
+      "passed": true,
+      "status": "passed",
+      "exit_code": 0,
+      "samples": 100,
+      "threshold_exclusive": 0.001,
+      "max_differences": {
+        "raw_probabilities": 0.0,
+        "joint": 0.0,
+        "conditional": 0.0,
+        "p_U": 0.0
+      },
+      "exact_rerun_required": true,
+      "rows_identical": true,
+      "release_or_stage_acceptance": false,
+      "scope": "Numerical only; source/model/runtime/GPU provenance required separately"
+    },
+    "elapsed_seconds": 112.180236
+  },
+  "native_processor": {
+    "status": "passed",
+    "exit_code": 0,
+    "complete_100_cases": true,
+    "cases": 100,
+    "all_exact": true,
+    "elapsed_seconds": 63.935
+  },
+  "model_smoke": {
+    "status": "passed",
+    "weights_loaded": true,
+    "model_forward_run": true,
+    "exact_repeatability": true,
+    "elapsed_seconds": 18.76,
+    "peak_cuda_bytes": 16246977536
+  },
+  "gateway_cpu": {
+    "real_media_cases": 15,
+    "new_runtime_reference_full100": "passed together with 15 media cases,16 tests,total56.91seconds; remote gpu-gateway-reference-001/artifacts/gateway-runtime-reference-001.log",
+    "backend": "MockTransport; no real inference acceptance"
+  },
+  "independent_review": {
+    "concrete_findings": 0,
+    "must_fix_before_inference": false,
+    "tests": "44 passed,15 real-fixture skips",
+    "limitations": "No LSP tool; mypy/ruff substituted; reviewer COMMENT solely for unavailable tool."
+  },
+  "cost": null,
+  "release_or_stage_acceptance": false,
+  "evidence_sha256": {
+    "artifacts/gpu-transition-ba4b22a/s0-hf-reference-001.json": "3b429ade792a7748ad24e89f0595e8e77890142445d69074edb509ec366d6726",
+    "artifacts/gpu-transition-ba4b22a/gpu-model-smoke-001.json": "c2a32d2e78f36c8055f4c06ae237252cd8beaca945139c85f3b12ca872be0b67",
+    "artifacts/gpu-transition-ba4b22a/primary026-peft-overlay-001.json": "1a1bc2673331812e11f6590d2c6e1442ca0ffb107167844c5cef851ee65702fb",
+    "artifacts/gpu-transition-ba4b22a/input-acceptance-001/native-six.json": "43cb0350a4bebc14a742a0bfc2aa9a2cadb2ce5fff61e9d3857ec4fcddc35ac0",
+    "artifacts/gpu-transition-ba4b22a/input-acceptance-001/hf-b.json": "e9e0517a32102055d5167a5f8e0939296302248f23a0e3ab33a176e5923339c2",
+    "artifacts/gpu-transition-ba4b22a/input-acceptance-001/native-full.json": "4ba9ab4d156d2fbee453dfc6e286648f5b455c5de740d19e1ddb101d65473461",
+    "artifacts/gpu-transition-ba4b22a/input-acceptance-001/hf-a.json": "33c397580db097141ffefe6f22f92151dfed90137d0e6e9cedeb4c066ca7a411",
+    "artifacts/gpu-transition-ba4b22a/input-acceptance-001/hf-repeat.json": "4ec981bf61f65c8e5e9ee4fd675256b59ee2dfcaf625cf159b4f6221f3ea7fce"
+  },
+  "next": "Live native HTTP100 then real gateway/browser; teacher small canary after student server releases GPU."
+}

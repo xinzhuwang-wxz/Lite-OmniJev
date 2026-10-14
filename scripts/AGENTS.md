@@ -5,3 +5,4 @@
 - HF LFS 原文件校验失败 → sibling.blob_id 是指针 Git 哈希而非原文件哈希 → LFS 用上游 SHA256+size，指针哈希另存；非 LFS 才比 Git blob。
 - curl重试反复丢下载进度 → 内部retry会撤回本次写入再试 → 使用有界外部续传，每次从实际文件大小开始，完整校验前不提升partial。
 - MDC urllib返回403但授权已完成 → 不能据此断言账号/条款缺失 → 复用官方curl POST流程；真实200/文件哈希才算下载通过，密钥走stdin配置且签名URL不落日志。
+- 临时教师冒烟在昂贵加载后报字段错误 → Score/Noul没有Choice options，结果字段为prediction_index和概率dict → 加载前按Primitive验证选项，逐题保存数值；复用.scratch/s0/teacher-public-canary.py，失败不伪报模型通过。

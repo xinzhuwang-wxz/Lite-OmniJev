@@ -10,7 +10,7 @@
 - `torch==2.11.0`、`torchaudio==2.11.0`、`torchvision==0.26.0`：沿用该版 [CUDA 依赖](https://github.com/vllm-project/vllm/blob/v0.26.0/requirements/cuda.txt)，BSD-style 上游许可随 wheel 保留。Transformers服务环境固定 `5.13.0`（Apache-2.0），训练仍为5.19.0；共享固定的模型/tokenizer/template文件，实际输入须探针对齐。
 - CUDA 采用该发行版默认构建；[tagged Dockerfile](https://github.com/vllm-project/vllm/blob/v0.26.0/docker/Dockerfile) 默认 `13.0.2`，CUDA 依赖包含 `cu13`。该版安装网页仍有默认 12.9 的旧文字，不能据此混装 cu129 Torch。以锁定 wheel、安装后 `torch.version.cuda` 和 `vllm.collect_env` 实测为准。
 - [NVIDIA 兼容表](https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html) 给出 CUDA 13.x 最低驱动分支 580；580.82.07 满足分支条件。这仅是兼容性候选依据，PTX/JIT、vLLM ABI、H20 内核启动仍须开卡验证。
-- 只引入 P0 文本服务及 vLLM 必需依赖；未安装 `vllm[audio]`，音频扩展/多模态验收留到对应票。传递依赖的确切版本、下载地址和哈希见 `infra/serve/uv.lock`。NVIDIA 组件适用 NVIDIA 自身许可，不能把整个依赖栈统称 Apache-2.0。
+- P0初期只引入文本依赖；S0真实HTTP后已补齐 `vllm[audio]`，固定PyAV15.1.0、SoundFile0.13.1及锁定的SciPy/soxr。canonical PCM WAV精确解码、pip check和audio extra缺项检查均通过，真实音频/视频HTTP及Chromium也已通过。依赖版本、下载地址和哈希见 `infra/serve/uv.lock`，实测来源由GPU接续报告绑定。NVIDIA组件、FFmpeg/libsndfile各适用自身许可，不能将整个栈统称Apache-2.0。
 
 ## 无卡准备（目标机待执行）
 

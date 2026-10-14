@@ -3,7 +3,9 @@ name = "lite-omnijev-service-env"
 version = "0.1.0"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-  "vllm==0.26.0",
+  "vllm[audio]==0.26.0",
+  "av==15.1.0",
+  "soundfile==0.13.1",
   "transformers==5.13.0",
   "torch==2.11.0",
   "torchaudio==2.11.0",
