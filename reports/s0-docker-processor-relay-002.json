@@ -1,0 +1,90 @@
+{
+  "schema": "lite-omnijev.s0_docker_processor.relay_report.v1",
+  "status": "relay_download_transport_blocked",
+  "exit_code": 2,
+  "started_utc": "2026-10-14T00:00:00Z",
+  "finished_utc": "2026-10-14T02:22:00+00:00",
+  "phase": "before_dependency_install",
+  "scope": "Bounded evidence closeout only; no new network, SSH, Docker, GPU or heavy CPU operation was attempted in this slice.",
+  "processor_cases": 0,
+  "gpu_used": false,
+  "weights_loaded": false,
+  "engine_started": false,
+  "dependency_install_run": false,
+  "container_created": false,
+  "docker_image_loaded": false,
+  "full100_run": false,
+  "new_paid_resources": 0,
+  "official_cpu_wheel": {
+    "name": "vllm-0.31.0+cpu-cp38-abi3-manylinux_2_39_aarch64.whl",
+    "expected_bytes": 68640121,
+    "expected_sha256": "8a9f86447a8ebcd1dadeae81b4b52587d8d967f67500bc7c00d2c6383c1df9cb",
+    "ordinary_curl_observed_bytes": 12645841,
+    "ordinary_curl_timeout_seconds": 120,
+    "range_recovery_last_complete_range_index": 13,
+    "range_chunk_bytes": 1048576,
+    "terminal_error": "release_transfer_no_progress",
+    "complete_sha256_verified": false,
+    "installed": false
+  },
+  "official_arm_image": {
+    "manifest_sha256": "1847ca1d1bc792b4b58fff39c82c67942112e3e1ebc0ee1d06b9014873152ce7",
+    "registry_terminal_error": "HTTP 503 Service Unavailable",
+    "complete_loaded": false
+  },
+  "logs": {
+    "image-fetch.log": {
+      "path": "artifacts/native-arm-docker-relay-002/image-fetch.log",
+      "bytes": 1930,
+      "sha256": "b1c4adb09f42486ccb3ea34680775eda8c6f92ad0b984952297743a4fafc92de",
+      "observed_error_code": "oci_registry_503"
+    },
+    "wheel-fetch.log": {
+      "path": "artifacts/native-arm-docker-relay-002/wheel-fetch.log",
+      "bytes": 1877,
+      "sha256": "6a39855e9bfa6e0906d8fe4538a7522eb67bad29ce728ecc34dd689d7b55a311",
+      "observed_error_code": "release_transfer_no_progress"
+    }
+  },
+  "resources": {
+    "network_retried_in_this_slice": false,
+    "ssh_retried_in_this_slice": false,
+    "docker_invoked_in_this_slice": false,
+    "gpu_used_in_this_slice": false,
+    "heavy_cpu_used_in_this_slice": false,
+    "owned_running_containers": 0,
+    "processor_cases": 0
+  },
+  "source": {
+    "repo_root": "/tmp/lite-omnijev-vllm-processor",
+    "git": {
+      "commit": "e33d39d4616b992887c9cedb558cec1d2b31b9fd",
+      "branch": "codex/s0-vllm-processor-cpu",
+      "dirty": "M docs/runbooks/s0-docker-processor.md\n M scripts/s0_docker_processor.py\n M tests/test_s0_docker_processor.py\n?? reports/s0-docker-processor-relay-002.json"
+    },
+    "code_hashes": {
+      "scripts/s0_docker_processor.py": "2f1cf7d0160eefd7aacd3da229705b013cdecb4f0b3b0e4d711079b3087d0026",
+      "tests/test_s0_docker_processor.py": "d658be622763a0ff1f6822a01aabb65198449151083abafabd25f9738ad0cb84",
+      "docs/runbooks/s0-docker-processor.md": "757875c3c57b22ba430ddf255917303cdab674f5977bb4b717ba4adf1de8d5f8"
+    }
+  },
+  "environment": {
+    "python": "3.11.14",
+    "executable": "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
+    "platform": "macOS-26.5.1-arm64-arm-64bit"
+  },
+  "verification": {
+    "command": "PYTHONPATH=/tmp/lite-omnijev-vllm-processor /Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python -m pytest tests/test_s0_docker_processor.py -q",
+    "exit_code": 0,
+    "summary": "5 passed in 0.20s",
+    "acceptance_implication": "relay-only controls; no native Docker processor acceptance"
+  },
+  "pending": [
+    "verified complete ARM base image",
+    "verified complete vLLM CPU ARM wheel",
+    "CPU ARM dependency closure",
+    "Docker package installation",
+    "processor canary cases",
+    "full100 native processor comparison"
+  ]
+}

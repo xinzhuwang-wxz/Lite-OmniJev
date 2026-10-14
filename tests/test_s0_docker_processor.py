@@ -56,3 +56,18 @@ def test_existing_container_is_never_reused_or_stopped(tmp_path, monkeypatch):
             tmp_path, image="fake", name="lite-omnijev-test", command=["python"], offline=True
         )
     assert calls == [["docker", "container", "inspect", "lite-omnijev-test"]]
+
+
+def test_relay_image_stage_does_not_load_remote_docker(tmp_path, monkeypatch):
+    import scripts.s0_docker_processor as runner
+
+    calls = []
+
+    def fetch(root, *, load):
+        calls.append((root, load))
+        return {"loaded": load}
+
+    monkeypatch.setattr(runner, "fetch_arm_image", fetch)
+    monkeypatch.setattr("sys.argv", ["runner", "--fetch-image", "--relay-only", str(tmp_path)])
+    assert runner.main() == 0
+    assert calls == [(tmp_path, False)]

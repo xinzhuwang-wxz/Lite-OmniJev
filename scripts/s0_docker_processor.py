@@ -102,7 +102,7 @@ def fetch_wheel(root: Path) -> dict[str, object]:
     return {"name": WHEEL_NAME, "bytes": WHEEL_SIZE, "sha256": WHEEL_SHA256, "url": WHEEL_URL}
 
 
-def fetch_arm_image(root: Path) -> dict[str, object]:
+def fetch_arm_image(root: Path, *, load: bool = True) -> dict[str, object]:
     """Restore the pinned official image from digest-checked public registry blobs."""
     token_url = "https://auth.docker.io/token?service=registry.docker.io&scope=repository:library/python:pull"
     with urllib.request.urlopen(token_url, timeout=30) as response:
@@ -204,13 +204,15 @@ def fetch_arm_image(root: Path) -> dict[str, object]:
     with tarfile.open(archive, "w:gz") as output:
         for name in [config_name, "manifest.json", *layer_names]:
             output.add(directory / name, arcname=name)
-    subprocess.run(["docker", "load", "-i", str(archive)], check=True, timeout=120)
+    if load:
+        subprocess.run(["docker", "load", "-i", str(archive)], check=True, timeout=120)
     return {
         "tag": tag,
         "source_manifest_sha256": ARM_IMAGE,
         "config_sha256": config_sha,
         "layers": manifest["layers"],
         "archive_bytes": archive.stat().st_size,
+        "loaded": load,
     }
 
 
@@ -309,6 +311,7 @@ def main() -> int:
     parser.add_argument("root", type=Path)
     parser.add_argument("--fetch-wheel", action="store_true")
     parser.add_argument("--fetch-image", action="store_true")
+    parser.add_argument("--relay-only", action="store_true")
     parser.add_argument("--image", default=ARM_IMAGE)
     parser.add_argument("--name", default="lite-omnijev-arm-processor-001")
     parser.add_argument("--network", action="store_true")
@@ -322,7 +325,7 @@ def main() -> int:
         return 0
     if args.fetch_image:
         (args.root / "official-arm-image.json").write_text(
-            json.dumps(fetch_arm_image(args.root), indent=2) + "\n"
+            json.dumps(fetch_arm_image(args.root, load=not args.relay_only), indent=2) + "\n"
         )
         return 0
     if not args.command:

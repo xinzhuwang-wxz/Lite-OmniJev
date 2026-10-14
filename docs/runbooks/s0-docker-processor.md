@@ -15,10 +15,14 @@ Only after complete verified binaries are available may a dedicated installation
 
 For a future successfully prepared owned image, the stage runner starts `--network=none`, clears `CUDA_VISIBLE_DEVICES`, enables both HF offline flags, sets one numerical thread and explicit `S0_CODE_VERSION`. First run `scripts.s0_prepare --profile canonical_http` against the licensed fixture inside the container. Then run `scripts.s0_vllm_processor` with that same-container HF report as `--hf-reference`, first six cases and only after success `--full`. Preserve any Mac/container input differences instead of calling FFmpeg-version differences native processor parity failures. The original Mac reference remains independently frozen; no numerical or source gate is relaxed.
 
-## Actual result: 2026-10-14
+## Actual result: 2026-10-14 relay-002
 
-The attempt stopped before dependency installation because public transport did not produce a verified complete ARM base or wheel. Docker pull exited 1 with `unexpected EOF`. The first wheel download ended at 5 MiB and failed the official size/SHA; bounded range recovery encountered incomplete bodies and TLS `record layer failure`. Raw official OCI recovery also encountered truncated bodies and TLS failure. The previous SSH ControlMaster was unavailable and the authorized SSH command returned authentication failure; no credentials were read or requested.
+The SSH relay/download closeout stopped before any dependency installation or Docker container creation. No network, SSH, Docker, GPU or heavy CPU retry is part of this evidence slice. Existing relay logs under `artifacts/native-arm-docker-relay-002/` show:
 
-No processor canary, full-100 comparison, backbone, engine, CUDA operation or package installation ran. There are no owned running containers. Existing containers and Docker daemon settings were not changed. Partial owned artifacts are retained for evidence, not installed. This is `download_transport_blocked`, not proof of ARM CPU incompatibility. See `reports/s0-docker-processor-001.json`.
+- ordinary wheel transfer reached 12,645,841 of 68,640,121 bytes within the 120 second observation window and never reached the official SHA256; the partial is retained only as failed transport evidence.
+- bounded range recovery reached range 13 with one complete 1 MiB chunk, then failed with `release_transfer_no_progress`; no complete wheel was assembled.
+- OCI registry token/manifest access failed with HTTP 503, so no pinned ARM image was reconstructed or loaded.
+
+No processor canary, full-100 comparison, backbone, engine, CUDA operation, Docker container or package installation ran. There are zero processor cases. Partial owned artifacts are retained for evidence, not installed. This is `relay_download_transport_blocked`, not proof of ARM CPU incompatibility. See `reports/s0-docker-processor-relay-002.json`.
 
 Official reference: [vLLM 0.31 CPU installation](https://docs.vllm.ai/en/v0.31.0/getting_started/installation/cpu/), [fixed v0.31.0 release](https://github.com/vllm-project/vllm/releases/tag/v0.31.0).
