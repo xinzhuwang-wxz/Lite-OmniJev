@@ -16,6 +16,9 @@
 - 原生get_goal已确认active；当前S0；完整教师/缓存/独立gate/人工一致性未全绿，S1尚不启动，goal终局未complete。无卡时期失败均历史证据，当前不重复资源失败路径。
 
 下一步（本轮优先）：
+- 五基线CPU002实际27.253sec：5passed/Valen-Qwen1partial，无blocked；显式quarantine路径及OneJev官方空thinking关闭分支已解决，剩余Qwen模板语法证明修复中。报告reports/s0-baseline-cpu-linux-002.json，代码c1bba83，未加载权重或GPU，教师专用读出/质量不凭通用probe准入。
+- s0:12公开TRAIN来源事实已写.scratch/s0/development-source-contract.md。GUI step annotation缺口开始最多3个/1MiB官方固定revision小审计；不重下媒体、不碰test/holdout。其余候选不当500dev已准入。
+
 - s0:13已冻结并认领CLINC真实公开train→500dev+14750train排除ledger，切片/tmp/lite-text-dev-001实现中；只覆盖intent Choice，不当完整文本primitive/质量准入。该票已加到08出口依赖。
 
 - 最新收口：s0:11 CPU适配/官方计分语义完成，231题两遍构建SHA11223d98…c75d一致，7回归、82源mypy/ruff/format/build通过；oracle只是计分测试非模型质量。见reports/jevbench-adapter-validation-001.json/build-001及002/oracle-001与plan/handoff-2026-10-14-jevbench-cpu.md。
