@@ -95,3 +95,38 @@ local-only lifespan及负测。上游由MockTransport返回合成logprobs；未�
 使用当前源码树中的测试 fixture，启动本机临时网关，通过实际 Chromium 请求文本、图像、截图、音频、8/16帧视频与三种决策，检查422隐私失败和未配置503；使用官方processor，但推理后端明确为fake。需要已安装Playwright/Chromium、官方本地metadata以及 `S0_LOCAL_MODEL_DIR` / `S0_CANONICAL_MEDIA_ROOT`。输出目录必须不存在，脚本只清理自己启动的进程。实际报告 `reports/browser-s0-cpu-003.json`，截图及trace保留；001失败也保留。此结果不证明模型效果或性能门槛。
 
 未来可对已启动的本机真实网关使用同一入口加 `--base-url http://127.0.0.1:<port> --model-version <期望版本>`；脚本不启动模型、不操作GPU，真实模型及质量来源须另有门槛报告。该live分支尚待真实服务验证。运行时禁止Python `-O`，浏览器检查使用assert。
+
+## primary026 Linux CPU gateway bounded check
+
+`reports/primary026-linux-gateway-cpu-001.json` records a bounded follow-up in the
+original primary026 Linux environment
+`/root/autodl-tmp/envs/serve-vllm026-offline-check`, source tree
+`/root/autodl-tmp/before-gpu-release-4366197` at
+`3dbbe0d68fec6768bd3cd4d8ef92fe06dd179102`. The prerequisite HF canonical
+six-case processor report `artifacts/primary026-linux-cpu-001/report.json` was
+present and passed as partial (`exit_code=0`, six cases, Transformers5.13,
+Torch2.11), so the earlier 031 resource failure is not evidence that every Linux
+processor path fails.
+
+The service env did not contain pytest tooling. A small isolated target
+`artifacts/primary026-linux-gateway-cpu-001/test-tools` was populated with
+already-staged wheels only, using `pip install --no-index --no-deps --target`:
+pytest8.4.2, pluggy1.6.0, and iniconfig2.3.1. `pip check` under that target
+reported no broken requirements. The service environment package versions were
+not changed.
+
+The gateway pytest attempt ran under `flock /tmp/omnijev-cpu-heavy.lock`,
+`CUDA_VISIBLE_DEVICES=''`, single-thread CPU settings, offline HF flags, and
+`</dev/null`. It selected
+`test_real_five_categories_and_multiquestion_canonical_chat` plus
+`test_fixed_100_gateway_requests_match_canonical_reference`, covering the
+intended actual gateway/media path and fixed-reference binding if completed.
+The process emitted four pytest progress dots and then exited 137 after 25s;
+no second attempt was started. Post-failure diagnostics found no matching live
+pytest/gateway process, and collected cgroup `memory.events` showed
+`oom=0`/`oom_kill=0`, so the report records exit137 without asserting a kernel
+OOM cause.
+
+This is a blocked evidence report, not a pass. It does not prove the video8/16
+gateway path, fixed100 gateway reference match, native vLLM processor, GPU
+forward/probability acceptance, model quality, or production readiness.
