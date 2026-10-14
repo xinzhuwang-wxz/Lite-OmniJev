@@ -129,9 +129,7 @@ class FakeOfficialThinkingTokenizer(FakeTokenizer):
         enable_thinking: bool = False,
     ) -> str | list[int]:
         rendered = (
-            "<think>\n\n</think>\n\nassistant"
-            if enable_thinking is False
-            else "<think>\nassistant"
+            "<think>\n\n</think>\n\nassistant" if enable_thinking is False else "<think>\nassistant"
         )
         return self.encode(rendered) if tokenize else rendered
 
@@ -316,8 +314,8 @@ def test_explicit_valen_asset_path_is_hash_checked_outside_model_root(tmp_path: 
     make_model_dirs(root, value)
     adapter = value["models"][5]
     adapter_dir = root / str(adapter["repo_id"]).replace("/", "__") / str(adapter["revision"])
-    quarantine_dir = tmp_path / "quarantine" / "Valen-Team__Valen-Preview-0923" / str(
-        adapter["revision"]
+    quarantine_dir = (
+        tmp_path / "quarantine" / "Valen-Team__Valen-Preview-0923" / str(adapter["revision"])
     )
     quarantine_dir.parent.mkdir(parents=True)
     adapter_dir.rename(quarantine_dir)
@@ -334,9 +332,7 @@ def test_explicit_valen_asset_path_is_hash_checked_outside_model_root(tmp_path: 
         subject for subject in report["subjects"] if subject["id"] == "valen-2b-qwen3.5-base"
     )
     assert valen["adapter"]["local_model_dir"] == str(quarantine_dir)
-    assert valen["adapter_config_sha256"] == hashlib.sha256(
-        _content_for("config.json")
-    ).hexdigest()
+    assert valen["adapter_config_sha256"] == hashlib.sha256(_content_for("config.json")).hexdigest()
     assert valen.get("blocker") != "adapter_metadata_invalid"
 
 
