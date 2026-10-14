@@ -32,6 +32,12 @@ pnpm fetch -> 322 packages, supply-chain policy passed
 pnpm offline install -> 322 reused, 0 downloaded, React 19.3.0 / framer-motion 14.1.0 / lucide-react 1.55.0 / Vite 8.3.4
 ```
 
+The Vite probe is deliberately a build-tool canary under the isolated artifact directory, not a product UI implementation. Local evidence is `reports/frontend-vite-offline-probe.json`.
+
+The bounded UI source gap is now covered for the selected Playground foundation controls. Official shadcn/ui `new-york-v4` registry JSON is cached for `button`, `card`, `input`, `textarea`, `select`, `tabs`, `alert`, and `dialog`; official Animate UI registry JSON is cached for `primitives-animate-tabs` plus its three registry dependencies (`primitives-effects-highlight`, `primitives-animate-slot`, and `lib-get-strict-context`). The raw registry source cache is 58,139 bytes, below the 100 MB budget, with per-item source URLs, MIT license notes, JSON SHA-256, inline file SHA-256, and dependency lists in `reports/frontend-registry-sources.json`. The selected registry npm additions are only `radix-ui==1.8.1` and `motion==14.2.0`; `cn` is treated as the local utility alias, not an npm package.
+
+A synthetic Vite app was generated under `artifacts/runtime-builds/offline-tools/frontend/registry-build-canary` using only the cached registry source files and local utility glue. `npm exec --offline --yes pnpm@12.11.2 -- install --offline --frozen-lockfile --ignore-scripts` reused the pnpm store with `downloaded 0`, then `vite build` passed with 2 dist files. Local evidence is `reports/frontend-registry-offline-build.json`. This is still a source/build canary only: no product UI, browser visual QA, full registry crawl, account, or paid API is claimed.
+
 ## Serve-next audio compatibility
 
 The existing remote `serve-next` environment was inspected read-only because it pins `torch==2.13.0+cu130` with `torchaudio==2.11.0+cu130`. CPU imports succeeded for torch, torchaudio, torchvision, Transformers, and vLLM, and a CPU tensor sum returned `2.0`. No existing GPU service environment was modified.
