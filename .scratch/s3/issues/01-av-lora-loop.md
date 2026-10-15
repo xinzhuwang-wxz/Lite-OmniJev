@@ -29,3 +29,5 @@ Evidence: reports/s3-joint-preparation-001.json：21184行五模态联合池及5
 ## Out of scope
 
 量化/E2B(S6)、封存holdout构建(s0:05)、新数据源、门槛静默调整。
+
+独立准备证据：656ff65按需预处理，86项CPU训练测试通过；reports/s3-lazy-parity-comparison-001.json真实GPU同30步loss与adapter哈希完全一致、cache峰值低于128MiB。仅工程可行性，不解除S2依赖、不代替S3训练质量门。

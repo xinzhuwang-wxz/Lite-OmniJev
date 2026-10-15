@@ -36,3 +36,5 @@ Evidence: 恢复修复bbdc041（65项相关回归通过）；reports/s2-counterf
 ### 2026-10-15 有界创新结果
 
 E04–E07均未达固定dev150扩量条件，停止；见reports/explore/及对应真实报告。E07新VQA人工一致gold监督CE123/150、CE+Brier124/150；S2完整门仍未通过，不以探针代替阶段验收。新训练目标与自主创新授权见ADR0015–0017。
+
+新增视觉覆盖路线ADR0018：新family构建器2508a6f，远端含Pillow16项测试通过，本机10通过/6因无Pillow跳过；计划400唯一family、元信息及媒体哈希隔离，下载仍在quarantine，未训练。
