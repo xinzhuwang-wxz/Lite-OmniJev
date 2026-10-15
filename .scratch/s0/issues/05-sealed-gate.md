@@ -32,5 +32,7 @@ Blocked by: p0:04
 
 2026-10-15：CLINC原始Parquet全链重放匹配原dev/train/3000cal/1000hold哈希（s4-text-gold-source-replay-001.json）；GUI002全历史隔离通过。跨模态及媒体整理构建器集成126测试通过，实际组装待VQA下载完成；冻结策略.scratch/s4/crossmodal-gold-policy.md。VQA003仅因20分钟预算结束，1161图已校验复用，004续传剩余3339图。
 
+2026-10-15：音频媒体整理实跑4000引用，2991文件全部SHA校验；原始artifact保留historical后合并全历史126438观测零跨池冲突，训练原resolver4000引用通过。新总清单with-audio-relocated-inventory-001.json SHA48d41081…；媒体与隔离报告均为001，非完整gold/权限准入。
+
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。
