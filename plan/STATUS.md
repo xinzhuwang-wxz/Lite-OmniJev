@@ -7,7 +7,7 @@
 - 五模态500题双遍：image82.0%、screenshot96.4%、text99.4%、audio80.0%、video16帧63.6%；旧三模态与S2持平。video8帧60.8%，当前保留16帧。
 - 主干E4B ee0ef602…，S3 adapter1bebae31…；图像1120是当前质量配置，未定为最终低成本服务默认。
 - ADR0021记录真实100步/1000次均衡回放执行调整，原质量门不改；本候选训练+正式评测0.9075 H20活跃小时，不含其它作业/空闲，不等价租卡总费用或H100。
-- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。本轮两项Sol 6.1修复已整合；GUI重建002已成功、VQA续传004正在远端执行，Sol 6.1正在只读梳理私有作业入口，未运行GPU作业。
+- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。本轮两项Sol 6.1修复已整合；GUI重建002已成功、VQA续传004正在远端执行，私有作业入口只读方案已返回，无活跃子代理；未运行GPU作业。
 
 ## 当前执行
 - 音频媒体整理001成功：4000引用、2991唯一媒体、1249458520字节；四个原artifact不改，仅新URI。原始文件作为historical、新文件current并入GUI002全清单，126438观测零跨池冲突，清单with-audio-relocated-inventory-001.json SHA48d41081…；reports/s4-audio-{media-bundle,relocated-isolation,media-provenance}-001.json。训练resolve_media实查全部4000引用通过（s4-audio-bundle-resolver-001.json，2.174秒）。不是完整gate准入。
@@ -35,6 +35,7 @@
 - 远端/root/autodl-tmp/s1-text-lora-001，SSH mux /tmp/omnijev-ssh-root-final、端口48926；训练Python before-gpu-teacher-job-final-001，GPU H20。模型/媒体/凭据沿runbook。
 
 ## 已知缺口与决定
+- 私有job隔离候选：固定audit注册表、独立无登录UID、显式只读输入、私有日志、严格汇总receipt与timeout；不称防root/外部证明。远端bwrap缺失，unshare user+net探针exit1（s4-private-job-prerequisites-001.json），需实测可用边界后实现；namespace方案尚不可运行，不能无声降级或新增用户账号前置。
 - 用户指定子代理分工：简单执行/下载/监控优先gpt-6-luna，常规实现/测试gpt-6.1-sol；主会话负责分析、规划、统筹与验收。已有运行中的构建任务完成后采用新分工，不重启浪费。
 - 用户再次要求S4按实测监控、多迭代/创新，避免盲跑全量；执行规则冻结.scratch/s4/iteration-policy.md：小批固定dev筛选、中途checkpoint/指标、退化/无收益停止、有效才放大，原阶段门槛与封存纪律保留。
 - train.trainer/s1_dev_eval已支持image+audio，并保留官方mm_token_type_ids；63项相关测试通过，真实CPU processor 10例与S0路径逐张量一致（reports/s4-crossmodal-preparation-parity-001.json）。尚未执行联合模态优化器更新，不计训练质量通过。
