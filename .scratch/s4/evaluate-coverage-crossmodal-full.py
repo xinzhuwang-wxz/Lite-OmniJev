@@ -1,7 +1,8 @@
 """One source and one pinned adapter per invocation; full dev crossmodal measurement.
 
 Default CPU preparation reads only the chosen dev source and adapter identities.
-Explicit --execute enables a 600-second GPU job. No small-screen threshold gates.
+Explicit --execute enables a bounded GPU job (default100/180s), with progress every25.
+No small-screen threshold gates; --limit500 explicitly opts into a full source.
 """
 
 from __future__ import annotations
@@ -108,14 +109,35 @@ def full_forward(samples: list, media: Path, adapter: Path, out: Path, paired: d
                     for i in prepared.answer_token_ids.values()
                 }
 
-        records = baseline.run_pass(
-            samples,
-            processor=BudgetProcessor(),
-            media_root=media,
-            pass_index=1,
-            forward=forward,
-            records_sidecar=out / "records.jsonl",
-        )
+        records = []
+        started = time.monotonic()
+        previous = started
+        for sample in samples:
+            records.extend(
+                baseline.run_pass(
+                    [sample],
+                    processor=BudgetProcessor(),
+                    media_root=media,
+                    pass_index=1,
+                    forward=forward,
+                    records_sidecar=out / "records.jsonl",
+                )
+            )
+            if len(records) % 25 == 0 or len(records) == len(samples):
+                now = time.monotonic()
+                progress = {
+                    "status": "evaluating",
+                    "completed": len(records),
+                    "total": len(samples),
+                    "metrics": baseline.score_records(records),
+                    "evaluation_seconds": now - started,
+                    "batch_seconds": now - previous,
+                    "scope": "public dev prefix only; not stage acceptance",
+                }
+                temp = out / "progress.tmp"
+                temp.write_text(json.dumps(progress, indent=2) + "\n")
+                temp.replace(out / "progress.json")
+                previous = now
         metrics = baseline.score_records(records)
         require(metrics["count"] == len(samples), "full crossmodal result count mismatch")
         return {
@@ -145,6 +167,8 @@ def main() -> int:
     parser.add_argument("--paired-records", type=Path)
     parser.add_argument("--paired-records-sha256")
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--limit", type=int, choices=(50, 100, 200, 500), default=100)
+    parser.add_argument("--budget-seconds", type=int, choices=(180, 300, 600), default=180)
     args = parser.parse_args()
     os.umask(0o077)
     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
@@ -160,7 +184,8 @@ def main() -> int:
         "adapter": args.adapter,
         "runner_sha256": sha(Path(__file__)),
         "shared_source_sha256": sha(SHARED),
-        "budget_seconds": 600,
+        "budget_seconds": args.budget_seconds,
+        "requested_count": args.limit,
     }
     start = time.monotonic()
 
@@ -175,6 +200,9 @@ def main() -> int:
             bool(line.strip()) for line in data.read_text().splitlines()
         )
         samples = full_samples(args.source, data)
+        source_count = len(samples)
+        require(args.limit <= source_count, "limit exceeds actual source count")
+        samples = samples[: args.limit]
         adapter, expected = ADAPTERS[args.adapter]
         require(sha(adapter / "adapter_model.safetensors") == expected, "adapter SHA mismatch")
         require(
@@ -184,7 +212,9 @@ def main() -> int:
         report.update(
             data_sha256=sha(data),
             data_path=str(data),
-            actual_full_source_count=len(samples),
+            actual_full_source_count=source_count,
+            evaluated_count=len(samples),
+            complete_source=len(samples) == source_count,
             expanded_beyond_fixed50=len(samples) > 50,
             adapter_sha256=expected,
             adapter_config_sha256=args.expected_adapter_config_sha256,
@@ -221,7 +251,7 @@ def main() -> int:
         report.update(status="prepared", exit_code=0)
         if args.execute:
             signal.signal(signal.SIGALRM, interrupted)
-            signal.alarm(600)
+            signal.alarm(args.budget_seconds)
             report.update(status="running", exit_code=1)
             (args.output / "receipt.json").write_text(json.dumps(report, indent=2) + "\n")
             report.update(full_forward(samples, media, adapter, args.output, paired))
