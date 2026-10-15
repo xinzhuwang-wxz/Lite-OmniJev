@@ -1,6 +1,6 @@
 # STATUS
 
-更新：2026-10-15（Asia/Shanghai，18:51）。**S2候选v2+1120预算image500单遍82.0%（门80.6%）；正式全模态双遍验收仍运行，尚未关票。高预算HF/native CPU100例精确一致通过；实际HTTP与服务性能待验证。**
+更新：2026-10-15（Asia/Shanghai，18:59）。**S2候选v2+1120预算image500单遍82.0%（门80.6%）；正式image双遍82.0%/cf93.8%精确重复已通过，截图/文本仍运行，尚未关票。高预算HF/native CPU100例精确一致通过；实际HTTP与服务性能待验证。**
 
 ## 已验证（不重跑）
 - S1通过；S2 v2 image78.8%/cf88.6%、screenshot96.6%/cf98.4%、text99.4%，各dev500双遍一致；reports/s2-stage-acceptance-v2-001.json仅image FAIL。
@@ -27,7 +27,10 @@
 - 当前唯一GPU链：/root/autodl-tmp/budget1120-full-gates.sh，timeout1800；日志artifacts/s2-text-lora-001/budget1120-full-gates-001.log。原v2 adapter，image/screenshot预算1120，各500题双遍+cf；text500双遍。每cohort检查质量/repeat失败即停。报告reports/s2-dev-eval-{image,screenshot,text}-v2-budget1120-001.json；输出同名artifacts/s2-text-lora-001目录。运行中不切远端ea3695e。
 - 独立CPU工作树/root/autodl-tmp/image-budget-cpu-check-001，代码60528f2：HF100例41.03秒/native vLLM0.26 100例70.13秒均passed，精确token/tensor匹配；reports/s2-budget1120-{hf,native}-cpu-001.json。本机CPU工作树无需保留训练产物，暂留证据；不加载权重、不占GPU。
 - e48dd73加固S2报告同模型/adapter、冻结devSHA、图像预算一致性，S3回归也拒绝预算变化。52项门槛测试通过，历史v2指标逐值不变。GPU主树仍ea3695e，运行中不合并。
-- 活跃独立review子代理s2_integration_review，worktree /Users/bamboo/.codex/worktrees/s2-integration-review/Lite-OmniJev，readonly，评估配置/运输/训练/验收风险及旧训练清单与联合训练证据的契合。主会话收齐正式全链后组装S2门、修复review阻断项，全绿才关闭S2/展开S3。实际HTTP与服务性能仍待实测。
+- 独立review已完成，无新预算/训练代码阻断；两项P2已处理：ADR0020用真实曝光记录替代过时独立训练清单；S3 gate绑定全部五cohort冻结SHA与严格权重身份，拒绝研究override。72项门槛回归通过，reports/s2-integration-review-001.md。无活跃子代理，review工作树已请求归档。
+- 实际joint曝光审计reports/s2-training-exposure-audit-001.json：smoke300步image/screenshot各750曝光；v2 1600步image3108/screenshot930，覆盖1341/420全部family，step800对照齐全。没有声称完成原独立300步两条训练，也未改质量门。
+- 里程碑工程检查：全仓ruff、410文件format、104源文件mypy、wheel/sdist构建通过。21个实验驱动格式整理经AST/compile核验；历史运行哈希保留，未重复GPU实验。
+- image正式报告reports/s2-dev-eval-image-v2-budget1120-001.json已拉取：82.0%、cf93.8%、双遍逐记录一致。链继续screenshot与text，输出路径同上；结束后主会话用最新本地S2 gate组装机器门。远端运行目录仍ea3695e，勿合并。
 
 ## 授权与研究
 - 原生goal active；用户强调按开机总时长计费，CPU准备与GPU重叠、停止无收益路线、避免重复验证/空转。

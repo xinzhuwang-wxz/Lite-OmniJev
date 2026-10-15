@@ -21,7 +21,7 @@ Blocked by: None
 - [x] joint主训练（ADR0020）：v2 1600步/16000曝光，image3108/截图930，完整训练family覆盖；step800 midway已作E01对照，SwanLab真实指标与谱系齐全。
 - [x] dev500同条件双遍：image与screenshot精确重复，字段与S0基线runner一致；文本回归评测（text dev500，S2 adapter）≥98.6%；反事实翻转双遍确定性，flip率实测。
 - [x] 门槛报告：eval.gate原值判定原样记录（image≥80.6%、screenshot≥63.2%、text_regression≤1pp、flip≥.80）；未达标如实保留，结构性不可达按ADR0013格式另录。
-- [ ] lint/type/build+新增回归；STATUS更新；commit带Lore trailers。
+- [x] lint/type/build+新增回归：全仓ruff/410文件format、104源文件mypy、wheel/sdist构建通过；预算/门槛/预处理回归通过，STATUS与Lore提交齐全。
 
 ## Evidence
 
