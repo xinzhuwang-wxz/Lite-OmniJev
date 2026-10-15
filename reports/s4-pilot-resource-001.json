@@ -1,0 +1,49 @@
+{
+  "scope": "S4 pilot001 actual completed training and 7 screen job walls; excludes CPU preparation, idle rental and earlier probes; not service latency",
+  "gpu": "NVIDIA H20",
+  "jobs": [
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-joint-pilot-train-001.json",
+      "sha256": "6045e4bca6a3bb23986a50dbd42589e13c78719fcba1d168d603f32db72b9872",
+      "wall_seconds": 319.1666372809559
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-pilot-crossmodal-original-001.json",
+      "sha256": "afbd11dd6d3c1fab20f7c98691ae01271d77dd9fdf1d6803d0aad675053c3b8a",
+      "wall_seconds": 49.665
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-pilot-crossmodal-supplemental-001.json",
+      "sha256": "df44c68fea5c712dfc3a4c2bcefe23d5d4a91ac22549015bd31d47e0f37714ef",
+      "wall_seconds": 44.837
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-five-screen-001/image-report.json",
+      "sha256": "c27195e943bfea12ada4b9880a05eb628233ab8004692a51d9f42f78037b3ad0",
+      "wall_seconds": 35.17090201377869
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-five-screen-001/screenshot-report.json",
+      "sha256": "c6be20dd6561885d63392e10b253c808b4bf14c030992f60097aa1137683279c",
+      "wall_seconds": 39.93700957298279
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-five-screen-001/text-report.json",
+      "sha256": "69d66fd22d1ba686d15661c2a78b71c9c9a8d8e9171f43904ada2ef8dfb18167",
+      "wall_seconds": 20.032357215881348
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-five-screen-001/audio-report.json",
+      "sha256": "338d15813cfd9a54238e72e21569d1a17a9df9d384f0d93e8f9124c40d315d3c",
+      "wall_seconds": 36.174949407577515
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-five-screen-001/video-report.json",
+      "sha256": "86befe9fa4e77a586ed4222527a778e98feca67010f981e01ffc623c6ad61100",
+      "wall_seconds": 120.65768003463745
+    }
+  ],
+  "total_job_wall_seconds": 665.6415355258137,
+  "cost": null,
+  "exit_code": 0
+}

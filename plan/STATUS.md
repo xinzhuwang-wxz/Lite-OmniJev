@@ -9,9 +9,11 @@
 - 首个S4候选30步完成：300曝光，六cohort各50；训练wall319.167秒，CUDA peak36.94GB，online SwanLab无错误。adapter SHA6bb86b09…，reports/s4-joint-pilot-train-001.json。首轮原crossmodal固定50从33→35，补充固定50保持40；两个selected ID SHA与旧基线一致，已通过预设跨模态筛选触发条件；不是S4门通过。
 - 五旧cohort筛选已完成并通过预设警戒：image40→40/50、screenshot50→50/50、text49→49/50、audio38→37/50、video99→99/150。reports/s4-pilot-screening-001.json qualified_for_expansion=true仅筛选资格，不是正式质量通过；音频小切片少1题需继续关注。
 - 首轮训练/筛选已结束，当前无GPU作业。真实CPU视频诊断reports/s4-video-pilot-diagnostic-001.json：首轮50视频全部重复S3 stable200已见；temporal60/97不变，motion10→7/14，existence29→32/39，逐题8修正/8退步，总分持平。TRAIN8299，除当前S3 stable200余8099（不声称全历史未见）。
-- 下一轮规则冻结.scratch/s4/pilot-002.md：30步、video150新族/媒体且时序90/运动30/存在30、其它5cohort各30回放；初始首轮adapter6bb86b09…，新optimizer，余训练/推理参数不变。Sol6.1 s4_crossmodal_train正在独立worktree实现CPU准备.scratch/s4/prepare-video-pilot.py，先通过全库存审计再上卡。
+- 下一轮规则冻结.scratch/s4/pilot-002.md：30步、video150新族/媒体且时序90/运动30/存在30、其它5cohort各30回放；初始首轮adapter6bb86b09…，新optimizer，余训练/推理参数不变。Sol6.1准备代码2a8574b已合入，真实CPU准备19.96秒通过，300唯一draw、150新视频按六个kind/label配额齐全，派生完整inventory隔离通过；reports/s4-video-pilot-preparation-001.json。当前远端预检进程session63245，预检通过再启动。
 - 两个crossmodal报告reports/s4-pilot-crossmodal-{original,supplemental}-001.json已拉回。跨模态Brier/ECE/coverage只是小样本未校准诊断，不能替代S5。五cohort报告/manifest/sidecar在远端artifacts/s4-pilot-five-screen-001，代码/root/autodl-tmp/s4-pilot-code-f592776；当前脚本源已入Git，不需重新跑。
 - 准备/预检/启动见reports/s4-joint-pilot-{preparation,preflight,launch}-001.json；源码f592776 archive双端SHA一致。Sol6.1实现与测试、Luna监控切片已结束；主要代码67相关CPU tests及主树24针对tests通过，集成ruff/mypy通过。子代理不再运行。
+- S4正式封存前须把这两轮实际更新/新派生TRAIN inventory补入已知曝光核对和当前准入绑定；原gold证据保留，不能把旧34-run范围声称为当前所有训练。
+- Sol6.1 s4_step_telemetry正在独立worktree给既有s0_public_baselines最窄增加E4B adapter绑定，用于S4必要JevBench231题；不改默认基线协议，不启动GPU。Decision Index public0.3原料已在，但完整重建/候选与peer测量尚缺。
 - 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。不为每个小切片另写handoff。
 
 ## 已验收数据与入口
