@@ -1,0 +1,18 @@
+{
+  "status": "blocked",
+  "exit_code": 1,
+  "gpu_used": false,
+  "failure_category": "candidate_versions_not_covered",
+  "aggregate_audit": {
+    "first_seen_cross": 50,
+    "second_seen_cross": 30,
+    "excluded_seen_cross": 71,
+    "eligible_rule_capacity": {
+      "both_true": 60,
+      "image_false_audio_true": 32,
+      "image_true_audio_false": 37
+    }
+  },
+  "duration_seconds": 0.9664970207959414,
+  "cost": null
+}

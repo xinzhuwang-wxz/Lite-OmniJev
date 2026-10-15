@@ -3,27 +3,27 @@
 更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
 
 ## 当前票与下一步
-- s0:05 done：reports/s4-gold-gate-engineering-acceptance-001.json。数据准入、私有数据审计、固定私有模型入口、失败拒绝和真实GPU双遍工程验证齐全；不代表S4/5/6质量通过。
-- s4:01 claimed main-session，主树 /Users/bamboo/Githubs/Lite-OmniJev；规格.scratch/s4/spec.md，规则iteration-policy.md。继续有界训练→固定dev筛选→完整dev→冻结候选→私有holdout/外榜→S4机器门。
-- Sol6.1构建器已合入87c766c，真实200对TRAIN组合构建通过：reports/s4-crossmodal-train-build-001.json；train SHA d3b0be2a…，新完整inventory SHA244a5c4f…，100/50/50 AND规则，原始train图像/音频各200唯一组件。源与媒体SHA及全库存隔离均通过；主树22针对测试通过。
-- 首个S4候选30步完成：300曝光，六cohort各50；训练wall319.167秒，CUDA peak36.94GB，online SwanLab无错误。adapter SHA6bb86b09…，reports/s4-joint-pilot-train-001.json。首轮原crossmodal固定50从33→35，补充固定50保持40；两个selected ID SHA与旧基线一致，已通过预设跨模态筛选触发条件；不是S4门通过。
-- 五旧cohort筛选已完成并通过预设警戒：image40→40/50、screenshot50→50/50、text49→49/50、audio38→37/50、video99→99/150。reports/s4-pilot-screening-001.json qualified_for_expansion=true仅筛选资格，不是正式质量通过；音频小切片少1题需继续关注。
-- 第二轮新视频课程已完成30步/300曝光，wall350.082秒、CUDA peak36.845GB、step15检查点保留；adapter14496e28…（reports/s4-video-pilot-train-001.json）。video99→113/150，分组existence34/39、motion11/14、temporal68/97；audio37→39/50。
-- 第二轮原crossmodal35→33/50，违反预设保留门，reports/s4-video-pilot-retention-001.json qualified_for_full_dev=false；未跑其余不必要筛选，不能推广。第一轮6bb86b09…仍为保留候选。当前GPU进程已实查为空，未关卡。
-- 有界融合pilot-003已结束，两比例均未全过：alpha.5原cross36/video107/audio39，但补充cross39<40；alpha.25两cross36/40，但video101<102。都不推广，不新增比例，不运行完整dev；报告两份s4-fusion*-screening、050-retention及crossmodal报告；025在video失败后未启其余保留评测。alpha.5/.25 CPU最大残差.000656/.000496均通过数值门；未证明任何S4质量门。首轮仍保留。
-- 原方案A4明确列有按模态路由多LoRA，ADR0015允许按实测干扰启动；已只读确认固定vLLM0.26 Gemma4ForConditionalGeneration声明SupportsLoRA，实际多LoRA运行/数值/成本仍未验证，不能据此称部署就绪。B3已完成并停止。
-- B3 video140对照已完成并停止：同首轮adapter/dev150/16帧仅视频soft tokens70→140，正确99→96、jobwall120.66→168.11秒，无收益。不推广140、不额外GPU试280；reports/s4-video140-probe-execution-001.json及native报告齐全。CPU6题已证实70/140/280输入约1173/2229/4373，属输入验证不是质量。所有本轮GPU作业已结束。
-- A4真实启动001已通过：固定vLLM0.26/bf16原生双LoRA注册成功，70.94秒含启动/正常退出；reports/s4-native-multilora-startup-001.json。仅文本模式加载证据，不是实际请求/概率一致性/多模态验收。002已完成四次交替真实请求，指定A/B/U三token logprobs齐全；两适配器返回结果不同，均选A，70.51秒含启动/退出。general重复原始概率差约.00207，不能声称一致性通过；summary-002记录联合/条件概率差。尚无HF对照或真实多模态验收。003关闭prefix cache/async/chunked后完成4请求及HF同题4前向。HF重复完全一致，vLLM仍有raw波动；归一化答案差本单题均<1e-3，但不代表阶段parity。comparison-003及HF报告齐全，所有进程已退出。下一步真实多模态固定切片HF/vLLM对照，原始波动原因未隔离，不以单题放行。
-- A4已完成真实8→100题扩展：8题四指标<.001；100题（四cohort各25）输入token全部匹配/请求完成，但raw最大.0572106、joint .0581282、conditional .0581313超.001，compare退出2。当前BF16原生路由配置不推广、不继续扫参数。HF126.93秒+服务210.19秒；报告s4-native-routing-comparison-100-001.json、diagnostic-100-001。全部作业已结束；原首轮候选保留，下一步单adapter gold CE+正确TRAIN replay参考KL备选。
-- 下一训练候选CE+固定reference KL已合入f26f2b1（Sol源69cc73e）：train/trainer.py、scripts/train_reference.py、tests/test_training_reference.py；代理91回归通过，主树26针对测试通过。gold不改，只在reference正确的TRAIN replay上启用，video不约束；不是RL。试验冻结reports/explore/s4-reference-retention-001.md，下一步复用第二轮300draw数据/config做真实CPU preflight→离线首轮reference→核验→30步有界训练。真实CPU preflight已通过（19.62秒），复用data d3a4c622…/ledger9f3dbd9d…/首轮replay6dd2d40a…；reference预计算已完成300draw，200.16秒，reference.json及SHA绑定报告s4-reference-retention-sidecar-001.json。训练前CPU检查失败KeyError answer_token_ids，尚无optimizer更新；text preparation不含该字段，媒体含。文本校验修复已合入44214af（源2fbec93），88CPU回归/ruff/mypy通过，prepared字节不变；失败证据training-preflight-failure-001。原source保持不可变，修复版/root/autodl-tmp/s4-reference-code-fix-001，wrapper reference-retention-pilot-002.py。CPU preflight002已ready/无blocker（111.01秒），300draw reference绑定通过；训练已完成30/30步，439.06秒/退出0，adapter SHA 8e5c0e4563b1…；139个KL replay均有实际记录，loss有限，第15步checkpoint b6ddb8b5…保留；会话67829/PID796965已终止；TRAIN mask139回放启用、video150不加KL，mask报告已保存，终态待监控；此前54153/58491均已终止。sidecar SHA b135b862…不重算。训练报告预定reports/s4-reference-retention-training-001.json，adapter artifacts/s4-reference-retention-train-001。训练及筛选均已结束：video113/150（temporal70/motion10/existence33）通过；原cross33/50<35失败，screen退出2，补充/其余未跑。reports/s4-reference-retention-screening-001.json。不推广、不扫λ；首轮6bb仍保留。曝光核对002通过，40份update-bearing报告，当前inventory artifacts/s4-pilot-exposure-002。所有67829/13789/1399/32634作业终止。
-- 下一可执行：Sol6.1在独立s4-lora-fusion工作树准备额外60条TRAIN跨模态覆盖的单候选（prepare-crossmodal-retention-pilot.py），尚未上卡。诊断显示普通video与KL在50题预测完全相同：纠正2/退化4，no→yes从10增14；原300训练cross为17yes/13no。新增各20 both_true/image_false/audio_false，必须排除先前实际已见cross；新360每step保留原10draw再加2cross，30步accum12，无KL。详见reports/explore/s4-crossmodal-retention-001.md；先CPU审计，再preflight→上卡。
-- A4闭环：原生双LoRA能实际运行，但当前BF16配置100题数值门失败，23/100超阈值（image3/screenshot1/audio11/video8），argmax变化0不代替概率门。失败不证明所有原生配置均不可行；当前按预算停止，不改引擎/不换基座/不降低门槛。
-- 两轮实际runtime canonical data SHA与准备JSONL不同，已逐ID完整Sample等价核验并追加historical TRAIN；reports/s4-pilot-exposure-reconciliation-001.json真实通过，38份已知update-bearing报告、追加2份canonical工件、全库存隔离通过。派生库存artifacts/s4-pilot-exposure-001/inventory-manifest.json；原gold11证据尚需在正式S4封存前刷新当前准入绑定。
-- 首轮训练+7筛选总jobwall665.642秒（reports/s4-pilot-resource-001.json），不是总租赁账单/服务时延；价格未知cost=null。第二轮损失/计时/曝光/SwanLab online真实记录齐全。
-- JevBench adapter入口ba5ca19已合入，主树26tests及真实CPU preflight通过；候选231题GPU仍待最终候选冻结。源/root/autodl-tmp/s4-public-code-ba5ca19。
-- Decision Index真实映射c5c8d52已执行：1530文件/5,899,934,817bytes，固定tar/Router/HLE/RAGTruth hash核验；metadata在artifacts/s4-index-inputs-001。安全审查发现umask扩大权限，e13d65e已修复并16tests通过。真实私有materialize12.34秒通过，全树700/600核验，reports/s4-index-materialization-001.json；work artifacts/s4-index-work-001；ready仍false，未执行rebuild/未加载pickle。
-- Decision Index offline准备入口aaf2fc6已合入，16tests通过；只准备独立Layout/安全解包/RouterBench JSONL seam，ready=false，实际映射和materialize已完成，评价许可/git provenance/完整rebuild与verify仍未完成。只读closure审计已确认Forecast36动态引用齐全；materialized 7个目录会错误继承父repo869ee95，1目录缺失，需修正（原8 Git roots/pins均真实验证）。tiktoken cl100k缓存已下载并SHA/离线加载核验，reports/decision-index-tiktoken-offline-001.json，缓存目录artifacts/decision-index-tiktoken-001（重建需显式TIKTOKEN_CACHE_DIR）。固定tar实际SHA127198…已确认旧config漏首位1，修正证据reports/decision-index-metadata-correction-001.json，不变更任何数据字节或许可。
-- 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。不为每个小切片另写handoff。
+- s0:05 done（s4-gold-gate-engineering-acceptance-001）；s4:01 claimed main-session。规格.scratch/s4/spec.md、iteration-policy.md；S4模型质量未通过，S5/S6/FINAL未完成。
+- 当前候选：跨模态反例覆盖，固定首轮adapter6bb86b09…初始化，原300实际draw+新增60（both_true/image_false/audio_false各20），360样本/30步/accum12、CE无KL。新增排除两轮实际见过的71个cross ID，三个剩余池60/32/37；seed42每step原10draw顺序保持。冻结试验reports/explore/s4-crossmodal-retention-001.md。
+- prepare001失败candidate_versions_not_covered；真实确认由同id历史22行混入两个旧版本所致，360候选并无缺失。47abc7a按(id,data_version)严格匹配，旧失败保留。prepare002完整库存审计isolated/ledger检查通过，reports/s4-crossmodal-retention-preparation-002.json。训练数据SHA c886baf002fb54e8786c3ec957e03a10e1eccf40363a8c4d5cee43e64616e8ef；inventory SHA 7c4133c7d1ca2ae10484f3acedc0552663a0e4085c170e9142d9e31e662c7a88。
+- preflight ready（27.97秒）；训练已完成30步/360实际draw，全部逐步数值有限，449.90秒、峰值37.14GB，adapter0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818。96086终态0，PID909317结束。源/root/autodl-tmp/s4-reference-code-fix-001（44214af，archive ed9220de…）；准备根artifacts/s4-crossmodal-retention-pilot-002，训练根artifacts/s4-crossmodal-retention-train-001；reports/s4-crossmodal-retention-{training,launch}-001.json。
+- 6714视频筛选通过108/150（existence33/39、motion10/14、temporal65/97），121.54秒；87821已接续PID984760，自动--execute --resume --through text（600秒总限），按原cross→补充→audio→image→screenshot→text顺序，任一失败立即停止。远端/root/autodl-tmp/screen-crossmodal-retention-001.py；输出artifacts/s4-crossmodal-retention-screen-001/receipt.json，日志/root/autodl-tmp/s4-crossmodal-screen-{video,continuation}-001.log。冻结门：video≥102/150且temporal≥60/motion≥7，原cross≥35/50、补充≥40、audio≥37、image≥40、screenshot≥50、text≥49。先核验现有句柄，勿重复启动；小筛选不是S4门。
+- 曝光helper29a2c36已真实执行成功，会话66041终态0：42份已知update-bearing报告，新增本轮canonical TRAIN输入，完整库存isolated。当前inventory artifacts/s4-pilot-exposure-003，reports/s4-pilot-exposure-reconciliation-003.json；正式S4封存前仍需刷新gold准入绑定。
+- 保留候选仍为首轮6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac，报告s4-joint-pilot-train-001。video99/150、原cross35/50、补充40/50，仅通过小筛选。
+
+## 最近实验结论（完整证据保留）
+- 第二轮video CE：30步/350.08秒，adapter14496e28…；video113/150、audio39/50，但原cross33/50<35，不推广。
+- 有效delta融合alpha.5和.25：分别补充cross39<40、video101<102，不推广、不扫比例；s4-fusion*-screening-001。
+- B3视频70→140 soft tokens/frame：99→96/150且jobwall120.66→168.11秒，停止；s4-video140-probe-execution-001。
+- A4原生多LoRA：8题小试过，100题输入IDs全部匹配但23题概率差超.001（raw最大.05721、conditional .05813），argmax0变化不替代数值门。停止当前BF16路由配置，不改引擎/阈值；s4-native-routing-comparison-100-001及diagnostic-100-001。
+- CE+reference KL .5：TRAIN reference300draw/200.16秒；139正确replay启用，video150纯CE。文本mapping预检bug44214af修复、复用sidecar b135b862…；30步439.06秒，adapter8e5c0e45…，video113/150、原cross33/50，停止不扫λ。s4-reference-retention-training/screening/diagnostic-001。与第二轮cross50预测完全相同：较首轮纠正2/退化4，no→yes10→14；由此启动当前覆盖试验。所有上一轮67829/13789/1399/32634作业已终止。
+
+## 外部基准准备
+- JevBench：adapter入口ba5ca19及真实CPU preflight通过；候选231题GPU待最终候选冻结。远端/root/autodl-tmp/s4-public-code-ba5ca19；禁止将公开231题当教师195题协议。
+- Decision Index：真实1530文件/5.90GB映射+私有materialize通过，work artifacts/s4-index-work-001；ready=false。Forecast36动态引用齐全，latest-llm未被固定recipe引用。cl100k缓存已下载SHA/离线加载验证，artifacts/decision-index-tiktoken-001（重建设置TIKTOKEN_CACHE_DIR），reports/decision-index-tiktoken-offline-001。
+- 仍待：评价许可、Git来源修复、完整rebuild/verify。materialized7目录会错误继承父repo869ee95，1目录缺失；原8真实Git roots/pins均验证，详见reports/explore/decision-index-closure-001.md。不得以父Git revision伪记数据来源，不运行raw pickle。原料许可不因下载成功而准入。
+- OpenAI Decisions对照按用户2026-10-16明确要求暂缓，不接入、不请求凭据、不付费。
+- 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。小切片不另写handoff。
 
 ## 已验收数据与入口
 - .scratch/s4/selected-gold-manifest-001.json SHA e073a601…：六cohort各3000cal/1000hold，原dev各500；image/audio/crossmodal额外dev各500单列。旧AOK623/211、video900/300保留为来源诊断及历史曝光，不重复计入主配额。
