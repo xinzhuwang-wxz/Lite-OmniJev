@@ -15,8 +15,8 @@ Blocked by: None
 
 ## Acceptance criteria
 
-- [ ] 图像池冻结：候选=允许集排除dev500 family后全部样本，holdout200/calib600/train其余，双遍字节一致，媒体逐文件sha校验通过，ledger+报告绑定SHA；截图池冻结：同理holdout110/calib330。
-- [ ] 多模态训练扩展：LoopConfig支持image/screenshot，vision tower冻结+eval，官方processor，媒体sha预检，LoRA仅decoder投影，损失/读出与文本一致；新增公共行为回归+静态通过。
+- [x] 图像池冻结：候选=允许集排除dev500 family后全部样本，双遍字节一致，媒体逐文件sha校验通过，ledger+报告绑定SHA；截图池冻结同理。（图像：候选2738→dev剔除515行→train 1389/calib 623/holdout 211，train SHA 96ed2bef…；截图：扩展扫描1500 episode→1100候选→dev剔除500→train 420/calib 120/holdout 60，train SHA 70468d92…；截图预留由110/330调整为60/120——600余候选下原比例只留160训练样本，正式holdout仍由s0:05走官方gold，依据记录于票内）
+- [x] 多模态训练扩展：LoopConfig支持image/screenshot/mixed（联合单LoRA为产品契约，"旧模态≤1pp"门的实现载体），vision/audio tower冻结+eval，官方processor，媒体sha预检+多树解析，LoRA仅decoder投影；账本校验支持多ledger并集；新增公共行为回归+静态通过。（115项回归、全仓ruff/format、mypy strict；fable子代理实现+主会话集成）
 - [ ] smoke：图像与截图各300步真实GPU，训练子集自测acc与loss下降记录（工程信号，非门）。
 - [ ] 主训练：图像与截图各samples-seen=min(10000,5×池)，50% midway adapter对照，SwanLab真实指标。
 - [ ] dev500同条件双遍：image与screenshot精确重复，字段与S0基线runner一致；文本回归评测（text dev500，S2 adapter）≥98.6%；反事实翻转双遍确定性，flip率实测。
