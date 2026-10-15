@@ -8,7 +8,15 @@ import pytest
 from test_vqa2_gold_capacity import fixture, rewrite
 
 from scripts.gold_inventory import digest
-from scripts.vqa2_gold_pools import choose, main, materialize, official_url, plan, rgb
+from scripts.vqa2_gold_pools import (
+    choose,
+    download_transport,
+    main,
+    materialize,
+    official_url,
+    plan,
+    rgb,
+)
 
 
 def sources(tmp_path: Path) -> dict[str, Any]:
@@ -331,3 +339,29 @@ def test_original_question_count_cannot_manufacture_family_capacity(tmp_path: Pa
             quotas=dict.fromkeys(("calibration", "holdout", "dev"), 5),
         )
     assert not (tmp_path / "rejected").exists()
+
+
+def test_exact_pinned_http_transport_only() -> None:
+    https = official_url(42)
+    http = https.replace("https:", "http:")
+    row = {"image_id": 42, "attribution": {"coco_url": http}}
+    assert download_transport(row, {"url": https}) == https
+    assert download_transport(row, {"url": https, "transport_url": http, "final_url": http}) == http
+    for transport in (
+        "http://evil.example/train2017/000000000042.jpg",
+        http + "?query=1",
+        http.replace(".org/", ".org:80/"),
+        http.replace("000000000042", "000000000043"),
+    ):
+        with pytest.raises(ValueError, match="download_url"):
+            download_transport(row, {"url": https, "transport_url": transport})
+    for final in (https, "https://flickr.com/private", http + "?query=1"):
+        with pytest.raises(ValueError, match="download_url"):
+            download_transport(row, {"url": https, "transport_url": http, "final_url": final})
+    with pytest.raises(ValueError, match="download_url"):
+        download_transport(
+            {"image_id": 42, "attribution": {"coco_url": https}},
+            {"url": https, "transport_url": http},
+        )
+    with pytest.raises(ValueError, match="download_url"):
+        download_transport(row, {"url": https, "final_url": http})

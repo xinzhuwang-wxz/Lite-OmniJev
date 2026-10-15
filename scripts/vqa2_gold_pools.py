@@ -41,6 +41,24 @@ def official_url(iid: int) -> str:
     return f"https://images.cocodataset.org/train2017/{iid:012d}.jpg"
 
 
+def download_transport(row: dict[str, Any], download: dict[str, Any]) -> str:
+    """Accept canonical identity or the exact pinned official HTTP transport, without redirects."""
+    canonical = official_url(row["image_id"])
+    allowed = {canonical}
+    pinned = row["attribution"].get("coco_url")
+    if pinned == canonical.replace("https:", "http:"):
+        allowed.add(pinned)
+    transport = download.get("transport_url", download["url"])
+    if (
+        not isinstance(transport, str)
+        or download["url"] != canonical
+        or transport not in allowed
+        or download.get("final_url", transport) != transport
+    ):
+        raise ValueError("download_url")
+    return transport
+
+
 def write_rows(path: Path, rows: list[dict[str, Any]]) -> str:
     write_private(path, b"".join(encode(row) for row in rows))
     return digest(path.read_bytes())
@@ -306,11 +324,7 @@ def materialize(
     for row in rows:
         try:
             download = by_id[row["image_id"]]
-            if (
-                download["url"] != official_url(row["image_id"])
-                or download.get("final_url", download["url"]) != download["url"]
-            ):
-                raise ValueError("download_url")
+            download_transport(row, download)
             path, sha = Path(download["path"]), download["sha256"]
             decoded = rgb(path, sha)
             if sha in seen_raw or decoded in seen_rgb:
@@ -340,6 +354,10 @@ def materialize(
             "source_revision": private["config"]["train_annotations"]["sha256"],
             "license": LICENSE,
             "media_license": MEDIA_LICENSE,
+            "download_transport_url": download_transport(row, by_id[row["image_id"]]),
+            "download_final_url": by_id[row["image_id"]].get(
+                "final_url", download_transport(row, by_id[row["image_id"]])
+            ),
         }
         sample = Sample.model_validate(
             {
