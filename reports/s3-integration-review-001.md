@@ -1,7 +1,7 @@
-# S3 independent integration review — completed evidence only
+# S3 independent integration review — final numerical evidence
 
 Date: 2026-10-15. Reviewed revision: `218684d`; recent changes: `b6b827b..218684d`.
-Disposition: **No new substantive blocker found in the completed five-cohort evidence and reviewed S3 code. S3 acceptance remains pending.**
+Disposition: **No substantive blocker found in the completed six-cohort evidence and reviewed S3 code. All four numerical S3 gates pass; resource aggregate and leader final acceptance remain pending.**
 
 This review did not access calibration/holdout payloads, remote GPU, or run another model evaluation. It reviewed committed reports and their generating code, independently checked report/hash relationships, and ran targeted CPU tests. It does not independently re-execute remote sidecar audits or establish complete historical media-alias isolation.
 
@@ -14,12 +14,18 @@ This review did not access calibration/holdout payloads, remote GPU, or run anot
 - **Execution adjustment is explicit:** `docs/adr/0021-s3-bounded-replay-execution.md:5`–`:16`, the S3 spec and ticket record 100 steps/1000 exposures in place of the old 300-step/10000-exposure execution plan. They preserve midway/checkpoint provenance, all quality gates and the frame comparison, distinguish loss from quality evidence, and do not convert H20 hours into H100 hours. The training-report hash also matches the screening report. No hidden threshold relaxation or claim of completing the old budget was found.
 - **Other recent code stays within its stated boundary:** the metadata-only `eval/gold_gate.py` implementation explicitly disclaims source authenticity, inventory completeness and private-job readiness; it is not used as S3 quality evidence. The parity input-budget changes bind the requested image profile rather than asserting that production parity already passed. Neither change substitutes for later S4/S5/S6 acceptance.
 
+## Final evidence addendum
+
+After the initial review, the leader provided additional reports for read-only review under `/Users/bamboo/Githubs/Lite-OmniJev/reports`: `s3-dev-eval-video8-stable-001.json`, `s3-full-sidecar-audit-001.json`, `s3-video8-metrics-correction-001.json`, `s3-stage-metrics-stable-001.json`, `s3-stage-thresholds-stable-001.json`, `s3-stage-gates-stable-001.json`, and `s3-engineering-validation-001.json`.
+
+The 8-frame control is complete: 500 samples, one pass, the same model/adapter and frozen video digest, product accuracy .608 versus .636 for 16 frames. Its generic accuracy correction .596→.608 preserves product predictions. The single-pass control correctly has no repeatability claim. The full audit covers all six cohorts and 5500 records; every report, data, sidecar and adapter hash matches the reviewed evidence. The original-runtime audit and separate corrected summaries preserve both metric interpretations.
+
+Using the reviewed `scripts.s3_gate.assemble_metrics` directly with the six real reports and accepted S2 references reproduces `s3-stage-metrics-stable-001.json` exactly. The published thresholds equal `configs/gates.json` S3 exactly. All four published checks pass: audio ratio 2.1052631578947367, video ratio .9111747851002866, zero old-modality regression and frame comparison complete. The engineering report identifies revision `218684d` and successful lint, formatting (430 files), mypy (105 files), and package build. Existing per-run `quality_gate: not_run` fields remain historically accurate; the new aggregate gate is the stage numerical decision.
+
 ## Required completion work already pending
 
-1. Finish and collect the real 8-frame, 500-sample single-pass control, verify its full sidecar and publish any Noul metric correction. `scripts/s3_gate.py:89`–`:104` must accept its matching model/data identity before frame comparison is complete.
-2. Assemble the final S3 metrics and run the unchanged numerical gate, retaining exact input report identities and corrected diagnostic context. All five existing reports still say `quality_gate: not_run`; this review does not change that status.
-3. Publish the milestone resource aggregate/feasibility review including the failed probe, screening, successful training, evaluations and other attributable work, with unavailable monetary cost explicitly unknown. Individual reports have `cost: null`; H20 elapsed time must not be presented as an H100 equivalence or API latency.
-4. Complete the leader's milestone lint/type/build evidence and status/ticket integration. No additional full model run is requested by this review.
+1. Publish the milestone resource aggregate/feasibility review including the failed probe, screening, successful training, evaluations and other attributable work, with unavailable monetary cost explicitly unknown. Individual reports have `cost: null`; H20 elapsed time must not be presented as an H100 equivalence or API latency.
+2. Complete leader final acceptance and status/ticket integration. No additional model run or repeated unchanged CPU tests is requested by this review.
 
 Operational caveat already recorded in STATUS: `.scratch/s3/verify-final-sidecars.py:80` compares diagnostics to the original GPU report using the imported metric implementation. Running it against old Noul reports after switching to corrected metric code will reject the known diagnostic difference. Preserve the old executed metric environment for original audits or explicitly validate original and corrected values; do not overwrite evidence or treat that expected mismatch as a failed GPU run.
 
@@ -27,4 +33,5 @@ Operational caveat already recorded in STATUS: `.scratch/s3/verify-final-sidecar
 
 - Assigned-worktree CPU command: `/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python -m pytest tests/test_s3_gate.py tests/test_s3_av.py -q` — exit 0, **60 passed in 0.27s**.
 - Independent standard-library assertions: all five report-to-sidecar-audit SHA relationships; training-to-exposure/screening report SHA relationships; audio/video correction-to-original and metric-source SHA relationships; accepted S2 reference base/data/adapter identities — exit 0.
+- Final addendum assertions: six report/audit hash bindings, 5500-record count, real-report gate assembly equality, unchanged threshold equality and video8 correction hashes — exit 0. Previously passing CPU tests were not repeated.
 - No production edits, GPU operations, sealed payload reads, threshold changes, or additional dependencies.
