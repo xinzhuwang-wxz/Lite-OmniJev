@@ -1,0 +1,41 @@
+{
+  "scope": "two dev-only real model executions through fixed private entrypoint; not stage quality",
+  "exit_code": 0,
+  "outcome": "repeatable",
+  "records_compared": 50,
+  "record_mismatches": 0,
+  "private_permissions_verified": true,
+  "binding_fields_compared": [
+    "spec_sha256",
+    "data_sha256",
+    "code_sha256",
+    "base_revision",
+    "model_manifest_sha256",
+    "adapter_manifest_sha256",
+    "tokenizer_template_sha256",
+    "answer_map_sha256",
+    "config_sha256",
+    "canonicalized_input_sha256",
+    "seed",
+    "source_rows",
+    "records",
+    "metrics"
+  ],
+  "records_sha256": [
+    "ffc660e3be84bdd52b8ca574625a4b8b11ac92e2c984f16dcbecbbddcb42ecbb",
+    "7aa5951cae00421f85bb4a8535ad42547d6c967cd7d4ed9d5a173e47e232dc86"
+  ],
+  "metrics": {
+    "count": 50,
+    "accuracy": 0.82,
+    "ece15": 0.08539160463323726,
+    "brier": 0.27994568531091885,
+    "coverage_at_error": 0.4,
+    "max_error": 0.05
+  },
+  "total_job_wall_seconds": 227.64300090633333,
+  "code_sha256": "af17fbaa6ae83f0ee74146b4fed33d0bfcbba288b27fcae89f332054ddf7b677",
+  "spec_sha256": "b0cecb6aabf1ba7426467c76c07e0cc368a8da2ee4594d6841cb09d482c2b696",
+  "runner_sha256": "2e48e11f8701c8262ac4f78d3b8cde0d6a3d8d5d52df16ba5bc65ce73cb015b2",
+  "elapsed_seconds": 0.004
+}

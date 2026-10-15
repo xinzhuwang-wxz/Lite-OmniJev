@@ -7,7 +7,7 @@ Status: ready-for-agent
 Execution: blocked
 Owner: none
 Worktree: none
-Blocked by: p0:04, s0:08, s0:05
+Blocked by: p0:04, s0:08, s0:05, s1:01, s2:01, s3:01, s4:01
 
 ## What to build
 按 docs/02-project.md 验证最终用户闭环与所有阶段出口。本票前置条件是P0与S0–S6全部通过；前序细拆后追加真实集成票依赖，绝不能仅凭bootstrap完成而执行。

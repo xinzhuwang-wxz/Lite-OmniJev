@@ -1,0 +1,42 @@
+{
+  "schema_version": "gold-gate-engineering-acceptance-v1",
+  "ticket": "s0:05",
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "Existing-gold data, fixed private audit/model entrypoints, negative tests and bounded real GPU repeatability; not S4/S5/S6 quality acceptance",
+  "data_admission_sha256": "fd5a42f6a311a2b6cb5d91cf473c46ee532c65b6abef13cd463fd118e7713c7a",
+  "evidence": {
+    "reports/s4-gold-data-admission-001.json": "fd5a42f6a311a2b6cb5d91cf473c46ee532c65b6abef13cd463fd118e7713c7a",
+    "reports/s4-private-stage-engineering-001.json": "8016b6f56c2cb9bce4f425fe4b45750b4585322fb84524f323d0231465440f2f",
+    "reports/s4-private-stage-engineering-002.json": "c7d5fc6c2f5e9bc99f31c1793631cba55adb86e4f24dee5f110ae4e282a65d14",
+    "reports/s4-private-stage-repeatability-001.json": "fcbdd6374308ccf4f0d657f4009f05612314d9397b53bbb9f43281ee57d203ec",
+    "reports/s4-private-stage-validation-001.json": "006e0f2c1fa2cb9692a696df66211130c0cd604914a25421a2d4306c80877158",
+    "docs/runbooks/sealed-gate.md": "9ed60888e51c49d34d9e350324dcb75f3c59e439328a055581e0621b359a63e7"
+  },
+  "criteria": {
+    "six_cohort_gold_counts_and_original_dev": true,
+    "source_gold_and_labels": true,
+    "known_exposure_and_pool_isolation": true,
+    "private_workflow_permissions_logs_and_rejections": true,
+    "bound_reproducible_real_model_engineering_execution": true
+  },
+  "full_stage_quality": "not_evaluated",
+  "real_engineering_rows": 50,
+  "real_engineering_passes": 2,
+  "private_record_mismatches": 0,
+  "runtime": {
+    "python": "3.11.17",
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "device": "NVIDIA H20"
+  },
+  "cost_usd": null,
+  "combined_job_wall_seconds": 227.64300090633333,
+  "resource_boundary": "Includes validation/loading/inference, not GPU-kernel-only time or service latency",
+  "future_stage_obligations": [
+    "Run complete admitted holdout for each frozen stage candidate.",
+    "Keep source-matched teacher ratios and dev/holdout comparisons.",
+    "Extend the same bound private execution contract for S5 calibration and S6 E2B/quantized runtime as those milestone implementations land."
+  ],
+  "supersedes_pending_engineering_status_in": "reports/s4-gold-data-admission-001.json"
+}
