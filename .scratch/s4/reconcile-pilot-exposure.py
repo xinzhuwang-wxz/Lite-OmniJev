@@ -17,6 +17,7 @@ from typing import Any
 
 from data.schema import Sample
 from scripts.gold_inventory import Manifest, audit_manifest
+from train.trainer import LoopConfig
 
 TERMINAL = {"completed", "failed", "blocked"}
 PILOTS = ("s4-joint-pilot", "s4-video-pilot")
@@ -105,6 +106,7 @@ def pilot_paths(
     crossmodal_retention: bool = False,
     claim_pair: bool = False,
     temporal_curriculum: bool = False,
+    temporal_brier: bool = False,
 ) -> list[tuple[str, Path, Path, Path]]:
     paths = [
         (
@@ -115,7 +117,7 @@ def pilot_paths(
         )
         for name in PILOTS
     ]
-    if crossmodal_retention or claim_pair or temporal_curriculum:
+    if crossmodal_retention or claim_pair or temporal_curriculum or temporal_brier:
         paths.append(
             (
                 "s4-crossmodal-retention",
@@ -124,7 +126,7 @@ def pilot_paths(
                 root / "artifacts/s4-crossmodal-retention-pilot-002",
             )
         )
-    if claim_pair or temporal_curriculum:
+    if claim_pair or temporal_curriculum or temporal_brier:
         paths.extend(
             (
                 "s4-claim-pair-" + arm,
@@ -134,7 +136,7 @@ def pilot_paths(
             )
             for arm in ("ce0", "pair01")
         )
-    if temporal_curriculum:
+    if temporal_curriculum or temporal_brier:
         paths.append(
             (
                 "s4-temporal-curriculum",
@@ -143,7 +145,39 @@ def pilot_paths(
                 root / "artifacts/s4-temporal-curriculum-pilot-001",
             )
         )
+    if temporal_brier:
+        paths.append(
+            (
+                "s4-temporal-brier",
+                root / "reports/s4-temporal-brier-training-001.json",
+                root / "artifacts/s4-temporal-brier-train-001",
+                root / "artifacts/s4-temporal-curriculum-pilot-001",
+            )
+        )
     return paths
+
+
+def brier_config_matches(
+    base: dict[str, Any],
+    actual: dict[str, Any],
+    expected_init: dict[str, str] | None = None,
+) -> None:
+    # Trainer report config also carries bound initialization metadata. It is not
+    # a LoopConfig field; remove only this exact, separately verified identity.
+    if "init_adapter" in actual:
+        require(
+            expected_init is not None and actual["init_adapter"] == expected_init,
+            "brier_report_init_metadata",
+        )
+        actual = {k: v for k, v in actual.items() if k != "init_adapter"}
+    baseline = LoopConfig.model_validate(base)
+    candidate = LoopConfig.model_validate(actual)
+    require(baseline.brier_weight == 0 and candidate.brier_weight == 0.5, "brier_objective_weight")
+    wanted = baseline.model_copy(update={"brier_weight": 0.5})
+    require(
+        candidate.model_dump(mode="json") == wanted.model_dump(mode="json"),
+        "brier_only_config_difference",
+    )
 
 
 def temporal_preparation_passed(report: dict[str, Any]) -> None:
@@ -204,9 +238,14 @@ def base_inventory(
     crossmodal_retention: bool,
     claim_pair: bool = False,
     temporal_curriculum: bool = False,
+    temporal_brier: bool = False,
 ) -> tuple[Path, dict[str, str] | None]:
-    if temporal_curriculum:
-        exposure = root / "artifacts/s4-pilot-exposure-004"
+    if temporal_curriculum or temporal_brier:
+        exposure = root / (
+            "artifacts/s4-pilot-exposure-005"
+            if temporal_brier
+            else "artifacts/s4-pilot-exposure-004"
+        )
         report, binding = read_json(exposure / "report.json")
         require(
             report.get("status") == "known_pilot_exposures_reconciled"
@@ -214,6 +253,15 @@ def base_inventory(
             and report.get("unknown_update_bearing_inputs") == 0,
             "exposure004_not_passed",
         )
+        if temporal_brier:
+            require(bool(report.get("all_bound_input_sha256")), "missing005_input_bindings")
+            require(
+                all(
+                    sha(Path(p)) == expected
+                    for p, expected in report["all_bound_input_sha256"].items()
+                ),
+                "mutated005_bound_input",
+            )
         path = exposure / "inventory-manifest.json"
         require(
             sha(path) == report["output_sha256"]["inventory-manifest.json"],
@@ -255,6 +303,7 @@ def prepare(
     crossmodal_retention: bool = False,
     claim_pair: bool = False,
     temporal_curriculum: bool = False,
+    temporal_brier: bool = False,
 ) -> dict[str, Any]:
     started = time.monotonic()
     require(
@@ -269,6 +318,7 @@ def prepare(
             crossmodal_retention=crossmodal_retention,
             claim_pair=claim_pair,
             temporal_curriculum=temporal_curriculum,
+            temporal_brier=temporal_brier,
         )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
@@ -285,14 +335,20 @@ def prepare(
             crossmodal_retention=crossmodal_retention,
             claim_pair=claim_pair,
             temporal_curriculum=temporal_curriculum,
+            temporal_brier=temporal_brier,
         ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
             terminal_report(final)
             terminal_report(runtime_report)
-            is_claim = (claim_pair or temporal_curriculum) and name.startswith("s4-claim-pair-")
-            is_temporal = temporal_curriculum and name == "s4-temporal-curriculum"
-            if is_claim or is_temporal:
+            is_claim = (claim_pair or temporal_curriculum or temporal_brier) and name.startswith(
+                "s4-claim-pair-"
+            )
+            is_temporal = (
+                temporal_curriculum or temporal_brier
+            ) and name == "s4-temporal-curriculum"
+            is_brier = temporal_brier and name == "s4-temporal-brier"
+            if is_claim or is_temporal or is_brier:
                 claim_terminal(final, name)
                 claim_terminal(runtime_report, name)
                 require(
@@ -305,7 +361,7 @@ def prepare(
             runtime_binding = bind(runtime_data)
             require(runtime_binding["sha256"] == final.get("data_sha256"), "runtime_data_sha")
             prep_report, prep_report_binding = read_json(preparation_dir / "report.json")
-            if is_temporal:
+            if is_temporal or is_brier:
                 temporal_preparation_passed(prep_report)
                 for filename in (
                     "allocation-ledger.jsonl",
@@ -332,6 +388,30 @@ def prepare(
                 )
             else:
                 preparation_passed(prep_report, claim_pair=is_claim)
+            if is_brier:
+                config_path = root / "artifacts/s4-temporal-brier-pilot-001/config-brier.json"
+                config_payload, config_binding = read_json(config_path)
+                launch_path = root / "reports/s4-temporal-brier-launch-001.json"
+                launch, launch_binding = read_json(launch_path)
+                require(
+                    launch.get("status") in {"completed", "failed"}
+                    and type(launch.get("exit_code")) is int,
+                    "brier_launcher_nonterminal",
+                )
+                require(
+                    launch["prepared_report_sha256"] == prep_report_binding["sha256"]
+                    and launch["config_sha256"] == config_binding["sha256"],
+                    "brier_launcher_binding",
+                )
+                base_config, _ = read_json(preparation_dir / "config-ce.json")
+                brier_config_matches(base_config, config_payload, prep_report["init_adapter"])
+                brier_config_matches(base_config, final["config"], prep_report["init_adapter"])
+                for b in (config_binding, launch_binding):
+                    require(
+                        b["path"] not in bindings or bindings[b["path"]] == b["sha256"],
+                        "mutable_report",
+                    )
+                    bindings[b["path"]] = b["sha256"]
             preparation_data = preparation_dir / "train.jsonl"
             preparation_binding = bind(preparation_data)
             expected = prep_report["output_sha256"].get(
@@ -339,7 +419,7 @@ def prepare(
             )
             require(preparation_binding["sha256"] == expected, "preparation_data_sha")
             comparison = equivalent(runtime_data, preparation_data)
-            if is_claim or is_temporal:
+            if is_claim or is_temporal or is_brier:
                 require(comparison["rows"] == 120, "claim_runtime_count")
             require(
                 all(version in mappings for version in comparison["data_versions"]),
@@ -497,15 +577,17 @@ def prepare(
             "runner_sha256": sha(Path(__file__)),
             "cost": None,
         }
-        if crossmodal_retention or claim_pair or temporal_curriculum:
+        if crossmodal_retention or claim_pair or temporal_curriculum or temporal_brier:
             report.update(
                 base_preparation_report=base_preparation_binding, crossmodal_retention_included=True
             )
-        if claim_pair or temporal_curriculum:
+        if claim_pair or temporal_curriculum or temporal_brier:
             report["claim_pair_included"] = True
-        if temporal_curriculum:
+        if temporal_curriculum or temporal_brier:
             report["temporal_curriculum_included"] = True
             report["base_exposure_report"] = base_preparation_binding
+        if temporal_brier:
+            report["temporal_brier_included"] = True
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -559,6 +641,11 @@ def main() -> int:
         action="store_true",
         help="Use terminal exposure004 base and include temporal training plus all older pilots",
     )
+    parser.add_argument(
+        "--temporal-brier",
+        action="store_true",
+        help="Use settled exposure005 base and include matched CE+Brier terminal run",
+    )
     args = parser.parse_args()
     try:
         report = prepare(
@@ -570,6 +657,7 @@ def main() -> int:
             crossmodal_retention=args.crossmodal_retention,
             claim_pair=args.claim_pair,
             temporal_curriculum=args.temporal_curriculum,
+            temporal_brier=args.temporal_brier,
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
