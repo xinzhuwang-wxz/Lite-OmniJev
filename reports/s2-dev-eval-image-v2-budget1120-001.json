@@ -1,0 +1,73 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/adapter",
+    "--data",
+    "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/dev.jsonl",
+    "--media-root",
+    "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/media",
+    "--counterfactual",
+    "--passes",
+    "2",
+    "--output-dir",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/dev-eval-image-v2-budget1120-001",
+    "--report",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-dev-eval-image-v2-budget1120-001.json",
+    "--image-max-soft-tokens",
+    "1120"
+  ],
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/adapter",
+  "data_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+  "samples": 500,
+  "passes": 2,
+  "video_num_frames": 16,
+  "repeat_identical": true,
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.82,
+    "ece15": 0.148204874789162,
+    "brier": 0.32550051853180695,
+    "coverage_at_error": 0.658,
+    "max_error": 0.05,
+    "product_accuracy": 0.82,
+    "mean_p_insufficient": 2.201261410608833e-05,
+    "max_p_insufficient": 0.00030655056489797334,
+    "predicted_insufficient": 0,
+    "counterfactual_content_match_rate": 0.938
+  },
+  "counterfactual": true,
+  "code_revision": "ea3695e8f181bfb7ccc972df207199bbb40d925e",
+  "script_sha256": "49881999124a7e570f8cf3dc6eb3441a8e8d19dc8cd7eefaeaec6fbf4e9f362c",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "ee22ea137a61b768e0b6c3e8239c08a15f8de3150367a2a68e434e2087fbd19e",
+  "timing": {
+    "started_at": 1792060911.8508992,
+    "finished_at": 1792061682.0019581,
+    "duration_seconds": 770.1510591506958
+  },
+  "image_max_soft_tokens": {
+    "requested": 1120,
+    "effective": 1120
+  }
+}
