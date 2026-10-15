@@ -24,5 +24,7 @@ Blocked by: p0:04
 
 2026-10-15：私有清单作业已实现并实跑，92项相关回归通过。40个输入文件覆盖已索引历史训练、五模态当前预留、六cohort dev与旧截图版本、crossmodal组件。首次扩展发现历史dev与截图calibration/holdout各一个连通组冲突；完整保留train/dev及原预留文件，在新派生清单隔离两条后复审零冲突（reports/s4-development-inventory-005.json、s4-reserve-quarantine-summary-001.json、s4-inventory-provenance-001.json）。这不是数量/来源gold/全历史完整性/权限验收；截图暂余119/59，仍需补足。后续只从远端artifacts/s4-gold-inventory-001/with-development-clean-reserves-manifest.json接续，并沿用私有quarantined-reserves/exclusions.json，禁止直接重用旧截图预留。
 
+2026-10-15：新增官方CLEVRER validation真实gold储备3000 calibration/1000 holdout，一视频一原始题、固定seed42，所有输入SHA绑定。与40文件历史清单合并后113938观测、零跨池连通组。证据reports/s4-clevrer-gold-build-001.json、s4-clevrer-gold-isolation-001.json、s4-clevrer-gold-provenance-001.json。接续私有with-clevrer-gold-manifest-001.json；其余cohort与权限/完整准入未完成，整体验收不勾选。
+
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。
