@@ -43,6 +43,7 @@ from train.checkpoint import (
 from train.monitoring import SwanLabConfig, Telemetry, start_swanlab
 from train.multimodal import (
     ImageMaxSoftTokens,
+    canonicalize_media,
     configure_image_processor,
     load_media,
     resolve_media,
@@ -142,6 +143,23 @@ MEDIA_FORWARD_KEYS = (
 )
 
 
+def validated_media_types(sample: Sample) -> tuple[str, ...]:
+    """Admit single media or one image/audio pair, preserving template order."""
+    kinds = tuple(item.type for item in sample.prefix.media)
+    supported = (len(kinds) == 1 and kinds[0] in MEDIA_TYPES) or (
+        len(kinds) == 2 and set(kinds) == {"image", "audio"}
+    )
+    declared = all(kind in sample.meta.modality for kind in kinds)
+    if len(kinds) == 2:
+        declared = declared and set(sample.meta.modality) == set(kinds)
+    if not supported or not declared:
+        raise ValueError(
+            f"sample {sample.id} must carry exactly one image, audio or video item "
+            "or one image+audio pair matching the declared modality"
+        )
+    return kinds
+
+
 def cohort_media_type(modality: str) -> str:
     """Screenshot cohorts reuse image media; audio and video carry their own type."""
     return "image" if modality in {"image", "screenshot"} else modality
@@ -186,15 +204,13 @@ def smoke_samples(
                 raise ValueError("smoke accepts training-pool samples")
             media = sample.prefix.media
             if media:
-                if (
-                    len(media) != 1
-                    or media[0].type not in MEDIA_TYPES
-                    or media[0].type not in sample.meta.modality
-                ):
+                try:
+                    validated_media_types(sample)
+                except ValueError as exc:
                     raise ValueError(
-                        "mixed media samples require exactly one media item "
-                        "matching the declared modality"
-                    )
+                        "mixed media samples require exactly one media item or an image+audio "
+                        "pair matching the declared modality"
+                    ) from exc
             elif sample.meta.modality != ["text"]:
                 raise ValueError("mixed text samples must be text-only")
         elif config.modality != "text":
@@ -310,28 +326,33 @@ def prepare_media_example(
     if video_num_frames not in (8, 16):
         raise ValueError("video_num_frames must be 8 or 16")
     question = sample.questions[0]
-    if len(sample.prefix.media) != 1 or sample.prefix.media[0].type not in MEDIA_TYPES:
-        raise ValueError(f"sample {sample.id} must carry exactly one image, audio or video item")
-    item = sample.prefix.media[0]
-    media_type = item.type
-    try:
-        media_path = verified_media_file(
-            media_root, item.uri, item.sha256, extra_roots=list(extra_roots)
+    media_types = validated_media_types(sample)
+    processor_kwargs: dict[str, Any] = {}
+    for item in sample.prefix.media:
+        try:
+            media_path = verified_media_file(
+                media_root, item.uri, item.sha256, extra_roots=list(extra_roots)
+            )
+        except ValueError as exc:
+            raise ValueError(f"sample {sample.id}: {exc}") from exc
+        loaded = load_media(
+            media_path,
+            item.type,
+            num_frames=video_num_frames,
+            max_seconds=30 if item.type == "audio" else 60,
         )
-    except ValueError as exc:
-        raise ValueError(f"sample {sample.id}: {exc}") from exc
-    loaded = load_media(
-        media_path,
-        media_type,
-        num_frames=video_num_frames,
-        max_seconds=30 if media_type == "audio" else 60,
-    )
+        if len(media_types) == 2 and item.type == "audio":
+            loaded = canonicalize_media("audio", loaded).hf_value
+        processor_kwargs.update(media_processor_kwargs(item.type, loaded))
+    if len(media_types) == 2:
+        processor_kwargs["add_special_tokens"] = False
     payload = render_payload(Prefix(state=sample.prefix.state), question)
     prompt = processor.apply_chat_template(
         [
             {
                 "role": "user",
-                "content": [{"type": media_type}, {"type": "text", "text": payload}],
+                "content": [{"type": kind} for kind in media_types]
+                + [{"type": "text", "text": payload}],
             }
         ],
         tokenize=False,
@@ -339,7 +360,7 @@ def prepare_media_example(
         enable_thinking=False,
     )
     if not isinstance(prompt, str) or not prompt:
-        raise ValueError(f"official {media_type} template returned empty prompt")
+        raise ValueError("official media template returned empty prompt")
     tokenizer = processor.tokenizer
     tokens = (*answer_tokens(question), "U")
     mapping = check_answer_tokens(tokenizer, question)
@@ -347,12 +368,14 @@ def prepare_media_example(
         text=[prompt],
         return_tensors="pt",
         truncation=False,
-        **media_processor_kwargs(media_type, loaded),
+        **processor_kwargs,
     )
     input_ids = inputs["input_ids"][0].tolist()
-    missing = [key for key in MEDIA_REQUIRED_KEYS[media_type] if key not in inputs]
+    missing = [
+        key for kind in media_types for key in MEDIA_REQUIRED_KEYS[kind] if key not in inputs
+    ]
     if missing:
-        raise ValueError(f"processor omitted {', '.join(missing)} for {media_type}")
+        raise ValueError(f"processor omitted {', '.join(missing)} for {media_types}")
     if not input_ids or len(input_ids) > max_length:
         raise ValueError("empty or over-length multimodal prompt; truncation is forbidden")
     prompt_ids = tokenizer.encode(prompt, add_special_tokens=False)
@@ -380,7 +403,7 @@ def prepare_media_example(
     for key in MEDIA_FORWARD_KEYS:
         if key in inputs:
             example[key] = inputs[key]
-    if media_type == "video":
+    if "video" in media_types:
         example["video_num_frames"] = video_num_frames
     return example
 

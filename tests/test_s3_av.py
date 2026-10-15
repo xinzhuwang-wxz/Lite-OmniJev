@@ -750,3 +750,73 @@ def test_noul_family_target_conflict_is_rejected(tmp_path: Path) -> None:
     assert report["status"] == "blocked"
     assert rows[0]["meta"]["family_id"] in str(report["blocker"])
     assert not (tmp_path / "out-conflict" / "train.jsonl").exists()
+
+
+def crossmodal_row(index):
+    row = noul_row(index)
+    row["prefix"]["media"].insert(
+        0, {"type": "image", "uri": f"image-{index}.png", "sha256": "b" * 64}
+    )
+    row["meta"]["modality"] = ["image", "audio"]
+    return row
+
+
+def test_crossmodal_mixed_train_and_dev_admission(tmp_path):
+    rows = [crossmodal_row(i) for i in range(2)]
+    path = write_jsonl(tmp_path / "crossmodal.jsonl", rows)
+    config = LoopConfig(
+        sample_count=2,
+        steps=1,
+        accumulation=1,
+        modality="mixed",
+        media_root=str(tmp_path),
+        expected_data_versions=[AUDIO_POOLS_VERSION],
+    )
+    assert len(smoke_samples(config, path, expected_data_versions=[AUDIO_POOLS_VERSION])) == 2
+    assert len(load_samples(path, media_root=tmp_path)) == 2
+    rows[0]["meta"]["modality"] = ["audio"]
+    path = write_jsonl(path, rows)
+    with pytest.raises(ValueError):
+        smoke_samples(config, path, expected_data_versions=[AUDIO_POOLS_VERSION])
+    with pytest.raises(ValueError):
+        load_samples(path, media_root=tmp_path)
+
+
+def test_crossmodal_prepare_forwards_both_modalities_and_checks_second_hash(monkeypatch, tmp_path):
+    row = crossmodal_row(0)
+    for item in row["prefix"]["media"]:
+        payload = item["type"].encode()
+        (tmp_path / item["uri"]).write_bytes(payload)
+        item["sha256"] = hashlib.sha256(payload).hexdigest()
+    monkeypatch.setattr("train.trainer.load_media", lambda path, kind, **kw: kind + "-decoded")
+    monkeypatch.setattr(
+        "train.trainer.canonicalize_media", lambda kind, value: SimpleNamespace(hf_value=value)
+    )
+
+    class Processor(FakeVideoProcessor):
+        def apply_chat_template(self, messages, **kwargs):
+            assert [x["type"] for x in messages[0]["content"]] == ["image", "audio", "text"]
+            assert kwargs["enable_thinking"] is False
+            return "official:" + messages[0]["content"][-1]["text"]
+
+        def __call__(self, **kwargs):
+            self.calls.append(kwargs)
+            assert kwargs["images"] == [["image-decoded"]]
+            assert kwargs["audio"] == ["audio-decoded"]
+            return {
+                "input_ids": [SimpleNamespace(tolist=lambda: [1, 2, 3])],
+                "pixel_values": "pixels",
+                "image_position_ids": "positions",
+                "input_features": "audio",
+                "input_features_mask": "mask",
+            }
+
+    processor = Processor()
+    sample = Sample.model_validate(row)
+    result = prepare_media_example(sample, processor, tmp_path, max_length=1000)
+    assert result["pixel_values"] == "pixels" and result["input_features"] == "audio"
+    assert result["target"] == [1.0, 0.0, 0.0]
+    sample.prefix.media[1].sha256 = "0" * 64
+    with pytest.raises(ValueError):
+        prepare_media_example(sample, processor, tmp_path, max_length=1000)
+    assert len(processor.calls) == 1

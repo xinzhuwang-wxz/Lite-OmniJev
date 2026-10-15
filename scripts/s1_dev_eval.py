@@ -26,7 +26,7 @@ from train.multimodal import (
 )
 from train.readout import read_probabilities
 from train.template import check_answer_tokens, render_prompt
-from train.trainer import MEDIA_FORWARD_KEYS, MEDIA_TYPES, prepare_media_example
+from train.trainer import MEDIA_FORWARD_KEYS, prepare_media_example, validated_media_types
 
 
 class DevEvalError(ValueError):
@@ -120,14 +120,12 @@ def load_samples(path: Path, *, media_root: Path | None = None) -> list[Sample]:
                     raise DevEvalError(
                         f"sample {sample.id} carries media but --media-root is unset"
                     )
-                if (
-                    len(media) > 1
-                    or media[0].type not in MEDIA_TYPES
-                    or media[0].type not in sample.meta.modality
-                ):
+                try:
+                    validated_media_types(sample)
+                except ValueError as exc:
                     raise DevEvalError(
                         f"sample {sample.id} media disagrees with its declared modality"
-                    )
+                    ) from exc
             elif sample.meta.modality != ["text"]:
                 raise DevEvalError(f"sample {sample.id} is not text-only")
             question = sample.questions[0]
