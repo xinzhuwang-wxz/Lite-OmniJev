@@ -1,4 +1,4 @@
-"""Bounded text/image decision LoRA smoke; no quality or GPU-parity claims."""
+"""Bounded text/image/audio/video decision LoRA smoke; no quality or GPU-parity claims."""
 
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ class LoopConfig(Contract):
     rank: Literal[16] = 16
     alpha: Literal[32] = 32
     dtype: Literal["bfloat16"] = "bfloat16"
-    modality: Literal["text", "image", "screenshot", "mixed"] = "text"
+    modality: Literal["text", "image", "screenshot", "audio", "video", "mixed"] = "text"
     media_root: str | None = None
     media_roots: list[str] | None = None
     midway_step: int | None = Field(default=None, ge=1)
@@ -107,6 +107,27 @@ class LoopConfig(Contract):
 
 
 TrainConfig = SmokeConfig | LoopConfig
+
+MEDIA_TYPES = ("image", "audio", "video")
+MEDIA_REQUIRED_KEYS: dict[str, tuple[str, ...]] = {
+    "image": ("pixel_values",),
+    "audio": ("input_features", "input_features_mask"),
+    "video": ("pixel_values_videos", "video_position_ids"),
+}
+# Everything a prepared media example may carry into the forward pass.
+MEDIA_FORWARD_KEYS = (
+    "pixel_values",
+    "input_features",
+    "input_features_mask",
+    "pixel_values_videos",
+    "video_position_ids",
+    "num_frames_per_video",
+)
+
+
+def cohort_media_type(modality: str) -> str:
+    """Screenshot cohorts reuse image media; audio and video carry their own type."""
+    return "image" if modality in {"image", "screenshot"} else modality
 
 
 def smoke_samples(
@@ -150,22 +171,26 @@ def smoke_samples(
             if media:
                 if (
                     len(media) != 1
-                    or media[0].type != "image"
-                    or "image" not in sample.meta.modality
+                    or media[0].type not in MEDIA_TYPES
+                    or media[0].type not in sample.meta.modality
                 ):
-                    raise ValueError("mixed media samples require exactly one image")
+                    raise ValueError(
+                        "mixed media samples require exactly one media item "
+                        "matching the declared modality"
+                    )
             elif sample.meta.modality != ["text"]:
                 raise ValueError("mixed text samples must be text-only")
         elif config.modality != "text":
             if sample.meta.pool != "train":
                 raise ValueError("smoke accepts training-pool samples")
+            expected = cohort_media_type(config.modality)
             if (
                 len(sample.prefix.media) != 1
-                or sample.prefix.media[0].type != "image"
-                or "image" not in sample.meta.modality
+                or sample.prefix.media[0].type != expected
+                or expected not in sample.meta.modality
             ):
                 raise ValueError(
-                    f"{config.modality} training requires exactly one image per sample"
+                    f"{config.modality} training requires exactly one {expected} per sample"
                 )
         elif sample.meta.pool != "train" or sample.meta.modality != ["text"] or sample.prefix.media:
             raise ValueError("smoke accepts text-only training-pool samples")
@@ -226,11 +251,11 @@ def verified_media_file(
     """Streaming-sha-verified local media path; multi-root tries sha matches in order."""
     roots = [media_root, *(extra_roots or [])]
     failures: list[str] = []
-    for index, root in enumerate(roots):
+    for root in roots:
         try:
             return resolve_media(root, uri, sha256, max_bytes=64 * 1024 * 1024)
         except (ValueError, OSError) as exc:
-            failures.append(f"root[{index}]={root}: {type(exc).__name__}: {exc}")
+            failures.append(f"{root / uri}: {type(exc).__name__}: {exc}")
     raise ValueError(
         "media resolution failed for "
         + uri
@@ -241,6 +266,21 @@ def verified_media_file(
     )
 
 
+def media_processor_kwargs(media_type: str, loaded: Any) -> dict[str, Any]:
+    """Official processor inputs per media type, isomorphic to s0_baseline_cpu."""
+    if media_type == "image":
+        return {"images": [[loaded]]}
+    if media_type == "audio":
+        return {"audio": [loaded], "sampling_rate": 16000}
+    if media_type == "video":
+        return {
+            "videos": [loaded["frames"]],
+            "video_metadata": [loaded["metadata"]],
+            "do_sample_frames": False,
+        }
+    raise ValueError(f"unsupported media type: {media_type}")
+
+
 def prepare_media_example(
     sample: Sample,
     processor: Any,
@@ -248,23 +288,30 @@ def prepare_media_example(
     *extra_roots: Path,
     max_length: int,
 ) -> dict[str, Any]:
-    """Official-processor rendering for one image sample, isomorphic to s0_baseline_cpu."""
+    """Official-processor rendering for one media sample, isomorphic to s0_baseline_cpu."""
     question = sample.questions[0]
-    if len(sample.prefix.media) != 1 or sample.prefix.media[0].type != "image":
-        raise ValueError(f"sample {sample.id} must carry exactly one image")
+    if len(sample.prefix.media) != 1 or sample.prefix.media[0].type not in MEDIA_TYPES:
+        raise ValueError(f"sample {sample.id} must carry exactly one image, audio or video item")
     item = sample.prefix.media[0]
-    image = load_media(
-        verified_media_file(media_root, item.uri, item.sha256, extra_roots=list(extra_roots)),
-        "image",
+    media_type = item.type
+    try:
+        media_path = verified_media_file(
+            media_root, item.uri, item.sha256, extra_roots=list(extra_roots)
+        )
+    except ValueError as exc:
+        raise ValueError(f"sample {sample.id}: {exc}") from exc
+    loaded = load_media(
+        media_path,
+        media_type,
         num_frames=16,
-        max_seconds=60,
+        max_seconds=30 if media_type == "audio" else 60,
     )
     payload = render_payload(Prefix(state=sample.prefix.state), question)
     prompt = processor.apply_chat_template(
         [
             {
                 "role": "user",
-                "content": [{"type": "image"}, {"type": "text", "text": payload}],
+                "content": [{"type": media_type}, {"type": "text", "text": payload}],
             }
         ],
         tokenize=False,
@@ -272,14 +319,20 @@ def prepare_media_example(
         enable_thinking=False,
     )
     if not isinstance(prompt, str) or not prompt:
-        raise ValueError("official image template returned empty prompt")
+        raise ValueError(f"official {media_type} template returned empty prompt")
     tokenizer = processor.tokenizer
     tokens = (*answer_tokens(question), "U")
     mapping = check_answer_tokens(tokenizer, question)
-    inputs = processor(text=[prompt], images=[[image]], return_tensors="pt", truncation=False)
+    inputs = processor(
+        text=[prompt],
+        return_tensors="pt",
+        truncation=False,
+        **media_processor_kwargs(media_type, loaded),
+    )
     input_ids = inputs["input_ids"][0].tolist()
-    if "pixel_values" not in inputs:
-        raise ValueError("processor omitted pixel_values")
+    missing = [key for key in MEDIA_REQUIRED_KEYS[media_type] if key not in inputs]
+    if missing:
+        raise ValueError(f"processor omitted {', '.join(missing)} for {media_type}")
     if not input_ids or len(input_ids) > max_length:
         raise ValueError("empty or over-length multimodal prompt; truncation is forbidden")
     prompt_ids = tokenizer.encode(prompt, add_special_tokens=False)
@@ -297,14 +350,17 @@ def prepare_media_example(
         expected = [0.0] * (len(tokens) - 1) + [1.0]
     else:
         raise ValueError("sample lacks supervision")
-    return {
+    example = {
         "id": sample.id,
         "input_ids": input_ids,
-        "pixel_values": inputs["pixel_values"],
         "token_ids": [mapping[t] for t in tokens],
         "answer_token_ids": mapping,
         "target": expected,
     }
+    for key in MEDIA_FORWARD_KEYS:
+        if key in inputs:
+            example[key] = inputs[key]
+    return example
 
 
 def prepare_multimodal_examples(
@@ -312,6 +368,7 @@ def prepare_multimodal_examples(
     model_dir: Path,
     media_root: Path,
     max_length: int,
+    extra_roots: list[Path] | None = None,
 ) -> list[dict[str, Any]]:
     """Cohort wrapper: load the official processor once, render every sample."""
     transformers = importlib.import_module("transformers")
@@ -321,7 +378,9 @@ def prepare_multimodal_examples(
         trust_remote_code=False,
     )
     return [
-        prepare_media_example(sample, processor, media_root, max_length=max_length)
+        prepare_media_example(
+            sample, processor, media_root, *(extra_roots or []), max_length=max_length
+        )
         for sample in samples
     ]
 
@@ -559,23 +618,18 @@ def train_smoke(
             draw = step * config.accumulation + offset
             example = examples[order[draw % len(examples)]]
             ids = torch.tensor([example["input_ids"]], device="cuda", dtype=torch.long)
-            if "pixel_values" in example:
-                output = model(
-                    input_ids=ids,
-                    attention_mask=torch.ones_like(ids),
-                    pixel_values=example["pixel_values"].to(ids.device),
-                    use_cache=False,
-                    logits_to_keep=1,
-                    return_dict=True,
-                )
-            else:
-                output = model(
-                    input_ids=ids,
-                    attention_mask=torch.ones_like(ids),
-                    use_cache=False,
-                    logits_to_keep=1,
-                    return_dict=True,
-                )
+            # Only whitelisted modality keys the official processor produced get forwarded.
+            media_inputs = {
+                key: example[key].to(ids.device) for key in MEDIA_FORWARD_KEYS if key in example
+            }
+            output = model(
+                input_ids=ids,
+                attention_mask=torch.ones_like(ids),
+                use_cache=False,
+                logits_to_keep=1,
+                return_dict=True,
+                **media_inputs,
+            )
             loss = decision_loss(output.logits[0, -1], example["token_ids"], example["target"])
             if not bool(torch.isfinite(loss)):
                 raise ValueError("nonfinite training loss")
@@ -708,15 +762,20 @@ def run(
             else:
                 if not config.media_root and not config.media_roots:
                     raise ValueError("non-text training requires media_root or media_roots")
-                extra_roots = [Path(root) for root in (config.media_roots or [])]
-                primary_root = Path(config.media_root or (config.media_roots or [""])[0])
+                if config.media_roots:
+                    # The primary root must not repeat inside the candidate list.
+                    primary_root = Path(config.media_roots[0])
+                    extra_roots = [Path(root) for root in config.media_roots[1:]]
+                else:
+                    primary_root = Path(config.media_root or "")
+                    extra_roots = []
                 if config.modality == "mixed":
                     examples = prepare_mixed_examples(
                         samples, model_dir, primary_root, config.max_length, extra_roots=extra_roots
                     )
                 else:
                     examples = prepare_multimodal_examples(
-                        samples, model_dir, primary_root, config.max_length
+                        samples, model_dir, primary_root, config.max_length, extra_roots
                     )
             report["examples"] = len(examples)
             report["max_prompt_tokens"] = max(len(e["input_ids"]) for e in examples)

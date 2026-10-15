@@ -1,4 +1,4 @@
-"""Same-condition dev evaluation for a text/image decision adapter; two identical passes."""
+"""Same-condition dev evaluation for a text/image/audio/video decision adapter; two passes."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from eval.metrics import evaluate
 from scripts.check_tokens import OfficialTokenizerAdapter
 from train.readout import read_probabilities
 from train.template import check_answer_tokens, render_prompt
-from train.trainer import prepare_media_example
+from train.trainer import MEDIA_FORWARD_KEYS, MEDIA_TYPES, prepare_media_example
 
 
 class DevEvalError(ValueError):
@@ -73,17 +73,18 @@ def load_samples(path: Path, *, media_root: Path | None = None) -> list[Sample]:
                     )
                 if (
                     len(media) > 1
-                    or media[0].type != "image"
-                    or "image" not in sample.meta.modality
+                    or media[0].type not in MEDIA_TYPES
+                    or media[0].type not in sample.meta.modality
                 ):
                     raise DevEvalError(
                         f"sample {sample.id} media disagrees with its declared modality"
                     )
             elif sample.meta.modality != ["text"]:
                 raise DevEvalError(f"sample {sample.id} is not text-only")
-            if len(sample.questions) != 1 or sample.questions[0].type != "choice":
-                raise DevEvalError(f"sample {sample.id} is not a single Choice question")
-            target = sample.questions[0].target
+            question = sample.questions[0]
+            if len(sample.questions) != 1 or question.type not in ("choice", "noul"):
+                raise DevEvalError(f"sample {sample.id} is not a single Choice or Noul question")
+            target = question.target
             if not isinstance(target, HardTarget) or type(target.value) is not str:
                 raise DevEvalError(f"sample {sample.id} lacks a hard answer-token target")
             samples.append(sample)
@@ -105,14 +106,14 @@ def forward_readout(
     """Boundary-verified original logits for every legal answer token plus U."""
     torch = importlib.import_module("torch")
     question = sample.questions[0]
-    pixel_values = None
+    media_inputs: dict[str, Any] = {}
     if sample.prefix.media:
         if processor is None or media_root is None:
             raise DevEvalError(f"sample {sample.id} requires a processor and media root")
         prepared = prepare_media_example(sample, processor, media_root, max_length=max_length)
         input_ids = prepared["input_ids"]
         mapping = prepared["answer_token_ids"]
-        pixel_values = prepared["pixel_values"]
+        media_inputs = {key: prepared[key] for key in MEDIA_FORWARD_KEYS if key in prepared}
     else:
         prompt = render_prompt(tokenizer, sample.prefix, question)
         input_ids = tokenizer.encode(prompt, add_special_tokens=False)
@@ -126,23 +127,14 @@ def forward_readout(
                 )
     ids = torch.tensor([input_ids], device="cuda", dtype=torch.long)
     with torch.no_grad():
-        if pixel_values is None:
-            output = model(
-                input_ids=ids,
-                attention_mask=torch.ones_like(ids),
-                use_cache=False,
-                logits_to_keep=1,
-                return_dict=True,
-            )
-        else:
-            output = model(
-                input_ids=ids,
-                attention_mask=torch.ones_like(ids),
-                pixel_values=pixel_values.to(ids.device),
-                use_cache=False,
-                logits_to_keep=1,
-                return_dict=True,
-            )
+        output = model(
+            input_ids=ids,
+            attention_mask=torch.ones_like(ids),
+            use_cache=False,
+            logits_to_keep=1,
+            return_dict=True,
+            **{key: value.to(ids.device) for key, value in media_inputs.items()},
+        )
     row = output.logits[0, -1]
     logits = {token: float(row[index]) for token, index in mapping.items()}
     readout = read_probabilities(logits, list(answer_tokens(question)), temperature=1.0)
@@ -177,12 +169,14 @@ def record_for(sample: Sample, readout: Any, logits: dict[str, float]) -> dict[s
 
 
 def metrics_from_records(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Generic option-order targets: Choice stays alphabetical, Noul yes/no by token order."""
     rows: list[list[float]] = []
     targets: list[int] = []
     for record in records:
         probabilities = record["probabilities"]
-        rows.append([probabilities[letter] for letter in sorted(probabilities)])
-        targets.append(ord(str(record["target"])) - ord("A"))
+        order = sorted(probabilities)
+        rows.append([probabilities[token] for token in order])
+        targets.append(order.index(str(record["target"])))
     core = evaluate(rows, targets)
     count = len(records)
     return {
@@ -245,6 +239,21 @@ def build_counterfactual(sample: Sample, seed: int) -> Sample:
     )
 
 
+def counterfactual_variant(sample: Sample) -> Sample | None:
+    """Option permutation only exists for Choice; Noul has nothing to permute."""
+    if sample.questions[0].type != "choice":
+        return None
+    return build_counterfactual(sample, counterfactual_seed(sample.id))
+
+
+def counterfactual_match_rate(records: list[dict[str, Any]]) -> float | None:
+    """Content-match rate over counterfactual rows only; None when none apply."""
+    matches = [
+        bool(record["content_match"]) for record in records if record["variant"] == "counterfactual"
+    ]
+    return sum(matches) / len(matches) if matches else None
+
+
 def run(
     *,
     model_dir: Path,
@@ -275,11 +284,7 @@ def run(
                 local_files_only=True,
                 trust_remote_code=False,
             )
-        variants = (
-            [build_counterfactual(sample, counterfactual_seed(sample.id)) for sample in samples]
-            if counterfactual
-            else []
-        )
+        variants = [counterfactual_variant(sample) for sample in samples] if counterfactual else []
         base = transformers.Gemma4ForConditionalGeneration.from_pretrained(
             str(model_dir),
             local_files_only=True,
@@ -309,6 +314,10 @@ def run(
             if counterfactual:
                 originals = list(records)
                 for sample, variant, original in zip(samples, variants, originals, strict=True):
+                    if variant is None:
+                        # Noul offers no option permutation; keep the row out of match rate.
+                        records.append({**original, "variant": "not_applicable"})
+                        continue
                     logits, readout = forward_readout(
                         model,
                         tokenizer,
@@ -338,13 +347,9 @@ def run(
                 for record in records:
                     handle.write(canonical_json({**record, "pass": pass_index}) + "\n")
         original_records = [record for record in all_passes[0] if record["variant"] == "original"]
-        counterfactual_records = [
-            record for record in all_passes[0] if record["variant"] == "counterfactual"
-        ]
         metrics = metrics_from_records(original_records)
         if counterfactual:
-            matches = [record["content_match"] for record in counterfactual_records]
-            metrics["counterfactual_content_match_rate"] = sum(matches) / len(matches)
+            metrics["counterfactual_content_match_rate"] = counterfactual_match_rate(all_passes[0])
         report = {
             "status": "passed" if repeat_identical is not False else "passed_unstable_repeat",
             "exit_code": 0,
@@ -411,7 +416,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--media-root",
         type=Path,
         default=None,
-        help="media asset root required when samples carry image media",
+        help="media asset root required when samples carry media",
     )
     parser.add_argument(
         "--counterfactual",

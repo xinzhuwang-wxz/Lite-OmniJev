@@ -1,4 +1,4 @@
-"""Freeze S2 media cohort pools: train, calibration-reserve, holdout-reserve."""
+"""Freeze S2/S3 media cohort pools: train, calibration-reserve, holdout-reserve."""
 
 from __future__ import annotations
 
@@ -24,6 +24,7 @@ COHORT_SPECS: dict[str, dict[str, Any]] = {
         "license": f"QA:{AOK_QA_LICENSE};media:{AOK_MEDIA_LICENSE}",
         "modality": "image",
         "media_type": "image",
+        "question_type": "choice",
         "source_data_version": IMAGE_DATA_VERSION,
         "pools_data_version": "aokvqa-train-image-choice-s2-pools-v1",
         "expected_dev_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
@@ -36,13 +37,47 @@ COHORT_SPECS: dict[str, dict[str, Any]] = {
         "license": "CC-BY-4.0",
         "modality": "image",
         "media_type": "image",
+        "question_type": "choice",
         "source_data_version": None,
         "pools_data_version": "gui-v2-screenshot-s2-pools-v1",
         "expected_dev_sha256": None,
         "holdout_reserve_count": 110,
         "calibration_reserve_count": 330,
     },
+    "audio": {
+        # Clotho-AQA provenance lives outside this repo for now; the license string
+        # and dev/source digests must be supplied per run until the ledger is pinned.
+        "source_dataset": "clotho-aqa",
+        "source_revision": "clotho-aqa-train-237c692e",
+        "license": None,
+        "modality": "audio",
+        "media_type": "audio",
+        "question_type": "noul",
+        "source_data_version": None,
+        "pools_data_version": "clotho-aqa-s3-pools-v1",
+        "expected_dev_sha256": None,
+        "holdout_reserve_count": None,
+        "calibration_reserve_count": None,
+    },
+    "video": {
+        "source_dataset": "CLEVRER",
+        "source_revision": (
+            "official-train-json-sha11181da673d223f41fb596aacfbbd3ff83d39af7f09a3210549e98cb283714b4"
+        ),
+        "license": "CC0-1.0",
+        "modality": "video",
+        "media_type": "video",
+        "question_type": "noul",
+        "source_data_version": None,
+        "pools_data_version": "clevrer-train-video-noul-s3-pools-v1",
+        "expected_dev_sha256": None,
+        "holdout_reserve_count": None,
+        "calibration_reserve_count": None,
+    },
 }
+
+# S2 cohorts split under s2- allocation keys; the S3 audio/video cohorts use s3-.
+S3_COHORTS = frozenset({"audio", "video"})
 
 
 class MediaPoolsError(ValueError):
@@ -94,7 +129,8 @@ def canonical_family_hash(family_id: str) -> str:
 
 
 def protocol_name(cohort: str) -> str:
-    return f"s2-{cohort}-pools-v1"
+    stage = "s3" if cohort in S3_COHORTS else "s2"
+    return f"{stage}-{cohort}-pools-v1"
 
 
 def allocation_prefix(cohort: str) -> str:
@@ -157,8 +193,11 @@ def validate_source_samples(
             raise MediaPoolsError("unexpected source data_version")
         if spec["modality"] not in meta.modality:
             raise MediaPoolsError("source samples must declare the cohort modality")
-        if len(sample.questions) != 1 or sample.questions[0].type != "choice":
-            raise MediaPoolsError("source samples must be single Choice questions")
+        question_type = str(spec["question_type"])
+        if len(sample.questions) != 1 or sample.questions[0].type != question_type:
+            raise MediaPoolsError(
+                f"source samples must be single {question_type.capitalize()} questions"
+            )
         target = sample.questions[0].target
         if not isinstance(target, HardTarget) or type(target.value) is not str:
             raise MediaPoolsError("source samples must use hard answer-token targets")
@@ -387,11 +426,14 @@ def run(
     calibration_count: int,
     expected_dev_sha256: str,
     expected_source_data_version: str,
+    license: str | None = None,
     command: list[str],
 ) -> int:
     started_at = time.time()
     report: dict[str, Any]
     spec = {**COHORT_SPECS[cohort], "source_data_version": expected_source_data_version}
+    if license is not None:
+        spec = {**spec, "license": license}
     base_config = {
         **config_payload(
             cohort=cohort,
@@ -525,15 +567,27 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--calibration-count", type=int, default=None)
     parser.add_argument("--expected-dev-sha256", default=None)
     parser.add_argument("--expected-source-data-version", default=None)
+    parser.add_argument(
+        "--license",
+        default=None,
+        help="license string required for cohorts whose spec leaves it unfrozen",
+    )
     args = parser.parse_args(argv)
     spec = COHORT_SPECS[args.cohort]
+    if args.license is not None and spec["license"] is not None:
+        parser.error("--license cannot override the frozen cohort license")
     if args.holdout_count is None:
+        if spec["holdout_reserve_count"] is None:
+            parser.error(f"--holdout-count is required for cohort {args.cohort}")
         args.holdout_count = int(spec["holdout_reserve_count"])
     if args.calibration_count is None:
+        if spec["calibration_reserve_count"] is None:
+            parser.error(f"--calibration-count is required for cohort {args.cohort}")
         args.calibration_count = int(spec["calibration_reserve_count"])
     for flag, dest, key in (
         ("--expected-dev-sha256", "expected_dev_sha256", "expected_dev_sha256"),
         ("--expected-source-data-version", "expected_source_data_version", "source_data_version"),
+        ("--license", "license", "license"),
     ):
         if getattr(args, dest) is None:
             default = spec[key]
@@ -559,6 +613,7 @@ def main(argv: list[str] | None = None) -> int:
         calibration_count=args.calibration_count,
         expected_dev_sha256=args.expected_dev_sha256,
         expected_source_data_version=args.expected_source_data_version,
+        license=args.license,
         command=[sys.executable, "-m", "scripts.s2_media_pools", *(argv or sys.argv[1:])],
     )
 

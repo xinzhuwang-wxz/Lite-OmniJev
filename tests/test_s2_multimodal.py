@@ -21,7 +21,13 @@ from scripts.s1_dev_eval import (
     prediction_content,
     record_for,
 )
-from train.trainer import LoopConfig, prepare_mixed_example, smoke_samples, verified_media_file
+from train.trainer import (
+    LoopConfig,
+    prepare_media_example,
+    prepare_mixed_example,
+    smoke_samples,
+    verified_media_file,
+)
 
 MIXED_VERSIONS = ["s2-image-train-v1-pools-v1", "s2-mixed-text-v1"]
 
@@ -244,7 +250,7 @@ def test_mixed_smoke_samples_rejects_inconsistent_rows(tmp_path: Path) -> None:
             write_jsonl(tmp_path / "text-media.jsonl", [bad_text, image_row(1)]),
             expected_data_versions=MIXED_VERSIONS,
         )
-    with pytest.raises(ValueError, match="exactly one image"):
+    with pytest.raises(ValueError, match="exactly one media"):
         smoke_samples(
             config,
             write_jsonl(tmp_path / "two.jsonl", [image_row(0, media_count=2), text_row(1)]),
@@ -337,5 +343,50 @@ def test_verified_media_file_multi_root_selects_by_sha(tmp_path: Path) -> None:
     except ValueError as exc:
         assert "media resolution failed" in str(exc)
         assert "train/x.jpg" in str(exc)
+        assert str(tree_a / "train" / "x.jpg") in str(exc)
+        assert str(tree_b / "train" / "x.jpg") in str(exc)
     else:
         raise AssertionError("expected multi-root failure")
+
+
+def test_loop_config_media_roots_rules(tmp_path: Path) -> None:
+    with pytest.raises(ValidationError, match="mutually exclusive"):
+        LoopConfig(
+            sample_count=2,
+            steps=1,
+            accumulation=1,
+            modality="mixed",
+            media_root=str(tmp_path),
+            media_roots=[str(tmp_path / "a"), str(tmp_path / "b")],
+            expected_data_versions=MIXED_VERSIONS,
+        )
+    listed = LoopConfig(
+        sample_count=2,
+        steps=1,
+        accumulation=1,
+        modality="image",
+        media_roots=[str(tmp_path / "a"), str(tmp_path / "b")],
+    )
+    assert listed.media_roots == [str(tmp_path / "a"), str(tmp_path / "b")]
+    with pytest.raises(ValidationError, match="nonempty strings"):
+        LoopConfig(sample_count=2, steps=1, accumulation=1, modality="image", media_roots=["  "])
+    with pytest.raises(ValidationError, match="reserved for media"):
+        LoopConfig(sample_count=2, steps=1, accumulation=1, media_roots=[str(tmp_path)])
+
+
+def test_prepare_media_failure_names_sample_and_every_candidate(tmp_path: Path) -> None:
+    tree_a = tmp_path / "coco"
+    tree_b = tmp_path / "gui"
+    tree_a.mkdir()
+    tree_b.mkdir()
+    (tree_a / "shot.png").write_bytes(b"coconut-bytes")
+    (tree_b / "shot.png").write_bytes(b"gui-bytes")
+    sample = Sample.model_validate(image_row(0))
+    sample.prefix.media[0].uri = "shot.png"
+    sample.prefix.media[0].sha256 = "f" * 64
+    with pytest.raises(ValueError) as excinfo:
+        prepare_media_example(sample, None, tree_a, tree_b, max_length=100)
+    message = str(excinfo.value)
+    assert sample.id in message
+    assert str(tree_a / "shot.png") in message
+    assert str(tree_b / "shot.png") in message
