@@ -421,10 +421,20 @@ def run(
             canonical_family_hash(family)
             for family in load_dev_families(dev_path, expected_dev_sha256)
         }
+        # 候选文件本来就含 dev500：切分前按 family 剔除（记录行数）。
+        total_input_rows = len(samples)
+        samples = [
+            sample
+            for sample in samples
+            if canonical_family_hash(sample.meta.family_id) not in dev_families
+        ]
+        dev_excluded_rows = total_input_rows - len(samples)
         candidate_families = {canonical_family_hash(sample.meta.family_id) for sample in samples}
         dev_overlap = candidate_families & dev_families
         if dev_overlap:
-            raise MediaPoolsError(f"pools overlap dev families: {len(dev_overlap)}")
+            raise MediaPoolsError(f"pools overlap dev families after exclusion: {len(dev_overlap)}")
+        if not samples:
+            raise MediaPoolsError("no candidate samples remain after dev exclusion")
         held, calibration, train = split_pools(
             samples,
             cohort=cohort,
@@ -457,6 +467,7 @@ def run(
             "dev_families": len(dev_families),
         }
         split = {
+            "dev_excluded_rows": dev_excluded_rows,
             "train_items": len(train),
             "calibration_reserve_items": len(calibration),
             "holdout_reserve_items": len(held),

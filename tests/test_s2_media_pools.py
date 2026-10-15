@@ -169,6 +169,7 @@ def test_image_split_counts_determinism_and_isolation(tmp_path: Path) -> None:
         "calibration_reserve_families": 3,
         "holdout_reserve_families": 2,
         "dev_family_overlap": 0,
+        "dev_excluded_rows": 0,
     }
     out = report_path.parent
     pools: dict[str, set[str]] = {}
@@ -281,9 +282,17 @@ def test_dev_family_overlap_is_rejected(tmp_path: Path) -> None:
         dev_rows=dev,
     )
     report = json.loads(report_path.read_text(encoding="utf-8"))
-    assert code == 1 and report["status"] == "blocked"
-    assert "dev" in str(report["blocker"])
-    assert not report_path.parent.joinpath("train.jsonl").exists()
+    assert code == 0 and report["status"] == "passed"
+    assert report["split"]["dev_excluded_rows"] == 1
+    out = report_path.parent
+    pooled_families = {
+        name: {
+            json.loads(line)["meta"]["family_id"]
+            for line in (out / f"{name}.jsonl").read_text(encoding="utf-8").splitlines()
+        }
+        for name in ("train", "calibration", "holdout")
+    }
+    assert overlap_family not in set().union(*pooled_families.values())
 
 
 def test_screenshot_split_with_overridden_counts_and_shared_family(tmp_path: Path) -> None:
