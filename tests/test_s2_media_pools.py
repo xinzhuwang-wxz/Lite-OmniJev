@@ -361,16 +361,18 @@ def test_family_target_conflict_is_rejected(tmp_path: Path) -> None:
     media_root = tmp_path / "media"
     rows = cohort_rows(media_root, "screenshot", 4)
     uri, digest = make_media(media_root, "screenshot", 4)
-    rows.append(
-        sample_row(
-            "screenshot",
-            4,
-            family_id=rows[0]["meta"]["family_id"],
-            media_uri=uri,
-            media_sha256=digest,
-            target="A",
-        )
+    # 同 family 同题面、不同 target —— 真冲突。
+    conflicting = sample_row(
+        "screenshot",
+        4,
+        family_id=rows[0]["meta"]["family_id"],
+        media_uri=uri,
+        media_sha256=digest,
+        target="A",
     )
+    conflicting["questions"][0]["instruction"] = rows[0]["questions"][0]["instruction"]
+    conflicting["questions"][0]["options"] = rows[0]["questions"][0]["options"]
+    rows.append(conflicting)
     code, report_path = run_split(
         tmp_path, cohort="screenshot", media_root=media_root, source_rows=rows, tag="conflict"
     )
@@ -424,3 +426,42 @@ def test_existing_outputs_are_refused(tmp_path: Path) -> None:
     assert blocked["status"] == "blocked"
     assert "overwrite" in str(blocked["blocker"])
     assert (out / "train.jsonl").read_text(encoding="utf-8") == "sentinel"
+
+
+def test_multi_question_family_same_image_is_accepted(tmp_path: Path) -> None:
+    """同图不同问题（不同 instruction/target）合法，必须整 family 进同一池。"""
+    media_root = tmp_path / "media"
+    rows = cohort_rows(media_root, "image", 4)
+    uri, digest = make_media(media_root, "image", 4)
+    extra = sample_row(
+        "image",
+        4,
+        family_id=rows[0]["meta"]["family_id"],
+        media_uri=uri,
+        media_sha256=digest,
+        target="A",
+    )
+    rows.append(extra)
+    code, report_path = run_split(
+        tmp_path,
+        cohort="image",
+        media_root=media_root,
+        source_rows=rows,
+        tag="multiq",
+        holdout_count=1,
+        calibration_count=1,
+    )
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert code == 0 and report["status"] == "passed"
+    out = report_path.parent
+    family = rows[0]["meta"]["family_id"]
+    locations = {
+        name: [
+            json.loads(line)["meta"]["family_id"]
+            for line in (out / f"{name}.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        for name in ("train", "calibration", "holdout")
+    }
+    homes = [name for name, fams in locations.items() if family in fams]
+    assert len(homes) == 1
+    assert sum(fams.count(family) for fams in locations.values()) == 2

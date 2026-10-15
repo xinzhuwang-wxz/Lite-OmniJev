@@ -139,7 +139,8 @@ def validate_source_samples(
     samples: list[Sample], *, spec: dict[str, Any], media_root: Path
 ) -> dict[str, Any]:
     ids: set[str] = set()
-    target_by_family: dict[str, str] = {}
+    families: set[str] = set()
+    conflict_by_family: dict[str, dict[str, str]] = {}
     verified: dict[str, str] = {}
     for sample in samples:
         if sample.id in ids:
@@ -175,12 +176,20 @@ def validate_source_samples(
         if verified[media.uri] != media.sha256:
             raise MediaPoolsError(f"media sha256 mismatch for sample {sample.id}: {media.uri}")
         family = meta.family_id
-        previous = target_by_family.get(family)
-        if previous is not None and previous != target.value:
-            raise MediaPoolsError(f"family {family} has conflicting targets across samples")
-        target_by_family[family] = target.value
+        families.add(family)
+        # 同图多问题合法（instruction/options 可不同）；仅完全相同题面配矛盾 target 才是真冲突。
+        conflict_key = canonical_json(
+            {"instruction": sample.questions[0].instruction, "options": sample.questions[0].options}
+        )
+        seen = conflict_by_family.setdefault(family, {})
+        prior_target = seen.get(conflict_key)
+        if prior_target is not None and prior_target != target.value:
+            raise MediaPoolsError(
+                f"family {family} has conflicting targets for an identical question"
+            )
+        seen[conflict_key] = target.value
     return {
-        "families": len(target_by_family),
+        "families": len(families),
         "rows": len(samples),
         "media_verified": len(verified),
     }
