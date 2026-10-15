@@ -86,6 +86,8 @@ def test_brier_resume_preserves_objective_and_legacy_identity(
     output_dir, original_report = prepare_resume_run(monkeypatch, tmp_path)
     config = LoopConfig(sample_count=100, steps=10, accumulation=10, brier_weight=new_weight)
     saved_config = config.model_dump()
+    saved_config.pop("preparation_mode")
+    saved_config.pop("preparation_cache_bytes")
     if old_weight:
         saved_config["brier_weight"] = old_weight
     else:

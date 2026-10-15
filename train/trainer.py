@@ -13,9 +13,10 @@ import random
 import re
 import subprocess
 import time
-from collections.abc import Callable
+from collections import OrderedDict
+from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, overload
 
 from pydantic import Field, model_validator
 
@@ -84,6 +85,8 @@ class LoopConfig(Contract):
     expected_data_versions: list[str] | None = Field(default=None, min_length=1)
     checkpoint_every: int | None = Field(default=None, ge=1)
     brier_weight: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+    preparation_mode: Literal["eager", "lazy"] = "eager"
+    preparation_cache_bytes: int = Field(default=256 * 1024 * 1024, ge=0)
 
     @model_validator(mode="after")
     def validate_loop(self) -> LoopConfig:
@@ -92,6 +95,8 @@ class LoopConfig(Contract):
         if self.midway_step is not None and self.midway_step > self.steps:
             raise ValueError("midway_step must not exceed steps")
         if self.modality == "text":
+            if self.preparation_mode == "lazy":
+                raise ValueError("lazy preparation is reserved for media training")
             if self.media_roots is not None:
                 raise ValueError("media_roots is reserved for media training")
         elif self.media_roots is not None:
@@ -453,6 +458,101 @@ def prepare_mixed_examples(
     ]
 
 
+class BoundedPreparedExamples(Sequence[dict[str, Any]]):
+    """On-demand official inputs; only tensor storage retained by this cache is bounded.
+
+    One current example and processor/decode temporaries may exceed the cache budget.
+    Sample metadata and the set of observed indices are cheap, eager bookkeeping.
+    """
+
+    def __init__(
+        self,
+        samples: list[Sample],
+        prepare: Callable[[Sample], dict[str, Any]],
+        cache_bytes: int,
+        report: dict[str, Any],
+    ) -> None:
+        if cache_bytes < 0:
+            raise ValueError("cache_bytes must be nonnegative")
+        self.samples = samples
+        self.prepare = prepare
+        self.budget = cache_bytes
+        self.cache: OrderedDict[int, tuple[dict[str, Any], int]] = OrderedDict()
+        self.observed: set[int] = set()
+        self.stats: dict[str, Any] = {
+            "mode": "lazy",
+            "pool_examples": len(samples),
+            "prepared_examples": 0,
+            "preparation_calls": 0,
+            "cache_budget_bytes": cache_bytes,
+            "cache_retained_bytes": 0,
+            "cache_peak_bytes": 0,
+            "observed_max_prompt_tokens": 0,
+            "media_validation": "partial; unvisited samples validated on access",
+        }
+        report["preparation"] = self.stats
+
+    def __len__(self) -> int:
+        return len(self.samples)
+
+    @overload
+    def __getitem__(self, index: int) -> dict[str, Any]: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[dict[str, Any]]: ...
+
+    def __getitem__(self, index: int | slice) -> dict[str, Any] | list[dict[str, Any]]:
+        if isinstance(index, slice):
+            return [self[i] for i in range(*index.indices(len(self)))]
+        if index < 0:
+            index += len(self)
+        if not 0 <= index < len(self):
+            raise IndexError(index)
+        if index in self.cache:
+            self.cache.move_to_end(index)
+            return self.cache[index][0]
+        sample = self.samples[index]
+        try:
+            example = self.prepare(sample)
+        except Exception as exc:
+            self.stats["failed_sample_id"] = sample.id
+            self.stats["failed_sample_index"] = index
+            raise ValueError(f"sample {sample.id} preparation failed: {exc}") from exc
+        self.observed.add(index)
+        self.stats["prepared_examples"] = len(self.observed)
+        self.stats["preparation_calls"] += 1
+        self.stats["observed_max_prompt_tokens"] = max(
+            self.stats["observed_max_prompt_tokens"], len(example["input_ids"])
+        )
+        # Account storage rather than numel: views can retain a larger backing tensor.
+        storages = {
+            value.untyped_storage().data_ptr(): value.untyped_storage().nbytes()
+            for value in example.values()
+            if hasattr(value, "untyped_storage")
+        }
+        size = sum(storages.values())
+        if size <= self.budget and self.budget > 0:
+            while self.cache and self.stats["cache_retained_bytes"] + size > self.budget:
+                _, (_, evicted_size) = self.cache.popitem(last=False)
+                self.stats["cache_retained_bytes"] -= evicted_size
+            self.cache[index] = (example, size)
+            self.stats["cache_retained_bytes"] += size
+            self.stats["cache_peak_bytes"] = max(
+                self.stats["cache_peak_bytes"], self.stats["cache_retained_bytes"]
+            )
+        return example
+
+    def validate_representatives(self) -> None:
+        """Validate the first sample of each declared modality, without scanning tensors."""
+        seen: set[str] = set()
+        for index, sample in enumerate(self.samples):
+            kind = sample.prefix.media[0].type if sample.prefix.media else "text"
+            if kind not in seen:
+                self[index]
+                seen.add(kind)
+        self.stats["preflight_prepared_examples"] = len(self.observed)
+
+
 def decision_loss(
     logits: Any, token_ids: list[int], target: list[float], *, brier_weight: float = 0.0
 ) -> Any:
@@ -637,7 +737,7 @@ def log_training_metrics(
 def train_smoke(
     config: TrainConfig,
     model_dir: Path,
-    examples: list[dict[str, Any]],
+    examples: Sequence[dict[str, Any]],
     output_dir: Path,
     report: dict[str, Any],
     telemetry: Telemetry,
@@ -692,7 +792,15 @@ def train_smoke(
     telemetry.log(
         {
             "validation/examples": float(report["examples"]),
-            "validation/max_prompt_tokens": float(report["max_prompt_tokens"]),
+            **(
+                {
+                    "validation/observed_max_prompt_tokens": float(
+                        report["preparation"]["observed_max_prompt_tokens"]
+                    )
+                }
+                if isinstance(examples, BoundedPreparedExamples)
+                else {"validation/max_prompt_tokens": float(report["max_prompt_tokens"])}
+            ),
             "train/learning_rate": config.learning_rate,
         },
         step=start_step,
@@ -821,6 +929,9 @@ def run(
     # nonzero weights remain in config and are checked by strict resume equality.
     if report["config"].get("brier_weight") == 0:
         report["config"].pop("brier_weight")
+    if report["config"].get("preparation_mode") == "eager":
+        report["config"].pop("preparation_mode")
+        report["config"].pop("preparation_cache_bytes")
     monitoring_config = monitoring or SwanLabConfig.from_env()
     report["monitoring"] = monitoring_config.describe()
     created = False
@@ -859,7 +970,7 @@ def run(
                 report[field] = operation()
             except Exception as exc:
                 blockers.append(f"{field}: {type(exc).__name__}: {exc}")
-        examples = []
+        examples: Sequence[dict[str, Any]] = []
         try:
             if config.modality == "text":
                 adapter = OfficialTokenizerAdapter(model_dir)
@@ -875,7 +986,29 @@ def run(
                     primary_root = Path(config.media_root or "")
                     extra_roots = []
                 video_num_frames = getattr(config, "video_num_frames", 16)
-                if config.modality == "mixed":
+                if getattr(config, "preparation_mode", "eager") == "lazy":
+                    processor = importlib.import_module(
+                        "transformers"
+                    ).AutoProcessor.from_pretrained(
+                        str(model_dir), local_files_only=True, trust_remote_code=False
+                    )
+                    adapter = OfficialTokenizerAdapter(model_dir)
+                    examples = BoundedPreparedExamples(
+                        samples,
+                        lambda sample: prepare_mixed_example(
+                            sample,
+                            adapter,
+                            processor,
+                            primary_root,
+                            max_length=config.max_length,
+                            extra_roots=extra_roots,
+                            video_num_frames=video_num_frames,
+                        ),
+                        getattr(config, "preparation_cache_bytes", 256 * 1024 * 1024),
+                        report,
+                    )
+                    examples.validate_representatives()
+                elif config.modality == "mixed":
                     examples = prepare_mixed_examples(
                         samples,
                         model_dir,
@@ -894,7 +1027,13 @@ def run(
                         video_num_frames=video_num_frames,
                     )
             report["examples"] = len(examples)
-            report["max_prompt_tokens"] = max(len(e["input_ids"]) for e in examples)
+            if not isinstance(examples, BoundedPreparedExamples):
+                report["max_prompt_tokens"] = max(len(e["input_ids"]) for e in examples)
+                report["preparation"] = {
+                    "mode": "eager",
+                    "prepared_examples": len(examples),
+                    "media_validation": "all examples prepared",
+                }
         except Exception as exc:
             blockers.append(f"examples: {type(exc).__name__}: {exc}")
         blockers.extend(monitoring_config.blockers())
