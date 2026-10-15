@@ -61,6 +61,7 @@ class BuildManifest(Contract):
     current_reserves: list[Artifact] = Field(min_length=1)
     annotation_root: str
     media_root: str
+    historical_rgb_cache: Artifact | None = None
 
 
 class SourceIndex(Contract):
@@ -69,6 +70,21 @@ class SourceIndex(Contract):
     license: Literal["CC-BY-4.0"]
     annotations: dict[str, Sha256]
     media: dict[str, Sha256]
+
+
+class HistoricalRGB(Contract):
+    sha256: Sha256
+    width: int = Field(gt=0)
+    height: int = Field(gt=0)
+    decoded_rgb_sha256: Sha256
+    isolation_alias_sha256: Sha256
+
+
+class HistoricalRGBCache(Contract):
+    schema_version: Literal["observed-image-rgb-cache-v1"]
+    pillow_version: Literal["12.3.0"]
+    source_index_sha256: Literal["3b29b518d765aa963ee0b734d1c759ad716e6ed1fcd41a0162530204efe222cc"]
+    media: dict[Sha256, HistoricalRGB]
 
 
 class Receipt(Contract):
@@ -138,6 +154,8 @@ def collect(
     receipt: Receipt | None = None,
     *,
     workers: int = 8,
+    assignments: dict[str, set[str]] | None = None,
+    existing: dict[str, Sample] | None = None,
 ) -> dict[str, dict[str, Any]]:
     index = SourceIndex.model_validate(bound_json(manifest.source_index))
     annotation_root = safe_path(Path(manifest.annotation_root))
@@ -146,7 +164,14 @@ def collect(
     if not 1 <= workers <= 8:
         raise ValueError("workers must be between 1 and 8")
     source_steps: list[tuple[str, dict[str, Any], Path]] = []
-    scanned_steps = 0
+    assigned = assignments or {}
+    mandatory = existing or {}
+    mandatory_raw = {
+        (sample.meta.family_id, media.sha256)
+        for sample in mandatory.values()
+        for media in sample.prefix.media
+    }
+    omitted_steps = 0
     scanned_episodes = 0
     for entry in gui.load_plan(Path(manifest.plan.path)):
         scanned_episodes += 1
@@ -158,8 +183,14 @@ def collect(
         gui.validate_episode_steps(annotation, episode, media_root)
         for step in annotation["steps"]:
             path = safe_path(media_root / "screenshots" / step["screenshot"])
+            family = f"gui:{episode}"
+            old = "f:" + canonical_family_hash(family) in assigned
+            if (old and (family, index.media.get(step["screenshot"])) not in mandatory_raw) or (
+                not old and step.get("action") != "CLICK"
+            ):
+                omitted_steps += 1
+                continue
             source_steps.append((episode, step, path))
-            scanned_steps += 1
     # Only paths, step records and decoded metadata cross the process boundary.
     # Verify every alias before deduplicating by its pinned raw content hash.
     with ProcessPoolExecutor(max_workers=workers) as pool:
@@ -177,9 +208,6 @@ def collect(
     for episode, step, path in source_steps:
         family_node = "f:" + canonical_family_hash(f"gui:{episode}")
         info = decoded_cache[index.media[step["screenshot"]]]
-        # Every original step contributes aliases, even if it cannot be a gold item.
-        graph.union(family_node, "m:" + info["sha256"])
-        graph.union(family_node, "r:" + info["decoded_rgb_sha256"])
         if step.get("action") != "CLICK":
             continue
         instruction = str(step.get("low_level_instruction", "")).strip()
@@ -213,11 +241,18 @@ def collect(
             annotation_sha256=index.annotations[episode],
         )
         sample, _, _ = gui.sample_for(row)
+        if family_node in assigned and sample.id not in mandatory:
+            continue
+        graph.union(family_node, "m:" + info["sha256"])
+        graph.union(family_node, "r:" + info["decoded_rgb_sha256"])
         result[sample.id] = row
     if receipt is not None:
         receipt.counts.update(
             source_episodes_scanned=scanned_episodes,
-            source_steps_aliased=scanned_steps,
+            source_steps_aliased=len(result),
+            source_steps_verified=len(source_steps),
+            source_unused_steps_omitted=omitted_steps,
+            source_decode_scope_click_and_mandatory=1,
             source_unique_media_decoded=len(decoded_cache),
             eligible_original_steps=len(result),
         )
@@ -238,6 +273,18 @@ def inventory_state(
     existing: dict[str, Sample] = {}
     decoded: set[str] = set()
     missing: set[str] = set()
+    cache = None
+    if manifest.historical_rgb_cache is not None:
+        safe_path(Path(manifest.historical_rgb_cache.path))
+        cache = HistoricalRGBCache.model_validate(bound_json(manifest.historical_rgb_cache))
+        if any(
+            key != row.sha256
+            or row.isolation_alias_sha256
+            != digest(f"rgb:{row.width}:{row.height}:{row.decoded_rgb_sha256}".encode())
+            for key, row in cache.media.items()
+        ):
+            raise BuildError("historical_rgb_cache_mismatch")
+        receipt.input_sha256["historical_rgb_cache"] = manifest.historical_rgb_cache.sha256
     for i, artifact in enumerate(inventory.samples):
         replace = (artifact.path, artifact.sha256) in replaced
         if replace:
@@ -259,6 +306,13 @@ def inventory_state(
                 if extracted.cohort != "screenshot":
                     continue
                 if media.sha256 in decoded:
+                    continue
+                if cache is not None:
+                    cached = cache.media.get(media.sha256)
+                    if cached is None:
+                        raise BuildError("historical_rgb_cache_incomplete")
+                    graph.union("m:" + media.sha256, "r:" + cached.decoded_rgb_sha256)
+                    decoded.add(media.sha256)
                     continue
                 uri = urlparse(media.uri)
                 local = Path(unquote(uri.path)) if uri.scheme == "file" else Path(media.uri)
@@ -293,6 +347,15 @@ def inventory_state(
     return inventory, assignments, existing
 
 
+def historical_pools(graph: Components, assignments: dict[str, set[str]]) -> dict[str, set[str]]:
+    pools: dict[str, set[str]] = defaultdict(set)
+    for node, assigned in assignments.items():
+        pools[graph.find(node)].update(assigned)
+    if any(len(p) > 1 for p in pools.values()):
+        raise BuildError("historical_pool_conflict")
+    return pools
+
+
 def allocate(
     rows: dict[str, dict[str, Any]],
     existing: dict[str, Sample],
@@ -302,11 +365,23 @@ def allocate(
     calibration_count: int,
     holdout_count: int,
 ) -> dict[str, list[str]]:
-    pools: dict[str, set[str]] = defaultdict(set)
-    for node, assigned in assignments.items():
-        pools[graph.find(node)].update(assigned)
-    if any(len(p) > 1 for p in pools.values()):
-        raise BuildError("historical_pool_conflict")
+    pools = historical_pools(graph, assignments)
+    history_nodes = set(graph.parents)
+    candidates_graph = Components()
+    for item_id, candidate_row in rows.items():
+        family = "f:" + canonical_family_hash(f"gui:{candidate_row['episode_id']}")
+        if item_id in existing or family in assignments:
+            continue
+        candidates_graph.union(family, "m:" + candidate_row["image"]["sha256"])
+        candidates_graph.union(family, "r:" + candidate_row["image"]["decoded_rgb_sha256"])
+    forbidden = (
+        history_nodes
+        | {"f:" + f for f in quarantine.families}
+        | {"m:" + m for m in quarantine.media}
+    )
+    excluded = {
+        candidates_graph.find(node) for node in tuple(candidates_graph.parents) if node in forbidden
+    }
     blocked = {graph.find("f:" + f) for f in quarantine.families} | {
         graph.find("m:" + m) for m in quarantine.media
     }
@@ -336,10 +411,13 @@ def allocate(
         output[sample.meta.pool].append(item_id)
     candidates: dict[str, list[str]] = defaultdict(list)
     for item_id, row in sorted(rows.items()):
-        component = graph.find("f:" + canonical_family_hash(f"gui:{row['episode_id']}"))
+        family = "f:" + canonical_family_hash(f"gui:{row['episode_id']}")
+        if item_id in existing or family in assignments:
+            continue
+        component = candidates_graph.find(family)
         rgb = row["image"]["decoded_rgb_sha256"]
         # Historical reserve components retain their assignments but are not expanded.
-        if component in blocked or pools.get(component) or rgb in seen:
+        if component in excluded or rgb in seen:
             continue
         seen.add(rgb)
         candidates[component].append(item_id)
@@ -374,6 +452,15 @@ def allocate(
     )
     if len(output["calibration"]) != calibration_count or len(output["holdout"]) != holdout_count:
         raise BuildError("insufficient_capacity")
+    combined_assignments = {node: set(pools) for node, pools in assignments.items()}
+    for pool, ids in output.items():
+        for item_id in ids:
+            row = rows[item_id]
+            family = "f:" + canonical_family_hash(f"gui:{row['episode_id']}")
+            graph.union(family, "m:" + row["image"]["sha256"])
+            graph.union(family, "r:" + row["image"]["decoded_rgb_sha256"])
+            combined_assignments.setdefault(family, set()).add(pool)
+    historical_pools(graph, combined_assignments)
     return output
 
 
@@ -396,9 +483,12 @@ def build(args: argparse.Namespace, receipt: Receipt) -> None:
         safe_path(Path(artifact.path))
         verify(artifact)
         receipt.input_sha256[name] = artifact.sha256
+    if real and manifest.historical_rgb_cache is None:
+        raise BuildError("historical_rgb_cache_required")
     graph = Components()
     inventory, assignments, existing = inventory_state(manifest, receipt, graph)
-    rows = collect(manifest, graph, receipt)
+    historical_pools(graph, assignments)
+    rows = collect(manifest, Components(), receipt, assignments=assignments, existing=existing)
     if real and {
         p: sum(s.meta.pool == p for s in existing.values()) for p in ("calibration", "holdout")
     } != {"calibration": 119, "holdout": 59}:

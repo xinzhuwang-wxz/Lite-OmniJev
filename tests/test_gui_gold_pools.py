@@ -234,17 +234,26 @@ def test_transitive_shared_media_components_and_determinism(tmp_path):
     receipt = gold.Receipt()
     m = gold.BuildManifest.model_validate(manifest)
     _, assignments, existing = gold.inventory_state(m, receipt, graph)
-    rows = gold.collect(m, graph)
-    # Transitive aliases connect three whole episodes into one assignment.
-    nodes = ["f:" + gold.canonical_family_hash(f"gui:{i:016d}") for i in (3, 4, 5)]
-    graph.union(nodes[0], "r:alias-a")
-    graph.union(nodes[1], "r:alias-a")
-    graph.union(nodes[1], "m:alias-b")
-    graph.union(nodes[2], "m:alias-b")
-    assert graph.find(nodes[0]) == graph.find(nodes[2])
-    args = (existing, graph, assignments, gold.Quarantine(families=[], media=[]), 6, 3)
+    rows = gold.collect(m, gold.Components())
+    # Shared candidate RGB ties entire episode groups before selection.
+    group = [row for row in rows.values() if row["episode_id"] in {f"{i:016d}" for i in (3, 4, 5)}]
+    for row in group:
+        row["image"]["decoded_rgb_sha256"] = "a" * 64
+    original_parents = dict(graph.parents)
+    args = (existing, graph, assignments, gold.Quarantine(families=[], media=[]), 4, 3)
     first = gold.allocate(rows, *args)
-    assert first == gold.allocate(dict(reversed(list(rows.items()))), *args)
+    second_graph = gold.Components()
+    second_graph.parents = original_parents
+    second = gold.allocate(
+        dict(reversed(list(rows.items()))),
+        existing,
+        second_graph,
+        assignments,
+        gold.Quarantine(families=[], media=[]),
+        4,
+        3,
+    )
+    assert first == second
     component_pools = {}
     for pool, ids in first.items():
         for item in ids:
@@ -271,9 +280,9 @@ def test_historical_unavailable_rgb_is_explicit_gap(tmp_path):
     assert receipt["counts"]["historical_gui_media_rgb_unavailable"] == 1
 
 
-def test_rgb_reencoding_alias_blocks_history_cross_pool(tmp_path):
+def test_unused_rgb_reencoding_does_not_bridge_history(tmp_path):
     path, manifest = fixture(tmp_path)
-    # Different PNG bytes with identical decoded RGB still connect old pools.
+    # Unused frames in old episodes are source material, not historical exposure.
     index_path = Path(manifest["source_index"]["path"])
     index = json.loads(index_path.read_bytes())
     media = Path(manifest["media_root"]) / "screenshots"
@@ -286,8 +295,8 @@ def test_rgb_reencoding_alias_blocks_history_cross_pool(tmp_path):
     rebind(manifest, "source_index")
     path.write_bytes(gold.encode(manifest))
     code, receipt = run(tmp_path, path)
-    assert code == 1
-    assert receipt["category"] == "historical_pool_conflict"
+    assert code == 0
+    assert receipt["counts"]["source_unused_steps_omitted"] == 4
 
 
 def test_component_capacity_may_exceed_remaining_quota(tmp_path):
@@ -320,7 +329,7 @@ def test_collect_worker_counts_preserve_candidates_graph_and_selection(tmp_path)
         graph = gold.Components()
         receipt = gold.Receipt()
         _, assignments, existing = gold.inventory_state(m, receipt, graph)
-        rows = gold.collect(m, graph, receipt, workers=workers)
+        rows = gold.collect(m, gold.Components(), receipt, workers=workers)
         selected = gold.allocate(
             rows, existing, graph, assignments, gold.Quarantine(families=[], media=[]), 6, 3
         )
@@ -379,3 +388,108 @@ def test_collect_deduplicates_raw_media_without_losing_aliases(tmp_path):
         assert graph.find(nodes[0]) == graph.find(nodes[1])
         results.append((rows, graph.parents, receipt.counts))
     assert results[0] == results[1]
+
+
+def cache_for(manifest):
+    media = {}
+    for path in (Path(manifest["media_root"]) / "screenshots").glob("*.png"):
+        info = gui.image_info(path)
+        info.pop("bytes")
+        info["isolation_alias_sha256"] = gold.digest(
+            f"rgb:{info['width']}:{info['height']}:{info['decoded_rgb_sha256']}".encode()
+        )
+        media[info["sha256"]] = info
+    payload = dict(
+        schema_version="observed-image-rgb-cache-v1",
+        pillow_version="12.3.0",
+        source_index_sha256="3b29b518d765aa963ee0b734d1c759ad716e6ed1fcd41a0162530204efe222cc",
+        media=media,
+    )
+    path = Path(manifest["inventory"]["path"]).parent / "rgb-cache.json"
+    path.write_bytes(gold.encode(payload))
+    manifest["historical_rgb_cache"] = dict(path=str(path), sha256=gold.file_digest(path))
+    return path, payload
+
+
+@pytest.mark.parametrize("attack", ["mutation", "missing", "alias", "key", "conflict"])
+def test_historical_rgb_cache_fails_closed(tmp_path, attack):
+    _, manifest = fixture(tmp_path)
+    path, payload = cache_for(manifest)
+    root = Path(manifest["media_root"]) / "screenshots"
+    keys = [gold.file_digest(root / f"{i:016d}_0.png") for i in range(3)]
+    if attack == "missing":
+        del payload["media"][keys[0]]
+    elif attack == "alias":
+        payload["media"][keys[0]]["isolation_alias_sha256"] = "a" * 64
+    elif attack == "key":
+        payload["media"][keys[0]]["sha256"] = "a" * 64
+    elif attack == "conflict":
+        # Actual consumed calibration and holdout images collide in decoded RGB.
+        row = payload["media"][keys[1]]
+        row["decoded_rgb_sha256"] = payload["media"][keys[0]]["decoded_rgb_sha256"]
+        row["isolation_alias_sha256"] = gold.digest(
+            f"rgb:{row['width']}:{row['height']}:{row['decoded_rgb_sha256']}".encode()
+        )
+    else:
+        payload["pillow_version"] = "tampered"
+    path.write_bytes(gold.encode(payload))
+    if attack != "mutation":
+        manifest["historical_rgb_cache"]["sha256"] = gold.file_digest(path)
+    with pytest.raises(gold.BuildError):
+        graph = gold.Components()
+        _, assignments, _ = gold.inventory_state(
+            gold.BuildManifest.model_validate(manifest), gold.Receipt(), graph
+        )
+        gold.historical_pools(graph, assignments)
+
+
+def test_candidate_bridge_excluded_without_changing_history(tmp_path):
+    _, manifest = fixture(tmp_path)
+    m = gold.BuildManifest.model_validate(manifest)
+    graph = gold.Components()
+    _, assignments, existing = gold.inventory_state(m, gold.Receipt(), graph)
+    rows = gold.collect(m, gold.Components(), assignments=assignments, existing=existing)
+    old = dict(graph.parents)
+    history_rgbs = [
+        row["image"]["decoded_rgb_sha256"] for key, row in rows.items() if key in existing
+    ]
+    bridge = [row for row in rows.values() if row["episode_id"] == f"{3:016d}"]
+    for row, rgb in zip(bridge, history_rgbs, strict=True):
+        row["image"]["decoded_rgb_sha256"] = rgb
+    selected = gold.allocate(
+        rows, existing, graph, assignments, gold.Quarantine(families=[], media=[]), 4, 3
+    )
+    assert not any(
+        item in ids for item, row in rows.items() if row in bridge for ids in selected.values()
+    )
+    assert gold.historical_pools(graph, assignments)
+    assert all(graph.find(node) == parent for node, parent in old.items())
+
+
+def test_bound_historical_cache_preserves_existing_samples(tmp_path):
+    path, manifest = fixture(tmp_path)
+    cache_for(manifest)
+    path.write_bytes(gold.encode(manifest))
+    originals = [
+        json.loads(Path(artifact["path"]).read_bytes()) for artifact in manifest["current_reserves"]
+    ]
+    code, receipt = run(tmp_path, path)
+    assert code == 0
+    assert receipt["historical_rgb_coverage"] == "complete_supplied_gui_media"
+    for original in originals:
+        output = tmp_path / "output" / f"{original['meta']['pool']}.jsonl"
+        preserved = next(
+            json.loads(line)
+            for line in output.read_text().splitlines()
+            if json.loads(line)["id"] == original["id"]
+        )
+        assert preserved == original
+
+
+def test_real_build_requires_bound_historical_cache(tmp_path, monkeypatch):
+    path, manifest = fixture(tmp_path)
+    monkeypatch.setattr(gold, "PLAN_SHA", manifest["plan"]["sha256"])
+    monkeypatch.setattr(gold, "SOURCE_INDEX_SHA", manifest["source_index"]["sha256"])
+    code, receipt = run(tmp_path, path, canary=False, cal=3000, hold=1000)
+    assert code == 1
+    assert receipt["category"] == "historical_rgb_cache_required"
