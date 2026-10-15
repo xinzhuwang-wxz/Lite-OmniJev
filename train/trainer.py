@@ -271,6 +271,7 @@ def prepare_examples(
         examples.append(
             {
                 "id": sample.id,
+                "observed_modalities": list(sample.meta.modality),
                 "input_ids": input_ids,
                 "token_ids": [mapping[t] for t in tokens],
                 "target": expected,
@@ -396,6 +397,7 @@ def prepare_media_example(
         raise ValueError("sample lacks supervision")
     example = {
         "id": sample.id,
+        "observed_modalities": list(sample.meta.modality),
         "input_ids": input_ids,
         "token_ids": [mapping[t] for t in tokens],
         "answer_token_ids": mapping,
@@ -758,9 +760,15 @@ def log_training_metrics(
     *,
     mean_loss: float,
     grad_norm: float,
+    step_metrics: dict[str, float] | None = None,
 ) -> None:
+    if step_metrics is not None:
+        history = report.setdefault("step_metrics", [])
+        history.append({"step": int(report["steps_completed"]), **step_metrics})
+        del history[:-256]
     telemetry.log(
         {
+            **{f"train/{key}": value for key, value in (step_metrics or {}).items()},
             "train/loss": mean_loss,
             "train/learning_rate": config.learning_rate,
             "train/grad_norm": grad_norm,
@@ -841,12 +849,41 @@ def train_smoke(
         },
         step=start_step,
     )
+    report["step_metrics_boundary"] = {
+        "step_wall_seconds": (
+            "optimizer step wall time including input access and CUDA synchronization; "
+            "excludes logging/checkpoint writes"
+        ),
+        "cpu_prepare_wait_seconds": (
+            "elapsed host time accessing prepared examples, including lazy decode/cache lookup"
+        ),
+        "invocation_samples_seen": "actual draws in this invocation; resets on resume",
+        "peak_cuda_bytes": "allocator peak since process peak reset, not per-step allocation",
+        "modality_exposure": (
+            "sample.meta.modality labels only; screenshot rows declared image stay image; "
+            "counts are sample exposures, not media objects; absent labels are not inferred"
+        ),
+        "modality_loss": (
+            "decision loss grouped by declared input modality; "
+            "crossmodal also contributes to image/audio"
+        ),
+        "history_limit": 256,
+    }
+    samples_seen = 0
     for step in range(start_step, config.steps):
+        step_started = time.perf_counter()
+        prepare_wait = 0.0
+        input_tokens = 0
+        modality_losses: dict[str, list[float]] = {}
         optimizer.zero_grad(set_to_none=True)
         losses = []
         for offset in range(config.accumulation):
             draw = step * config.accumulation + offset
+            prepare_started = time.perf_counter()
             example = examples[order[draw % len(examples)]]
+            prepare_wait += time.perf_counter() - prepare_started
+            input_tokens += len(example["input_ids"])
+            samples_seen += 1
             ids = torch.tensor([example["input_ids"]], device="cuda", dtype=torch.long)
             # Only whitelisted modality keys the official processor produced get forwarded.
             media_inputs = {
@@ -869,7 +906,19 @@ def train_smoke(
             if not bool(torch.isfinite(loss)):
                 raise ValueError("nonfinite training loss")
             (loss / config.accumulation).backward()
-            losses.append(float(loss.detach().cpu()))
+            observed_loss = float(loss.detach().cpu())
+            losses.append(observed_loss)
+            modalities = set(example.get("observed_modalities", [])) & {
+                "text",
+                "image",
+                "screenshot",
+                "audio",
+                "video",
+            }
+            if {"image", "audio"} <= modalities:
+                modalities.add("crossmodal")
+            for modality in modalities:
+                modality_losses.setdefault(modality, []).append(observed_loss)
         norm = torch.nn.utils.clip_grad_norm_(parameters, 1.0, error_if_nonfinite=True)
         if float(norm) <= 0:
             raise ValueError("no LoRA gradient reached the decision loss")
@@ -877,7 +926,26 @@ def train_smoke(
         report["steps_completed"] = step + 1
         mean_loss = math.fsum(losses) / len(losses)
         report["losses"].append(mean_loss)
-        log_training_metrics(telemetry, config, report, mean_loss=mean_loss, grad_norm=float(norm))
+        torch.cuda.synchronize()
+        step_metrics = {
+            "step_wall_seconds": time.perf_counter() - step_started,
+            "cpu_prepare_wait_seconds": prepare_wait,
+            "invocation_samples_seen": float(samples_seen),
+            "step_samples": float(len(losses)),
+            "input_tokens": float(input_tokens),
+            "peak_cuda_bytes": float(torch.cuda.max_memory_allocated()),
+        }
+        for modality, observed_losses in modality_losses.items():
+            step_metrics[f"{modality}/samples"] = float(len(observed_losses))
+            step_metrics[f"{modality}/loss"] = math.fsum(observed_losses) / len(observed_losses)
+        log_training_metrics(
+            telemetry,
+            config,
+            report,
+            mean_loss=mean_loss,
+            grad_norm=float(norm),
+            step_metrics=step_metrics,
+        )
         midway = getattr(config, "midway_step", None)
         if midway is not None and report["steps_completed"] == midway:
             midway_dir = output_dir / f"adapter-at-step-{midway:04d}"
