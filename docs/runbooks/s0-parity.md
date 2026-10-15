@@ -61,3 +61,30 @@ The gateway harness checks the existing chance-adjusted confidence contract.
 This reference does not admit BF16/FP8 serving performance or cache-enabled
 correctness. The failed BF16 evidence remains preserved. Exact launch paths and
 resume boundaries are in `plan/handoff-2026-10-14-s0-parity-and-teacher-admission.md`.
+
+## Explicit image token budget (ADR0019)
+
+Both `hf-reference` and `compare-vllm` accept optional
+`--image-max-soft-tokens 70|140|280|560|1120`. For an explicit1120 experiment,
+append `--image-max-soft-tokens 1120` to **both** commands and use new report
+paths. The HF reference, local reference re-preparation, and both native chat
+passes use the same requested value. The existing official preparation path
+sets HF image processing and supplies native `mm_processor_kwargs` through
+`PreparedDecision`; video and audio preprocessing stay under their existing
+contracts.
+
+The explicit value is recorded in `provenance.image_max_soft_tokens` and must
+also be present in the server record's exact copied provenance. Image input
+identity includes its effective prepared budget and processor-kwargs hash.
+A default/explicit or different-explicit reference mismatch is rejected before
+native HTTP requests. Server provenance must match too; it remains operator
+attestation, not remote configuration proof.
+
+Omitting the option preserves official-default preparation and the historical
+provenance/input-hash shape. Old reports are never rewritten, and all existing
+source, model, tensor and dtype checks still apply: a reference from another
+source revision is not automatically reusable merely because its budget is
+default. Generate fresh evidence under the intended revision/profile when
+those bindings differ. CLI and mocked CPU tests establish propagation and
+rejection behavior only; each explicit budget still requires its own real
+HF/native GPU parity and performance acceptance.

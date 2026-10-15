@@ -32,7 +32,13 @@ from eval.multimodal_parity import RawReadout, compare_rows, make_row
 from scripts.assets import write_json
 from scripts.s0_prepare import read_manifest
 from serve.vllm_chat import VllmChatClient
-from train.multimodal import PreparationCase, PreparedDecision, prepare_case
+from train.multimodal import (
+    IMAGE_MAX_SOFT_TOKENS,
+    PreparationCase,
+    PreparedDecision,
+    prepare_case,
+    validate_image_max_soft_tokens,
+)
 from train.trainer import runtime_requirements, verified_assets
 
 S0_PARITY_VERSION = "s0-parity-v1"
@@ -230,7 +236,10 @@ def load_cases(manifest: Path) -> list[PreparationCase]:
     return cases
 
 
-def build_provenance(paths: ParityPaths, *, dtype: str) -> dict[str, Any]:
+def build_provenance(
+    paths: ParityPaths, *, dtype: str, image_max_soft_tokens: int | None = None
+) -> dict[str, Any]:
+    validate_image_max_soft_tokens(image_max_soft_tokens)
     if dtype not in ALLOWED_DTYPES:
         raise S0ParityError(f"unsupported dtype: {dtype}")
     model_files = verified_assets(paths.model_dir, paths.asset_manifest)
@@ -238,6 +247,11 @@ def build_provenance(paths: ParityPaths, *, dtype: str) -> dict[str, Any]:
     return {
         "version": S0_PARITY_VERSION,
         "profile": CANONICAL_HTTP_PROFILE,
+        **(
+            {"image_max_soft_tokens": image_max_soft_tokens}
+            if image_max_soft_tokens is not None
+            else {}
+        ),
         "hf_reference_requires_cuda": True,
         "vllm_compare_starts_server": False,
         "thinking": False,
@@ -278,6 +292,16 @@ def row_id_hash(case_id: str) -> str:
 def prepared_input_hash(prepared: PreparedDecision) -> str:
     return sha256_json(
         {
+            **(
+                {
+                    "image_max_soft_tokens": prepared.http_image_max_soft_tokens,
+                    "http_mm_processor_kwargs_sha256": prepared.summary.get(
+                        "http_mm_processor_kwargs_sha256"
+                    ),
+                }
+                if prepared.http_image_max_soft_tokens is not None
+                else {}
+            ),
             "input_profile": prepared.summary.get("input_profile"),
             "prompt_sha256": prepared.summary.get("prompt_sha256"),
             "http_messages_sha256": prepared.summary.get("http_messages_sha256"),
@@ -441,11 +465,18 @@ def validate_prepared_rows(
     processor: Any,
     asset_root: Path,
     prepare: Callable[[PreparationCase, Any, Path], PreparedDecision] | None = None,
+    image_max_soft_tokens: int | None = None,
 ) -> dict[str, Any]:
     if len(rows) != REQUIRED_COHORT_SIZE:
         raise S0ParityError(f"reference contains {len(rows)} rows; expected {REQUIRED_COHORT_SIZE}")
     prepare_fn = prepare or (
-        lambda case, proc, root: prepare_case(case, proc, root, profile=CANONICAL_HTTP_PROFILE)
+        lambda case, proc, root: prepare_case(
+            case,
+            proc,
+            root,
+            profile=CANONICAL_HTTP_PROFILE,
+            image_max_soft_tokens=image_max_soft_tokens,
+        )
     )
     checked: list[RawReadout] = []
     for case, row in zip(cases, rows, strict=True):
@@ -474,11 +505,20 @@ def validate_reference_report(
         raise S0ParityError("reference report action is not hf-reference")
     if reference_report.get("status") != "reference-ready":
         raise S0ParityError("reference report is not reference-ready")
-    if reference_report.get("provenance") != provenance:
+    reference_provenance = reference_report.get("provenance")
+    if not isinstance(reference_provenance, Mapping) or reference_provenance.get(
+        "image_max_soft_tokens"
+    ) != provenance.get("image_max_soft_tokens"):
+        raise S0ParityError("reference image_max_soft_tokens does not match current run")
+    if reference_provenance != provenance:
         raise S0ParityError("reference provenance does not match current run")
     rows = rows_from_json(reference_report.get("rows", []))
     validation = validate_prepared_rows(
-        rows, cases=cases, processor=processor, asset_root=asset_root
+        rows,
+        cases=cases,
+        processor=processor,
+        asset_root=asset_root,
+        image_max_soft_tokens=provenance.get("image_max_soft_tokens"),
     )
     repeat = reference_report.get("hf_repeatability", {})
     if repeat.get("passed") is not True:
@@ -566,7 +606,9 @@ def run_hf_pass(
     processor: Any,
     paths: ParityPaths,
     dtype_name: str,
+    image_max_soft_tokens: int | None = None,
 ) -> list[RawReadout]:
+    validate_image_max_soft_tokens(image_max_soft_tokens)
     torch = ensure_cuda_available()
     configure_torch_runtime(torch)
     dtype = _torch_dtype(torch, dtype_name)
@@ -595,7 +637,11 @@ def run_hf_pass(
         with torch.inference_mode():
             for case in cases:
                 prepared = prepare_case(
-                    case, processor, paths.asset_root, profile=CANONICAL_HTTP_PROFILE
+                    case,
+                    processor,
+                    paths.asset_root,
+                    profile=CANONICAL_HTTP_PROFILE,
+                    image_max_soft_tokens=image_max_soft_tokens,
                 )
                 inputs = {
                     k: _tensor_to_device(v, torch=torch, dtype=dtype)
@@ -625,7 +671,9 @@ async def run_vllm_pass(
     served_model: str,
     upstream_url: str,
     transport: httpx.AsyncBaseTransport | None = None,
+    image_max_soft_tokens: int | None = None,
 ) -> tuple[list[RawReadout], list[dict[str, Any]]]:
+    validate_image_max_soft_tokens(image_max_soft_tokens)
     rows: list[RawReadout] = []
     summaries: list[dict[str, Any]] = []
     client = VllmChatClient(
@@ -636,7 +684,13 @@ async def run_vllm_pass(
     )
     try:
         for case in cases:
-            prepared = prepare_case(case, processor, asset_root, profile=CANONICAL_HTTP_PROFILE)
+            prepared = prepare_case(
+                case,
+                processor,
+                asset_root,
+                profile=CANONICAL_HTTP_PROFILE,
+                image_max_soft_tokens=image_max_soft_tokens,
+            )
             logprobs = await client.read_logprobs(prepared)
             rows.append(row_from_prepared(case, prepared, logprobs.raw_logprobs))
             summaries.append(logprobs.summary)
@@ -704,11 +758,27 @@ def run_hf_reference(args: argparse.Namespace) -> int:
     provenance: Mapping[str, Any] | None = None
     try:
         paths = args_to_paths(args)
-        provenance = build_provenance(paths, dtype=args.dtype)
+        provenance = build_provenance(
+            paths,
+            dtype=args.dtype,
+            image_max_soft_tokens=getattr(args, "image_max_soft_tokens", None),
+        )
         cases = load_cases(paths.manifest)
         processor = load_official_processor(paths.model_dir)
-        rows_a = run_hf_pass(cases=cases, processor=processor, paths=paths, dtype_name=args.dtype)
-        rows_b = run_hf_pass(cases=cases, processor=processor, paths=paths, dtype_name=args.dtype)
+        rows_a = run_hf_pass(
+            cases=cases,
+            processor=processor,
+            paths=paths,
+            dtype_name=args.dtype,
+            image_max_soft_tokens=getattr(args, "image_max_soft_tokens", None),
+        )
+        rows_b = run_hf_pass(
+            cases=cases,
+            processor=processor,
+            paths=paths,
+            dtype_name=args.dtype,
+            image_max_soft_tokens=getattr(args, "image_max_soft_tokens", None),
+        )
     except S0ParityError as exc:
         return failure_report(
             "hf-reference",
@@ -749,7 +819,9 @@ def run_compare_vllm(args: argparse.Namespace) -> int:
     started = time.monotonic()
     started_at = now_iso()
     paths = args_to_paths(args)
-    provenance = build_provenance(paths, dtype=args.dtype)
+    provenance = build_provenance(
+        paths, dtype=args.dtype, image_max_soft_tokens=getattr(args, "image_max_soft_tokens", None)
+    )
     cases = load_cases(paths.manifest)
     processor = load_official_processor(paths.model_dir)
     reference_report = json.loads(args.reference.read_text())
@@ -769,6 +841,7 @@ def run_compare_vllm(args: argparse.Namespace) -> int:
             asset_root=paths.asset_root,
             served_model=server["served_model"],
             upstream_url=args.upstream_url,
+            image_max_soft_tokens=getattr(args, "image_max_soft_tokens", None),
         )
     )
     rows_b, summaries_b = asyncio.run(
@@ -778,6 +851,7 @@ def run_compare_vllm(args: argparse.Namespace) -> int:
             asset_root=paths.asset_root,
             served_model=server["served_model"],
             upstream_url=args.upstream_url,
+            image_max_soft_tokens=getattr(args, "image_max_soft_tokens", None),
         )
     )
     repeat = compare_exact("vllm_repeatability", rows_a, rows_b)
@@ -895,6 +969,7 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--asset-manifest", type=Path, required=True)
         p.add_argument("--adapter-dir", type=Path)
         p.add_argument("--dtype", choices=sorted(ALLOWED_DTYPES), default="bfloat16")
+        p.add_argument("--image-max-soft-tokens", type=int, choices=IMAGE_MAX_SOFT_TOKENS)
         p.add_argument("--report", type=Path, required=True)
 
     hf = sub.add_parser(

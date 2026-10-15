@@ -56,6 +56,7 @@ def _prepared(i: int):
         inputs={"input_ids": _InputIds([1000 + i, 2000 + i])},
         http_messages=messages,
         http_media_io_kwargs=media_kwargs,
+        http_image_max_soft_tokens=None,
         summary={
             "input_profile": "canonical-http-v1",
             "prompt_sha256": f"prompt-{i}",
@@ -208,7 +209,8 @@ def test_validate_server_record_requires_launch_dtype_and_logprobs_mode():
 def test_run_vllm_pass_uses_canonical_prepared_inputs(monkeypatch):
     cases = [_case(i) for i in range(100)]
 
-    def fake_prepare(case, processor, asset_root, *, profile):
+    def fake_prepare(case, processor, asset_root, *, profile, image_max_soft_tokens):
+        assert image_max_soft_tokens is None
         assert profile == s0_parity.CANONICAL_HTTP_PROFILE
         index = int(case.id.rsplit("-", 1)[1])
         return _prepared(index)
@@ -293,7 +295,9 @@ def test_every_admitted_dtype_reaches_official_loader(monkeypatch, tmp_path, dty
 
 def test_hf_reference_writes_blocked_report_for_cpu_gate(monkeypatch, tmp_path):
     report = tmp_path / "hf-blocked.json"
-    monkeypatch.setattr(s0_parity, "build_provenance", lambda paths, dtype: {"dtype": dtype})
+    monkeypatch.setattr(
+        s0_parity, "build_provenance", lambda paths, dtype, **kwargs: {"dtype": dtype}
+    )
     monkeypatch.setattr(s0_parity, "load_cases", lambda manifest: [])
     monkeypatch.setattr(s0_parity, "load_official_processor", lambda model_dir: object())
 
@@ -325,3 +329,221 @@ def test_synthetic_control_refuses_overwrite(tmp_path):
     report = tmp_path / "report.json"
     report.write_text("{}")
     assert s0_parity.main(["synthetic-control", "--report", str(report)]) == 2
+
+
+@pytest.mark.parametrize("budget", [None, 70, 140, 280, 560, 1120])
+def test_budget_binds_provenance_and_native_request(monkeypatch, tmp_path, budget):
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text("{}")
+    monkeypatch.setattr(s0_parity, "verified_assets", lambda *args: {})
+    monkeypatch.setattr(s0_parity, "source_identity", lambda: {})
+    paths = s0_parity.ParityPaths(manifest, tmp_path, tmp_path, manifest, None)
+    provenance = s0_parity.build_provenance(paths, dtype="float32", image_max_soft_tokens=budget)
+    assert provenance.get("image_max_soft_tokens") == budget
+    if budget is None:
+        assert "image_max_soft_tokens" not in provenance
+
+    prepared = _prepared(0)
+    prepared.http_image_max_soft_tokens = budget
+    if budget is not None:
+        prepared.summary["http_mm_processor_kwargs_sha256"] = _mapping_sha(
+            {"images_kwargs": {"max_soft_tokens": budget}}
+        )
+
+    def prepare(*args, profile, image_max_soft_tokens):
+        assert profile == "canonical_http"
+        assert image_max_soft_tokens == budget
+        return prepared
+
+    def respond(request):
+        payload = json.loads(request.content)
+        assert payload.get("mm_processor_kwargs") == (
+            {"images_kwargs": {"max_soft_tokens": budget}} if budget is not None else None
+        )
+        return _response_for(request)
+
+    monkeypatch.setattr(s0_parity, "prepare_case", prepare)
+    rows, _ = asyncio.run(
+        s0_parity.run_vllm_pass(
+            cases=[_case(0)],
+            processor=object(),
+            asset_root=tmp_path,
+            served_model="local",
+            upstream_url="http://fake.local",
+            transport=httpx.MockTransport(respond),
+            image_max_soft_tokens=budget,
+        )
+    )
+    assert len(rows) == 1
+
+
+@pytest.mark.parametrize("budget", [None, 1120])
+def test_reference_validation_reprepares_requested_budget(monkeypatch, tmp_path, budget):
+    cases = [_case(i) for i in range(100)]
+    prepared = [_prepared(i) for i in range(100)]
+    for item in prepared:
+        item.http_image_max_soft_tokens = budget
+    provenance = {} if budget is None else {"image_max_soft_tokens": budget}
+    rows = [
+        s0_parity.row_from_prepared(case, item, {11: -2.0, 22: -3.0, 33: -4.0})
+        for case, item in zip(cases, prepared, strict=True)
+    ]
+    reference = {
+        "action": "hf-reference",
+        "status": "reference-ready",
+        "provenance": provenance,
+        "rows": s0_parity.rows_to_json(rows),
+        "hf_repeatability": {"passed": True},
+    }
+
+    def prepare(case, *args, profile, image_max_soft_tokens):
+        assert image_max_soft_tokens == budget
+        return prepared[int(case.id.rsplit("-", 1)[1])]
+
+    monkeypatch.setattr(s0_parity, "prepare_case", prepare)
+    _, result = s0_parity.validate_reference_report(
+        reference, provenance=provenance, cases=cases, processor=object(), asset_root=tmp_path
+    )
+    assert result["passed"]
+
+
+@pytest.mark.parametrize(
+    "reference_budget,current_budget", [(None, 1120), (1120, None), (280, 1120)]
+)
+def test_reference_budget_mismatch_rejected_before_preparation(
+    monkeypatch, tmp_path, reference_budget, current_budget
+):
+    def forbidden(*args, **kwargs):
+        pytest.fail("mismatched reference must fail before preparation or inference")
+
+    monkeypatch.setattr(s0_parity, "prepare_case", forbidden)
+    reference = {
+        "action": "hf-reference",
+        "status": "reference-ready",
+        "provenance": {}
+        if reference_budget is None
+        else {"image_max_soft_tokens": reference_budget},
+    }
+    provenance = {} if current_budget is None else {"image_max_soft_tokens": current_budget}
+    with pytest.raises(s0_parity.S0ParityError, match="image_max_soft_tokens"):
+        s0_parity.validate_reference_report(
+            reference, provenance=provenance, cases=[], processor=object(), asset_root=tmp_path
+        )
+
+
+@pytest.mark.parametrize("budget", [0, 281, True, "1120"])
+def test_invalid_budget_rejected_before_hf_cuda(monkeypatch, tmp_path, budget):
+    def forbidden():
+        pytest.fail("invalid budget must not enter CUDA")
+
+    monkeypatch.setattr(s0_parity, "ensure_cuda_available", forbidden)
+    with pytest.raises(ValueError, match="image_max_soft_tokens"):
+        s0_parity.run_hf_pass(
+            cases=[], processor=None, paths=None, dtype_name="float32", image_max_soft_tokens=budget
+        )
+
+
+def test_budget_changes_input_identity_without_changing_tensors():
+    prepared = _prepared(0)
+    original = s0_parity.prepared_input_hash(prepared)
+    prepared.http_image_max_soft_tokens = 1120
+    assert s0_parity.prepared_input_hash(prepared) != original
+
+
+def test_hf_forward_receives_budget_prepared_inputs(monkeypatch, tmp_path):
+    from contextlib import nullcontext
+
+    prepared = _prepared(0)
+    prepared.inputs = {"pixel_values": object()}
+    seen = []
+
+    class Logits:
+        def __getitem__(self, key):
+            return self
+
+        def float(self):
+            return self
+
+        def item(self):
+            return -2.0
+
+    class Model:
+        def requires_grad_(self, value):
+            pass
+
+        def eval(self):
+            pass
+
+        def to(self, value):
+            pass
+
+        def __call__(self, **kwargs):
+            assert kwargs["pixel_values"] is prepared.inputs["pixel_values"]
+            return SimpleNamespace(logits=Logits())
+
+    torch = SimpleNamespace(
+        float32="float32",
+        inference_mode=nullcontext,
+        nn=SimpleNamespace(functional=SimpleNamespace(log_softmax=lambda x, **kw: x)),
+        cuda=SimpleNamespace(empty_cache=lambda: None, is_available=lambda: False),
+    )
+    monkeypatch.setattr(s0_parity, "ensure_cuda_available", lambda: torch)
+    monkeypatch.setattr(s0_parity, "configure_torch_runtime", lambda _: None)
+    monkeypatch.setattr(s0_parity, "runtime_requirements", lambda: None)
+    monkeypatch.setattr(
+        s0_parity.importlib,
+        "import_module",
+        lambda _: SimpleNamespace(
+            Gemma4ForConditionalGeneration=SimpleNamespace(from_pretrained=lambda *a, **kw: Model())
+        ),
+    )
+
+    def prepare(*args, profile, image_max_soft_tokens):
+        seen.append(image_max_soft_tokens)
+        return prepared
+
+    monkeypatch.setattr(s0_parity, "prepare_case", prepare)
+    paths = s0_parity.ParityPaths(tmp_path, tmp_path, tmp_path, tmp_path, None)
+    rows = s0_parity.run_hf_pass(
+        cases=[_case(0)],
+        processor=None,
+        paths=paths,
+        dtype_name="float32",
+        image_max_soft_tokens=1120,
+    )
+    assert seen == [1120]
+    assert len(rows) == 1
+
+
+@pytest.mark.parametrize("action", ["hf-reference", "compare-vllm"])
+def test_cli_budget_choices_and_default(action):
+    argv = [
+        action,
+        "--manifest",
+        "m",
+        "--asset-root",
+        "a",
+        "--model-dir",
+        "d",
+        "--asset-manifest",
+        "am",
+        "--report",
+        "r",
+    ]
+    if action == "compare-vllm":
+        argv += ["--reference", "ref", "--server-record", "server"]
+    parser = s0_parity.build_parser()
+    assert parser.parse_args(argv).image_max_soft_tokens is None
+    assert (
+        parser.parse_args([*argv, "--image-max-soft-tokens", "1120"]).image_max_soft_tokens == 1120
+    )
+    with pytest.raises(SystemExit):
+        parser.parse_args([*argv, "--image-max-soft-tokens", "281"])
+
+
+def test_server_cannot_reuse_different_budget_identity():
+    with pytest.raises(s0_parity.S0ParityError, match="server record provenance"):
+        s0_parity.validate_server_record(
+            {"operator_attested": True, "provenance": {"image_max_soft_tokens": 280}},
+            provenance={"image_max_soft_tokens": 1120},
+        )
