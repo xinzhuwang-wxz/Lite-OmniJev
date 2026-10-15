@@ -1,29 +1,25 @@
 # STATUS
 
-更新：2026-10-15（Asia/Shanghai）。**S1文本闭环已完成并通过阶段门（dev500 acc 99.6%，ECE15 0.004）；S2尚未开始，GPU仍在跑可继续排下一闭环。** s1:01 done；完整交接plan/handoff-2026-10-15-s0-complete.md仍为S0权威入口。
+更新：2026-10-15（Asia/Shanghai）。**S1关闭全门通过（dev500 99.6%）；S2迭代中（s2:01 claimed）：screenshot 94.6%、text零回归达标，image首轮77.2%差3.4pp（v2全量已训好待评测），反事实门按ADR0014如实FAIL（结构性）；S3前置全部就绪。** 正式交接plan/handoff-2026-10-15-s2-miditeration.md，新session从其"先执行"第4步继续（补三评测→门槛→关票→接S3）。
 
 ## 当前结果（已完成，不重跑）
 | 闭环 | 证据与边界 |
 |---|---|
-| S0全部六门 | reports/s0-stage-acceptance-001.json；30/30开发基线、六公开模型双轮齐全。 |
-| s1:01 文本LoRA闭环 | reports/s1-stage-acceptance-001.json绑定13份证据SHA；池冻结10750/3000/1000双遍字节一致零交集；smoke自测99.8%≥.98；dev500：30k adapter 99.6%（超E4B零样本+6pp、超OneJev4+3pp）、ECE15 .0040、双遍完全一致；eval.gate校准后全过exit0。 |
-| 校准ADR0013 | docs/adr/0013-s1-measured-gate-calibration.md；30k_vs_10k原+2pp门在99.4%起点数学不可达（上限+0.6pp），原门判定s1-stage-gates-original-001.json如实FAIL留证，按用户2026-10-15授权校准为≥0；ECE由扩量改善（−24%）与Brier（−28%）承载。 |
-
-训练栈：E4B冻结+决策LoRA r16α32（3488万可训参数）、官方模板/thinking关/A..T+U单token边界探针、FP32 log-softmax、账本前置校验；教师环境python（torch2.13/TF5.17/peft0.21.2）增量加装swanlab0.10.2（--no-deps、freeze diff留证）；SwanLab online真实上传（key在远端/root/.s1-swanlab-env，不入仓）。
+| S1全门 | reports/s1-stage-acceptance-001.json；99.6%/ECE .004；ADR0013（扩量门结构性校准，原FAIL留证）。 |
+| S2首轮 | reports/s2-dev-eval-{image,screenshot,text}-001.json：77.2%/94.6%/99.6%，cf 0.288/0.280；双遍字节一致。 |
+| S2探针（小批量流程） | reports/s2-probe-v3-*、s2-probe-zeroshot-image-001.json：三体制+零样本cf全钉0.28–0.32→ADR0014结构缺口，门保持FAIL列开放风险；缺失3个探针文件如实记于交接。 |
+| S3前置 | 池冻结audio 326/80/40、video 8299/900/300（远端s3-pools-*，双遍一致零交集）；A/V+Noul训练评测代码+8/16帧对照已提交本地main；票s3:01+spec就绪。 |
 
 ## 资源与恢复
-- GPU当前空闲（chain完成）；用户指示"卡开着尽量上卡，不要空转，尽量省卡时"——下一闭环应立即接续排卡或由用户决定关卡。
-- S1工作树/root/autodl-tmp/s1-text-lora-001（HEAD 96fcf2d+未跟踪artifacts）；adapter三份（smoke/10k/30k）、sidecar、池输出、chain日志均在远端持久盘，本地reports/为判定层证据。
-- SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final（失效则向用户要密码，凭据不入仓）。同步方式：git bundle增量+远端fetch。
-- 执行中修复已收口：eval zip成对strict错误、单遍repeat语义、blocker留全消息；训练器checkpoint_every防磁盘爆量；S1配置JSON无尾逗号。
+- GPU空闲（链已停）；v2 adapter就绪=/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/adapter（14368行含1809置换变体、1600步、loss 0.001，reports/s2-joint-v2-run-001.json远端）。
+- 远端树f49ea74+未跟踪链脚本（**落后本地main**，S3前需同步并恢复stash卷走的reports）；SSH密码向用户要，mux重建法见交接；SwanLab key /root/.s1-swanlab-env。
+- 训练/评测env=教师env python；HF下载需source /etc/network_turbo。
 
-## 当前下一步（S2入口）
-- 用户指示：S1有戏就继续推进。S1结论"有戏"：文本Choice达99.6%并明确超两基线；S2按原门推进（图像/截图≥OneJev4−3pp、文本回归≤1pp、反事实翻转≥.80）。
-- S2闭环入口：图像cohort dev500（AOK，SHA38efa78e…）+截图dev500（GUIv2，SHA19c9d2c3…）已在configs/s0-development-cohorts-h20.json；复用s1:01全部训练/评测机制，媒体路径与多模态输入为新增工程量；基线image 83.6%/screenshot 66.2%（OneJev4），E4B 74.4%/51.4%。
-- s0:05（S4现成gold封存+自动gate）保持needs-triage/open，FINAL依赖它；文本holdout-reserve 1000已预留未训练。
-- 待用户决策：无需阻塞项；若需省费用可关卡（S2排卡时再开）。SwanLab凭据如轮换需更新远端env文件。
+## 当前下一步
+1. 补跑S2三评测（交接第4步含现成字面命令）→ s2_gate+eval.gate判定 → 关票s2:01 → 同步代码 → S3链。
+2. image判定预案：v2（2×媒体epoch+变体）实测为准；仍<80.6%则对照探针趋势78.0%按ADR0010格式决策是否再迭代或记录。
+3. cf门按ADR0014：FAIL保留、列开放风险、不阻塞S3；S4入口先实测教师置换表现。
 
 ## 执行约束
-- 用户2026-10-15授权：负责人全权处理、非实测指标按ADR0010式实测校准（记录原值/证据/新标准，参照ADR0013格式）、GPU不空转省卡时、成块代码可派fable写；质量结论不暗降。
-- 5b/探索关闭，不换基座/引擎、不push/付费/自动开关卡/生产部署；只有解除当前阶段门后才展开下一闭环。
-- 数据/质量/许可/隔离保留：任何新训练入口必须核allocation ledger并拒绝dev/calibration/holdout family。
+- 用户授权（2026-10-15）：全权推进、非实测指标按ADR0010式实测校准（ADR0013/0014格式）、GPU不空转、**小批量探针验证后再全量**、当前阶段跑时备好下一阶段、代码可派fable。
+- 质量/许可/隔离不暗降：训练入口核ledger（多ledger并集+变体id后缀）；5b/探索不开；不push/付费/自动开关卡/生产部署。
