@@ -1,0 +1,228 @@
+{
+  "sources": [
+    {
+      "source": "gui",
+      "receipt": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-gui-gold-build-002.json",
+        "sha256": "c182cf1b43bf32945fdbafdda8a74c70d80c08345452d9a362b8b28940e129b3"
+      },
+      "input_manifest": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/build-manifest.json",
+        "sha256": "b4bde1d84e580a8d1f32487fcca86ed97ed4f1b3ea9d24c55f77b10f3506eac1"
+      },
+      "outputs": [
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/calibration.jsonl",
+          "sha256": "fa59238c6362557db7f08212f143b8e685edf40350d9dcd120d5afce3a4b0e7e"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/holdout.jsonl",
+          "sha256": "85fc04f992ebbc72c8c60ea0809b3c0d4354859a698c8dcb55e1fcb6b91c624c"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/inventory-manifest.json",
+          "sha256": "a80bf03ff68508cf2c32c7108991e6d649191de207e2db3f26b1410e749611af"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/allocation.jsonl",
+          "sha256": "b87e63a7e0746f4ca89c98cd430887c70d75669954a7b02965d2c582f51030f9"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/build-manifest.json",
+          "sha256": "b4bde1d84e580a8d1f32487fcca86ed97ed4f1b3ea9d24c55f77b10f3506eac1"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/provenance.json",
+          "sha256": "2538e8944684378520af0beb7a7e0cea8c11351df6c687c7e2b4f8411ce18f7d"
+        }
+      ]
+    },
+    {
+      "source": "clotho",
+      "receipt": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-clotho-gold-build-001.json",
+        "sha256": "75ec0faba5bf8a98ae62c8d5b94b9633e5d2028b75ad289885603f8b4c8ed457"
+      },
+      "input_manifest": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clotho-gold-001/build-manifest.json",
+        "sha256": "8f89a79e41a8d99b0fb30368a51da4614930336baa0913cc04779644130638a2"
+      },
+      "outputs": [
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clotho-gold-001/calibration.jsonl",
+          "sha256": "150e98db85bbdd5626f6570f5d93f4a8773c207802c167a6cfe2876b794980f0"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clotho-gold-001/holdout.jsonl",
+          "sha256": "f950d7a6ece478b7b9a0fde6883de13acce6f786c6a0e3ca64a28d446390c565"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clotho-gold-001/inventory-manifest.json",
+          "sha256": "c1090a794766647d34a54f6f23a12de6776865193a82af1a338f64e57bbc6940"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clotho-gold-001/allocation.jsonl",
+          "sha256": "ca57e5f01ae8446568139c1b77f145e93e19f9968f248cf201d5f5dc7b2aace5"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clotho-gold-001/build-manifest.json",
+          "sha256": "8f89a79e41a8d99b0fb30368a51da4614930336baa0913cc04779644130638a2"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clotho-gold-001/provenance.json",
+          "sha256": "c5d335a5d9008656371b026842262c2a6a86650874ecfc2b6253c728c9c23d56"
+        }
+      ]
+    },
+    {
+      "source": "speech",
+      "receipt": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-speech-gold-build-001.json",
+        "sha256": "050818fcd05b1749dd4340c79f5aa7be7a0ff9bdefa36224d939c4693fd62f87"
+      },
+      "input_manifest": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/speech-build-manifest-001.json",
+        "sha256": "df19e6301121aa00ea6f75ef86bbefc6bf48a4d8fbe1730bfd6ef6a9c670401f"
+      },
+      "outputs": [
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/speech-gold-001/calibration.jsonl",
+          "sha256": "c4d5bccb277a26a20a31fa807fb69d7bbb39144f49b8e2b40e7585eed391fe99"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/speech-gold-001/holdout.jsonl",
+          "sha256": "766cff2af080b579cd4fb3a642d1ae3b9bc4bde8628512ac849224da1873f609"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/speech-gold-001/dev.jsonl",
+          "sha256": "181e9570453fa9aa83bbd2f2bd5a6e6924c9b8939198a9681886d773d1f63fc9"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/speech-gold-001/allocation.jsonl",
+          "sha256": "e2a7271d97413d398ea0c7cdde1cc4635f4bfda62d89b3df60951772cb2201c2"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/speech-gold-001/inventory-manifest.json",
+          "sha256": "f653007144b068f3d750f6e8ecf6a941974f7f261cecd418d82e1f6fb4317d97"
+        }
+      ]
+    },
+    {
+      "source": "video",
+      "receipt": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-clevrer-gold-build-001.json",
+        "sha256": "213a5a71d4aa6f03ab262e1d78229ad34461104c1f3d47cb2f4ed08b951d2ce8"
+      },
+      "input_manifest": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-build-manifest-001.json",
+        "sha256": "fb147c81fea5ae55aec62fb3ab1c9286a8250243057d35635c2c0c33de3009cf"
+      },
+      "outputs": [
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/calibration.jsonl",
+          "sha256": "cfae7dcad72fb5c8055ade7c9110ead8f0f3484aee3dc2175b8f726947b3108b"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/holdout.jsonl",
+          "sha256": "572a3d9de0a3d10f5728eb6f08c29ef6a4797dd5a040545afbb4eb974e269f05"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/allocation.jsonl",
+          "sha256": "3847b013453c0e6882c46f9bac72395ad3c65e773e8d9c6ceeef5d069a55f72b"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/inventory-manifest.json",
+          "sha256": "e51ad430135062b5fa66a4127a61c34f4e547e391dddedcc5edff2a0bc6fbc42"
+        }
+      ]
+    },
+    {
+      "source": "vqa",
+      "receipt": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-vqa-gold-build-001.json",
+        "sha256": "eb74e64a94d2affd2ae5c4b64ea4ea0e4b33014d650140883a950537cb36b7a8"
+      },
+      "input_manifest": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/vqa-gold-plan-002/plan.json",
+        "sha256": "748dc460c65953c30f6d7cd21a37034ce3c49c4eddf235a2c584fd6559b9bb1f"
+      },
+      "outputs": [
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/vqa-gold-001/alias-ledger.jsonl",
+          "sha256": "4d02fb344f50183a22a903add94a04ba6ba07a9b2705f6d1dedaab0c8a43d06a"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/vqa-gold-001/calibration.jsonl",
+          "sha256": "3427780d9c82e8d66f3b88eb17572ad969fb130f512f00871856c98dfff7b52d"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/vqa-gold-001/dev.jsonl",
+          "sha256": "ff6b3aa6fb7ed7b90aa826c447d1c22ac5e20e1a80acd4954d28b3c7c79aa9fe"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/vqa-gold-001/holdout.jsonl",
+          "sha256": "c8953ca88958b7ab5a56040a66c7119bf720da429a316ee8ca0c721daec284f8"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/vqa-gold-001/inventory-manifest.json",
+          "sha256": "c45ca0f4f46aff327b1bb62cb6fed37ca468898f28d7bf5099230d51022b3ad8"
+        }
+      ]
+    },
+    {
+      "source": "crossmodal",
+      "receipt": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-crossmodal-gold-assembly-001.json",
+        "sha256": "8066585dce3c168ade7c35033cee214dc1d41a33955b4388dff8379d7b220ddf"
+      },
+      "input_manifest": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-input-001.json",
+        "sha256": "2340c6b3ab7ea142b4f1618e46ca042795578149d97a45ecfe651addbeafcfe3"
+      },
+      "outputs": [
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/calibration.jsonl",
+          "sha256": "d349b64d8f09ffe135d17e2e521c9c1561c4e1e1cc01d8c8d3ac8e3f1568bb51"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/components.jsonl",
+          "sha256": "c0559ec0bf032482acb596b58e8ce7f7c02259f481fec05fc9d9c66c07fa44d0"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/holdout.jsonl",
+          "sha256": "346c08aa7bcfbce543b853500cd36b6dfe0fc60ce2f426015aa5e9b3e0d57d49"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/inventory-manifest.json",
+          "sha256": "9c3e02ccbd45b577301a49e1f889a607869bd22de143511675126112ff08037e"
+        }
+      ]
+    },
+    {
+      "source": "crossmodal_dev",
+      "receipt": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-crossmodal-dev-assembly-002.json",
+        "sha256": "d9b75f0421a8a105bbcffc4afd91788425f51c47405922367f9dfdf4dcbce84a"
+      },
+      "input_manifest": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-input-002.json",
+        "sha256": "f253e40149c49d65613c153678a7194db29530974c24f3ef0b7cbd9e8aecb766"
+      },
+      "outputs": [
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-002/components.jsonl",
+          "sha256": "e13044783232d7c893a25d5d02e7546f3292d2a5beb7ba328c325cafcec18817"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-002/dev.jsonl",
+          "sha256": "1d2d8e151a3bc282099764a5ce7d04e8190fd212684ca010582511c5b25cfde1"
+        },
+        {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-002/inventory-manifest.json",
+          "sha256": "6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769"
+        }
+      ]
+    }
+  ],
+  "scope": "Successful executed original-gold builders and composed program truth; source metadata strings alone are insufficient."
+}

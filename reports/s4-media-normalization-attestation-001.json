@@ -1,0 +1,31 @@
+{
+  "outcome": "uri_only_changes_verified",
+  "exit_code": 0,
+  "bundles": [
+    {
+      "bundle": "audio-media-bundle-001",
+      "samples": 4000,
+      "mapping_sha256": "ffd6bcaa276585553846a012c3d0bb11b7970ae0fac6559f82b85f560634f181",
+      "input_manifest_sha256": "73afc9a7b76d3d6cdf2b5f87079007ef3c4b5c915778ce9f5ad688030cc417dc",
+      "receipt_sha256": "19c5959f15331ad37eda60d8a3e1156cf4e8e57ad8718f76f6911c96b71fc16b"
+    },
+    {
+      "bundle": "crossmodal-source-bundle-001",
+      "samples": 8000,
+      "mapping_sha256": "e5b9d75e552be50ae641fac9e6b41b0995580021ed645c2bb0f30b9de64144c5",
+      "input_manifest_sha256": "7274730a9fb99b714e093cf9997c0ee0c0711b4adfea1e7b4c10e4d0c2e8cb5e",
+      "receipt_sha256": "5948caf43c25a65b155a5412632ead79473d864f76c69f5608d7d54f65f1b92a"
+    },
+    {
+      "bundle": "crossmodal-dev-source-bundle-002",
+      "samples": 1500,
+      "mapping_sha256": "81f95705f1ad3cf6a93074aca891e93b05597fd63f7936a30b8bfe03bcd4171a",
+      "input_manifest_sha256": "cb1f209f50e2f49bb6b96bb0e7b003badc98098112c0d3bb35e5e90c5c0ea64b",
+      "receipt_sha256": "7f0634ea4daaffbb33f7da0d9a732661a56f674047523fb1e2199220ff737164"
+    }
+  ],
+  "verified_media_paths": 19973,
+  "scope": "exact semantic preservation plus original/rewritten media bytes; not full gold admission",
+  "elapsed_seconds": 10.793,
+  "runner_sha256": "d377cf4f00cfc9b5ea93a425881a6330ca8fcb0641b3a3f4be078e5c400d4f42"
+}

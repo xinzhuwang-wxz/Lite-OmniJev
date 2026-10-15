@@ -1,0 +1,14 @@
+{
+  "outcome": "original_mapping_verified",
+  "exit_code": 0,
+  "scope": "preserved120 exact original train question and metadata mapping",
+  "preserved_items": 120,
+  "source_artifact_sha256": {
+    "train": "237c692e21e015a3e9b4391edd716b1387d7eb2d068d7ecdb5a6d6ead7e7a992",
+    "metadata": "7505ba93c291d344b31e5c33e872b95d84255852cff93278bbdf549402acc1f5",
+    "license_plan": "e5821f612665a846309c884784007adf19c48fc56cfa7b87a15fcfa72e28e1f1"
+  },
+  "build_manifest_sha256": "8f89a79e41a8d99b0fb30368a51da4614930336baa0913cc04779644130638a2",
+  "elapsed_seconds": 2.106,
+  "runner_sha256": "6c180098639fb0502005e7a455ff282347f58c22ae425d3bc75b805a216db6db"
+}

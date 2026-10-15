@@ -7,16 +7,19 @@
 - 五模态500题双遍：image82.0%、screenshot96.4%、text99.4%、audio80.0%、video16帧63.6%；旧三模态与S2持平。video8帧60.8%，当前保留16帧。
 - 主干E4B ee0ef602…，S3 adapter1bebae31…；图像1120是当前质量配置，未定为最终低成本服务默认。
 - ADR0021记录真实100步/1000次均衡回放执行调整，原质量门不改；本候选训练+正式评测0.9075 H20活跃小时，不含其它作业/空闲，不等价租卡总费用或H100。
-- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。VQA与跨模态储备已实际构建；补充crossmodaldev002已成功，私有job修复及Linux否定探针完成，无活跃子代理；已启动补充dev固定50题候选→基座串行GPU诊断（session96687）。
+- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。VQA与跨模态储备已实际构建；补充crossmodaldev002已成功，私有job修复及Linux否定探针完成，Sol 6.1正在实现私有模型评测入口；补充dev固定50题GPU对照已完成。
 
 ## 当前执行
+- 数据侧准入已通过，s0:05验收1–4勾选，第5未完成；reports/s4-gold-data-admission-001.json evidenceSHA9cf11cea…绑定真实证据。六cohort各3000cal/1000hold，原dev各500保留；source code128绑定/source链154工件、Clotho保留120完整字段回放、13500规范化记录仅URI改动/19973媒介路径校验、已知34训练报告/18输入/7dev版本全部覆盖。不是模型gate或S4通过。
+- 新增固定私有模型入口由Sol6.1子代理private_stage_eval实现，worktree /Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-private-stage-eval，独占scripts/private_stage_eval.py及tests/test_private_stage_eval.py。下一步整合CPU否定测试、独立review、真实GPU engineering50，之后收口s0:05。
+- matched50 GPU对照通过：S3候选80%/ECE.1673，基座66%/ECE.2546，prepared输入逐题相同，candidate_only_correct14/base_only_correct7；合计86.6秒。reports/s4-crossmodal-matched-paired-001.json。两作业结束，无当前GPU作业；下一GPU作业为私有入口工程验证，不重复当前对照。
 - 最终图像RGB审计002：16963引用全部SHA定位、12463唯一文件实解码，144938历史/当前观测零跨池冲突；reports/s4-image-history-resolution-004.json、s4-observed-image-rgb-audit-002.json，RGB缓存SHA45ab0b7a…，89.479秒。
 - 私有job003已对最新总清单6eb32249…运行通过。真实Linux失败探针002的13项全部通过：非法样本/池重叠/哈希/重复输出/恶意receipt/私有stdout-stderr异常/超时回收与redaction。001测试脚本误用os.pause导致timeout项失败，改signal.pause后新UID重跑，失败保留。reports/s4-private-failure-probes-{001,002}.json；launcher codeSHA b6372817…与job003一致。621xx/622xx测试UID、62301/2已使用，不复用。
 - eval/gold_admission.py严格元数据组合器e7f74fb已整合，73测试通过；只验证六cohort配额/绑定结构，不能代实际source验证。私有31项artifact元数据清单s4-gold-selection-metadata-001.json已生成，下一步冻结实际选集并核验来源replay/映射链，不能把源字段字符串当准入。
-- GPU公开开发诊断：.scratch/s4/screen-matched-{candidate,base}.py串行各50固定题，1120/bf16，补充devSHA1d2d8e15…，同seed42子集；执行c7cdb21代码快照，session96687。输出s4-crossmodal-matched-{candidate,base}-001.json；不读封存，不做阶段放行，收结果后按实测选择训练改进。
+- GPU公开开发诊断：.scratch/s4/screen-matched-{candidate,base}.py串行各50固定题，1120/bf16，补充devSHA1d2d8e15…，同seed42子集；执行c7cdb21代码快照，已完成。输出s4-crossmodal-matched-{candidate,base}-001.json；不读封存，不做阶段放行。
 - VQA004下载4500齐全/726891084字节/零失败，815.064秒；VQA真构建144.64秒，3000cal/1000hold/500补充dev，reports/s4-vqa-gold-{download-004,build-001}.json。
 - crossmodal真实组装79.76秒：3000cal/1000hold，固定AND规则，音频来源1400/1600与500/500。cal/hold实际依赖组610/206，最大音频family复用151/182，不声称IID/有效N；reports/s4-crossmodal-gold-assembly-001.json。全历史142938观测零跨池冲突；当前私有crossmodal-gold-001/inventory-manifest.json SHA9c3e02cc…，包含GUI/VQA/音频重定位及组件ledger。
-- 固定private_gold_job已实现，代码35829c0。初版001权限claim被review否决，已撤销旧run根访问并保留失败/纠正证据。新版002实际独立UID审计18秒成功，真实live UID/重复UID拒绝和保留目录访问拒绝通过；reports/s4-private-{inventory-job-002,identity-negative-probes-001,job-review-correction-001}.json。仅普通身份/单work-root权限边界，network未强制隔离，不防root；完整日志/失败注入与source准入仍待验收。固定work-root /var/tmp/omnijev-gold-jobs-001，62041/42、62051/52已用；每次需新UID。
+- 固定private_gold_job已实现，代码35829c0。初版001权限claim被review否决，已撤销旧run根访问并保留失败/纠正证据。新版002实际独立UID审计18秒成功，真实live UID/重复UID拒绝和保留目录访问拒绝通过；reports/s4-private-{inventory-job-002,identity-negative-probes-001,job-review-correction-001}.json。仅普通身份/单work-root权限边界，network未强制隔离，不防root；数据审计日志/失败注入与source准入已验收；模型推理入口另需验证。固定work-root /var/tmp/omnijev-gold-jobs-001，62041/42、62051/52已用；每次需新UID。
 - source-matched补充crossmodaldev构建器04a5239已整合105相关测试通过。001因3个Clotho原始相对文件名含#被旧整理器误解为URLfragment而失败；d4112a6修复literal filename解析，31测试通过。002已成功57.405秒，新增500dev（250Clotho+250speech，258依赖组），原500dev保留；输出crossmodal-dev-002，最新总清单SHA6eb32249…，reports/s4-crossmodal-dev-assembly-002.json。真实构建结束；RGB及错误路径探针完成，下一步选集/来源绑定准入；GPU仅公开dev有界诊断。
 - 音频媒体整理001成功：4000引用、2991唯一媒体、1249458520字节；四个原artifact不改，仅新URI。原始文件作为historical、新文件current并入GUI002全清单，126438观测零跨池冲突，清单with-audio-relocated-inventory-001.json SHA48d41081…；reports/s4-audio-{media-bundle,relocated-isolation,media-provenance}-001.json。训练resolve_media实查全部4000引用通过（s4-audio-bundle-resolver-001.json，2.174秒）。不是完整gate准入。
 - CLINC源Parquet→原始Choice→S0dev排除→S1四池重放通过，3000cal/1000hold及10750train与原文件字节hash完全一致，dev500一致；reports/s4-text-gold-source-replay-001.json，2.843秒。

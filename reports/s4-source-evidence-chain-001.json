@@ -1,0 +1,62 @@
+{
+  "scope": "mechanical successful-build source/code/output bindings, not full stage acceptance",
+  "exit_code": 0,
+  "outcome": "mechanical_source_bindings_verified",
+  "full_gold_gate": "not_validated",
+  "sources": [
+    {
+      "source": "gui",
+      "receipt_sha256": "c182cf1b43bf32945fdbafdda8a74c70d80c08345452d9a362b8b28940e129b3",
+      "input_manifest_sha256": "b4bde1d84e580a8d1f32487fcca86ed97ed4f1b3ea9d24c55f77b10f3506eac1",
+      "output_artifacts": 6,
+      "status": "verified"
+    },
+    {
+      "source": "clotho",
+      "receipt_sha256": "75ec0faba5bf8a98ae62c8d5b94b9633e5d2028b75ad289885603f8b4c8ed457",
+      "input_manifest_sha256": "8f89a79e41a8d99b0fb30368a51da4614930336baa0913cc04779644130638a2",
+      "output_artifacts": 6,
+      "status": "verified"
+    },
+    {
+      "source": "speech",
+      "receipt_sha256": "050818fcd05b1749dd4340c79f5aa7be7a0ff9bdefa36224d939c4693fd62f87",
+      "input_manifest_sha256": "df19e6301121aa00ea6f75ef86bbefc6bf48a4d8fbe1730bfd6ef6a9c670401f",
+      "output_artifacts": 5,
+      "status": "verified"
+    },
+    {
+      "source": "video",
+      "receipt_sha256": "213a5a71d4aa6f03ab262e1d78229ad34461104c1f3d47cb2f4ed08b951d2ce8",
+      "input_manifest_sha256": "fb147c81fea5ae55aec62fb3ab1c9286a8250243057d35635c2c0c33de3009cf",
+      "output_artifacts": 4,
+      "status": "verified"
+    },
+    {
+      "source": "vqa",
+      "receipt_sha256": "eb74e64a94d2affd2ae5c4b64ea4ea0e4b33014d650140883a950537cb36b7a8",
+      "input_manifest_sha256": "748dc460c65953c30f6d7cd21a37034ce3c49c4eddf235a2c584fd6559b9bb1f",
+      "output_artifacts": 5,
+      "status": "verified"
+    },
+    {
+      "source": "crossmodal",
+      "receipt_sha256": "8066585dce3c168ade7c35033cee214dc1d41a33955b4388dff8379d7b220ddf",
+      "input_manifest_sha256": "2340c6b3ab7ea142b4f1618e46ca042795578149d97a45ecfe651addbeafcfe3",
+      "output_artifacts": 4,
+      "status": "verified"
+    },
+    {
+      "source": "crossmodal_dev",
+      "receipt_sha256": "d9b75f0421a8a105bbcffc4afd91788425f51c47405922367f9dfdf4dcbce84a",
+      "input_manifest_sha256": "f253e40149c49d65613c153678a7194db29530974c24f3ef0b7cbd9e8aecb766",
+      "output_artifacts": 3,
+      "status": "verified"
+    }
+  ],
+  "verified_unique_artifacts": 154,
+  "binding_manifest_sha256": "a2937ed6d0a2bfd5c4618ba47cc951f9315392a79ce02ed5ff16bd35e7ab5278",
+  "code_closure_manifest_sha256": "53e44915c0a0a1b4541eaae602d20e7a44679e87f5d615a1fcb8ba92e6c1a8c6",
+  "runner_sha256": "1cf2823d13b3f58ff164d6aae590be923104be9c4be70e0fc12e413a75c9ddfc",
+  "elapsed_seconds": 12.473
+}

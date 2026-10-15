@@ -1,0 +1,48 @@
+{
+  "scope": "repository-owned statically imported source mapping code plus literal dynamic imports; external dependencies remain runtime evidence",
+  "jobs": [
+    {
+      "source": "text",
+      "code_files": 10,
+      "mismatched_or_missing": 0
+    },
+    {
+      "source": "gui",
+      "code_files": 18,
+      "mismatched_or_missing": 0
+    },
+    {
+      "source": "clotho",
+      "code_files": 15,
+      "mismatched_or_missing": 0
+    },
+    {
+      "source": "speech",
+      "code_files": 14,
+      "mismatched_or_missing": 0
+    },
+    {
+      "source": "video",
+      "code_files": 13,
+      "mismatched_or_missing": 0
+    },
+    {
+      "source": "vqa",
+      "code_files": 18,
+      "mismatched_or_missing": 0
+    },
+    {
+      "source": "crossmodal",
+      "code_files": 20,
+      "mismatched_or_missing": 0
+    },
+    {
+      "source": "crossmodal_dev",
+      "code_files": 20,
+      "mismatched_or_missing": 0
+    }
+  ],
+  "manifest_sha256": "53e44915c0a0a1b4541eaae602d20e7a44679e87f5d615a1fcb8ba92e6c1a8c6",
+  "exit_code": 0,
+  "elapsed_seconds": 0.004
+}

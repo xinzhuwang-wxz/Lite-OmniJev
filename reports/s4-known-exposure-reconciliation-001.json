@@ -1,0 +1,17 @@
+{
+  "scope": "known saved update-bearing runs and frozen inspected development versions, not unknowable external jobs",
+  "outcome": "known_exposures_reconciled",
+  "exit_code": 0,
+  "indexed_input_files": 18,
+  "bound_training_reports": 34,
+  "fresh_update_bearing_reports": 34,
+  "frozen_original_dev_versions": 7,
+  "exposure_report_sha256": [
+    "6460351456bf604c82716d36481ecb3dbd05e088e92a18c4e9dd9b034dcfd11c",
+    "910486e2f2db8fab60271a3fc08356a06c82a01cfcd8cd106f52e387f4990cc4"
+  ],
+  "inventory_sha256": "6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769",
+  "index_sha256": "0f6dff35cf4c14f84ecb88b1abee74a9ac3b95558c43bf54693b9f4eb4562b29",
+  "elapsed_seconds": 0.192,
+  "runner_sha256": "26f01582c5bc3449a323f5777e2675b68aee4b3301b018fd705a23129bdd881b"
+}

@@ -1,0 +1,298 @@
+{
+  "schema_version": "s4-selected-gold-manifest-v1",
+  "inventory": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-002/inventory-manifest.json",
+    "sha256": "6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769"
+  },
+  "selection_rule": "Existing frozen source policies; original development cohorts retained; no model-score-based selection. Source-specific quality gates required.",
+  "selected": [
+    {
+      "cohort": "text",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-a/calibration-reserve.jsonl",
+      "sha256": "6d3878168fbe135bb38bf1253ba8534d88b00b71654235c0bf619a2481a8a0c9",
+      "expected_questions": 3000,
+      "expected_target_sources": [
+        "clinc_human_label"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "text",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-a/holdout-reserve.jsonl",
+      "sha256": "6bba594d544fdb67dc7dd95d37ce22de3570ad91d2db5dd0e633828eb87542c6",
+      "expected_questions": 1000,
+      "expected_target_sources": [
+        "clinc_human_label"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "text",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/dev.jsonl",
+      "sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "clinc_human_label"
+      ],
+      "frozen_original_dev": true
+    },
+    {
+      "cohort": "image",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/dev.jsonl",
+      "sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "aokvqa_correct_choice_idx"
+      ],
+      "frozen_original_dev": true
+    },
+    {
+      "cohort": "video",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/dev.jsonl",
+      "sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "clevrer_descriptive_exist_answer"
+      ],
+      "frozen_original_dev": true
+    },
+    {
+      "cohort": "crossmodal",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/dev.jsonl",
+      "sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "programmatic_component_answer_and"
+      ],
+      "frozen_original_dev": true
+    },
+    {
+      "cohort": "screenshot",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/dev.jsonl",
+      "sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "gui_odyssey_sam2_bbox_program_truth"
+      ],
+      "frozen_original_dev": true
+    },
+    {
+      "cohort": "video",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/calibration.jsonl",
+      "sha256": "cfae7dcad72fb5c8055ade7c9110ead8f0f3484aee3dc2175b8f726947b3108b",
+      "expected_questions": 3000,
+      "expected_target_sources": [
+        "clevrer_descriptive_exist_answer"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "video",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/holdout.jsonl",
+      "sha256": "572a3d9de0a3d10f5728eb6f08c29ef6a4797dd5a040545afbb4eb974e269f05",
+      "expected_questions": 1000,
+      "expected_target_sources": [
+        "clevrer_descriptive_exist_answer"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "screenshot",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/calibration.jsonl",
+      "sha256": "fa59238c6362557db7f08212f143b8e685edf40350d9dcd120d5afce3a4b0e7e",
+      "expected_questions": 3000,
+      "expected_target_sources": [
+        "gui_odyssey_sam2_bbox_program_truth"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "screenshot",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/holdout.jsonl",
+      "sha256": "85fc04f992ebbc72c8c60ea0809b3c0d4354859a698c8dcb55e1fcb6b91c624c",
+      "expected_questions": 1000,
+      "expected_target_sources": [
+        "gui_odyssey_sam2_bbox_program_truth"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "audio",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0000.jsonl",
+      "sha256": "014ab60998f31c235d5d9e0861b0ea1d3d74ed42b367f94ce219b40b3ce289f4",
+      "expected_questions": 1400,
+      "expected_target_sources": [
+        "clotho_original_unanimous_three_answers"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "audio",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0001.jsonl",
+      "sha256": "7751971b5c7848883295533776280e51bbde25db1cecf9470efc323f35f8d48a",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "clotho_original_unanimous_three_answers"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "audio",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0002.jsonl",
+      "sha256": "c5ad76631dc918809f78982b660ef52baf896aef69b8efe9dd0e5b5f983c1fb5",
+      "expected_questions": 1600,
+      "expected_target_sources": [
+        "librispeech_original_transcript"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "audio",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0003.jsonl",
+      "sha256": "a30da7147e1f15d202f71fb4fc0076c358dd2c2ffee74a7de7d5257cb4acceca",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "librispeech_original_transcript"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "image",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0004.jsonl",
+      "sha256": "28aed43541408a80b356760a38e3b8a7578375ea07428795d429667668018db1",
+      "expected_questions": 3000,
+      "expected_target_sources": [
+        "vqa2_unanimous_10_human_answers"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "image",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0005.jsonl",
+      "sha256": "5ac4e51d1932a6d4ad01cbc6c1ac1e29f42a8c18e540e41f34f8efc4d6ed98c0",
+      "expected_questions": 1000,
+      "expected_target_sources": [
+        "vqa2_unanimous_10_human_answers"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "crossmodal",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/calibration.jsonl",
+      "sha256": "d349b64d8f09ffe135d17e2e521c9c1561c4e1e1cc01d8c8d3ac8e3f1568bb51",
+      "expected_questions": 3000,
+      "expected_target_sources": [
+        "programmatic_component_answer_and"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "crossmodal",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/holdout.jsonl",
+      "sha256": "346c08aa7bcfbce543b853500cd36b6dfe0fc60ce2f426015aa5e9b3e0d57d49",
+      "expected_questions": 1000,
+      "expected_target_sources": [
+        "programmatic_component_answer_and"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "audio",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-source-bundle-002/samples-0000.jsonl",
+      "sha256": "61774ce2f4aa8f59b17cf69cc0ee20c4e890d39e8709b4cccf7aed971180bc09",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "clotho_original_unanimous_three_answers"
+      ],
+      "frozen_original_dev": true
+    },
+    {
+      "cohort": "audio",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-source-bundle-002/samples-0001.jsonl",
+      "sha256": "d4f56a85c567bc67f1603bd73cbdfc0c2a26f4fd532e07649bd63c3c48b23aa3",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "librispeech_original_transcript"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "image",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-source-bundle-002/samples-0002.jsonl",
+      "sha256": "8b7df3c241015fd640784416834d1cc7264b56ab309fc47d237d7671cc4b8428",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "vqa2_unanimous_10_human_answers"
+      ],
+      "frozen_original_dev": false
+    },
+    {
+      "cohort": "crossmodal",
+      "pool": "dev",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-002/dev.jsonl",
+      "sha256": "1d2d8e151a3bc282099764a5ce7d04e8190fd212684ca010582511c5b25cfde1",
+      "expected_questions": 500,
+      "expected_target_sources": [
+        "programmatic_component_answer_and"
+      ],
+      "frozen_original_dev": false
+    }
+  ],
+  "auxiliary": [
+    {
+      "cohort": "image",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-image-001/run-a/calibration-reserve.jsonl",
+      "sha256": "a54d9e99f9ab2b35e4a397484134352dda4cec858bb6a44f785b8c61c0df493a",
+      "expected_questions": 623,
+      "role": "preserved_source_diagnostic_not_primary_quota"
+    },
+    {
+      "cohort": "image",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-image-001/run-a/holdout-reserve.jsonl",
+      "sha256": "e0f5ac21f0175eda5fd66ca1ceed2e21bec537933507ab63452a0bff3485f385",
+      "expected_questions": 211,
+      "role": "preserved_source_diagnostic_not_primary_quota"
+    },
+    {
+      "cohort": "video",
+      "pool": "calibration",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-video-001/run-a/calibration-reserve.jsonl",
+      "sha256": "a87d08a03f6f1b74ba5129b88fc5e85d3d4a493d20da980c02433348ed51ac65",
+      "expected_questions": 900,
+      "role": "preserved_source_diagnostic_not_primary_quota"
+    },
+    {
+      "cohort": "video",
+      "pool": "holdout",
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-video-001/run-a/holdout-reserve.jsonl",
+      "sha256": "1c67100f7c9abdf70ce57b70e300acf1fec5301c57cef95012b194a6865be590",
+      "expected_questions": 300,
+      "role": "preserved_source_diagnostic_not_primary_quota"
+    }
+  ],
+  "full_gold_gate": "not_validated"
+}
