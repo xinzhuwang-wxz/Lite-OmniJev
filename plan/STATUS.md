@@ -13,9 +13,9 @@
 - v2 video dev500单遍53.4%，未达69.8%×.9；不能免除音视频训练。reports/s3-v2-video-dev500-diagnostic-001.json。
 
 ## 当前唯一GPU链 / 下一步
-- SSH root@region-42.seetacloud.com:48926；mux /tmp/omnijev-ssh-root-final；远端 /root/autodl-tmp/s1-text-lora-001 代码656ff65，运行中不切代码。
+- SSH root@region-42.seetacloud.com:48926；mux /tmp/omnijev-ssh-root-final；远端 /root/autodl-tmp/s1-text-lora-001 代码2508a6f，运行中不切代码。
 - E07已结束：CE123/150、CE+Brier124/150，未达125扩量条件；reports/s2-vqa-{ce,brier}-{run,dev150}-001.json，停止扫参。S2仍78.8% vs80.6%，未放行。
-- S3 lazy/eager真实GPU一致性完成：30步loss完全相同、adapter SHA相同e4caf62d…；243→213秒；cache峰值134011035 bytes<128MiB，GPU峰值28.64GB。reports/s3-lazy-parity-comparison-001.json；不是S3质量通过。原作业PID243896已终止，GPU当前无作业。
+- S3 lazy/eager真实GPU一致性完成：30步loss完全相同、adapter SHA相同e4caf62d…；243→213秒；cache峰值134011035 bytes<128MiB，GPU峰值28.64GB。reports/s3-lazy-parity-comparison-001.json；不是S3质量通过。原作业PID243896已终止。
 - 全池21184行lazy CPU预检完成：29.54秒、进程峰值1559654400 bytes；reports/s3-lazy-full-preflight-001.json及resource报告。仅全量metadata+4个代表样本，不宣称全部媒体读取。
 - E08准入完成：400新family，颜色160/数字160/yesno80；排除原AOKtrain全部family、现有ledger与3832张图片SHA。首批下载400张62.63MB/252秒，其中coco:265843解码截断，已记录排除并确定性补选1张。最终plan artifacts/s2-new-family-plan-004，候选SHA8a9cf9a5…；媒体未删除。
 - 构建输出artifacts/s2-new-family-gold-001，train SHA7d0f1583…；混合池artifacts/s2-new-family-probe-001为1000行（新image400/旧image400/text100/screenshot100），SHA88dab83e…，四ledger验证通过。构建器2508a6f远端16测试通过；无活跃子代理。
@@ -27,3 +27,7 @@
 - 最新授权ADR0015：训练/RL/架构/训推/产品均可自主提出并验证创新，RL时点由负责人决定，不硬性排在微调之后；社区作对照，创新/SOTA须证据。目标先产品达标，再吸收有益创新。
 - 官方Jev公开称RLCD但未披露奖励公式/优化器；不混同社区OneJev CE+Brier或臆称复现。原R1需明确动作相关奖励及梯度路径，见ADR0017；当前实际作业仅监督训练。
 - 不push/付费/自动开关卡/生产部署；许可和封存隔离保持。暂无需用户操作的阻塞；凭据不入仓。GPU链已启动，未请求关卡。
+
+## 本轮并行准备
+- E08训练PID266665仍存活，未重启。CPU开发题型审计reports/s2-question-family-audit-001.json：颜色19/计数18/why54/其它409，属于粗词法分组，不当语义真值。
+- E09官方1120视觉token预算研究对照已准备（仅E08无收益才启动），见reports/explore/S2-E09-official-image-budget.md；独立进程覆盖processor参数，不修改模型资产/默认评测/运行中代码。单train样本CPU280→1120处理预检通过：实际image token260→1107，prompt339→1186。远端/root/autodl-tmp/image-budget1120.sh已准备，E08无收益且原链终止才timeout300启动。

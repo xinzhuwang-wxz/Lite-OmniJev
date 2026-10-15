@@ -25,11 +25,11 @@ Blocked by: None
 
 ## Evidence
 
-Evidence: 恢复修复bbdc041（65项相关回归通过）；reports/s2-counterfactual-rescore-001.json证明旧cf统计错误，ADR0014结构性结论失效；v2修正版GPU双遍评测运行中，原质量门保持，未关票。历史规格与证据：规格.scratch/s2/spec.md；复用s1:01机制与ADR0013原则。基线：OneJev4 image 83.6%/screenshot 66.2%，E4B 74.4%/51.4%（s0-baseline-summary.md）。
+Evidence: 恢复修复bbdc041（65项相关回归通过）；reports/s2-counterfactual-rescore-001.json证明旧cf统计错误，ADR0014结构性结论失效；v2修正版GPU双遍评测已完成，原质量门保持，未关票。历史规格与证据：规格.scratch/s2/spec.md；复用s1:01机制与ADR0013原则。基线：OneJev4 image 83.6%/screenshot 66.2%，E4B 74.4%/51.4%（s0-baseline-summary.md）。
 
 ## Out of scope
 
-音频/视频（S3）、E2B/量化（S6）、封存holdout构建（s0:05）、新数据源下载、门槛静默调整。
+音频/视频（S3）、E2B/量化（S6）、封存holdout构建（s0:05）、未经准入的新数据源、门槛静默调整。VQA扩展仅按ADR0016/0018范围。
 
 恢复证据（2026-10-15）：reports/s2-stage-acceptance-v2-001.json（FAILED，仅图像78.8%<80.6%；其余门通过），三cohort报告逐记录双遍一致。勾选“生成评测/判定报告”不代表阶段通过，Execution保持claimed。E01/E02探针未达扩量条件停止；E03小批量方案见reports/explore/。
 
@@ -37,4 +37,4 @@ Evidence: 恢复修复bbdc041（65项相关回归通过）；reports/s2-counterf
 
 E04–E07均未达固定dev150扩量条件，停止；见reports/explore/及对应真实报告。E07新VQA人工一致gold监督CE123/150、CE+Brier124/150；S2完整门仍未通过，不以探针代替阶段验收。新训练目标与自主创新授权见ADR0015–0017。
 
-新增视觉覆盖路线ADR0018：新family构建器2508a6f，远端含Pillow16项测试通过，本机10通过/6因无Pillow跳过；计划400唯一family、元信息及媒体哈希隔离，下载仍在quarantine，未训练。
+新增视觉覆盖路线ADR0018：新family构建器2508a6f，远端含Pillow16项测试通过，本机10通过/6因无Pillow跳过；计划400唯一family、元信息及媒体哈希隔离，400个新family经下载、解码、重复媒体排除及ledger验证后已启动E08训练，见reports/s2-new-family-admission-001.json。

@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "scope": "single train example CPU official processing only; not GPU quality evidence",
+  "data_sha256": "96ed2bef6e4824cd6fb6b44e469007f9c180df789541caa95c8fd11d73f5ef8e",
+  "driver_sha256": "02759edcec1cf173d9dc6d60b7cfb8a32df0f941e98ebb4b705f5322e4f92b48",
+  "measurements": [
+    {
+      "budget": 280,
+      "prompt_tokens": 339,
+      "image_tokens": 260,
+      "pixel_shape": [
+        1,
+        2520,
+        768
+      ],
+      "seconds": 0.19135923869907856
+    },
+    {
+      "budget": 1120,
+      "prompt_tokens": 1186,
+      "image_tokens": 1107,
+      "pixel_shape": [
+        1,
+        10080,
+        768
+      ],
+      "seconds": 0.02195262350142002
+    }
+  ]
+}
