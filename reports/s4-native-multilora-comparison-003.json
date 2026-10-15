@@ -1,0 +1,39 @@
+{
+  "scope": "one_synthetic_prompt_not_stage_acceptance",
+  "comparison": [
+    {
+      "adapter": "general",
+      "max_raw_probability_difference": 7.558860077971907e-06,
+      "max_joint_k_plus_u_difference": 5.133204972196381e-11,
+      "conditional_yes_difference": 5.1299964276552146e-11
+    },
+    {
+      "adapter": "video",
+      "max_raw_probability_difference": 0.0024465012957325394,
+      "max_joint_k_plus_u_difference": 6.492138096741984e-05,
+      "conditional_yes_difference": 6.492139329339341e-05
+    },
+    {
+      "adapter": "general",
+      "max_raw_probability_difference": 5.382498610484454e-06,
+      "max_joint_k_plus_u_difference": 1.446629482870776e-10,
+      "conditional_yes_difference": 1.445725761328731e-10
+    },
+    {
+      "adapter": "video",
+      "max_raw_probability_difference": 6.37709317608023e-05,
+      "max_joint_k_plus_u_difference": 6.49437539215203e-05,
+      "conditional_yes_difference": 6.492146777092866e-05
+    }
+  ],
+  "hf_exact_repeat": true,
+  "native_multilora_requests_work": true,
+  "stage_parity_passed": false,
+  "quality_passed": false,
+  "conclusion": "Native BF16 routing executes. Normalized answer differences below 1e-3 on this single prompt, but raw probability variability remains despite disabled prefix/async/chunked; cause not isolated. Requires real multimodal fixed-slice HF/vLLM comparison before adoption.",
+  "source_sha256": {
+    ".scratch/s4/probe-native-multilora.py": "55ea28c49491689649f7a4f5b5cf1a01a410b0ab27da7f6eb498b133ca959537",
+    ".scratch/s4/probe-native-multilora-repeat.py": "a6299dd4346ab7058a68650f4cd031c9d4a97cb650b6c8905aabe2f8d983d1f8",
+    ".scratch/s4/probe-multilora-hf.py": "91c5f70128483dc528e08d35526fbd6b72e0aeedccdf0c9a825c49861d0dc850"
+  }
+}

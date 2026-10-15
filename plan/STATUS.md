@@ -11,8 +11,9 @@
 - 第二轮新视频课程已完成30步/300曝光，wall350.082秒、CUDA peak36.845GB、step15检查点保留；adapter14496e28…（reports/s4-video-pilot-train-001.json）。video99→113/150，分组existence34/39、motion11/14、temporal68/97；audio37→39/50。
 - 第二轮原crossmodal35→33/50，违反预设保留门，reports/s4-video-pilot-retention-001.json qualified_for_full_dev=false；未跑其余不必要筛选，不能推广。第一轮6bb86b09…仍为保留候选。当前GPU进程已实查为空，未关卡。
 - 有界融合pilot-003已结束，两比例均未全过：alpha.5原cross36/video107/audio39，但补充cross39<40；alpha.25两cross36/40，但video101<102。都不推广，不新增比例，不运行完整dev；报告两份s4-fusion*-screening、050-retention及crossmodal报告；025在video失败后未启其余保留评测。alpha.5/.25 CPU最大残差.000656/.000496均通过数值门；未证明任何S4质量门。首轮仍保留。
-- 原方案A4明确列有按模态路由多LoRA，ADR0015允许按实测干扰启动；已只读确认固定vLLM0.26 Gemma4ForConditionalGeneration声明SupportsLoRA，实际多LoRA运行/数值/成本仍未验证，不能据此称部署就绪。当前先检验B3输入预算。
+- 原方案A4明确列有按模态路由多LoRA，ADR0015允许按实测干扰启动；已只读确认固定vLLM0.26 Gemma4ForConditionalGeneration声明SupportsLoRA，实际多LoRA运行/数值/成本仍未验证，不能据此称部署就绪。B3已完成并停止。
 - B3 video140对照已完成并停止：同首轮adapter/dev150/16帧仅视频soft tokens70→140，正确99→96、jobwall120.66→168.11秒，无收益。不推广140、不额外GPU试280；reports/s4-video140-probe-execution-001.json及native报告齐全。CPU6题已证实70/140/280输入约1173/2229/4373，属输入验证不是质量。所有本轮GPU作业已结束。
+- A4真实启动001已通过：固定vLLM0.26/bf16原生双LoRA注册成功，70.94秒含启动/正常退出；reports/s4-native-multilora-startup-001.json。仅文本模式加载证据，不是实际请求/概率一致性/多模态验收。002已完成四次交替真实请求，指定A/B/U三token logprobs齐全；两适配器返回结果不同，均选A，70.51秒含启动/退出。general重复原始概率差约.00207，不能声称一致性通过；summary-002记录联合/条件概率差。尚无HF对照或真实多模态验收。003关闭prefix cache/async/chunked后完成4请求及HF同题4前向。HF重复完全一致，vLLM仍有raw波动；归一化答案差本单题均<1e-3，但不代表阶段parity。comparison-003及HF报告齐全，所有进程已退出。下一步真实多模态固定切片HF/vLLM对照，原始波动原因未隔离，不以单题放行。
 - 下一可执行路线A4：原方案明确允许分模态LoRA/标准vLLM路由，当前实测视频专家113/150但跨模态退化触发模态干扰假设。先用固定vLLM0.26原生multi-LoRA做最小加载/概率一致性/资源验证（纯video→第二轮14496e28…，其他→首轮6bb86b09…），不能仅靠静态SupportsLoRA声明认定可发布；不换基座、不新增head、不改引擎、未作产品默认。若runtime验证通过，继续完整dev/同源教师/独立holdout阶段门，不把各自小分拼成已通过结论。
 - 两轮实际runtime canonical data SHA与准备JSONL不同，已逐ID完整Sample等价核验并追加historical TRAIN；reports/s4-pilot-exposure-reconciliation-001.json真实通过，38份已知update-bearing报告、追加2份canonical工件、全库存隔离通过。派生库存artifacts/s4-pilot-exposure-001/inventory-manifest.json；原gold11证据尚需在正式S4封存前刷新当前准入绑定。
 - 首轮训练+7筛选总jobwall665.642秒（reports/s4-pilot-resource-001.json），不是总租赁账单/服务时延；价格未知cost=null。第二轮损失/计时/曝光/SwanLab online真实记录齐全。
@@ -52,4 +53,4 @@
 - 用户指定：常规实现/测试Sol6.1，简单执行/监控Luna6，主会话负责分析/统筹；原生子代理独立worktree。所有凭据在项目外，不写入Git/日志。
 - 用户授权有界创新/RL与实测资源调整；先小批量、有效再扩大，持续监控与早停。冻结基座/无新分类头/不换引擎、质量门不降、5b不启用。大预算/付费/租卡开关/生产部署仍须用户决定；不push。
 - S5、S6和FINAL尚未完成；终局包含真实API/单卡/端侧/浏览器/性能与无未解决问题。快与低成本须同条件实测，未知价格不编造成本，无同条件Jev实测不声称超越。
-- 暂无需要用户操作的阻塞；继续独立工作。GPU真正用完再通知用户关卡，不代执行关机。
+- 用户2026-10-16明确暂缓OpenAI Decisions对照；保留资料，不请求凭据、不接入、不付费。继续S4主线。GPU真正用完再通知用户关卡，不代执行关机。
