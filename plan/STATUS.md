@@ -11,10 +11,11 @@
 - TRAIN梯度诊断已真实完成：d96d580，4项CPU测试通过，36draw无optimizer更新，GPU112.81秒/峰值36.47GB；17079终态0。video/cross仅1/3负内积，sum/cross三组均正，不符合冻结条件，因此不启动投影训练。reports/s4-gradient-probe-{preflight,gpu,launch}-001；源码/root/autodl-tmp/s4-gradient-probe-code-001，archive f4f8fa30…。此为固定初始权重3组TRAIN局部测量，不排除训练后段冲突。
 - ADR0022用户授权小筛选不死卡一题差，并进一步要求机时优先、小批次+中途监控。video500已完成337/500=67.4%，较S3 63.6%+3.8pp，363.74秒；87250终态0。reports/s4-coverage-video-full-001及execution-001。S4视频教师门仍未达。
 - 原fullcross队列76057已取消：parent58947与child94914 SIGTERM，coverage500在31.28秒/18条中断，receipt s4-cross-full-original-coverage-interrupted-001；first500未启动。不重启此队列。
-- 新短批次队列5929：original coverage100→first100配对，每作业180秒（外层200），入口/root/autodl-tmp/s4-cross-batch-code-001/evaluate-coverage-crossmodal-full.py，core源s4-gradient-probe-code-001。输出artifacts/s4-cross-batch100-original-{coverage,first}-001/{progress,receipt}.json；每25题公开dev进度。已实际核对前25双方同输入均14正确，继续至100判断。补充来源尚未排GPU。
+- original100配对已完成，5929终态0：coverage72/100 vs first73/100，纠正2/退化3，逐题输入一致；各约85秒，reports/s4-cross-batch100-original-{coverage,first,paired}-001。按ADR0022保留coverage为继续评估工作候选（非验收晋级），不追逐单题。
+- supplemental coverage固定50已完成41/50（首轮40），48.09秒，63186终态0，reports/s4-cross-batch50-supplemental-coverage-001；旧四模态固定50单遍已完成，50489终态0：audio39(+2)、image40(=)、screenshot50(=)、text49(=)，总135.52秒（每项180秒限额），artifacts/s4-coverage-old50-001/receipt.json及各stage/eval/progress.json；超10pp退化才停止作诊断，原正式质量门不变。代码快照s4-monitored-eval-code-001，74e96e2，archive b8c5b318…。
 - s1_dev_eval核心监控已集成（来源608339c）：87项CPU测试、ruff/mypy通过；加载阶段及每25 original指标，CF不混分母，非全dev不生成公开partial/progress。下一部署用新快照，现有任务不热改。融合/旧四模态全量入口暂缓。
 - 曝光helper29a2c36已真实执行成功，会话66041终态0：42份已知update-bearing报告，新增本轮canonical TRAIN输入，完整库存isolated。当前inventory artifacts/s4-pilot-exposure-003，reports/s4-pilot-exposure-reconciliation-003.json；正式S4封存前仍需刷新gold准入绑定。
-- 保留候选仍为首轮6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac，报告s4-joint-pilot-train-001。video99/150、原cross35/50、补充40/50，仅通过小筛选。
+- 参考基线保留为首轮6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac，报告s4-joint-pilot-train-001。video99/150、原cross35/50、补充40/50，仅通过小筛选。
 
 ## 最近实验结论（完整证据保留）
 - 第二轮video CE：30步/350.08秒，adapter14496e28…；video113/150、audio39/50，但原cross33/50<35，不推广。
@@ -62,3 +63,6 @@
 - 用户授权有界创新/RL与实测资源调整；先小批量、有效再扩大，持续监控与早停。冻结基座/无新分类头/不换引擎、质量门不降、5b不启用。大预算/付费/租卡开关/生产部署仍须用户决定；不push。
 - S5、S6和FINAL尚未完成；终局包含真实API/单卡/端侧/浏览器/性能与无未解决问题。快与低成本须同条件实测，未知价格不编造成本，无同条件Jev实测不声称超越。
 - 用户2026-10-16明确暂缓OpenAI Decisions对照；保留资料，不请求凭据、不接入、不付费。继续S4主线。GPU真正用完再通知用户关卡，不代执行关机。
+
+## 当前创新准备
+- 已审计现有200跨模态TRAIN互不复用组件，严格受控正负pair为0（74e96e2）。Sol6.1在s4-lora-fusion独立worktree准备同已准入组件三种claim变体/配对账本，600条已实际构建，64edd17，29测试；正在最新曝光003库存隔离与120draw准备。成对margin helper83c4921、23真实torch测试通过；另一Sol6.1正在显式opt-in训练接入（默认0必须兼容旧配置/checkpoint）。冻结两arm各10步/240秒的设计reports/explore/s4-claim-pair-pilot-001.md；未训练，不声称RL。

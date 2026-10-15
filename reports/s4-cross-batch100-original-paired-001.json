@@ -1,0 +1,23 @@
+{
+  "status": "paired",
+  "count": 100,
+  "models": {
+    "coverage": {
+      "accuracy": 0.72,
+      "brier": 0.37100603477356436,
+      "ece": 0.1122522471760404,
+      "seconds": 85.11346340179443,
+      "records_sha256": "580c7d7155fb083080a7273510b5640bf00640e563e935a1204c2093239bb3be"
+    },
+    "first": {
+      "accuracy": 0.73,
+      "brier": 0.3651230762005908,
+      "ece": 0.10326347306428518,
+      "seconds": 85.63122065924108,
+      "records_sha256": "966537504f4164aab56a97d2a12a921f4af2e3f47a518dcab58b81e162a9709c"
+    }
+  },
+  "coverage_corrected": 2,
+  "coverage_regressed": 3,
+  "scope": "fixed dev100 paired; no formal stage acceptance"
+}
