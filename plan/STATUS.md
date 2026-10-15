@@ -1,6 +1,6 @@
 # STATUS
 
-更新：2026-10-15（Asia/Shanghai，18:17）。**S2图像原门仍未过：v2 78.8% vs80.6%；其它三门通过。停止旧池六条无扩量收益路线，新增1811条已许可/同train-family人工一致问题；新gold监督两臂均未达扩量条件，停止。S3训练技术路径已通，质量仍需改进。**
+更新：2026-10-15（Asia/Shanghai，18:25）。**S2图像原门仍未过：v2 78.8% vs80.6%；其它三门通过。停止旧池六条无扩量收益路线，新增1811条已许可/同train-family人工一致问题；新gold监督两臂均未达扩量条件，停止。S3训练技术路径已通，质量仍需改进。**
 
 ## 已验证（不重跑）
 - S1通过；S2 v2 image78.8%/cf88.6%、screenshot96.6%/cf98.4%、text99.4%，各dev500双遍一致；reports/s2-stage-acceptance-v2-001.json仅image FAIL。
@@ -17,13 +17,13 @@
 - E07已结束：CE123/150、CE+Brier124/150，未达125扩量条件；reports/s2-vqa-{ce,brier}-{run,dev150}-001.json，停止扫参。S2仍78.8% vs80.6%，未放行。
 - S3 lazy/eager真实GPU一致性完成：30步loss完全相同、adapter SHA相同e4caf62d…；243→213秒；cache峰值134011035 bytes<128MiB，GPU峰值28.64GB。reports/s3-lazy-parity-comparison-001.json；不是S3质量通过。原作业PID243896已终止，GPU当前无作业。
 - 全池21184行lazy CPU预检完成：29.54秒、进程峰值1559654400 bytes；reports/s3-lazy-full-preflight-001.json及resource报告。仅全量metadata+4个代表样本，不宣称全部媒体读取。
-- 新视觉family可行性：排除全部AOKtrain16540family后有8744候选；ADR0018批准400图像pilot。最终plan artifacts/s2-new-family-plan-003绑定2508a6f；400候选SHA23ffa1bf…，与前两版字节一致；增加3832张既有媒体SHA排除，输入artifacts/s2-existing-image-sha-exclusion-001.jsonl。
-- 构建器2508a6f已整合、远端16测试通过。子代理已完成、worktree已请求归档。下载正在运行：脚本/root/autodl-tmp/download-vqa-new-images.py，输出/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/vqa2-new-images-001，日志artifacts/s2-new-images-download-001.log；核实终态再build，不重复启动。
-- 已上传/root/autodl-tmp/prepare-new-family-probe.py与vqa-new-family-inner.sh，尚未执行。数据build必须 --media-root 指向下载目录，输出artifacts/s2-new-family-gold-001；再PYTHONPATH=.运行prepare生成1000行池并验证ledger；最后timeout900运行训练评测链。远端代码2508a6f。
-- 下一步：取子代理plan CLI，生成400唯一family候选（color160/integer160/yesno80）、有限下载哈希核验，合并build/tests后构建并验ledger；复制E07同配置CE训练对照。dev150≥125才扩大。s2:01仍claimed，S3依赖不解除。
+- E08准入完成：400新family，颜色160/数字160/yesno80；排除原AOKtrain全部family、现有ledger与3832张图片SHA。首批下载400张62.63MB/252秒，其中coco:265843解码截断，已记录排除并确定性补选1张。最终plan artifacts/s2-new-family-plan-004，候选SHA8a9cf9a5…；媒体未删除。
+- 构建输出artifacts/s2-new-family-gold-001，train SHA7d0f1583…；混合池artifacts/s2-new-family-probe-001为1000行（新image400/旧image400/text100/screenshot100），SHA88dab83e…，四ledger验证通过。构建器2508a6f远端16测试通过；无活跃子代理。
+- 当前唯一GPU链：/root/autodl-tmp/vqa-new-family-inner.sh，外层timeout900，日志artifacts/s2-text-lora-001/new-family-ce-001.log；输出artifacts/s2-text-lora-001/new-family-ce-001，报告reports/s2-new-family-ce-{run,dev150}-001.json。从v2初始化、lr2e-5/100步CE，自动接image dev150。启动后需核实进程，不重复派发；运行中不切远端2508a6f代码。
+- 下一步：收取E08，达到125/150才扩大旧模态/完整S2门，否则停止候选并复盘数据/任务匹配，不扫参数。s2:01仍claimed，S3依赖不解除。
 
 ## 授权与研究
 - 原生goal active；用户强调按开机总时长计费，CPU准备与GPU重叠、停止无收益路线、避免重复验证/空转。
 - 最新授权ADR0015：训练/RL/架构/训推/产品均可自主提出并验证创新，RL时点由负责人决定，不硬性排在微调之后；社区作对照，创新/SOTA须证据。目标先产品达标，再吸收有益创新。
 - 官方Jev公开称RLCD但未披露奖励公式/优化器；不混同社区OneJev CE+Brier或臆称复现。原R1需明确动作相关奖励及梯度路径，见ADR0017；当前实际作业仅监督训练。
-- 不push/付费/自动开关卡/生产部署；许可和封存隔离保持。暂无需用户操作的阻塞；凭据不入仓。当前GPU空闲，正在完成新数据准入准备；未请求关卡。
+- 不push/付费/自动开关卡/生产部署；许可和封存隔离保持。暂无需用户操作的阻塞；凭据不入仓。GPU链已启动，未请求关卡。

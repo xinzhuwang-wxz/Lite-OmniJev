@@ -15,7 +15,7 @@ assert len(selected)==1000
 p=out/'train.jsonl';p.write_text(''.join(json.dumps(r,sort_keys=True,ensure_ascii=False)+'\n' for r in selected))
 check=verify_data_is_train_pool(p,ledgers)
 config=json.loads((root/'artifacts/s2-image-focus-001/config.json').read_text());config['expected_data_versions'].append('vqa2-new-family-choice-v1')
-config['media_roots'].append('/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/vqa2-new-images-001')
+config['media_roots'].append('/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine')
 for name,weight in [('ce',0.),('brier',1.)]:
  (out/f'{name}-config.json').write_text(json.dumps({**config,'brier_weight':weight},indent=2)+'\n')
 result={'status':'passed','exit_code':0,'rows':1000,'new_gold':400,'old_image':400,'text':100,'screenshot':100,'ledger_check':check,'data_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'new_gold_report_sha256':hashlib.sha256((new/'report.json').read_bytes()).hexdigest(),'config_sha256':{n:hashlib.sha256((out/f'{n}-config.json').read_bytes()).hexdigest() for n in ['ce','brier']}}
