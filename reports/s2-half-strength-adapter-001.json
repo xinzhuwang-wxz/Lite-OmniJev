@@ -1,0 +1,11 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "method": "LoRA B *= 0.5; A/config unchanged",
+  "parent_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+  "adapter_sha256": "0f10952144f22dec684884ab02fa054e7abaa1bb5bd062e4b14ffa434d33ca16",
+  "scaled_tensors": 258,
+  "training_performed": false,
+  "quality_gate": "not_run",
+  "script_sha256": "f4eb3fd693a1a9965ed2122bf706259c6092f68d79e7c1c4cc563e0ec30ff014"
+}

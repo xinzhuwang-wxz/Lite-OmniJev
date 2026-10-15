@@ -32,3 +32,7 @@ Evidence: 恢复修复bbdc041（65项相关回归通过）；reports/s2-counterf
 音频/视频（S3）、E2B/量化（S6）、封存holdout构建（s0:05）、新数据源下载、门槛静默调整。
 
 恢复证据（2026-10-15）：reports/s2-stage-acceptance-v2-001.json（FAILED，仅图像78.8%<80.6%；其余门通过），三cohort报告逐记录双遍一致。勾选“生成评测/判定报告”不代表阶段通过，Execution保持claimed。E01/E02探针未达扩量条件停止；E03小批量方案见reports/explore/。
+
+### 2026-10-15 有界创新结果
+
+E04–E07均未达固定dev150扩量条件，停止；见reports/explore/及对应真实报告。E07新VQA人工一致gold监督CE123/150、CE+Brier124/150；S2完整门仍未通过，不以探针代替阶段验收。新训练目标与自主创新授权见ADR0015–0017。

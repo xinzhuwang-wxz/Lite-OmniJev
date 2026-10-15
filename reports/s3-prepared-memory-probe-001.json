@@ -1,0 +1,241 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "scope": "CPU representative tensor allocation, estimate not full-pool memory acceptance",
+  "samples_per_modality": 3,
+  "pool_counts": {
+    "video": 8299,
+    "image": 1809,
+    "text": 10750,
+    "audio": 326
+  },
+  "measurements": {
+    "video": [
+      {
+        "tensor_bytes": 31127040,
+        "prompt_tokens": 1175,
+        "tensors": {
+          "pixel_values_videos": {
+            "shape": [
+              1,
+              16,
+              630,
+              768
+            ],
+            "bytes": 30965760
+          },
+          "video_position_ids": {
+            "shape": [
+              1,
+              16,
+              630,
+              2
+            ],
+            "bytes": 161280
+          }
+        }
+      },
+      {
+        "tensor_bytes": 31127040,
+        "prompt_tokens": 1171,
+        "tensors": {
+          "pixel_values_videos": {
+            "shape": [
+              1,
+              16,
+              630,
+              768
+            ],
+            "bytes": 30965760
+          },
+          "video_position_ids": {
+            "shape": [
+              1,
+              16,
+              630,
+              2
+            ],
+            "bytes": 161280
+          }
+        }
+      },
+      {
+        "tensor_bytes": 31127040,
+        "prompt_tokens": 1180,
+        "tensors": {
+          "pixel_values_videos": {
+            "shape": [
+              1,
+              16,
+              630,
+              768
+            ],
+            "bytes": 30965760
+          },
+          "video_position_ids": {
+            "shape": [
+              1,
+              16,
+              630,
+              2
+            ],
+            "bytes": 161280
+          }
+        }
+      }
+    ],
+    "image": [
+      {
+        "tensor_bytes": 7781760,
+        "prompt_tokens": 353,
+        "tensors": {
+          "pixel_values": {
+            "shape": [
+              1,
+              2520,
+              768
+            ],
+            "bytes": 7741440
+          },
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "bytes": 40320
+          }
+        }
+      },
+      {
+        "tensor_bytes": 7781760,
+        "prompt_tokens": 479,
+        "tensors": {
+          "pixel_values": {
+            "shape": [
+              1,
+              2520,
+              768
+            ],
+            "bytes": 7741440
+          },
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "bytes": 40320
+          }
+        }
+      },
+      {
+        "tensor_bytes": 7781760,
+        "prompt_tokens": 347,
+        "tensors": {
+          "pixel_values": {
+            "shape": [
+              1,
+              2520,
+              768
+            ],
+            "bytes": 7741440
+          },
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "bytes": 40320
+          }
+        }
+      }
+    ],
+    "text": [
+      {
+        "tensor_bytes": 0,
+        "prompt_tokens": 163,
+        "tensors": {}
+      },
+      {
+        "tensor_bytes": 0,
+        "prompt_tokens": 173,
+        "tensors": {}
+      },
+      {
+        "tensor_bytes": 0,
+        "prompt_tokens": 167,
+        "tensors": {}
+      }
+    ],
+    "audio": [
+      {
+        "tensor_bytes": 1333800,
+        "prompt_tokens": 717,
+        "tensors": {
+          "input_features": {
+            "shape": [
+              1,
+              2600,
+              128
+            ],
+            "bytes": 1331200
+          },
+          "input_features_mask": {
+            "shape": [
+              1,
+              2600
+            ],
+            "bytes": 2600
+          }
+        }
+      },
+      {
+        "tensor_bytes": 1401003,
+        "prompt_tokens": 757,
+        "tensors": {
+          "input_features": {
+            "shape": [
+              1,
+              2731,
+              128
+            ],
+            "bytes": 1398272
+          },
+          "input_features_mask": {
+            "shape": [
+              1,
+              2731
+            ],
+            "bytes": 2731
+          }
+        }
+      },
+      {
+        "tensor_bytes": 1109619,
+        "prompt_tokens": 611,
+        "tensors": {
+          "input_features": {
+            "shape": [
+              1,
+              2163,
+              128
+            ],
+            "bytes": 1107456
+          },
+          "input_features_mask": {
+            "shape": [
+              1,
+              2163
+            ],
+            "bytes": 2163
+          }
+        }
+      }
+    ]
+  },
+  "estimated_all_prepared_tensor_bytes": 272857235778,
+  "process_peak_rss_bytes": 1537691648,
+  "duration_seconds": 11.057637214660645
+}

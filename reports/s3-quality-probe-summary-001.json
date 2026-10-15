@@ -1,0 +1,53 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "scope": "dev50 single-pass screening only; no phase or gate pass claim",
+  "sources": {
+    "image": {
+      "data": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-quality-probe-001/image-50.jsonl",
+      "media_root": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/media",
+      "sha256": "28d495d858219900c3bca5c8de08301784a880ab539f644fbf2681fdc5403629",
+      "parent_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de"
+    },
+    "screenshot": {
+      "data": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-quality-probe-001/screenshot-50.jsonl",
+      "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+      "sha256": "57e4c212b635831f08a5ccae00299d74af8a1939de45757f67f2273d5e9e900f",
+      "parent_sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2"
+    },
+    "text": {
+      "data": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-quality-probe-001/text-50.jsonl",
+      "media_root": null,
+      "sha256": "4063e0611100658b36e6de399ec4b81e9ed3d60f575d86be41bcbfde6d5e5583",
+      "parent_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070"
+    },
+    "audio": {
+      "data": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-quality-probe-001/audio-50.jsonl",
+      "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+      "sha256": "3a58db8166c879c19aa3e12de90c6f37dc9dfb5e2ad197a76372aef9fc7d3466",
+      "parent_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc"
+    },
+    "video": {
+      "data": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-quality-probe-001/video-50.jsonl",
+      "media_root": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/media",
+      "sha256": "497e3b3c8776349875514f182bef26d1b0f1d27bdb92fb608d8cdcf3e99efa38",
+      "parent_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2"
+    }
+  },
+  "baseline_v2": {
+    "image": 0.78,
+    "screenshot": 1.0,
+    "text": 0.98,
+    "audio": 0.7,
+    "video": 0.62
+  },
+  "s3_probe": {
+    "audio": 0.52,
+    "video": 0.58,
+    "image": 0.76,
+    "screenshot": 0.98,
+    "text": 0.98
+  },
+  "old_modalities_max_regression": 0.020000000000000018,
+  "training_report_sha256": "9f5509b5494951267b6c7fbec0b327a028d3effef34a8fd3169e99e52af28b1f"
+}
