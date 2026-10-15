@@ -250,3 +250,53 @@ def test_precompute_freezes_model_uses_eval_and_no_grad(bound_reference):
     assert model.seen == [examples[i]["input_ids"][0] for i in reference_order(write(), 300)]
     assert len(result["rows"]) == 300
     assert reference_prepared_hash(examples[0]) != reference_prepared_hash(examples[1])
+
+
+def test_real_text_preparation_reference_keeps_existing_hash_and_bytes():
+    from train.trainer import prepare_examples
+
+    class TextTokenizer:
+        def apply_chat_template(self, messages, **kwargs):
+            assert kwargs["enable_thinking"] is False
+            return "official:" + messages[0]["content"]
+
+        def encode(self, text, **kwargs):
+            if text in {"yes", "no"}:
+                return [2000 if text == "yes" else 2001]
+            for word, token in [("yes", 2000), ("no", 2001)]:
+                if text.startswith("official:") and text.endswith(word):
+                    return [ord(c) for c in text[: -len(word)]] + [token]
+            return [ord(c) for c in text]
+
+    sample = generate_samples(seed=42, count=1)[0]
+    sample = Sample.model_validate(
+        {**sample.model_dump(), "meta": {**sample.meta.model_dump(), "pool": "train"}}
+    )
+    sample = sample.model_copy(update={"questions": sample.questions[:1]})
+    example = prepare_examples([sample], TextTokenizer(), 2048)[0]
+    assert "answer_token_ids" not in example
+    before = copy.deepcopy(example)
+    before_hash = reference_prepared_hash(example)
+    # Gold-target probabilities are a valid correct reference including trailing U.
+    row = reference_row(0, 0, sample, example, example["target"])
+    assert validate_reference_row(row, 0, 0, sample, example)
+    assert example == before and reference_prepared_hash(example) == before_hash
+    assert row["prepared_sha256"] == before_hash
+    for key, value in [
+        ("token_ids", example["token_ids"][:-1]),
+        ("token_ids", [example["token_ids"][0]] * len(example["token_ids"])),
+    ]:
+        changed = {**example, key: value}
+        changed_row = reference_row(0, 0, sample, changed, example["target"])
+        with pytest.raises(ValueError):
+            validate_reference_row(changed_row, 0, 0, sample, changed)
+    wrong_order = copy.deepcopy(row)
+    wrong_order["token_ids"].reverse()
+    with pytest.raises(ValueError):
+        validate_reference_row(wrong_order, 0, 0, sample, example)
+    media_sample = sample.model_copy(
+        update={"meta": sample.meta.model_copy(update={"modality": ["image"]})}
+    )
+    media_row = reference_row(0, 0, media_sample, example, example["target"])
+    with pytest.raises(ValueError, match="media reference requires"):
+        validate_reference_row(media_row, 0, 0, media_sample, example)

@@ -804,9 +804,27 @@ def validate_reference_row(
         or not math.isclose(math.fsum(probs), 1.0, abs_tol=1e-6)
     ):
         raise ValueError("invalid reference probabilities including U")
+    mapping = example.get("answer_token_ids")
+    if mapping is None:
+        # prepare_examples already checked these IDs at the official generation
+        # boundary. Reconstruct locally; never mutate/hash a different prepared example.
+        if (
+            sample.meta.modality != ["text"]
+            or sample.prefix.media
+            or len(sample.questions) != 1
+            or any(key in example for key in MEDIA_FORWARD_KEYS)
+        ):
+            raise ValueError("media reference requires original answer-token mapping")
+        labels = (*answer_tokens(sample.questions[0]), "U")
+        ids = example["token_ids"]
+        if len(ids) != len(labels) or any(type(token) is not int or token < 0 for token in ids):
+            raise ValueError("text reference answer length/type mismatch")
+        mapping = dict(zip(labels, ids, strict=True))
     if (
-        list(example["answer_token_ids"])[-1] != "U"
-        or list(example["answer_token_ids"].values()) != row["token_ids"]
+        not mapping
+        or list(mapping)[-1] != "U"
+        or list(mapping.values()) != row["token_ids"]
+        or len(set(mapping.values())) != len(mapping)
     ):
         raise ValueError("reference requires ordered complete answers including U")
     gold = [i for i, p in enumerate(example["target"]) if p == 1.0]
