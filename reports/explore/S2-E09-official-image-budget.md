@@ -1,6 +1,6 @@
 # S2-E09：官方视觉token预算对照
 
-状态：prepared，2026-10-15。E08失败才启动；不修改官方模型资产或在训练链运行时切代码。
+状态：running，2026-10-15。E08失败才启动；不修改官方模型资产或在训练链运行时切代码。
 
 依据：实际processor_config.json默认max_soft_tokens=280；Google官方https://ai.google.dev/gemma/docs/capabilities/vision/image说明所有Gemma4支持70/140/280/560/1120，官方示例修改image_processor.max_soft_tokens控制细节与速度。保持冻结E4B、同v2 adapter、模板、原图与概率语义，仅用官方1120预算单次前向；不是新增分类头/推理引擎。
 
