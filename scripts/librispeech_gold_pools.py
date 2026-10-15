@@ -367,16 +367,32 @@ def decode(payload: bytes) -> bytes:
     )
     if process.returncode:
         raise BuildError("decode_failed")
-    return process.stdout
+    # ffmpeg cannot seek its stdout pipe to finalize RIFF/data lengths. Read
+    # bounded PCM, then let wave finalize exact lengths in a seekable buffer.
+    with wave.open(io.BytesIO(process.stdout), "rb") as audio:
+        if (audio.getframerate(), audio.getnchannels(), audio.getsampwidth()) != (16000, 1, 2):
+            raise BuildError("invalid_decoded_audio")
+        frames = audio.readframes(480001)
+    if not frames or len(frames) % 2 or len(frames) > 960000:
+        raise BuildError("invalid_decoded_duration")
+    output = io.BytesIO()
+    with wave.open(output, "wb") as canonical:
+        canonical.setparams((1, 2, 16000, 0, "NONE", "not compressed"))
+        canonical.writeframes(frames)
+    return output.getvalue()
 
 
 def validate_wav(payload: bytes) -> None:
     with wave.open(io.BytesIO(payload), "rb") as audio:
         if (audio.getframerate(), audio.getnchannels(), audio.getsampwidth()) != (16000, 1, 2):
             raise BuildError("invalid_decoded_audio")
-        # ffmpeg pipe WAV has an unknown-size header; validate actual decoded data.
         frames = audio.readframes(480001)
-        if not frames or len(frames) % 2 or len(frames) > 960000:
+        if (
+            not frames
+            or len(frames) % 2
+            or len(frames) > 960000
+            or audio.getnframes() != len(frames) // 2
+        ):
             raise BuildError("invalid_decoded_duration")
 
 

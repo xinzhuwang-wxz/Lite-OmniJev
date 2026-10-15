@@ -382,3 +382,22 @@ def test_actual_ffmpeg_roundtrip():
     builder.validate_wav(decoded)
     with wave.open(io.BytesIO(decoded), "rb") as stream:
         assert stream.getframerate() == 16000
+        frames = stream.readframes(480001)
+        assert stream.getnframes() == len(frames) // 2 == 16000
+    assert decoded[:4] == b"RIFF"
+    assert int.from_bytes(decoded[4:8], "little") == len(decoded) - 8
+    assert decoded[36:40] == b"data"
+    assert int.from_bytes(decoded[40:44], "little") == len(frames)
+
+
+def test_actual_ffmpeg_oversized_decode_rejected():
+    import shutil
+
+    if shutil.which("ffmpeg") is None:
+        pytest.skip("ffmpeg unavailable; real decoding not exercised")
+    oversized = io.BytesIO()
+    with wave.open(oversized, "wb") as wav:
+        wav.setparams((1, 2, 16000, 0, "NONE", "not compressed"))
+        wav.writeframes(b"\x00\x00" * 480001)
+    with pytest.raises(builder.BuildError, match="invalid_decoded_duration"):
+        builder.decode(oversized.getvalue())
