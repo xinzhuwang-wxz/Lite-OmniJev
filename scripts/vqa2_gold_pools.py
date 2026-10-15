@@ -235,14 +235,14 @@ def plan(
     }
 
 
-def rgb(path: Path, expected: str) -> str:
+def rgb(path: Path, expected: str, *, historical: bool = False) -> str:
     Image = importlib.import_module("PIL.Image")
 
     safe_path(path)
     if digest(path.read_bytes()) != expected:
         raise ValueError("media_hash")
     with Image.open(path) as image:
-        if image.format != "JPEG":
+        if image.format not in ({"JPEG", "PNG"} if historical else {"JPEG"}):
             raise ValueError("media_format")
         image.load()
         decoded = image.convert("RGB")
@@ -290,7 +290,7 @@ def materialize(
         matches = [p for p in paths if p.is_file() and digest(p.read_bytes()) == sha]
         if not matches:
             raise ValueError("historical_rgb_unavailable")
-        seen_rgb.add(rgb(matches[0], sha))
+        seen_rgb.add(rgb(matches[0], sha, historical=True))
     verified = []
     failures: Counter[str] = Counter()
     for row in rows:

@@ -185,9 +185,9 @@ def test_materialize_preserves_inventory_and_rejects_duplicates(tmp_path: Path) 
     inventory = json.loads(inventory_path.read_bytes())
     history_path = Path(inventory["samples"][0]["path"])
     history = json.loads(history_path.read_text())
-    old_image = tmp_path / "old.jpg"
-    image.new("RGB", (3, 3), "black").save(old_image)
-    history["prefix"]["media"][0].update(uri="old.jpg", sha256=digest(old_image.read_bytes()))
+    old_image = tmp_path / "old.png"
+    image.new("RGB", (4, 4), "black").save(old_image)
+    history["prefix"]["media"][0].update(uri="old.png", sha256=digest(old_image.read_bytes()))
     history_path.write_text(json.dumps(history) + "\n")
     inventory["samples"][0]["sha256"] = digest(history_path.read_bytes())
     inventory_path.write_text(json.dumps(inventory))
@@ -226,9 +226,17 @@ def test_materialize_preserves_inventory_and_rejects_duplicates(tmp_path: Path) 
     for pool in receipt["counts"]:
         sample = json.loads((built / f"{pool}.jsonl").read_text().splitlines()[0])
         assert not sample["prefix"]["media"][0]["uri"].startswith("file:")
+    historical_jpeg = tmp_path / "same-pixels.jpg"
+    image.new("RGB", (4, 4), "black").save(historical_jpeg)
+    assert rgb(old_image, digest(old_image.read_bytes()), historical=True) == rgb(
+        historical_jpeg, digest(historical_jpeg.read_bytes())
+    )
+    with pytest.raises(ValueError, match="media_format"):
+        rgb(old_image, digest(old_image.read_bytes()))
     original_download = dict(downloads[0])
     for label, payload in (
         ("history", old_image.read_bytes()),
+        ("history-cross-format-alias", historical_jpeg.read_bytes()),
         ("rgb-alias", Path(downloads[1]["path"]).read_bytes() + b"metadata"),
         ("invalid-jpeg", b"broken"),
     ):
