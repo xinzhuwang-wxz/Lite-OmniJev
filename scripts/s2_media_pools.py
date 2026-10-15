@@ -186,8 +186,9 @@ def validate_source_samples(
             raise MediaPoolsError("unexpected source_dataset")
         if meta.source_revision != spec["source_revision"]:
             raise MediaPoolsError("unexpected source_revision")
-        if meta.license != spec["license"]:
-            raise MediaPoolsError("unexpected license")
+        allowed_licenses = spec.get("licenses") or [spec["license"]]
+        if meta.license not in allowed_licenses:
+            raise MediaPoolsError(f"unexpected license for sample {sample.id}: {meta.license}")
         if meta.data_version != spec["source_data_version"]:
             raise MediaPoolsError("unexpected source data_version")
         if spec["modality"] not in meta.modality:
@@ -425,14 +426,16 @@ def run(
     calibration_count: int,
     expected_dev_sha256: str,
     expected_source_data_version: str,
-    license: str | None = None,
+    license: str | list[str] | None = None,
     command: list[str],
 ) -> int:
     started_at = time.time()
     report: dict[str, Any]
     spec = {**COHORT_SPECS[cohort], "source_data_version": expected_source_data_version}
     if license is not None:
-        spec = {**spec, "license": license}
+        # str 来自冻结 spec 回填，list 来自多许可 CLI；统一为成员集合。
+        approved = list(license) if isinstance(license, list) else [license]
+        spec = {**spec, "licenses": approved, "license": approved[0]}
     base_config = {
         **config_payload(
             cohort=cohort,
@@ -568,8 +571,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--expected-source-data-version", default=None)
     parser.add_argument(
         "--license",
+        action="append",
         default=None,
-        help="license string required for cohorts whose spec leaves it unfrozen",
+        help="approved license string(s); repeatable when a cohort admits several",
     )
     args = parser.parse_args(argv)
     spec = COHORT_SPECS[args.cohort]
