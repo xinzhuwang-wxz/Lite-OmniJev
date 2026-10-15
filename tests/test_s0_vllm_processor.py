@@ -166,3 +166,36 @@ def test_video_frame_count_stays_required_when_hf_version_omits_count(native_cou
         native["video_frame_counts"] = torch.tensor([native_count])
     result = {"prompt_token_ids": [1, 2], "mm_kwargs": native, "mm_placeholders": {}}
     assert compare_native(prepared, result)["passed"] is (native_count == 2)
+
+
+def test_reference_with_different_image_budget_rejected_before_native_import(tmp_path, monkeypatch):
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
+    monkeypatch.setenv("HF_HUB_OFFLINE", "1")
+    monkeypatch.setattr("scripts.s0_vllm_processor.read_manifest", lambda _: [])
+    reference = tmp_path / "reference.json"
+    reference.write_text(json.dumps({"input_profile": "canonical-http-v1", "status": "passed"}))
+    output = tmp_path / "result.json"
+    assert (
+        main(
+            [
+                "--manifest",
+                str(tmp_path / "manifest.json"),
+                "--asset-root",
+                str(tmp_path),
+                "--model-dir",
+                str(tmp_path),
+                "--hf-reference",
+                str(reference),
+                "--output",
+                str(output),
+                "--image-max-soft-tokens",
+                "1120",
+            ]
+        )
+        == 1
+    )
+    report = json.loads(output.read_text())
+    assert report["failure_stage"] == "before_native_import"
+    assert report["error_type"] == "ValueError"
+    assert report["image_max_soft_tokens"] == 1120
+    assert not report["weights_loaded"]

@@ -21,7 +21,7 @@ from typing import Any
 
 from scripts.assets import write_json
 from scripts.s0_prepare import read_manifest
-from train.multimodal import file_hash, native_processor_kwargs, prepare_case
+from train.multimodal import IMAGE_MAX_SOFT_TOKENS, file_hash, native_processor_kwargs, prepare_case
 
 
 def canonical_mm_data(parts: list[dict[str, Any]], video_kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -171,12 +171,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--full", action="store_true")
     parser.add_argument("--same-process-inspection", action="store_true")
+    parser.add_argument("--image-max-soft-tokens", type=int, choices=IMAGE_MAX_SOFT_TOKENS)
     args = parser.parse_args(argv)
     if args.output.exists() or args.output.is_symlink():
         parser.error("evidence output already exists")
     started = time.monotonic()
     report: dict[str, Any] = {
         "status": "running",
+        "image_max_soft_tokens": args.image_max_soft_tokens,
         "exit_code": 1,
         "phase": "before_native_import",
         "scope": "Native processor only; no engine/backbone/forward/CUDA or probability acceptance",
@@ -206,6 +208,7 @@ def main(argv: list[str] | None = None) -> int:
         if (
             reference.get("input_profile") != "canonical-http-v1"
             or reference.get("status") != "passed"
+            or reference.get("image_max_soft_tokens") != args.image_max_soft_tokens
         ):
             raise ValueError("passing_frozen_canonical_reference_required")
         frozen = {row["id"]: row for row in reference["cases"]}
@@ -266,7 +269,13 @@ def main(argv: list[str] | None = None) -> int:
         for case in selected:
             report["active_case_id"] = case.id
             checkpoint("canonical_hf_preparation")
-            prepared = prepare_case(case, hf, args.asset_root, profile="canonical_http")
+            prepared = prepare_case(
+                case,
+                hf,
+                args.asset_root,
+                profile="canonical_http",
+                image_max_soft_tokens=args.image_max_soft_tokens,
+            )
             frozen_match = all(
                 prepared.summary[key] == frozen[case.id][key]
                 for key in (

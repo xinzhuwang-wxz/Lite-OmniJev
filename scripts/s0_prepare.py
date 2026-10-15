@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from scripts.assets import write_json
-from train.multimodal import PreparationCase, file_hash, prepare_case
+from train.multimodal import IMAGE_MAX_SOFT_TOKENS, PreparationCase, file_hash, prepare_case
 
 
 def read_manifest(path: Path, *, allow_partial: bool = False) -> list[PreparationCase]:
@@ -51,12 +51,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-partial", action="store_true")
     parser.add_argument("--profile", choices=("hf_only", "canonical_http"), default="hf_only")
+    parser.add_argument("--image-max-soft-tokens", type=int, choices=IMAGE_MAX_SOFT_TOKENS)
     args = parser.parse_args(argv)
     if args.output.exists() or args.output.is_symlink():
         parser.error("output path already exists; choose a new evidence report path")
     start = time.monotonic()
     report: dict[str, Any] = {
         "status": "pending",
+        "image_max_soft_tokens": args.image_max_soft_tokens,
         "input_profile": "canonical-http-v1" if args.profile == "canonical_http" else "hf-only-v1",
         "exit_code": 1,
         "complete_100_cases": False,
@@ -107,7 +109,13 @@ def main(argv: list[str] | None = None) -> int:
             report["active_case_id"] = case.id
             write_json(args.output, report)
             report["cases"].append(
-                prepare_case(case, processor, args.asset_root, profile=args.profile).summary
+                prepare_case(
+                    case,
+                    processor,
+                    args.asset_root,
+                    profile=args.profile,
+                    image_max_soft_tokens=args.image_max_soft_tokens,
+                ).summary
             )
         report.pop("active_case_id", None)
         report["phase"] = "finished"
