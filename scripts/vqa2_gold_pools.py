@@ -161,12 +161,18 @@ def choose(
         for pool in QUOTAS:
             total = quotas[pool]
             needed = total * numerator // 5
-            chosen = [r for r in ordered if r["image_id"] not in used][:needed]
+            chosen = []
+            for candidate in ordered:
+                if candidate["image_id"] in used:
+                    continue
+                used.add(candidate["image_id"])
+                chosen.append(candidate)
+                if len(chosen) == needed:
+                    break
             if len(chosen) != needed:
                 raise ValueError("insufficient_capacity")
             for row in chosen:
                 iid, qid, gold = row["image_id"], row["question_id"], row["gold"]
-                used.add(iid)
                 rng = random.Random(f"42:{iid}:{qid}")
                 domain = list(COLORS) if category == "color" else [str(i) for i in range(21)]
                 options = (
@@ -187,6 +193,10 @@ def choose(
                         "source_gold_sha256": digest(encode(annotations[qid])),
                     }
                 )
+    if len(selected) != sum(quotas.values()) or len({r["image_id"] for r in selected}) != len(
+        selected
+    ):
+        raise ValueError("family_allocation")
     return selected, measured
 
 

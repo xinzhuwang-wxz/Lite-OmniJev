@@ -280,3 +280,54 @@ def test_materialize_preserves_inventory_and_rejects_duplicates(tmp_path: Path) 
     )
     assert rejected["exit_code"] == 1
     assert not (tmp_path / "rejected").exists()
+
+
+def duplicate_originals(config: dict[str, Any]) -> None:
+    """Multiple distinct original questions per image/category; not normalized aliases."""
+
+    def questions(payload: dict[str, Any]) -> None:
+        original = list(payload["questions"])
+        payload["questions"].extend(
+            {
+                **row,
+                "question_id": int(row["question_id"]) + 10000 * n,
+                "question": row["question"] + f" distinct original {n}",
+            }
+            for n in range(1, 6)
+            for row in original
+        )
+
+    def annotations(payload: dict[str, Any]) -> None:
+        original = list(payload["annotations"])
+        payload["annotations"].extend(
+            {**row, "question_id": int(row["question_id"]) + 10000 * n}
+            for n in range(1, 6)
+            for row in original
+        )
+
+    rewrite(config, "train_questions", questions)
+    rewrite(config, "train_annotations", annotations)
+
+
+def test_multiple_originals_allocate_unique_image_families(tmp_path: Path) -> None:
+    config = sources(tmp_path)
+    duplicate_originals(config)
+    rows, _ = choose(config, dict.fromkeys(("calibration", "holdout", "dev"), 5), True)
+    assert len(rows) == len({r["image_id"] for r in rows}) == 15
+    assert rows == choose(config, dict.fromkeys(("calibration", "holdout", "dev"), 5), True)[0]
+    for pool in ("calibration", "holdout", "dev"):
+        assert len([r for r in rows if r["pool"] == pool]) == 5
+
+
+def test_original_question_count_cannot_manufacture_family_capacity(tmp_path: Path) -> None:
+    config = fixture(tmp_path)
+    duplicate_originals(config)
+    # 54 eligible original questions, only three unused image families.
+    with pytest.raises(ValueError, match="insufficient_capacity"):
+        plan(
+            config,
+            tmp_path / "rejected",
+            canary=True,
+            quotas=dict.fromkeys(("calibration", "holdout", "dev"), 5),
+        )
+    assert not (tmp_path / "rejected").exists()
