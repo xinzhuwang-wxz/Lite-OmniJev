@@ -100,7 +100,7 @@ def version_mapping(inventory: Manifest) -> dict[str, str]:
 
 
 def pilot_paths(
-    root: Path, *, crossmodal_retention: bool = False
+    root: Path, *, crossmodal_retention: bool = False, claim_pair: bool = False
 ) -> list[tuple[str, Path, Path, Path]]:
     paths = [
         (
@@ -111,7 +111,7 @@ def pilot_paths(
         )
         for name in PILOTS
     ]
-    if crossmodal_retention:
+    if crossmodal_retention or claim_pair:
         paths.append(
             (
                 "s4-crossmodal-retention",
@@ -120,10 +120,72 @@ def pilot_paths(
                 root / "artifacts/s4-crossmodal-retention-pilot-002",
             )
         )
+    if claim_pair:
+        paths.extend(
+            (
+                "s4-claim-pair-" + arm,
+                root / "reports" / ("s4-claim-pair-" + arm + "-training-001.json"),
+                root / "artifacts" / ("s4-claim-pair-" + arm + "-train-001"),
+                root / "artifacts/s4-claim-pair-pilot-001",
+            )
+            for arm in ("ce0", "pair01")
+        )
     return paths
 
 
-def base_inventory(root: Path, *, crossmodal_retention: bool) -> tuple[Path, dict[str, str] | None]:
+def preparation_passed(report: dict[str, Any], *, claim_pair: bool = False) -> None:
+    if claim_pair:
+        require(
+            report.get("status") == "prepared_pending_pair_hashes"
+            and report.get("exit_code") == 0
+            and report.get("expanded_isolation") == "isolated"
+            and report.get("pilot_isolation") == "isolated"
+            and report.get("draws") == 120
+            and report.get("pair_count") == 20,
+            "claim_preparation_not_passed",
+        )
+    else:
+        require(
+            report.get("status") == "prepared" and report.get("exit_code") == 0,
+            "preparation_not_passed",
+        )
+
+
+def claim_terminal(report: dict[str, Any], name: str) -> None:
+    terminal_report(report)
+    require(report["steps_completed"] <= 10, "claim_steps_out_of_budget")
+    require(
+        report["status"] != "completed" or report["steps_completed"] == 10, "claim_completed_short"
+    )
+    require(
+        report["status"] != "blocked" or report["steps_completed"] == 0, "claim_blocked_updates"
+    )
+    require(report["status"] != "failed" or report["exit_code"] != 0, "claim_failed_exit_code")
+    config = report.get("config", {})
+    require(
+        all(
+            type(config.get(k)) is int and config[k] == v
+            for k, v in {"seed": 42, "steps": 10, "accumulation": 12, "sample_count": 120}.items()
+        ),
+        "claim_draw_config",
+    )
+    expected_weight = 0.1 if name.endswith("pair01") else 0.0
+    require(config.get("pair_loss_weight", 0.0) == expected_weight, "claim_arm_weight")
+
+
+def base_inventory(
+    root: Path, *, crossmodal_retention: bool, claim_pair: bool = False
+) -> tuple[Path, dict[str, str] | None]:
+    if claim_pair:
+        preparation = root / "artifacts/s4-claim-pair-pilot-001"
+        report, binding = read_json(preparation / "report.json")
+        preparation_passed(report, claim_pair=True)
+        path = preparation / "inventory-manifest.json"
+        require(
+            sha(path) == report["output_sha256"]["inventory-manifest.json"],
+            "base_inventory_preparation_sha",
+        )
+        return path, binding
     if not crossmodal_retention:
         return root / "artifacts/s4-video-pilot-001/inventory-manifest.json", None
     preparation = root / "artifacts/s4-crossmodal-retention-pilot-002"
@@ -147,6 +209,7 @@ def prepare(
     historical_index: Path,
     *,
     crossmodal_retention: bool = False,
+    claim_pair: bool = False,
 ) -> dict[str, Any]:
     started = time.monotonic()
     require(
@@ -157,7 +220,7 @@ def prepare(
     output.mkdir(parents=True, mode=0o700)
     try:
         inventory_path, base_preparation_binding = base_inventory(
-            root, crossmodal_retention=crossmodal_retention
+            root, crossmodal_retention=crossmodal_retention, claim_pair=claim_pair
         )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
@@ -170,22 +233,27 @@ def prepare(
             bindings[base_preparation_binding["path"]] = base_preparation_binding["sha256"]
         pilots, new_artifacts = [], []
         for name, final_path, run_dir, preparation_dir in pilot_paths(
-            root, crossmodal_retention=crossmodal_retention
+            root, crossmodal_retention=crossmodal_retention, claim_pair=claim_pair
         ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
             terminal_report(final)
             terminal_report(runtime_report)
+            is_claim = claim_pair and name.startswith("s4-claim-pair-")
+            if is_claim:
+                claim_terminal(final, name)
+                claim_terminal(runtime_report, name)
+                require(
+                    final.get("config") == runtime_report.get("config"),
+                    "claim_final_config_mismatch",
+                )
             for key in ("status", "steps_completed", "exit_code", "data_sha256"):
                 require(final.get(key) == runtime_report.get(key), "final_run_report_mismatch")
             runtime_data = run_dir / "data.jsonl"
             runtime_binding = bind(runtime_data)
             require(runtime_binding["sha256"] == final.get("data_sha256"), "runtime_data_sha")
             prep_report, prep_report_binding = read_json(preparation_dir / "report.json")
-            require(
-                prep_report.get("status") == "prepared" and prep_report.get("exit_code") == 0,
-                "preparation_not_passed",
-            )
+            preparation_passed(prep_report, claim_pair=is_claim)
             preparation_data = preparation_dir / "train.jsonl"
             preparation_binding = bind(preparation_data)
             expected = prep_report["output_sha256"].get(
@@ -193,6 +261,8 @@ def prepare(
             )
             require(preparation_binding["sha256"] == expected, "preparation_data_sha")
             comparison = equivalent(runtime_data, preparation_data)
+            if is_claim:
+                require(comparison["rows"] == 120, "claim_runtime_count")
             require(
                 all(version in mappings for version in comparison["data_versions"]),
                 "unmapped_data_version",
@@ -349,10 +419,12 @@ def prepare(
             "runner_sha256": sha(Path(__file__)),
             "cost": None,
         }
-        if crossmodal_retention:
+        if crossmodal_retention or claim_pair:
             report.update(
                 base_preparation_report=base_preparation_binding, crossmodal_retention_included=True
             )
+        if claim_pair:
+            report["claim_pair_included"] = True
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -396,6 +468,11 @@ def main() -> int:
         action="store_true",
         help="Bind prepare002 inventory and include the terminal 360-draw candidate",
     )
+    parser.add_argument(
+        "--claim-pair",
+        action="store_true",
+        help="Bind claim pilot inventory and both terminal 10-step arms; includes older pilots",
+    )
     args = parser.parse_args()
     try:
         report = prepare(
@@ -405,6 +482,7 @@ def main() -> int:
             args.historical_index
             or args.root / "artifacts/s4-gold-inventory-001/historical-training-index.json",
             crossmodal_retention=args.crossmodal_retention,
+            claim_pair=args.claim_pair,
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
