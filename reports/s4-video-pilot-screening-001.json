@@ -1,0 +1,39 @@
+{
+  "status": "completed",
+  "scope": "fixed public dev screen, not stage acceptance",
+  "adapter_sha256": "14496e283908180303e6d48d0983dbd4c574b4f35f7bb350acf59d9c2a176c9c",
+  "results": {
+    "video": {
+      "count": 150,
+      "correct": 113,
+      "required_correct": 102,
+      "groups": {
+        "existence": {
+          "count": 39,
+          "correct": 34
+        },
+        "motion": {
+          "count": 14,
+          "correct": 11
+        },
+        "temporal": {
+          "count": 97,
+          "correct": 68
+        }
+      },
+      "passed": true,
+      "report_sha256": "1c0afcab6ecfd695346f62c0b680d0d41fac0dc86475f98c336fa597c59cf749"
+    },
+    "audio": {
+      "count": 50,
+      "correct": 39,
+      "required_correct": 37,
+      "groups": null,
+      "passed": true,
+      "report_sha256": "2f793044a008e6ae1089b8d209dd7c23ef62e951bed3a7a512ab52a9d6719338"
+    }
+  },
+  "eligible_for_remaining_retention": true,
+  "cost": null,
+  "runner_sha256": "f833e9be7dc155e24d46aedddace2e82211cb7266d78e7fbe138d8538ecb9da9"
+}

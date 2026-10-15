@@ -8,12 +8,13 @@
 - Sol6.1构建器已合入87c766c，真实200对TRAIN组合构建通过：reports/s4-crossmodal-train-build-001.json；train SHA d3b0be2a…，新完整inventory SHA244a5c4f…，100/50/50 AND规则，原始train图像/音频各200唯一组件。源与媒体SHA及全库存隔离均通过；主树22针对测试通过。
 - 首个S4候选30步完成：300曝光，六cohort各50；训练wall319.167秒，CUDA peak36.94GB，online SwanLab无错误。adapter SHA6bb86b09…，reports/s4-joint-pilot-train-001.json。首轮原crossmodal固定50从33→35，补充固定50保持40；两个selected ID SHA与旧基线一致，已通过预设跨模态筛选触发条件；不是S4门通过。
 - 五旧cohort筛选已完成并通过预设警戒：image40→40/50、screenshot50→50/50、text49→49/50、audio38→37/50、video99→99/150。reports/s4-pilot-screening-001.json qualified_for_expansion=true仅筛选资格，不是正式质量通过；音频小切片少1题需继续关注。
-- 首轮训练/筛选已结束，当前无GPU作业。真实CPU视频诊断reports/s4-video-pilot-diagnostic-001.json：首轮50视频全部重复S3 stable200已见；temporal60/97不变，motion10→7/14，existence29→32/39，逐题8修正/8退步，总分持平。TRAIN8299，除当前S3 stable200余8099（不声称全历史未见）。
-- 下一轮规则冻结.scratch/s4/pilot-002.md：30步、video150新族/媒体且时序90/运动30/存在30、其它5cohort各30回放；初始首轮adapter6bb86b09…，新optimizer，余训练/推理参数不变。Sol6.1准备代码2a8574b已合入，真实CPU准备19.96秒通过，300唯一draw、150新视频按六个kind/label配额齐全，派生完整inventory隔离通过；reports/s4-video-pilot-preparation-001.json。预检已ready/exit0；第二轮实际训练已启动，timeout PID461581、python461582，源/root/autodl-tmp/s4-pilot-code-f592776；run artifacts/s4-video-pilot-train-001/run.json，final reports/s4-video-pilot-train-001.json；Luna监控，已观察step3真实指标。
-- 两个crossmodal报告reports/s4-pilot-crossmodal-{original,supplemental}-001.json已拉回。跨模态Brier/ECE/coverage只是小样本未校准诊断，不能替代S5。五cohort报告/manifest/sidecar在远端artifacts/s4-pilot-five-screen-001，代码/root/autodl-tmp/s4-pilot-code-f592776；当前脚本源已入Git，不需重新跑。
-- 准备/预检/启动见reports/s4-joint-pilot-{preparation,preflight,launch}-001.json；源码f592776 archive双端SHA一致。Sol6.1实现与测试、Luna监控切片已结束；主要代码67相关CPU tests及主树24针对tests通过，集成ruff/mypy通过。子代理不再运行。
-- S4正式封存前须把这两轮实际更新/新派生TRAIN inventory补入已知曝光核对和当前准入绑定；原gold证据保留，不能把旧34-run范围声称为当前所有训练。
-- JevBench E4B adapter绑定已合入ba5ca19，主树26tests通过、真实租机CPU preflight exit0（reports/s4-jevbench-adapter-preflight-001.json），源/root/autodl-tmp/s4-public-code-ba5ca19。尚未运行候选231题GPU；冻结候选后执行。Sol6.1正只读核对Decision Index public0.3 offline rebuild输入/许可/unsafe加载接缝，完整重建/候选与peer测量仍缺。
+- 第二轮新视频课程已完成30步/300曝光，wall350.082秒、CUDA peak36.845GB、step15检查点保留；adapter14496e28…（reports/s4-video-pilot-train-001.json）。video99→113/150，分组existence34/39、motion11/14、temporal68/97；audio37→39/50。
+- 第二轮原crossmodal35→33/50，违反预设保留门，reports/s4-video-pilot-retention-001.json qualified_for_full_dev=false；未跑其余不必要筛选，不能推广。第一轮6bb86b09…仍为保留候选。当前GPU进程已实查为空，未关卡。
+- 下一试验规则.scratch/s4/pilot-003.md：最多alpha=.5/.25两个同谱系有效LoRA增量融合，QR/SVD投回rank16，numerical residual<=1e-3才GPU筛选，质量门不降。Sol6.1 s4_lora_fusion在独立worktree /Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-lora-fusion 独占scripts/lora_fusion.py和tests/test_lora_fusion.py；主会话负责真实构建和评测。
+- 两轮实际runtime canonical data SHA与准备JSONL不同，已逐ID完整Sample等价核验并追加historical TRAIN；reports/s4-pilot-exposure-reconciliation-001.json真实通过，38份已知update-bearing报告、追加2份canonical工件、全库存隔离通过。派生库存artifacts/s4-pilot-exposure-001/inventory-manifest.json；原gold11证据尚需在正式S4封存前刷新当前准入绑定。
+- 首轮训练+7筛选总jobwall665.642秒（reports/s4-pilot-resource-001.json），不是总租赁账单/服务时延；价格未知cost=null。第二轮损失/计时/曝光/SwanLab online真实记录齐全。
+- JevBench adapter入口ba5ca19已合入，主树26tests及真实CPU preflight通过；候选231题GPU仍待最终候选冻结。源/root/autodl-tmp/s4-public-code-ba5ca19。
+- Decision Index offline准备入口aaf2fc6已合入，16tests通过；只准备独立Layout/安全解包/RouterBench JSONL seam，ready=false，实际输入映射/评价许可/完整rebuild与verify未完成。固定tar实际SHA127198…已确认旧config漏首位1，修正证据reports/decision-index-metadata-correction-001.json，不变更任何数据字节或许可。
 - 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。不为每个小切片另写handoff。
 
 ## 已验收数据与入口
@@ -38,7 +39,7 @@
 - S3五模态dev500双遍：image82.0%、screenshot96.4%、text99.4%、audio80.0%、video16帧63.6%。原S3四门通过；16帧优于8帧60.8%。图像1120为质量配置，不是最终低成本服务默认。
 - 原crossmodal固定50：候选66%/基座48%；初版34%是JSON yes/no排序恢复错误，权威recovered002/paired002与correction001，旧失败不覆盖。
 - 补充来源固定50配对GPU：候选80%/ECE.1673、基座66%/ECE.2546；逐题prepared输入相同，candidate-only14/base-only7，合计86.6秒。s4-crossmodal-matched-paired-001。工程入口另一个随机seed42切片82%/ECE.0854仅工程证据，不与前切片直接比较。
-- S4仍需最强允许教师同来源/同输入比率≥.97、封存/开发差≤.03、Decision Index/JevBench不低于同尺寸基线。小切片与数据gate不替代完整门槛。
+- S4原视频最强已测教师OneJev27B94.2%，同原dev500 SHA79ed30…与baseline固定16帧；97%比率目标91.374%。S3的Jev-Omni69.8%对照不能替代它。S4仍需最强允许教师同来源/同输入比率≥.97、封存/开发差≤.03、Decision Index/JevBench不低于同尺寸基线。小切片与数据gate不替代完整门槛。
 - train.trainer/s1_dev_eval已支持image+audio并传官方mm_token_type_ids；63回归与真实CPU processor10例逐张量一致。已执行首轮联合模态训练，见本STATUS首段。
 - S3 HF/vLLM FP32合并副本数值对照已通过，不是低成本服务/校准/最终浏览器验收；原模型/adapter保持，派生缓存不擅删。
 

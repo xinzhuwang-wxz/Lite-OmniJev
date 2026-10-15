@@ -1,0 +1,45 @@
+{
+  "status": "completed",
+  "scope": "small fixed development retention only, not S4 acceptance",
+  "adapter_sha256": "14496e283908180303e6d48d0983dbd4c574b4f35f7bb350acf59d9c2a176c9c",
+  "results": {
+    "video": {
+      "count": 150,
+      "correct": 113,
+      "required_correct": 102,
+      "groups": {
+        "existence": {
+          "count": 39,
+          "correct": 34
+        },
+        "motion": {
+          "count": 14,
+          "correct": 11
+        },
+        "temporal": {
+          "count": 97,
+          "correct": 68
+        }
+      },
+      "passed": true,
+      "report_sha256": "1c0afcab6ecfd695346f62c0b680d0d41fac0dc86475f98c336fa597c59cf749"
+    },
+    "audio": {
+      "count": 50,
+      "correct": 39,
+      "required_correct": 37,
+      "groups": null,
+      "passed": true,
+      "report_sha256": "2f793044a008e6ae1089b8d209dd7c23ef62e951bed3a7a512ab52a9d6719338"
+    },
+    "crossmodal_original": {
+      "count": 50,
+      "correct": 33,
+      "required_correct": 35,
+      "passed": false,
+      "report_sha256": "a816bf7c7a644a23baa867a24eea1d8d40cf80b5e9799df14450fb1b1fdecf1d"
+    }
+  },
+  "qualified_for_full_dev": false,
+  "runner_sha256": "ed98399032a5b9de92ed632e48468f2b0fa4e708032dabcd8dd9e7306716c208"
+}

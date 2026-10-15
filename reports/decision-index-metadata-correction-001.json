@@ -1,0 +1,12 @@
+{
+  "scope": "Correct one missing leading hex digit in pinned source archive metadata; source bytes unchanged",
+  "archive_path": "artifacts/source-audit/public-index/decision-index.tar.gz",
+  "archive_bytes": 1065428,
+  "previous_declared_sha256": "2719836807976e25e9ff5b5dee742679577b48508cbd601f7c57be9672f4082",
+  "verified_sha256": "12719836807976e25e9ff5b5dee742679577b48508cbd601f7c57be9672f4082",
+  "previous_length": 63,
+  "verified_length": 64,
+  "dataset_admission": "not_changed",
+  "full_rebuild": "not_run",
+  "exit_code": 0
+}
