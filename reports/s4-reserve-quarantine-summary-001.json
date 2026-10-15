@@ -1,0 +1,26 @@
+{
+  "status": "quarantined_and_reaudited",
+  "exit_code": 0,
+  "scope": "Supplied known history only; no real gold admission, quotas or permission acceptance",
+  "overlapping_components": 2,
+  "cohort_pool_changes": [
+    {
+      "cohort": "screenshot",
+      "pool": "calibration",
+      "removed": 1,
+      "remaining": 119
+    },
+    {
+      "cohort": "screenshot",
+      "pool": "holdout",
+      "removed": 1,
+      "remaining": 59
+    }
+  ],
+  "training_or_dev_removed": false,
+  "source_reserves_modified": false,
+  "quarantine_exclusions_sha256": "8901483c170a7b1b1d04cf339eb4fbc6fc9e9722b8c2beb9cde0dc56b437ba7f",
+  "manifest_sha256": "0ccea4ee3657116a1a18af6701f6b40f41688aa6c30b32de59a8fe16c67d489f",
+  "remaining_overlap_components": 0,
+  "next": "Replenish reliable gold; source provenance and permissions still pending"
+}

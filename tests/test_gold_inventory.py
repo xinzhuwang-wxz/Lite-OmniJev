@@ -171,6 +171,27 @@ def test_conflicting_ids_rejected(tmp_path: Path, mutation: str) -> None:
     assert result.categories == ["conflicting_identity"]
 
 
+@pytest.mark.parametrize("moved_to_holdout", [False, True])
+def test_historical_input_versions_keep_stable_original_alias(
+    tmp_path: Path, moved_to_holdout: bool
+) -> None:
+    old, revised = sample(pool="dev"), sample(pool="dev")
+    revised["prefix"]["state"] += "revised"
+    specs = [spec(tmp_path, [old, revised], exposure="historical")]
+    if moved_to_holdout:
+        moved = sample(pool="holdout")
+        moved["meta"]["family_id"] = "renamed-family"
+        moved["prefix"]["state"] += "another revision"
+        specs.append(spec(tmp_path, [moved], expected_pool="holdout"))
+    result = audit_manifest(manifest(tmp_path, specs))
+    if moved_to_holdout:
+        assert result.categories == ["pool_overlap"]
+    else:
+        assert result.outcome == "isolated"
+        assert result.isolation is not None
+        assert result.isolation.connected_components == 1
+
+
 def test_mixed_cohort_requires_explicit_version_mapping(tmp_path: Path) -> None:
     value = spec(tmp_path, [sample("text"), sample("image", modality="image")])
     del value["cohort"]

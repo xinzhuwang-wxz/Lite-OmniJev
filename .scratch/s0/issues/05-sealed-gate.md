@@ -10,7 +10,7 @@ Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04
 
 ## What to build
-按ADR0012从已准备/可取得的许可明确来源选用已有gold或程序真值，交付独立holdout及自动汇总gate。保留ID供历史依赖；不再是需用户真人/账号的外部阻塞。当前不提前细拆S4；S1入训前必须预留pool/family，实际构建与gate在S4放量前完成。
+按ADR0012从已准备/可取得的许可明确来源选用已有gold或程序真值，交付独立holdout及自动汇总gate。保留ID供历史依赖；不再是需用户真人/账号的外部阻塞。当前已进入S4；沿用S1前预留pool/family，补齐真实数量、来源和自动gate后才允许S4放量。
 
 ## Acceptance criteria
 - [ ] 六cohort各1000独立holdout、各500dev来源/许可/revision/标签规则/hash可追溯；不得把现有dev/公开已调参题兼作封存，数量不足如实报告。
@@ -21,6 +21,8 @@ Blocked by: p0:04
 
 ## Evidence
 现有四池family机制、历史dev union与来源manifest可复用。旧v2人工双标canary仅历史工程证据，当前不是首发必走合同；新的实际gold gate尚未实现，不宣称通过。详docs/adr/0012-existing-gold-without-new-human-labeling.md与docs/runbooks/sealed-gate.md。
+
+2026-10-15：私有清单作业已实现并实跑，92项相关回归通过。40个输入文件覆盖已索引历史训练、五模态当前预留、六cohort dev与旧截图版本、crossmodal组件。首次扩展发现历史dev与截图calibration/holdout各一个连通组冲突；完整保留train/dev及原预留文件，在新派生清单隔离两条后复审零冲突（reports/s4-development-inventory-005.json、s4-reserve-quarantine-summary-001.json、s4-inventory-provenance-001.json）。这不是数量/来源gold/全历史完整性/权限验收；截图暂余119/59，仍需补足。后续只从远端artifacts/s4-gold-inventory-001/with-development-clean-reserves-manifest.json接续，并沿用私有quarantined-reserves/exclusions.json，禁止直接重用旧截图预留。
 
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。

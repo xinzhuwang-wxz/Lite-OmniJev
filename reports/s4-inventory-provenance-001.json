@@ -1,0 +1,19 @@
+{
+  "status": "recorded",
+  "exit_code": 0,
+  "scope": "Operator-bound private job provenance; not external attestation or complete gold admission",
+  "receipt_sha256": "961d0cfb6be97a98dced17d30ec94c47671cc3ce85127889032b85e7b7828876",
+  "manifest_sha256": "0ccea4ee3657116a1a18af6701f6b40f41688aa6c30b32de59a8fe16c67d489f",
+  "code_revision": "869ee9592ed079d1b522f75ca6e994ada0c9fcfe",
+  "code_sha256": {
+    "gold_inventory_external_override": "b446eaf0e7d509486e9091fb0e44342bef2d2e94e08cc31fdffe8c5ba99e675a",
+    "pool_isolation": "3b4ed471502ccf813d5a11bbc54998c0210e339b0929f5eb51ea5aeee2fd7094",
+    "sample_schema": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6",
+    "quarantine_job": "e4aae35ef5387d7c5e9cb33f2f0f5854045218cc466a5654e586c3a3d33c90c4"
+  },
+  "python": "3.11.17",
+  "pydantic": "2.14.1",
+  "gpu_used": false,
+  "raw_payloads_exported": false,
+  "private_job_permissions": "not_validated"
+}

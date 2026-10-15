@@ -213,7 +213,7 @@ def link_components(
                         or set(original_row.media_sha256) != {component.media_sha256}
                     ):
                         raise Rejected("invalid_component")
-                refs.append(digest(component.item_id.encode()))
+                refs.extend(original_row.item_sha256 for _, original_row in candidates)
                 hashes.add(component.media_sha256)
             if hashes != set(row.media_sha256):
                 raise Rejected("invalid_component")
@@ -235,7 +235,7 @@ def audit_manifest(path: Path) -> Receipt:
             raise Rejected("invalid_manifest") from None
         samples: list[Sample] = []
         rows: list[IsolationRow] = []
-        identities: dict[str, str] = {}
+        current_identities: dict[str, str] = {}
         for artifact in manifest.samples:
             lines = bound_lines(artifact)
             verified.append(artifact.sha256)
@@ -253,11 +253,25 @@ def audit_manifest(path: Path) -> Receipt:
                 for question in payload["questions"]:
                     del question["target"]
                 fingerprint = digest(json.dumps(payload, sort_keys=True).encode())
-                if sample.id in identities and identities[sample.id] != fingerprint:
-                    raise Rejected("conflicting_identity")
-                identities[sample.id] = fingerprint
+                if artifact.exposure == "current":
+                    if sample.id in current_identities:
+                        raise Rejected("conflicting_identity")
+                    current_identities[sample.id] = fingerprint
                 samples.append(sample)
-                rows.append(extract(sample, artifact))
+                # Historical revisions remain separate observations, joined by a
+                # stable original ID alias even if their declared family changed.
+                # These observation counts are not independent gold-item quotas.
+                row = extract(sample, artifact)
+                rows.append(
+                    row.model_copy(
+                        update={
+                            "item_sha256": digest((sample.id + ":" + fingerprint).encode()),
+                            "family_alias_sha256": [
+                                digest(("original-item:" + sample.id).encode())
+                            ],
+                        }
+                    )
+                )
         records: list[ComponentRecord] = []
         for ledger in manifest.component_ledgers:
             lines = bound_lines(ledger)
