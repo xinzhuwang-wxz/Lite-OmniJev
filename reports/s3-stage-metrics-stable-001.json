@@ -1,0 +1,12 @@
+{
+  "audio_teacher_ratio": 2.1052631578947367,
+  "video_teacher_ratio": 0.9111747851002866,
+  "old_modalities_max_regression": 0.0,
+  "frame_ab_complete": 1,
+  "audio_accuracy": 0.8,
+  "video_accuracy": 0.636,
+  "image_accuracy": 0.82,
+  "screenshot_accuracy": 0.964,
+  "text_accuracy": 0.994,
+  "video_8frame_accuracy": 0.608
+}

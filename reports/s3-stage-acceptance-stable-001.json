@@ -1,0 +1,64 @@
+{
+  "status": "passed",
+  "stage": "S3",
+  "exit_code": 0,
+  "scope": "Frozen development audio/video and old-modality decision LoRA acceptance; not S4 gold admission, calibration or release acceptance",
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+  "image_max_soft_tokens": 1120,
+  "video_num_frames": 16,
+  "metrics": {
+    "audio_teacher_ratio": 2.1052631578947367,
+    "video_teacher_ratio": 0.9111747851002866,
+    "old_modalities_max_regression": 0.0,
+    "frame_ab_complete": 1,
+    "audio_accuracy": 0.8,
+    "video_accuracy": 0.636,
+    "image_accuracy": 0.82,
+    "screenshot_accuracy": 0.964,
+    "text_accuracy": 0.994,
+    "video_8frame_accuracy": 0.608
+  },
+  "gate_command": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "eval.gate",
+    "reports/s3-stage-metrics-stable-001.json",
+    "reports/s3-stage-thresholds-stable-001.json"
+  ],
+  "code_revision": "9bdb9fd1db420011a3d360ae8ff08b061b0a23dc",
+  "runtime_code_revision": "b6b827b10ac0a1dd12306d3b93907973edfa38e4",
+  "training_execution_decision": "docs/adr/0021-s3-bounded-replay-execution.md",
+  "resource_leader_validation": "All seven selected-run durations re-summed; limited H20 scope explicit, unknown rental price and H100 conversion not invented",
+  "metric_corrections": [
+    "reports/s3-video-metrics-correction-001.json",
+    "reports/s3-audio-metrics-correction-001.json",
+    "reports/s3-video8-metrics-correction-001.json"
+  ],
+  "evidence": {
+    "reports/s3-dev-eval-image-stable-001.json": "2539b353fb2f4e499d3609ad7b9a366f467ec381fe46d2b3bac0295ea4405690",
+    "reports/s3-dev-eval-screenshot-stable-001.json": "87d6985272f3a28dc1f108eee1f38026e12951a1c18ebde13868b82423fca5d6",
+    "reports/s3-dev-eval-text-stable-001.json": "a5d204e1ef63ee1e9a905a11d6cf14a432388a78808cf460d627606a6bff55de",
+    "reports/s3-dev-eval-audio-stable-001.json": "d1d7a95082c6b929bd978b5d07cf7df99c035a7b33e42b916f94f22d7dfb4731",
+    "reports/s3-dev-eval-video-stable-001.json": "adb3404e959e96af93e7b6b6f07b3428b82c2a15821db8e039cc6d856e280309",
+    "reports/s3-dev-eval-video8-stable-001.json": "f34d63f52c575cab9ebf0d473bf07e10beaaa7c459600a58e5653f98eae45ff5",
+    "reports/s3-stage-metrics-stable-001.json": "26b8eefe56f32b2e81f17795c691609564c521c43ff4d970c40e75bea36a1e53",
+    "reports/s3-stage-thresholds-stable-001.json": "e2056b5af091e744e2c7c2c5defef06bbbc35e51ec7dfc7a868fba4c5bababf5",
+    "reports/s3-stage-gates-stable-001.json": "07005baaa2fe53ab486c489a7157eca1f485d0004da324439132e024e7149390",
+    "reports/s3-full-sidecar-audit-001.json": "850068a767ef949fc5c1747817db60756e46bfb85c326cbfbd369c4d068750b7",
+    "reports/s3-resource-recap-001.json": "ee3bdf16d6a823aa4e083472ccd6e94564b93525b0c0a391945be6d615262327",
+    "reports/s3-engineering-validation-001.json": "11bf01550fe9c21458dacee32dd4e253ecffd82160fd23725787364ea900ebca",
+    "reports/s3-integration-review-001.md": "020bbd18060d97ffbf14d33fdae369951a16c16ccfaf123a2731f0e404f39ffa",
+    "reports/s3-stable-probe-train-001.json": "aa8704944689047956c473ccaa1ad815e4c7076c17e89b6e94b969eea07d5d42",
+    "reports/s3-training-exposure-audit-001.json": "910486e2f2db8fab60271a3fc08356a06c82a01cfcd8cd106f52e387f4990cc4",
+    "docs/adr/0021-s3-bounded-replay-execution.md": "f8e13e046b340fd75ee804263465ea010f48b2662c7efed2aafd64c747050f2e"
+  },
+  "pending_release": [
+    "S4 quality/real gold/holdout/external benchmarks",
+    "S5 calibration and robustness",
+    "S6 quantization/E2B/runtime/performance",
+    "FINAL browser/API/single-GPU/edge packages"
+  ]
+}

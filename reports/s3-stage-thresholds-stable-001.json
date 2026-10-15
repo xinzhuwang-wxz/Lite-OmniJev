@@ -1,0 +1,14 @@
+{
+  "audio_teacher_ratio": {
+    "min": 0.9
+  },
+  "video_teacher_ratio": {
+    "min": 0.9
+  },
+  "old_modalities_max_regression": {
+    "max": 0.01
+  },
+  "frame_ab_complete": {
+    "min": 1
+  }
+}

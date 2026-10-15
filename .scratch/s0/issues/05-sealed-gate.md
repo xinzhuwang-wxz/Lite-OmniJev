@@ -3,10 +3,10 @@
 ID: s0:05
 Milestone: S4
 Category: enhancement
-Status: needs-triage
-Execution: open
-Owner: none
-Worktree: none
+Status: ready-for-agent
+Execution: claimed
+Owner: main-session
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: p0:04
 
 ## What to build
