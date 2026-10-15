@@ -6,7 +6,7 @@
 
 数据：S3固定1000条回放，每旧cohort200；新crossmodal200，100双真/50图像假/50音频假。新train SHA d3b0be2adeadbd12cbfc01daa5fa6ef74fb687b8fab6148bc750d695bbab6977，库存SHA244a5c4f8e7dc0ae769d0b3c73b781f86c0c30aaa3f283f256d440d6c26b95ae。组合来源均train，保留family/media组件账本；不得使用cal/hold。
 
-初始adapter：S3 stable SHA1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755。沿用冻结E4B、LoRA rank16/alpha32、CE、bf16、seed42、LR2e-5、accum10、图像1120、视频16帧。1200只是池大小，首轮30步实际300次样本曝光，不能写为全量一遍。实际shuffle后的六类曝光以日志为准，不假称每300条恰好均衡。
+初始adapter：S3 stable SHA1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755。沿用冻结E4B、LoRA rank16/alpha32、CE、bf16、seed42、LR2e-5、accum10、图像1120、视频16帧。1200只是池大小，首轮30步实际300次样本曝光，不能写为全量一遍。构建器逆向固定trainer shuffle，冻结前300次抽取每cohort50次；实际执行再以逐步日志核验。
 
 预算：首轮最多30optimizer步、外层墙钟1800秒；结束后回收模型并评测。现有midway只保存不暂停，配置严格相等才允许optimizer恢复。因此不预设30→60原状态续跑；追加候选的初始化/优化器状态需另行明确记录。OOM/NaN/非有限梯度/数据契约失败立即停，留失败报告。
 

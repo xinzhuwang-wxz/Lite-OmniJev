@@ -286,12 +286,18 @@ def prepare(root: Path, output: Path, *, model_dir: Path, asset_manifest: Path) 
             "at30"
         ),
         "script_sha256": sha(Path(__file__)),
-        "code_revision": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=root, text=True
-        ).strip(),
+        "code_revision": subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        ).stdout.strip()
+        or "unavailable",
+        "intake_code_sha256": sha(Path("train/trainer.py")),
         "python": platform.python_version(),
         "duration_seconds": time.monotonic() - started,
-        "cost": 0,
+        "cost": None,
     }
     write(output / "report.json", json.dumps(report, indent=2) + "\n")
     return report
