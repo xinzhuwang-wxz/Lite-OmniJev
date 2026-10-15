@@ -1,0 +1,58 @@
+{
+  "status": "source_capacity_upper_bound_only",
+  "exit_code": 0,
+  "scope": "Private job parsed public source labels; only aggregates exported. No reserved payload file read, no pool changed. Duration, media hashes, complete historical exposure and crossmodal aliases still require admission checks. No model evaluation.",
+  "metadata_sha256": "7505ba93c291d344b31e5c33e872b95d84255852cff93278bbdf549402acc1f5",
+  "allocation_ledger_sha256": "23889f3c2da24917124a8fb8fa312c765603c80ad2352aeec3eb0c80cfc8c1e1",
+  "dev_exclusion_ledger_sha256": "640c15d670a359b374597d5f45cedd6d2bcdfae52f01c0c430e2b745b08b5433",
+  "source_splits": {
+    "train": {
+      "sha256": "237c692e21e015a3e9b4391edd716b1387d7eb2d068d7ecdb5a6d6ead7e7a992",
+      "candidate_counts": {
+        "dev": 1187,
+        "train": 775,
+        "calibration": 196,
+        "holdout": 107,
+        "unallocated": 2
+      },
+      "rejected": {
+        "not_three_unanimous_yes_no": 3570,
+        "media_not_approved": 1206
+      }
+    },
+    "val": {
+      "sha256": "c69b32095d70740cee49d66dc33690d0267cf7bc821d71d834725f9d24c0a491",
+      "candidate_counts": {
+        "unallocated": 693
+      },
+      "rejected": {
+        "media_not_approved": 336,
+        "not_three_unanimous_yes_no": 1035
+      }
+    },
+    "test": {
+      "sha256": "6b72ea4722e2a4dde53465f9a0c165c901b16a2fb4ef16356d37891f71496737",
+      "candidate_counts": {
+        "unallocated": 918
+      },
+      "rejected": {
+        "media_not_approved": 456,
+        "not_three_unanimous_yes_no": 1464
+      }
+    }
+  },
+  "unique_questions_by_existing_pool": {
+    "dev": 1187,
+    "train": 775,
+    "calibration": 196,
+    "holdout": 107,
+    "unallocated": 1613
+  },
+  "families_by_existing_pool": {
+    "dev": 500,
+    "train": 326,
+    "calibration": 80,
+    "holdout": 40,
+    "unallocated": 670
+  }
+}

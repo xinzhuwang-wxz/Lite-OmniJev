@@ -25,6 +25,8 @@
 - 凭据仅项目外。暂无需用户操作的阻塞，GPU链运行，未请求关卡。独立CPU检查工作树/root/autodl-tmp/image-budget-cpu-check-001保留原始证据，未影响GPU checkout。
 
 ## 本轮新增证据
+- 私有CPU作业统计全部已下载Clotho train/val/test，reports/s3-audio-reserve-capacity-001.json只导出汇总：未分配1613题/670family，已有calibration196题/80family、holdout107题/40family；合计1916道上界，距3000+1000至少缺2084。还未验证完整历史/时长/media别名，不作准入；不改变池、不读取预留payload文件、不导出源题/答案。需后续补充可靠来源，ADR0004允许已准备TTS但不能冒称真实音频或重复计数。
+- sidecar审计负向验证reports/s3-sidecar-audit-rejections-001.json：有效复制件接受；重新算SHA后篡改真值、概率、缺记录、错adapter均拒绝。仅一次性dev复制件，原GPU产物未改。
 - CPU完成S3图像1000条原始记录审计：输入/权重/sidecar哈希、真实dev目标、逐条logits概率读出和汇总指标一致；reports/s3-image-sidecar-audit-002.json仅partial，不代S3全门。.scratch/s3/verify-final-sidecars.py已准备全六组审计，远端外置脚本/root/autodl-tmp/s3-verify-final-sidecars.py，未改运行中checkout。
 - 训练曝光重建reports/s3-training-exposure-audit-001.json确认100步/1000次、每模态200次，image199family、其余200；首/末10步loss .722695→.207186。不是原300步/10000次预算完成，正式门通过后明确执行调整ADR再关票。
 - 下一阶段独立准备reports/s4-gold-gate-implementation-assessment-001.md已整合；识别四池全历史family/media/component联通审计和私有作业日志隔离缺口。未实现/运行真实gold gate，未读封存，子代理已结束，工作树归档。
