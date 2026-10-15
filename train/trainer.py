@@ -33,6 +33,7 @@ from data.synth import generate_samples
 from scripts.assets import selected_files, verify_file, write_json
 from scripts.check_tokens import OfficialTokenizerAdapter
 from train.checkpoint import (
+    file_sha256,
     load_checkpoint,
     restore_checkpoint,
     save_checkpoint,
@@ -524,8 +525,22 @@ def runtime_requirements() -> dict[str, str]:
     return versions
 
 
-def attach_lora(model: Any, config: TrainConfig) -> Any:
-    """Freeze all original weights and target only decoder attention/MLP projections."""
+def verified_init_adapter(path: Path, sha256: str) -> dict[str, str]:
+    """Pin local standard PEFT safetensors and its configuration before model loading."""
+    if not re.fullmatch(r"[0-9a-f]{64}", sha256):
+        raise ValueError("init adapter requires a lowercase SHA256")
+    path = path.resolve()
+    if file_sha256(path / "adapter_model.safetensors") != sha256:
+        raise ValueError("init adapter weights hash mismatch")
+    return {
+        "path": str(path),
+        "weights_sha256": sha256,
+        "config_sha256": file_sha256(path / "adapter_config.json"),
+    }
+
+
+def attach_lora(model: Any, config: TrainConfig, init_adapter: dict[str, str] | None = None) -> Any:
+    """Freeze original weights; optionally initialize only compatible decoder LoRA."""
     peft = importlib.import_module("peft")
     projections = {"q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"}
     targets = [
@@ -535,23 +550,60 @@ def attach_lora(model: Any, config: TrainConfig) -> Any:
     ]
     if {name.split(".")[-1] for name in targets} != projections:
         raise ValueError("cannot locate all intended Gemma decoder projections")
-    model.requires_grad_(False)
-    adapted = peft.get_peft_model(
-        model,
-        peft.LoraConfig(
-            r=config.rank,
-            lora_alpha=config.alpha,
-            lora_dropout=0.0,
-            target_modules=targets,
-            bias="none",
-            inference_mode=False,
-        ),
+    lora_config = peft.LoraConfig(
+        r=config.rank,
+        lora_alpha=config.alpha,
+        lora_dropout=0.0,
+        target_modules=targets,
+        bias="none",
+        inference_mode=False,
     )
+    if init_adapter is not None:
+        path = Path(init_adapter["path"])
+        if verified_init_adapter(path, init_adapter["weights_sha256"]) != init_adapter:
+            raise ValueError("init adapter config hash mismatch")
+        # Compare every behavior-bearing field against the existing decision LoRA.
+        # Serialization metadata and saved inference mode do not change its math.
+        saved = json.loads((path / "adapter_config.json").read_text())
+        expected = lora_config.to_dict()
+        metadata = {
+            "auto_mapping",
+            "peft_version",
+            "base_model_name_or_path",
+            "revision",
+            "inference_mode",
+        }
+        for key in saved.keys() | expected.keys():
+            if key in metadata:
+                continue
+            actual = saved.get(key, expected.get(key))
+            wanted = expected.get(key)
+            if key == "target_modules":
+                actual = set(actual) if isinstance(actual, list) else actual
+            if actual != wanted:
+                raise ValueError(f"init adapter config mismatch: {key}")
+        if not {"peft_type", "r", "lora_alpha", "target_modules"} <= saved.keys():
+            raise ValueError("init adapter config is incomplete")
+    model.requires_grad_(False)
+    adapted = peft.get_peft_model(model, lora_config)
     trainable = [name for name, p in adapted.named_parameters() if p.requires_grad]
     if not trainable or any(
         ".lora_" not in name or ".language_model.layers." not in name for name in trainable
     ):
         raise ValueError("trainable parameters extend beyond decoder LoRA")
+    if init_adapter is not None:
+        tensors = importlib.import_module("safetensors.torch").load_file(
+            str(Path(init_adapter["path"]) / "adapter_model.safetensors")
+        )
+        expected_state = peft.get_peft_model_state_dict(adapted)
+        if tensors.keys() != expected_state.keys() or any(
+            tensors[name].shape != parameter.shape for name, parameter in expected_state.items()
+        ):
+            raise ValueError("init adapter tensor keys or shapes mismatch")
+        torch = importlib.import_module("torch")
+        if any(not bool(torch.isfinite(tensor).all()) for tensor in tensors.values()):
+            raise ValueError("init adapter contains nonfinite weights")
+        peft.set_peft_model_state_dict(adapted, tensors)
     return adapted
 
 
@@ -603,7 +655,7 @@ def train_smoke(
         dtype=torch.bfloat16,
         attn_implementation="sdpa",
     )
-    model = attach_lora(base, config).to("cuda")
+    model = attach_lora(base, config, report.get("init_adapter")).to("cuda")
     for name, parameter in model.named_parameters():
         if ".vision_tower." in name or ".audio_tower." in name:
             if parameter.requires_grad:
@@ -695,7 +747,7 @@ def train_smoke(
             checkpoint_path = save_checkpoint(
                 output_dir,
                 step=report["steps_completed"],
-                config=config.model_dump(),
+                config=report["config"],
                 model_revision=report["model_revision"],
                 data_sha256=report["data_sha256"],
                 asset_hashes=report["asset_hashes"],
@@ -734,6 +786,8 @@ def run(
     monitoring: SwanLabConfig | None = None,
     resume_from: Path | None = None,
     scope: str | None = None,
+    init_adapter: Path | None = None,
+    init_adapter_sha256: str | None = None,
 ) -> dict[str, Any]:
     start = time.monotonic()
     report: dict[str, Any] = {
@@ -756,6 +810,14 @@ def run(
     accepted_resume = False
     telemetry: Telemetry | None = None
     try:
+        if (init_adapter is None) != (init_adapter_sha256 is None):
+            raise ValueError("init-adapter and init-adapter-sha256 must be supplied together")
+        if init_adapter is not None and init_adapter_sha256 is not None:
+            identity = verified_init_adapter(init_adapter, init_adapter_sha256)
+            report["init_adapter"] = identity
+            # Checkpoint config equality requires the same source on every resume.
+            # Leave legacy config byte-for-byte unchanged when no source is provided.
+            report["config"]["init_adapter"] = identity
         if execute:
             if resume_from is None:
                 output_dir.mkdir(parents=True, exist_ok=False)
@@ -836,7 +898,7 @@ def run(
             resume_metadata = verify_resume_request(
                 output_dir,
                 resume_from,
-                config=config.model_dump(),
+                config=report["config"],
                 model_revision=report["model_revision"],
                 data_sha256=report["data_sha256"],
                 asset_hashes=report["asset_hashes"],

@@ -191,6 +191,54 @@ def test_peft_updates_only_decoder_lora_and_saves_safetensors(tmp_path):
     assert (tmp_path / "adapter_model.safetensors").is_file()
     assert not list(tmp_path.glob("*.bin"))
 
+    from train.trainer import verified_init_adapter
+
+    identity = verified_init_adapter(
+        tmp_path, hashlib.sha256((tmp_path / "adapter_model.safetensors").read_bytes()).hexdigest()
+    )
+    fresh = Tiny()
+    frozen = {name: p.detach().clone() for name, p in fresh.named_parameters()}
+    loaded = attach_lora(fresh, SmokeConfig(), identity)
+    peft = __import__("peft")
+    source = peft.get_peft_model_state_dict(model)
+    restored = peft.get_peft_model_state_dict(loaded)
+    assert source.keys() == restored.keys()
+    assert all(torch.equal(source[key], restored[key]) for key in source)
+    for name, parameter in loaded.named_parameters():
+        if "lora_" in name:
+            assert parameter.requires_grad
+        else:
+            assert not parameter.requires_grad
+            original_name = name.removeprefix("base_model.model.").replace(".base_layer", "")
+            assert torch.equal(parameter, frozen[original_name])
+    with pytest.raises(ValueError, match="weights hash mismatch"):
+        verified_init_adapter(tmp_path, "0" * 64)
+    config_path = tmp_path / "adapter_config.json"
+    saved_config = json.loads(config_path.read_text())
+    for key, bad in [
+        ("r", 8),
+        ("lora_alpha", 16),
+        ("target_modules", ["q_proj"]),
+        ("use_dora", True),
+        ("modules_to_save", ["lm_head"]),
+    ]:
+        config_path.write_text(json.dumps({**saved_config, key: bad}))
+        with pytest.raises(ValueError, match="config hash mismatch"):
+            attach_lora(Tiny(), SmokeConfig(), identity)
+        changed = verified_init_adapter(tmp_path, identity["weights_sha256"])
+        with pytest.raises(ValueError, match="config mismatch"):
+            attach_lora(Tiny(), SmokeConfig(), changed)
+    config_path.write_text(json.dumps(saved_config))
+    safetensors = __import__("safetensors.torch", fromlist=["save_file"])
+    safetensors.save_file(
+        {"unexpected": torch.ones(2)}, str(tmp_path / "adapter_model.safetensors")
+    )
+    bad_identity = verified_init_adapter(
+        tmp_path, hashlib.sha256((tmp_path / "adapter_model.safetensors").read_bytes()).hexdigest()
+    )
+    with pytest.raises(ValueError, match="tensor keys or shapes mismatch"):
+        attach_lora(Tiny(), SmokeConfig(), bad_identity)
+
 
 def test_missing_weights_preflight_is_structured_and_output_is_not_created(tmp_path):
     output = tmp_path / "run"
@@ -773,3 +821,57 @@ def test_asset_manifest_must_cover_exactly_indexed_shards(tmp_path):
     )
     with pytest.raises(ValueError, match="unverified shards"):
         verified_assets(model_dir, manifest)
+
+
+@pytest.mark.parametrize("supply_source", [False, True])
+def test_warmstart_resume_requires_and_preserves_source(monkeypatch, tmp_path, supply_source):
+    from train.trainer import verified_init_adapter
+
+    output_dir, original_report = prepare_resume_run(monkeypatch, tmp_path)
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "adapter_model.safetensors").write_bytes(b"test-pinned-weights")
+    (source / "adapter_config.json").write_text("{}")
+    sha = hashlib.sha256(b"test-pinned-weights").hexdigest()
+    identity = verified_init_adapter(source, sha)
+    order = list(range(100))
+    __import__("random").Random(SmokeConfig().seed).shuffle(order)
+    checkpoint = make_cpu_checkpoint(
+        output_dir, config={**SmokeConfig().model_dump(), "init_adapter": identity}, order=order
+    )
+    calls = []
+    monkeypatch.setattr("train.trainer.train_smoke", lambda *args, **kwargs: calls.append(args[4]))
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "manifest.json",
+        output_dir,
+        execute=True,
+        resume_from=checkpoint,
+        init_adapter=source if supply_source else None,
+        init_adapter_sha256=sha if supply_source else None,
+    )
+    if supply_source:
+        assert report["status"] == "completed"
+        assert calls[0]["init_adapter"] == identity
+        assert report["config"]["init_adapter"] == identity
+    else:
+        assert "checkpoint config does not match" in report["error"]
+        assert not calls
+        assert (output_dir / "run.json").read_bytes() == original_report
+
+
+@pytest.mark.parametrize("path,sha", [("source", None), (None, "a" * 64)])
+def test_warmstart_requires_path_and_pin_together(tmp_path, path, sha):
+    report = run(
+        SmokeConfig(),
+        tmp_path / ("a" * 40),
+        tmp_path / "manifest.json",
+        tmp_path / "out",
+        execute=True,
+        init_adapter=tmp_path / path if path else None,
+        init_adapter_sha256=sha,
+    )
+    assert report["status"] == "blocked"
+    assert "must be supplied together" in report["error"]
+    assert not (tmp_path / "out").exists()
