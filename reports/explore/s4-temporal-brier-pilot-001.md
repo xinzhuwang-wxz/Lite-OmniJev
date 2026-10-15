@@ -9,3 +9,5 @@
 240秒训练硬限、5步检查点、真实SwanLab；成功后固定video150单遍180秒、每25题记录。评估wrapper逐项比较训练配置（只排除Brier字段）与data身份；不满足立即拒绝。先比较CE110/150及原CE0 109/150，再看NLL/Brier/错误重分配；准确率小波动不是机械裁决。只有明显收益且旧模态保留筛查通过才扩大；失败则保留当前CE0，不继续同族扫描。
 
 执行入口 .scratch/s4/launch-temporal-brier.py 与 evaluate-temporal-brier.py；预检已通过，运行中不计通过。远端launcher-001执行版本与本地只差首行docstring缩短（lint修正，无行为变化）。完整S4质量门、calibration/holdout及最终发布均未完成。
+
+结果：completed10/171.966秒（launcher训练wall173.834秒），adapter20ea65d4…。首个评测启动缺少PYTHONPATH，在GPU加载前失败；002入口显式添加source后video150完成110/150。同数据CE110持平，对CE0仍NLL+.027755/Brier+.018215；对matchedCE NLL-.003602/Brier-.004883，不能消除原课程退化。因此停止、不扫权重、不推广，当前仍CE0。paired诊断沿用9d93c51 helper，显式绑定两对adapter，保留历史sidecar无tensorhash的局限。比较wrapper首试误用本地summary路径，CPU读文件失败；改为远端真实artifacts receipt后成功，无重跑GPU。
