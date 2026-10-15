@@ -14,7 +14,7 @@
 - 100步S3候选训练完成843.25秒、峰值显存30.14GB，adapter1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755，artifacts/s3-stable-probe-train-001/adapter。
 - 小筛查全部通过：video99/150（基线77）、audio38/50、image40/50、screenshot50/50、text49/50。reports/s3-stable-probe-screening-001.json qualified=true，仅允许扩量，不代表S3通过。
 - 当前/root/autodl-tmp/s3-full-gates.sh，外层timeout4200、各cohort独立时限；日志artifacts/s3-stable-probe-001/full-gates.log。顺序image→video→screenshot→text→audio（各dev500双遍）→video8（500单遍）。image/screenshot1120、video16/8，失败即停；阈值仍原S3，不扫配置。
-- 16帧video500双遍完成：product_accuracy63.6%（318/500）≥62.82%，repeat相同，723.67秒；reports/s3-dev-eval-video-stable-001.json及1000条sidecar审计已收取。截图500双遍96.4%与S2相同，483.10秒，reports/s3-dev-eval-screenshot-stable-001.json及原始记录审计通过。当前text子作业timeout PID583839，后接audio/video8。
+- 16帧video500双遍完成：product_accuracy63.6%（318/500）≥62.82%，repeat相同，723.67秒；reports/s3-dev-eval-video-stable-001.json及1000条sidecar审计已收取。截图500双遍96.4%与S2相同，483.10秒，reports/s3-dev-eval-screenshot-stable-001.json及原始记录审计通过。text500双遍99.4%与S2相同，142.06秒，原始记录审计通过；当前audio子作业timeout PID584060，后接video8。
 - 输出artifacts/s3-dev-eval-{image,video,screenshot,text,audio,video8}-stable-001；报告reports/s3-dev-eval-同名-stable-001.json。新runner有progress.json与records.partial.jsonl，只供观察，完整通过报告才作门槛证据。勿重复启动。
 - s3:01 claimed owner main-session。下一步收取真实全门报告，用scripts/s3_gate与configs/gates.json组装；旧模态基线是S2 1120的image/screenshot报告及原text v2-corrected报告。
 

@@ -1,0 +1,20 @@
+{
+  "status": "partial",
+  "exit_code": 0,
+  "scope": "CPU artifact verification only; S3 numerical gate remains separate",
+  "cohorts": [
+    {
+      "cohort": "text",
+      "report_sha256": "a5d204e1ef63ee1e9a905a11d6cf14a432388a78808cf460d627606a6bff55de",
+      "data_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+      "sidecar_sha256": "6874730f355305ff49adfe3b40d5f77eb04dc2283d5025051d6dcc70168d1066",
+      "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+      "records": 1000,
+      "passes": 2,
+      "repeat_exact": true,
+      "recomputed_metrics_exact": true,
+      "source_targets_verified": true,
+      "raw_logits_readout_exact": true
+    }
+  ]
+}

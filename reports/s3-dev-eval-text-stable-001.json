@@ -1,0 +1,67 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter",
+    "--data",
+    "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/dev.jsonl",
+    "--passes",
+    "2",
+    "--output-dir",
+    "artifacts/s3-dev-eval-text-stable-001",
+    "--report",
+    "reports/s3-dev-eval-text-stable-001.json"
+  ],
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter",
+  "data_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+  "samples": 500,
+  "passes": 2,
+  "video_num_frames": 16,
+  "repeat_identical": true,
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.994,
+    "ece15": 0.004696581375008974,
+    "brier": 0.009827812491054272,
+    "coverage_at_error": 1.0,
+    "max_error": 0.05,
+    "product_accuracy": 0.994,
+    "mean_p_insufficient": 1.0070340897276849e-06,
+    "max_p_insufficient": 4.935299431601363e-05,
+    "predicted_insufficient": 0
+  },
+  "counterfactual": false,
+  "code_revision": "b6b827b10ac0a1dd12306d3b93907973edfa38e4",
+  "script_sha256": "cda2b7bf06ea2516d1bc6ed0732f57f741059d6c7a29effeaaf188b490b44be8",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "6874730f355305ff49adfe3b40d5f77eb04dc2283d5025051d6dcc70168d1066",
+  "timing": {
+    "started_at": 1792065786.624172,
+    "finished_at": 1792065928.6874228,
+    "duration_seconds": 142.06325125694275
+  },
+  "image_max_soft_tokens": {
+    "requested": null,
+    "effective": null
+  }
+}
