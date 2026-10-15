@@ -12,6 +12,7 @@ import json
 import math
 import re
 import sys
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, TypeGuard
 
@@ -81,6 +82,11 @@ def load_dev_report(path: Path, label: str) -> dict[str, Any]:
             f"(samples={report.get('samples')!r}, passes={report.get('passes')!r})"
         )
     return report
+
+
+def decimal_difference(left: float, right: float) -> float:
+    """Subtract reported decimal accuracies without binary boundary drift."""
+    return float(Decimal(str(left)) - Decimal(str(right)))
 
 
 def image_budget(report: dict[str, Any]) -> int:
@@ -158,9 +164,11 @@ def assemble_metrics(
     )
 
     return {
-        "image_vs_onejev_delta": acc_image - baseline_onejev4_image,
-        "screenshot_vs_onejev_delta": acc_screenshot - baseline_onejev4_screenshot,
-        "text_regression": baseline_s1_text - acc_text,
+        "image_vs_onejev_delta": decimal_difference(acc_image, baseline_onejev4_image),
+        "screenshot_vs_onejev_delta": decimal_difference(
+            acc_screenshot, baseline_onejev4_screenshot
+        ),
+        "text_regression": decimal_difference(baseline_s1_text, acc_text),
         # cf 口径：image 与 screenshot 两个模态都须各自达标；取 min 使
         # counterfactual_flip_rate 的单阈值判定等价于逐模态 ≥ 阈值。
         "counterfactual_flip_rate": min(cf_image, cf_screenshot),

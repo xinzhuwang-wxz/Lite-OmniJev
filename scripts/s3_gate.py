@@ -13,6 +13,7 @@ from scripts.assets import write_json
 from scripts.s2_gate import (
     FROZEN_DEV_SHA256,
     GateInputError,
+    decimal_difference,
     image_budget,
     load_dev_report,
     load_report,
@@ -105,7 +106,7 @@ def assemble_metrics(
         "audio_teacher_ratio": measured["audio"][1] / AUDIO_TEACHER_ACCURACY,
         "video_teacher_ratio": measured["video"][1] / VIDEO_TEACHER_ACCURACY,
         "old_modalities_max_regression": max(
-            reference[name][1] - measured[name][1] for name in reference
+            decimal_difference(reference[name][1], measured[name][1]) for name in reference
         ),
         "frame_ab_complete": 1,
         **{f"{name}_accuracy": result[1] for name, result in measured.items()},

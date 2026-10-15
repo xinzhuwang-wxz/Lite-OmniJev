@@ -261,3 +261,23 @@ def test_matching_explicit_image_profiles_accepted(tmp_path):
         value["image_max_soft_tokens"] = {"requested": 1120, "effective": 1120}
         write_report(path, value)
     assert main(argv_for(*paths, tmp_path / "metrics.json")) == 0
+
+
+def test_exact_percentage_point_boundaries_are_not_float_rounding_failures(tmp_path):
+    from eval.gate import evaluate_gate
+
+    paths = write_inputs(tmp_path)
+    for path, accuracy in zip(paths[:3], [0.806, 0.632, 0.986], strict=True):
+        value = json.loads(path.read_text())
+        value["metrics"]["product_accuracy"] = accuracy
+        write_report(path, value)
+    out = tmp_path / "metrics.json"
+    assert main(argv_for(*paths, out)) == 0
+    assert evaluate_gate(
+        json.loads(out.read_text()),
+        {
+            "image_vs_onejev_delta": {"min": -0.03},
+            "screenshot_vs_onejev_delta": {"min": -0.03},
+            "text_regression": {"max": 0.01},
+        },
+    )["passed"]

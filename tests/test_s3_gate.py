@@ -129,3 +129,16 @@ def test_rejects_unbound_or_research_stage_reports(tmp_path, cohort, change):
     current[cohort].write_text(json.dumps(row))
     with pytest.raises(GateInputError):
         assemble_metrics(current, previous, control)
+
+
+def test_exact_one_percentage_point_regression_passes_original_bound(tmp_path):
+    from eval.gate import evaluate_gate
+
+    current, previous, control = reports(tmp_path)
+    result = assemble_metrics(current, previous, control)
+    assert evaluate_gate(result, {"old_modalities_max_regression": {"max": 0.01}})["passed"]
+    row = json.loads(current["screenshot"].read_text())
+    row["metrics"]["product_accuracy"] = 0.948
+    current["screenshot"].write_text(json.dumps(row))
+    result = assemble_metrics(current, previous, control)
+    assert not evaluate_gate(result, {"old_modalities_max_regression": {"max": 0.01}})["passed"]

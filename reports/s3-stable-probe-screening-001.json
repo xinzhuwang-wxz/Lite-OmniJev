@@ -1,0 +1,43 @@
+{
+  "status": "completed",
+  "qualified_for_expansion": true,
+  "scope": "single-pass small development screen, not stage acceptance",
+  "training_report_sha256": "aa8704944689047956c473ccaa1ad815e4c7076c17e89b6e94b969eea07d5d42",
+  "results": {
+    "video": {
+      "correct": 99,
+      "count": 150,
+      "required_correct": 95,
+      "screen_passed": true,
+      "report_sha256": "a8fdb149259f00c3b976f7be9d63562dba2c02db2544891af9d256856e1df60a"
+    },
+    "audio": {
+      "correct": 38,
+      "count": 50,
+      "required_correct": 18,
+      "screen_passed": true,
+      "report_sha256": "40c1e2098d63eeb2c092b4cb7fbd5913478475a42d5108d4210eabb51ba307a6"
+    },
+    "image": {
+      "correct": 40,
+      "count": 50,
+      "required_correct": 39,
+      "screen_passed": true,
+      "report_sha256": "46d5977f1047098dd277db6c7fbd6974251a7e2f4e99cc273a49b3669e026161"
+    },
+    "screenshot": {
+      "correct": 50,
+      "count": 50,
+      "required_correct": 49,
+      "screen_passed": true,
+      "report_sha256": "a4649217ba8d740a3c9c918e1c1f013f71efee4487c64fc9f102b07e59010cca"
+    },
+    "text": {
+      "correct": 49,
+      "count": 50,
+      "required_correct": 48,
+      "screen_passed": true,
+      "report_sha256": "82d0b35c61f23ab861d7689bec373ae86477ea6ea05badb904fcc28daac400ca"
+    }
+  }
+}

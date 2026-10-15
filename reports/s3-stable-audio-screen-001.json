@@ -1,0 +1,69 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter",
+    "--data",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-quality-probe-001/audio-50.jsonl",
+    "--passes",
+    "1",
+    "--output-dir",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-audio-screen-001",
+    "--report",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s3-stable-audio-screen-001.json",
+    "--media-root",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002"
+  ],
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter",
+  "data_sha256": "3a58db8166c879c19aa3e12de90c6f37dc9dfb5e2ad197a76372aef9fc7d3466",
+  "samples": 50,
+  "passes": 1,
+  "video_num_frames": 16,
+  "repeat_identical": null,
+  "metrics": {
+    "count": 50,
+    "accuracy": 0.74,
+    "ece15": 0.16962750700660895,
+    "brier": 0.3508226108152931,
+    "coverage_at_error": 0.16,
+    "max_error": 0.05,
+    "product_accuracy": 0.76,
+    "mean_p_insufficient": 3.0162406754607047e-05,
+    "max_p_insufficient": 0.00015566088505818498,
+    "predicted_insufficient": 0
+  },
+  "counterfactual": false,
+  "code_revision": "ea3695e8f181bfb7ccc972df207199bbb40d925e",
+  "script_sha256": "49881999124a7e570f8cf3dc6eb3441a8e8d19dc8cd7eefaeaec6fbf4e9f362c",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "12244c6180712fcefc568217f9fb34a2fadcfcb9effd4739e0c3298eb37c14f6",
+  "timing": {
+    "started_at": 1792063866.4947846,
+    "finished_at": 1792063903.0366805,
+    "duration_seconds": 36.54189610481262
+  },
+  "image_max_soft_tokens": {
+    "requested": null,
+    "effective": 280
+  }
+}
