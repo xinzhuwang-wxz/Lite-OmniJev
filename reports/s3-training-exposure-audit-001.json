@@ -1,0 +1,46 @@
+{
+  "status": "passed",
+  "scope": "reconstruction from saved input SHA, seed and trainer fixed-shuffle modulo order; not new training or independent quality evidence",
+  "runs": [
+    {
+      "report": "/root/autodl-tmp/s1-text-lora-001/reports/s3-stable-probe-train-001.json",
+      "report_sha256": "aa8704944689047956c473ccaa1ad815e4c7076c17e89b6e94b969eea07d5d42",
+      "data_sha256": "e120aca4ecf14019c37131ab0eea63a58b45ffc8e3efaf14473416b9722081ae",
+      "pool_rows": 1000,
+      "pool_counts": {
+        "audio": 200,
+        "screenshot": 200,
+        "video": 200,
+        "text": 200,
+        "image": 200
+      },
+      "steps": 100,
+      "samples_seen": 1000,
+      "exposures": {
+        "image": 200,
+        "text": 200,
+        "audio": 200,
+        "screenshot": 200,
+        "video": 200
+      },
+      "unique_exposed_families": {
+        "audio": 200,
+        "image": 199,
+        "screenshot": 200,
+        "text": 200,
+        "video": 200
+      },
+      "midway_adapters": [
+        {
+          "step": 50,
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter-at-step-0050",
+          "sha256": "5d89e32615112d53996c7be82f05d620986aef272ed4cd3abed9451d37ae780c"
+        }
+      ],
+      "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+      "seconds": 843.2489095199853,
+      "first_10_mean_loss": 0.722694722758588,
+      "last_10_mean_loss": 0.2071857785801683
+    }
+  ]
+}

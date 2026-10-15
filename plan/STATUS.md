@@ -25,6 +25,9 @@
 - 凭据仅项目外。暂无需用户操作的阻塞，GPU链运行，未请求关卡。独立CPU检查工作树/root/autodl-tmp/image-budget-cpu-check-001保留原始证据，未影响GPU checkout。
 
 ## 本轮新增证据
+- CPU完成S3图像1000条原始记录审计：输入/权重/sidecar哈希、真实dev目标、逐条logits概率读出和汇总指标一致；reports/s3-image-sidecar-audit-002.json仅partial，不代S3全门。.scratch/s3/verify-final-sidecars.py已准备全六组审计，远端外置脚本/root/autodl-tmp/s3-verify-final-sidecars.py，未改运行中checkout。
+- 训练曝光重建reports/s3-training-exposure-audit-001.json确认100步/1000次、每模态200次，image199family、其余200；首/末10步loss .722695→.207186。不是原300步/10000次预算完成，正式门通过后明确执行调整ADR再关票。
+- 下一阶段独立准备reports/s4-gold-gate-implementation-assessment-001.md已整合；识别四池全历史family/media/component联通审计和私有作业日志隔离缺口。未实现/运行真实gold gate，未读封存，子代理已结束，工作树归档。
 - S3 image dev500双遍完成：82.0%、两遍一致，与S2持平，reports/s3-dev-eval-image-stable-001.json；其余cohort和总门仍待完成。396.30秒是离线双遍耗时，不是API延迟。
 - 用户再次强调快/低成本：发布配置按质量达标前提下的真实API延迟、吞吐、显存和单位请求成本选择，1120仍非最终低成本默认。
 - CPU仅统计分池ledger，未读calibration/holdout载荷：reports/s3-reserve-inventory-001.json。text储备3000/1000；image623/211、screenshot120/60、audio80/40、video900/300（校准/封存题数），crossmodal未识别冻结ledger。S4/S5须补齐许可清晰且family隔离的可靠gold，不把现有储备称为就绪、不降数量门槛。
