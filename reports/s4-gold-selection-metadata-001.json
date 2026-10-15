@@ -1,0 +1,641 @@
+{
+  "scope": "artifact-level metadata only, selection not yet approved",
+  "inventory_sha256": "6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769",
+  "artifacts": [
+    {
+      "artifact_sha256": "6d3878168fbe135bb38bf1253ba8534d88b00b71654235c0bf619a2481a8a0c9",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-a/calibration-reserve.jsonl",
+      "cohort": "text",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 3000,
+      "questions": 3000,
+      "families": 3000,
+      "media": 0,
+      "datasets": {
+        "clinc/clinc_oos": 3000
+      },
+      "target_sources": {
+        "clinc_human_label": 3000
+      },
+      "licenses": {
+        "CC-BY-3.0": 3000
+      }
+    },
+    {
+      "artifact_sha256": "6bba594d544fdb67dc7dd95d37ce22de3570ad91d2db5dd0e633828eb87542c6",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-a/holdout-reserve.jsonl",
+      "cohort": "text",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 1000,
+      "questions": 1000,
+      "families": 1000,
+      "media": 0,
+      "datasets": {
+        "clinc/clinc_oos": 1000
+      },
+      "target_sources": {
+        "clinc_human_label": 1000
+      },
+      "licenses": {
+        "CC-BY-3.0": 1000
+      }
+    },
+    {
+      "artifact_sha256": "a54d9e99f9ab2b35e4a397484134352dda4cec858bb6a44f785b8c61c0df493a",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-image-001/run-a/calibration-reserve.jsonl",
+      "cohort": "image",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 623,
+      "questions": 623,
+      "families": 600,
+      "media": 600,
+      "datasets": {
+        "A-OKVQA": 623
+      },
+      "target_sources": {
+        "aokvqa_correct_choice_idx": 623
+      },
+      "licenses": {
+        "QA:Apache-2.0;media:CC-BY-2.0": 623
+      }
+    },
+    {
+      "artifact_sha256": "e0f5ac21f0175eda5fd66ca1ceed2e21bec537933507ab63452a0bff3485f385",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-image-001/run-a/holdout-reserve.jsonl",
+      "cohort": "image",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 211,
+      "questions": 211,
+      "families": 200,
+      "media": 200,
+      "datasets": {
+        "A-OKVQA": 211
+      },
+      "target_sources": {
+        "aokvqa_correct_choice_idx": 211
+      },
+      "licenses": {
+        "QA:Apache-2.0;media:CC-BY-2.0": 211
+      }
+    },
+    {
+      "artifact_sha256": "a87d08a03f6f1b74ba5129b88fc5e85d3d4a493d20da980c02433348ed51ac65",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-video-001/run-a/calibration-reserve.jsonl",
+      "cohort": "video",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 900,
+      "questions": 900,
+      "families": 900,
+      "media": 900,
+      "datasets": {
+        "CLEVRER": 900
+      },
+      "target_sources": {
+        "clevrer_descriptive_exist_answer": 900
+      },
+      "licenses": {
+        "CC0-1.0": 900
+      }
+    },
+    {
+      "artifact_sha256": "1c67100f7c9abdf70ce57b70e300acf1fec5301c57cef95012b194a6865be590",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-video-001/run-a/holdout-reserve.jsonl",
+      "cohort": "video",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 300,
+      "questions": 300,
+      "families": 300,
+      "media": 300,
+      "datasets": {
+        "CLEVRER": 300
+      },
+      "target_sources": {
+        "clevrer_descriptive_exist_answer": 300
+      },
+      "licenses": {
+        "CC0-1.0": 300
+      }
+    },
+    {
+      "artifact_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+      "artifact_path": "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/dev.jsonl",
+      "cohort": "text",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 0,
+      "datasets": {
+        "clinc/clinc_oos": 500
+      },
+      "target_sources": {
+        "clinc_human_label": 500
+      },
+      "licenses": {
+        "CC-BY-3.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+      "artifact_path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/dev.jsonl",
+      "cohort": "image",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "A-OKVQA": 500
+      },
+      "target_sources": {
+        "aokvqa_correct_choice_idx": 500
+      },
+      "licenses": {
+        "QA:Apache-2.0;media:CC-BY-2.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "b926acd3043c7e21aa03c2251430e8a52592caea91f9980cafc13b78b212ec27",
+      "artifact_path": "/root/autodl-tmp/s0-gui-dev-001/artifacts/run-k-actual-001/dev.jsonl",
+      "cohort": "screenshot",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "hflqf88888/GUIOdyssey": 500
+      },
+      "target_sources": {
+        "gui_odyssey_sam2_bbox_program_truth": 500
+      },
+      "licenses": {
+        "CC-BY-4.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+      "artifact_path": "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/dev.jsonl",
+      "cohort": "audio",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "Clotho-AQA": 500
+      },
+      "target_sources": {
+        "clotho_original_unanimous_three_answers": 500
+      },
+      "licenses": {
+        "QA:MIT;media:CC-BY-3.0": 224,
+        "QA:MIT;media:CC0-1.0": 276
+      }
+    },
+    {
+      "artifact_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+      "artifact_path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/dev.jsonl",
+      "cohort": "video",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "CLEVRER": 500
+      },
+      "target_sources": {
+        "clevrer_descriptive_exist_answer": 500
+      },
+      "licenses": {
+        "CC0-1.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+      "artifact_path": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/dev.jsonl",
+      "cohort": "crossmodal",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 1000,
+      "datasets": {
+        "A-OKVQA+Clotho-AQA": 500
+      },
+      "target_sources": {
+        "programmatic_component_answer_and": 500
+      },
+      "licenses": {
+        "image:QA:Apache-2.0;media:CC-BY-2.0;audio:QA:MIT;media:CC0-1.0": 276,
+        "image:QA:Apache-2.0;media:CC-BY-2.0;audio:QA:MIT;media:CC-BY-3.0": 224
+      }
+    },
+    {
+      "artifact_sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2",
+      "artifact_path": "/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a/dev.jsonl",
+      "cohort": "screenshot",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "hflqf88888/GUIOdyssey": 500
+      },
+      "target_sources": {
+        "gui_odyssey_sam2_bbox_program_truth": 500
+      },
+      "licenses": {
+        "CC-BY-4.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "cfae7dcad72fb5c8055ade7c9110ead8f0f3484aee3dc2175b8f726947b3108b",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/calibration.jsonl",
+      "cohort": "video",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 3000,
+      "questions": 3000,
+      "families": 3000,
+      "media": 3000,
+      "datasets": {
+        "CLEVRER": 3000
+      },
+      "target_sources": {
+        "clevrer_descriptive_exist_answer": 3000
+      },
+      "licenses": {
+        "CC0-1.0": 3000
+      }
+    },
+    {
+      "artifact_sha256": "572a3d9de0a3d10f5728eb6f08c29ef6a4797dd5a040545afbb4eb974e269f05",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/clevrer-validation-gold-001/holdout.jsonl",
+      "cohort": "video",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 1000,
+      "questions": 1000,
+      "families": 1000,
+      "media": 1000,
+      "datasets": {
+        "CLEVRER": 1000
+      },
+      "target_sources": {
+        "clevrer_descriptive_exist_answer": 1000
+      },
+      "licenses": {
+        "CC0-1.0": 1000
+      }
+    },
+    {
+      "artifact_sha256": "181e9570453fa9aa83bbd2f2bd5a6e6924c9b8939198a9681886d773d1f63fc9",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/speech-gold-001/dev.jsonl",
+      "cohort": "audio",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 8,
+      "media": 500,
+      "datasets": {
+        "LibriSpeech": 500
+      },
+      "target_sources": {
+        "librispeech_original_transcript": 500
+      },
+      "licenses": {
+        "CC-BY-4.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "fa59238c6362557db7f08212f143b8e685edf40350d9dcd120d5afce3a4b0e7e",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/calibration.jsonl",
+      "cohort": "screenshot",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 3000,
+      "questions": 3000,
+      "families": 564,
+      "media": 3000,
+      "datasets": {
+        "hflqf88888/GUIOdyssey": 3000
+      },
+      "target_sources": {
+        "gui_odyssey_sam2_bbox_program_truth": 3000
+      },
+      "licenses": {
+        "CC-BY-4.0": 3000
+      }
+    },
+    {
+      "artifact_sha256": "85fc04f992ebbc72c8c60ea0809b3c0d4354859a698c8dcb55e1fcb6b91c624c",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/gui-gold-002/holdout.jsonl",
+      "cohort": "screenshot",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 1000,
+      "questions": 1000,
+      "families": 179,
+      "media": 1000,
+      "datasets": {
+        "hflqf88888/GUIOdyssey": 1000
+      },
+      "target_sources": {
+        "gui_odyssey_sam2_bbox_program_truth": 1000
+      },
+      "licenses": {
+        "CC-BY-4.0": 1000
+      }
+    },
+    {
+      "artifact_sha256": "ff6b3aa6fb7ed7b90aa826c447d1c22ac5e20e1a80acd4954d28b3c7c79aa9fe",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/vqa-gold-001/dev.jsonl",
+      "cohort": "image",
+      "pool": "dev",
+      "exposure": "historical",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "VQA-v2": 500
+      },
+      "target_sources": {
+        "vqa2_unanimous_10_human_answers": 500
+      },
+      "licenses": {
+        "QA:CC-BY-4.0;media:CC-BY-2.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "014ab60998f31c235d5d9e0861b0ea1d3d74ed42b367f94ce219b40b3ce289f4",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0000.jsonl",
+      "cohort": "audio",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 1400,
+      "questions": 1400,
+      "families": 590,
+      "media": 656,
+      "datasets": {
+        "Clotho-AQA": 1400
+      },
+      "target_sources": {
+        "clotho_original_unanimous_three_answers": 1400
+      },
+      "licenses": {
+        "QA:MIT;media:CC-BY-3.0": 718,
+        "QA:MIT;media:CC0-1.0": 682
+      }
+    },
+    {
+      "artifact_sha256": "7751971b5c7848883295533776280e51bbde25db1cecf9470efc323f35f8d48a",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0001.jsonl",
+      "cohort": "audio",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 500,
+      "questions": 500,
+      "families": 200,
+      "media": 235,
+      "datasets": {
+        "Clotho-AQA": 500
+      },
+      "target_sources": {
+        "clotho_original_unanimous_three_answers": 500
+      },
+      "licenses": {
+        "QA:MIT;media:CC-BY-3.0": 254,
+        "QA:MIT;media:CC0-1.0": 246
+      }
+    },
+    {
+      "artifact_sha256": "c5ad76631dc918809f78982b660ef52baf896aef69b8efe9dd0e5b5f983c1fb5",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0002.jsonl",
+      "cohort": "audio",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 1600,
+      "questions": 1600,
+      "families": 20,
+      "media": 1600,
+      "datasets": {
+        "LibriSpeech": 1600
+      },
+      "target_sources": {
+        "librispeech_original_transcript": 1600
+      },
+      "licenses": {
+        "CC-BY-4.0": 1600
+      }
+    },
+    {
+      "artifact_sha256": "a30da7147e1f15d202f71fb4fc0076c358dd2c2ffee74a7de7d5257cb4acceca",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0003.jsonl",
+      "cohort": "audio",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 500,
+      "questions": 500,
+      "families": 6,
+      "media": 500,
+      "datasets": {
+        "LibriSpeech": 500
+      },
+      "target_sources": {
+        "librispeech_original_transcript": 500
+      },
+      "licenses": {
+        "CC-BY-4.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "28aed43541408a80b356760a38e3b8a7578375ea07428795d429667668018db1",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0004.jsonl",
+      "cohort": "image",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 3000,
+      "questions": 3000,
+      "families": 3000,
+      "media": 3000,
+      "datasets": {
+        "VQA-v2": 3000
+      },
+      "target_sources": {
+        "vqa2_unanimous_10_human_answers": 3000
+      },
+      "licenses": {
+        "QA:CC-BY-4.0;media:CC-BY-2.0": 3000
+      }
+    },
+    {
+      "artifact_sha256": "5ac4e51d1932a6d4ad01cbc6c1ac1e29f42a8c18e540e41f34f8efc4d6ed98c0",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-source-bundle-001/samples-0005.jsonl",
+      "cohort": "image",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 1000,
+      "questions": 1000,
+      "families": 1000,
+      "media": 1000,
+      "datasets": {
+        "VQA-v2": 1000
+      },
+      "target_sources": {
+        "vqa2_unanimous_10_human_answers": 1000
+      },
+      "licenses": {
+        "QA:CC-BY-4.0;media:CC-BY-2.0": 1000
+      }
+    },
+    {
+      "artifact_sha256": "d349b64d8f09ffe135d17e2e521c9c1561c4e1e1cc01d8c8d3ac8e3f1568bb51",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/calibration.jsonl",
+      "cohort": "crossmodal",
+      "pool": "calibration",
+      "exposure": "current",
+      "samples": 3000,
+      "questions": 3000,
+      "families": 3000,
+      "media": 5256,
+      "datasets": {
+        "VQA-v2+LibriSpeech": 1600,
+        "VQA-v2+Clotho-AQA": 1400
+      },
+      "target_sources": {
+        "programmatic_component_answer_and": 3000
+      },
+      "licenses": {
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:CC-BY-4.0": 1600,
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:QA:MIT;media:CC-BY-3.0": 718,
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:QA:MIT;media:CC0-1.0": 682
+      }
+    },
+    {
+      "artifact_sha256": "346c08aa7bcfbce543b853500cd36b6dfe0fc60ce2f426015aa5e9b3e0d57d49",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-gold-001/holdout.jsonl",
+      "cohort": "crossmodal",
+      "pool": "holdout",
+      "exposure": "current",
+      "samples": 1000,
+      "questions": 1000,
+      "families": 1000,
+      "media": 1735,
+      "datasets": {
+        "VQA-v2+Clotho-AQA": 500,
+        "VQA-v2+LibriSpeech": 500
+      },
+      "target_sources": {
+        "programmatic_component_answer_and": 1000
+      },
+      "licenses": {
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:QA:MIT;media:CC-BY-3.0": 254,
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:CC-BY-4.0": 500,
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:QA:MIT;media:CC0-1.0": 246
+      }
+    },
+    {
+      "artifact_sha256": "61774ce2f4aa8f59b17cf69cc0ee20c4e890d39e8709b4cccf7aed971180bc09",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-source-bundle-002/samples-0000.jsonl",
+      "cohort": "audio",
+      "pool": "dev",
+      "exposure": "current",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "Clotho-AQA": 500
+      },
+      "target_sources": {
+        "clotho_original_unanimous_three_answers": 500
+      },
+      "licenses": {
+        "QA:MIT;media:CC-BY-3.0": 224,
+        "QA:MIT;media:CC0-1.0": 276
+      }
+    },
+    {
+      "artifact_sha256": "d4f56a85c567bc67f1603bd73cbdfc0c2a26f4fd532e07649bd63c3c48b23aa3",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-source-bundle-002/samples-0001.jsonl",
+      "cohort": "audio",
+      "pool": "dev",
+      "exposure": "current",
+      "samples": 500,
+      "questions": 500,
+      "families": 8,
+      "media": 500,
+      "datasets": {
+        "LibriSpeech": 500
+      },
+      "target_sources": {
+        "librispeech_original_transcript": 500
+      },
+      "licenses": {
+        "CC-BY-4.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "8b7df3c241015fd640784416834d1cc7264b56ab309fc47d237d7671cc4b8428",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-source-bundle-002/samples-0002.jsonl",
+      "cohort": "image",
+      "pool": "dev",
+      "exposure": "current",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 500,
+      "datasets": {
+        "VQA-v2": 500
+      },
+      "target_sources": {
+        "vqa2_unanimous_10_human_answers": 500
+      },
+      "licenses": {
+        "QA:CC-BY-4.0;media:CC-BY-2.0": 500
+      }
+    },
+    {
+      "artifact_sha256": "1d2d8e151a3bc282099764a5ce7d04e8190fd212684ca010582511c5b25cfde1",
+      "artifact_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-002/dev.jsonl",
+      "cohort": "crossmodal",
+      "pool": "dev",
+      "exposure": "current",
+      "samples": 500,
+      "questions": 500,
+      "families": 500,
+      "media": 1000,
+      "datasets": {
+        "VQA-v2+Clotho-AQA": 250,
+        "VQA-v2+LibriSpeech": 250
+      },
+      "target_sources": {
+        "programmatic_component_answer_and": 500
+      },
+      "licenses": {
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:QA:MIT;media:CC-BY-3.0": 113,
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:QA:MIT;media:CC0-1.0": 137,
+        "image:QA:CC-BY-4.0;media:CC-BY-2.0;audio:CC-BY-4.0": 250
+      }
+    }
+  ],
+  "exit_code": 0
+}

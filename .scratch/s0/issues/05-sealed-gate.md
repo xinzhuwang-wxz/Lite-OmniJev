@@ -36,5 +36,7 @@ Blocked by: p0:04
 
 2026-10-16：VQA4500图全量齐全并materialize3000cal/1000hold/500dev通过；crossmodal3000cal/1000hold组装通过，依赖组610/206单列，完整隔离142938观测零跨池。独立UID固定audit002和真实live/reused UID/保留目录访问拒绝探针通过，001权限claim已纠正；完整source准入及日志错误注入未完成。补充crossmodaldev002成功新增500题，原500dev保留；当前总清单crossmodal-dev-002/inventory-manifest.json SHA6eb32249…。
 
+2026-10-16：最新总清单RGB002（12463图像/144938观测）零跨池，private-job003最新清单通过，Linux真实失败/日志探针002的13项通过，001脚本API错误保留。结构组合器73测试通过；实际选集/source replay映射准入尚待组装，不能凭元数据声明关票。
+
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。

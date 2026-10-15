@@ -1,0 +1,11 @@
+{
+  "scope": "SHA-bound historical image resolution only, RGB decode remains materializer responsibility",
+  "image_references": 16963,
+  "resolved": 16963,
+  "unresolved": 0,
+  "roots": 63,
+  "config_sha256": "7d322f04580b1f378f98dad09ce16a2e898652328081120b769a6a03d54eff34",
+  "resolved_index_sha256": "def65b42d23e0f9155a78ecf17f5c8d0f2f3ace787020a61e9f894eda515d8cc",
+  "elapsed_seconds": 15.656,
+  "exit_code": 0
+}

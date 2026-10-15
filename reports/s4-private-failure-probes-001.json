@@ -1,0 +1,23 @@
+{
+  "scope": "real Linux synthetic failure/log/permission behavior, not gold or network security",
+  "checks": {
+    "valid": true,
+    "invalid": true,
+    "overlap": true,
+    "cli_redaction": true,
+    "hash_rejection": true,
+    "overwrite_rejected": true,
+    "malformed_receipt_rejected": true,
+    "extra_receipt_rejected": true,
+    "private_log_captured": true,
+    "exception_rejected": true,
+    "private_log_denied_after_run": true,
+    "timeout_reaped": false,
+    "exported_surfaces_redacted": true
+  },
+  "passed": false,
+  "code_sha256": "b6372817ddf111ccba83edba40b148b7034e56550e01dbc5a816663da8ac31b5",
+  "runner_sha256": "a29cade903f59ffe51b6e4d2ab9f45437c8a87a618e80f01d95d645d6f4fdfee",
+  "elapsed_seconds": 0.19,
+  "exit_code": 1
+}
