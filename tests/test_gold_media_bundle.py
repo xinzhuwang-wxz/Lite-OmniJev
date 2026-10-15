@@ -86,8 +86,6 @@ def test_bundle_preserves_payload_deduplicates_and_is_private(tmp_path: Path) ->
         "../asset.wav",
         "https://example.com/asset.wav",
         "file://host/a.wav",
-        "asset.wav?secret",
-        "asset.wav#secret",
         "/absolute.wav",
         "file:relative.wav",
         "%2e%2e/asset.wav",
@@ -281,3 +279,32 @@ def test_both_root_declarations_rejected(tmp_path: Path) -> None:
     value["samples"][0]["media_roots"] = [str(tmp_path / "trusted")]
     manifest.write_text(json.dumps(value))
     assert bundle(manifest, tmp_path / "output").categories == ["invalid_manifest"]
+
+
+@pytest.mark.parametrize(
+    "name", ["Bird #3.wav", "rain%20literal.wav", "what? sound.wav", "%2e%2e.wav"]
+)
+def test_relative_media_names_are_literal(tmp_path: Path, name: str) -> None:
+    manifest, source, _ = setup(tmp_path, [name])
+    (tmp_path / "trusted" / "asset.wav").rename(tmp_path / "trusted" / name)
+    before = source.read_bytes()
+    output = tmp_path / "output"
+    receipt = bundle(manifest, output)
+    assert receipt.outcome == "bundled"
+    rewritten = json.loads((output / "samples-0000.jsonl").read_text())
+    uri = rewritten["prefix"]["media"][0]["uri"]
+    assert (output / uri).read_bytes() == b"public synthetic bytes"
+    assert source.read_bytes() == before
+
+
+@pytest.mark.parametrize("tail", ["#fragment", "?query", "#", "?"])
+def test_file_uri_components_rejected(tmp_path: Path, tail: str) -> None:
+    manifest, _, _ = setup(tmp_path, [(tmp_path / "trusted" / "asset.wav").as_uri() + tail])
+    assert bundle(manifest, tmp_path / "output").categories == ["unsafe_path"]
+
+
+def test_file_uri_percent_decoding_remains_supported(tmp_path: Path) -> None:
+    name = "Bird #3%?.wav"
+    manifest, _, _ = setup(tmp_path, [(tmp_path / "trusted" / name).as_uri()])
+    (tmp_path / "trusted" / "asset.wav").rename(tmp_path / "trusted" / name)
+    assert bundle(manifest, tmp_path / "output").outcome == "bundled"

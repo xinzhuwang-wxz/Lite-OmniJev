@@ -87,21 +87,25 @@ def media_path(roots: list[Path], uri: str) -> Path:
         real_path(root)
         if not root.is_dir():
             raise Rejected("unsafe_path")
-    parsed = urlsplit(uri)
-    if parsed.netloc or parsed.query or parsed.fragment or parsed.scheme not in {"", "file"}:
-        raise Rejected("unsafe_path")
-    decoded = unquote(parsed.path)
-    value = Path(decoded)
-    if ".." in value.parts or "\\" in decoded or "\x00" in decoded:
-        raise Rejected("unsafe_path")
-    if parsed.scheme == "file":
+    if uri.startswith("file://"):
+        parsed = urlsplit(uri)
+        if parsed.netloc or "?" in uri or "#" in uri:
+            raise Rejected("unsafe_path")
+        local = unquote(parsed.path)
+        value = Path(local)
         if not value.is_absolute() or not any(value.is_relative_to(root) for root in roots):
             raise Rejected("unsafe_path")
         candidates = [value]
     else:
-        if value.is_absolute() or ":" in uri:
+        # Relative URIs are literal local filenames, as in the trainer resolver.
+        # Percent escapes, question marks and hashes have no URL meaning here.
+        local = uri
+        value = Path(local)
+        if value.is_absolute() or ":" in local:
             raise Rejected("unsafe_path")
         candidates = [root / value for root in roots]
+    if ".." in value.parts or "\\" in local or "\x00" in local:
+        raise Rejected("unsafe_path")
     matches: set[Path] = set()
     for path in candidates:
         real_path(path)
