@@ -25,6 +25,7 @@
 - 远端/root/autodl-tmp/s1-text-lora-001，SSH mux /tmp/omnijev-ssh-root-final、端口48926；训练Python before-gpu-teacher-job-final-001，GPU H20。模型/媒体/凭据沿runbook。
 
 ## 已知缺口与决定
+- 音频候选LibriSpeech dev-clean/test-clean已下载并通过官方MD5及SHA256绑定；5305段≤30秒/16kHz/mono（仅FLAC header核查），跨split有5本书/20转录串重叠。reports/s4-librispeech-{capacity,source-audit}-001.json；尚未分池/入gold，须书籍/文本/媒体连通组隔离，保留Clotho分项质量门，不能用语音替换环境声门。远端source-audit/librispeech-s4-candidate-001/mirror-002，下载与CPU作业均已结束。
 - 用户重申产品必须兼顾快与低成本。S6/FINAL按同硬件、同输入长度/媒体预算、同并发报告端到端p50/p95、吞吐、峰值显存、每千次成功决策成本（含预处理与空闲摊销边界）；当前FP32正确性参考不能充当低成本产品。无同条件Jev测量时不声称追平或超越。
 - reports/s3-reserve-inventory-001.json：text预留3000/1000，其余不足。audio原来源全部split排除现有train/dev后最多1916题，至少缺2084；video新增validation3000/1000已构建且通过所提供历史/media隔离，完整权限边界仍待验收。crossmodal未分配。
 - Noul统计tie顺序已修复：规范yes/no，旧JSON顺序导致通用accuracy/ECE偏差；产品预测及S3门不变。原报告不覆盖，audio/video/video8 correction报告保留。远端旧代码的全记录审计已完成，现可同步。
