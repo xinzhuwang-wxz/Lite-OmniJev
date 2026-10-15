@@ -1,0 +1,18 @@
+{
+  "paths": [
+    "reports/s3-merged-alias-repair-001.json",
+    "reports/s3-merged-fp32-materialization-001.json",
+    "reports/s3-serving-hf1120-reference-001.json",
+    "reports/s3-serving-merged-server-001.json",
+    "reports/s3-serving-startup-failures-001.json",
+    "reports/s4-historical-training-index-001.json",
+    "reports/s4-training-reserve-inventory-001.json",
+    "reports/s4-training-reserve-inventory-002.json",
+    "reports/s3-serving-merged-server-002.json",
+    "reports/s3-serving-merged-parity-001.json"
+  ],
+  "code_hashes_unchanged": true,
+  "full_source_identity_matches": true,
+  "scope": "Local git output exclusions only, preserving all original source/code/weight/reference checks",
+  "reference_report_sha256": "04baf154863676948d98776908a4bdf7ad37d2e5787220b4511dca54b2e8e1e5"
+}

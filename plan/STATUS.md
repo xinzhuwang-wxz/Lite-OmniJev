@@ -16,7 +16,8 @@
 - S3全GPU链已结束、全sidecar已审计。远端已安全ff至869ee95，17个精确路径冲突的旧untracked证据保存在/root/autodl-tmp/s2-evidence-recovery/pre-s3-serving-reference。
 - HF float32+S3 adapter+1120公开100例双遍完成，227.05秒/exit0/完全相同；reports/s3-serving-hf1120-summary-001.json绑定远端完整报告。
 - 原生LoRA FP32启动失败（内核仅FP16/BF16），改为独立FP32合并副本artifacts/s3-merged-fp32-reference-001（31.8GB），原基座/adapter未改；补18个原始k_norm别名并修复服务PATH后启动成功。materialization/alias-repair/启动失败报告保留；36个共享KV projection不改，不改推理引擎。
-- 当前本机服务PID826568，127.0.0.1:18001，/root/autodl-tmp/s3-serving-merged.sh限时900秒；native-merged-server-003.log。控制器PID826802运行/root/autodl-tmp/compare-merged-reference.py，正式公开100例双遍HTTP对照，日志compare.log、compare-exit-code.txt、报告reports/s3-serving-merged-parity-001.json。原始代码仍869ee95，运行中不切代码；完成后停自己开的服务进程，未获授权不关卡。
+- 当前本机服务PID826568，127.0.0.1:18001，/root/autodl-tmp/s3-serving-merged.sh限时900秒；native-merged-server-003.log。首轮控制器在推理前被git dirty中的新增报告拦截exit2；全部代码哈希相同，只将10个本次输出报告路径加入本地git/info/exclude，完整source identity已精确相同，reports/s3-reference-output-exclusion-001.json留证，不改reference或校验器。
+- 当前正式比较子进程PID827126，由/root/autodl-tmp/compare-merged-reference-002.py启动；日志compare-002.log、compare-exit-code-002.txt，server-record为reports/s3-serving-merged-server-002.json，结果reports/s3-serving-merged-parity-001.json。原始代码仍869ee95，运行中不切代码；完成后停自己开的服务进程，未获授权不关卡。
 - 远端/root/autodl-tmp/s1-text-lora-001，SSH mux /tmp/omnijev-ssh-root-final、端口48926；训练Python before-gpu-teacher-job-final-001，GPU H20。模型/媒体/凭据沿runbook。
 
 ## 已知缺口与决定
