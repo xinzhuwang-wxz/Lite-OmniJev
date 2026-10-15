@@ -1,0 +1,40 @@
+{
+  "status": "prepared",
+  "exit_code": 0,
+  "stage_gate": false,
+  "scope": "full chosen public-dev file; no calibration/holdout; no screening threshold",
+  "gpu_requested": false,
+  "cost": null,
+  "source": "original",
+  "adapter": "coverage",
+  "runner_sha256": "1571ce16c8086e1e6b55830b35684e0a5913d922d549e0fa7e395cae94eaec7a",
+  "shared_source_sha256": "0c9c616f90f4fb942dbfa5f96f7abd64d238796ff8b8c7b073b7c5deb07ed379",
+  "budget_seconds": 600,
+  "actual_full_source_count": 500,
+  "data_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+  "data_path": "/root/autodl-tmp/s0-crossmodal-development-001/artifacts/crossmodal-dev-001-a/dev.jsonl",
+  "expanded_beyond_fixed50": true,
+  "adapter_sha256": "0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818",
+  "adapter_config_sha256": "7c1a933ff570ff2c256d4123e7cd8a7cd28f24729562d8a93879f77d99ef4217",
+  "selected_ids_sha256": "f055d5fb2e60415ebcc8540d0977ca347896dbe31021f84a300a237b8661cd2b",
+  "image_max_soft_tokens": 1120,
+  "dtype": "bfloat16",
+  "seed": 42,
+  "passes": 1,
+  "code_sha256": {
+    "scripts/s0_development_baselines.py": "68a173f47b5161c49c2fe250eb445506bc8e760a62d19b2577fd3719197298d4",
+    "scripts/s0_public_baselines.py": "aa77de96903ec7093bf3f79dd8dbc3f85b84f07cb61f0e170c64446057b38cf2",
+    "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+    "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+    "train/multimodal.py": "09c5df0cb4ea5917910282b0fd2ae3ba55778049dc8e33b36f9b1d3ee469f265",
+    "eval/metrics.py": "a7e4f0412add2106094e50c2cf9e78ff4d4d9732085ff23b7186d881151ecda8",
+    "data/schema.py": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6"
+  },
+  "duration_seconds": 0.24728590436279774,
+  "records_sidecar": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-coverage-cross-full-original-preflight-001/records.jsonl",
+    "exists": false,
+    "records": 0,
+    "sha256": null
+  }
+}

@@ -10,7 +10,7 @@
 - 本轮筛选已停止：video108/150（motion10/14、temporal65/97）通过，原cross34/50<35失败；87821终态2，PID984760结束，余下5项不运行。reports/s4-crossmodal-retention-screening/diagnostic-001。较首轮纠正1/退化2，no→yes10→12；不推广。
 - TRAIN梯度诊断已真实完成：d96d580，4项CPU测试通过，36draw无optimizer更新，GPU112.81秒/峰值36.47GB；17079终态0。video/cross仅1/3负内积，sum/cross三组均正，不符合冻结条件，因此不启动投影训练。reports/s4-gradient-probe-{preflight,gpu,launch}-001；源码/root/autodl-tmp/s4-gradient-probe-code-001，archive f4f8fa30…。此为固定初始权重3组TRAIN局部测量，不排除训练后段冲突。
 - 用户最新授权ADR0022：小筛选一题差异不机械否决有收益候选，历史失败保留但允许完整dev取证，最终S4门不变。当前coverage0deef完整原video500已启动会话87250，PID996703，≤600秒；脚本/root/autodl-tmp/evaluate-coverage-full-video-001.py，源s4-gradient-probe-code-001，输出reports/s4-coverage-video-full-001.json及execution-001。核验同一会话，勿重启。
-- alpha.5融合入口已CPU完成但暂缓，不生成候选、不上卡。Sol6.1独立s4-gradient-diagnostic正准备coverage/首轮的完整跨模态来源对照入口。
+- alpha.5融合暂缓。完整cross入口5433262已集成，真实original/supplemental各500题CPU预检通过；脚本目录/root/autodl-tmp/s4-cross-full-code-001，core源s4-gradient-probe-code-001。队列76057等待视频PID996703退出且报告成功后依序跑original coverage/first（每个600秒），first逐题输入绑定coverage sidecar；输出artifacts/s4-cross-full-original-{coverage,first}-001/receipt.json。补充来源GPU待此结果，不重复启动队列。Sol6.1并行准备旧四模态完整dev入口。
 - 曝光helper29a2c36已真实执行成功，会话66041终态0：42份已知update-bearing报告，新增本轮canonical TRAIN输入，完整库存isolated。当前inventory artifacts/s4-pilot-exposure-003，reports/s4-pilot-exposure-reconciliation-003.json；正式S4封存前仍需刷新gold准入绑定。
 - 保留候选仍为首轮6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac，报告s4-joint-pilot-train-001。video99/150、原cross35/50、补充40/50，仅通过小筛选。
 
