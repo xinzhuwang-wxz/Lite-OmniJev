@@ -85,14 +85,14 @@ def test_ledger_verification_rejects_reserved_and_unlisted(tmp_path: Path) -> No
     )
     assert load_ledger_pools(ledger)["clinc-oos-train-00001"] == "holdout"
     clean = write_jsonl(tmp_path / "clean.jsonl", [sample_row(0)])
-    assert verify_data_is_train_pool(clean, ledger)["verified_train"] == 1
+    assert verify_data_is_train_pool(clean, [ledger])["verified_train"] == 1
     for index, pattern in ((1, "reserved"), (2, "reserved"), (3, "dev")):
         bad = write_jsonl(tmp_path / f"bad-{index}.jsonl", [sample_row(index)])
         with pytest.raises(ValueError, match=pattern):
-            verify_data_is_train_pool(bad, ledger)
+            verify_data_is_train_pool(bad, [ledger])
     unlisted = write_jsonl(tmp_path / "unlisted.jsonl", [sample_row(99)])
     with pytest.raises(ValueError, match="unlisted"):
-        verify_data_is_train_pool(unlisted, ledger)
+        verify_data_is_train_pool(unlisted, [ledger])
 
 
 def test_dev_eval_load_samples_rejects_non_choice(tmp_path: Path) -> None:

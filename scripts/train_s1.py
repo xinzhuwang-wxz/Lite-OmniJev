@@ -26,9 +26,14 @@ def load_ledger_pools(path: Path) -> dict[str, str]:
     return pools
 
 
-def verify_data_is_train_pool(data_path: Path, ledger_path: Path) -> dict[str, int]:
-    """Reject any sample the frozen allocation did not place in the train pool."""
-    pools = load_ledger_pools(ledger_path)
+def verify_data_is_train_pool(data_path: Path, ledger_paths: list[Path]) -> dict[str, int]:
+    """Reject any sample the frozen allocations did not place in a train pool."""
+    pools: dict[str, str] = {}
+    for ledger_path in ledger_paths:
+        for item_id, pool in load_ledger_pools(ledger_path).items():
+            prior = pools.setdefault(item_id, pool)
+            if prior != pool:
+                raise ValueError(f"ledgers disagree about {item_id}: {prior} vs {pool}")
     data_ids = [
         json.loads(line)["id"]
         for line in data_path.read_text(encoding="utf-8").splitlines()
@@ -57,7 +62,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--allocation-ledger",
         type=Path,
-        help="allocation ledger binding every sample id to its frozen pool",
+        action="append",
+        default=None,
+        help="allocation ledger(s) binding sample ids to frozen pools; repeatable",
     )
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
@@ -66,7 +73,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         config = LoopConfig.model_validate_json(args.config.read_text())
         ledger_check: dict[str, int] | None = None
-        if args.allocation_ledger is not None:
+        if args.allocation_ledger:
             ledger_check = verify_data_is_train_pool(args.data, args.allocation_ledger)
         report = run(
             config,
