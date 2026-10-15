@@ -1,0 +1,52 @@
+{
+  "canonical_data_sha256": "72c9bbf0b3cd8b931feeb4ce3b63128634d714dc1caadeb2117a27aa583e81fe",
+  "code_sha256": {
+    "train/multimodal.py": "09c5df0cb4ea5917910282b0fd2ae3ba55778049dc8e33b36f9b1d3ee469f265",
+    "train/pair_objective.py": "a2e164e98527001e868cb665342fdb510ccaedd7592a186a2d9891f08598b1fa",
+    "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+    "train/trainer.py": "75f262b814f7176ba6dd7c479515d8acfcfa9929a161eedc99e1d555f6b88190"
+  },
+  "cost": null,
+  "duration_seconds": 33.59648530930281,
+  "exit_code": 0,
+  "gpu_used": false,
+  "init_adapter": {
+    "config_sha256": "7c1a933ff570ff2c256d4123e7cd8a7cd28f24729562d8a93879f77d99ef4217",
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-retention-train-001/adapter",
+    "weights_sha256": "0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818"
+  },
+  "input_sha256": {
+    "allocation-ledger.jsonl": "c2376c1b83da4bfe45308e827690f95d71422232d925e4057da083f378c3bee8",
+    "config-ce0.json": "3bca7236bc4e2fe8db9ef4742858f5a3ad257288f10d714693e16380e1ea2145",
+    "draw-recipe.json": "cb628127e95cf1fb0d7259b6c890d480817d3d3af6822aa9785bf4e0f0b6f5d7",
+    "inventory-audit.json": "1c36a4f19a915891d8dd497883618720b2a19ff29ade5c0e89ffbf659fbe06be",
+    "inventory-expanded-audit.json": "42e38e4a38ee518c1d491a44297e39e35881d7523e7ad22f34728499779221e4",
+    "inventory-expanded.json": "3fc8acce06c8d159b6bea783b19f96ad76243badfd7c9bd27587003f970f8cbb",
+    "inventory-manifest.json": "9646925d69a25e822ff080c7a7505c29b5be4f73881d444421164008e5eca8f9",
+    "pair-override-recipe.json": "2eee4748a076067e946ec6820e8dea032f96da2e00a7e04d2b0ad0636e9e3ea2",
+    "train.jsonl": "72c9bbf0b3cd8b931feeb4ce3b63128634d714dc1caadeb2117a27aa583e81fe"
+  },
+  "observed_git_revision": "unavailable",
+  "output_sha256": {
+    "config-pair01.json": "00f1b14150a577ca5098f78544ffde7ce89859e1809b3651cd83b66b7b3e7840",
+    "pair-sidecar.json": "963813e965cbdc9b60e3b13eb96532495c4f4ea2b4008a6d58422f3054da6dd4"
+  },
+  "pairs": 20,
+  "preparation": {
+    "cache_budget_bytes": 134217728,
+    "cache_peak_bytes": 130507542,
+    "cache_retained_bytes": 129901300,
+    "media_validation": "partial; unvisited samples validated on access",
+    "mode": "lazy",
+    "observed_max_prompt_tokens": 1974,
+    "pool_examples": 120,
+    "preparation_calls": 80,
+    "prepared_examples": 40
+  },
+  "preparation_report_sha256": "65cd76fbd84b206fcb864c40312be271cc3da5dca2ded293e4356d8a3650832b",
+  "prepared_pair_draws": 40,
+  "script_sha256": "774207981de6614dcbef42f3b00d7dc613490614073ad17c54a81539d167cdc2",
+  "source_archive_sha256": "9132c2d552af09aa4569c33df3b370fc61abe5c61eb34fa2e235b795a28f2378",
+  "source_commit": "3fe0ab2a3096f125ecbdf31426dc5d50296e386e",
+  "status": "validated"
+}
