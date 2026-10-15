@@ -99,7 +99,55 @@ def version_mapping(inventory: Manifest) -> dict[str, str]:
     return result
 
 
-def prepare(root: Path, legacy_root: Path, output: Path, historical_index: Path) -> dict[str, Any]:
+def pilot_paths(
+    root: Path, *, crossmodal_retention: bool = False
+) -> list[tuple[str, Path, Path, Path]]:
+    paths = [
+        (
+            name,
+            root / "reports" / (name + "-train-001.json"),
+            root / "artifacts" / (name + "-train-001"),
+            root / "artifacts" / (name + "-001"),
+        )
+        for name in PILOTS
+    ]
+    if crossmodal_retention:
+        paths.append(
+            (
+                "s4-crossmodal-retention",
+                root / "reports/s4-crossmodal-retention-training-001.json",
+                root / "artifacts/s4-crossmodal-retention-train-001",
+                root / "artifacts/s4-crossmodal-retention-pilot-002",
+            )
+        )
+    return paths
+
+
+def base_inventory(root: Path, *, crossmodal_retention: bool) -> tuple[Path, dict[str, str] | None]:
+    if not crossmodal_retention:
+        return root / "artifacts/s4-video-pilot-001/inventory-manifest.json", None
+    preparation = root / "artifacts/s4-crossmodal-retention-pilot-002"
+    report, binding = read_json(preparation / "report.json")
+    require(
+        report.get("status") == "prepared" and report.get("exit_code") == 0,
+        "preparation_not_passed",
+    )
+    path = preparation / "inventory-manifest.json"
+    require(
+        sha(path) == report["output_sha256"]["inventory-manifest.json"],
+        "base_inventory_preparation_sha",
+    )
+    return path, binding
+
+
+def prepare(
+    root: Path,
+    legacy_root: Path,
+    output: Path,
+    historical_index: Path,
+    *,
+    crossmodal_retention: bool = False,
+) -> dict[str, Any]:
     started = time.monotonic()
     require(
         all(p.is_absolute() for p in (root, legacy_root, output, historical_index)),
@@ -108,7 +156,9 @@ def prepare(root: Path, legacy_root: Path, output: Path, historical_index: Path)
     require(not output.exists(), "output_exists")
     output.mkdir(parents=True, mode=0o700)
     try:
-        inventory_path = root / "artifacts/s4-video-pilot-001/inventory-manifest.json"
+        inventory_path, base_preparation_binding = base_inventory(
+            root, crossmodal_retention=crossmodal_retention
+        )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
         mappings = version_mapping(inventory)
@@ -116,10 +166,12 @@ def prepare(root: Path, legacy_root: Path, output: Path, historical_index: Path)
         hashes = {a.sha256 for a in inventory.samples if a.expected_pool == "train"}
         all_hashes = {a.sha256 for a in inventory.samples}
         bindings: dict[str, str] = {inventory_binding["path"]: inventory_binding["sha256"]}
+        if base_preparation_binding is not None:
+            bindings[base_preparation_binding["path"]] = base_preparation_binding["sha256"]
         pilots, new_artifacts = [], []
-        for name in PILOTS:
-            final_path = root / "reports" / (name + "-train-001.json")
-            run_dir = root / "artifacts" / (name + "-train-001")
+        for name, final_path, run_dir, preparation_dir in pilot_paths(
+            root, crossmodal_retention=crossmodal_retention
+        ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
             terminal_report(final)
@@ -129,7 +181,6 @@ def prepare(root: Path, legacy_root: Path, output: Path, historical_index: Path)
             runtime_data = run_dir / "data.jsonl"
             runtime_binding = bind(runtime_data)
             require(runtime_binding["sha256"] == final.get("data_sha256"), "runtime_data_sha")
-            preparation_dir = root / "artifacts" / (name + "-001")
             prep_report, prep_report_binding = read_json(preparation_dir / "report.json")
             require(
                 prep_report.get("status") == "prepared" and prep_report.get("exit_code") == 0,
@@ -169,6 +220,11 @@ def prepare(root: Path, legacy_root: Path, output: Path, historical_index: Path)
                 prep_report_binding,
                 preparation_binding,
             ):
+                require(
+                    binding["path"] not in bindings
+                    or bindings[binding["path"]] == binding["sha256"],
+                    "mutable_report",
+                )
                 bindings[binding["path"]] = binding["sha256"]
             pilots.append(
                 {
@@ -293,6 +349,10 @@ def prepare(root: Path, legacy_root: Path, output: Path, historical_index: Path)
             "runner_sha256": sha(Path(__file__)),
             "cost": None,
         }
+        if crossmodal_retention:
+            report.update(
+                base_preparation_report=base_preparation_binding, crossmodal_retention_included=True
+            )
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -331,6 +391,11 @@ def main() -> int:
     parser.add_argument("--legacy-root", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--historical-index", type=Path)
+    parser.add_argument(
+        "--crossmodal-retention",
+        action="store_true",
+        help="Bind prepare002 inventory and include the terminal 360-draw candidate",
+    )
     args = parser.parse_args()
     try:
         report = prepare(
@@ -339,6 +404,7 @@ def main() -> int:
             args.output_dir,
             args.historical_index
             or args.root / "artifacts/s4-gold-inventory-001/historical-training-index.json",
+            crossmodal_retention=args.crossmodal_retention,
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
