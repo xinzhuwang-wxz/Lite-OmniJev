@@ -390,3 +390,71 @@ def test_prepare_media_failure_names_sample_and_every_candidate(tmp_path: Path) 
     assert sample.id in message
     assert str(tree_a / "shot.png") in message
     assert str(tree_b / "shot.png") in message
+
+
+@pytest.mark.parametrize("follow_content,expected", [(True, 1.0), (False, 0.0)])
+def test_eval_reports_content_consistency_after_option_permutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, follow_content: bool, expected: float
+) -> None:
+    import sys
+
+    from scripts import s1_dev_eval
+    from train.readout import read_probabilities
+
+    row = text_row(0)
+    row["meta"]["pool"] = "dev"
+    sample = Sample.model_validate(row)
+    variant = build_counterfactual(sample, counterfactual_seed(sample.id))
+    options = sample.questions[0].options or []
+    permuted = variant.questions[0].options or []
+    moved_index = next(i for i, value in enumerate(options) if permuted[i] != value)
+    content = options[moved_index]
+    letter = chr(ord("A") + moved_index)
+    data = write_jsonl(tmp_path / "dev.jsonl", [row])
+    model = SimpleNamespace()
+    model.to = lambda device: model
+    model.eval = lambda: model
+    monkeypatch.setitem(
+        sys.modules,
+        "torch",
+        SimpleNamespace(
+            bfloat16="bf16",
+            use_deterministic_algorithms=lambda value: None,
+            cuda=SimpleNamespace(get_device_name=lambda index: "test-double"),
+        ),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "transformers",
+        SimpleNamespace(
+            Gemma4ForConditionalGeneration=SimpleNamespace(from_pretrained=lambda *a, **k: model),
+        ),
+    )
+    monkeypatch.setattr(s1_dev_eval, "OfficialTokenizerAdapter", lambda path: None)
+    monkeypatch.setattr(s1_dev_eval.importlib.metadata, "version", lambda package: "test")
+
+    def predict(model, tokenizer, current, max_length, **kwargs):
+        current_options = current.questions[0].options or []
+        prediction = chr(ord("A") + current_options.index(content)) if follow_content else letter
+        logits = {token: (10.0 if token == prediction else -10.0) for token in "ABCU"}
+        return logits, read_probabilities(logits, list("ABC"), temperature=1.0)
+
+    monkeypatch.setattr(s1_dev_eval, "forward_readout", predict)
+    report_path = tmp_path / "report.json"
+    assert (
+        s1_dev_eval.run(
+            model_dir=tmp_path,
+            adapter_dir=None,
+            data_path=data,
+            output_dir=tmp_path / "output",
+            report_out=report_path,
+            max_length=2048,
+            passes=2,
+            command=["test"],
+            counterfactual=True,
+        )
+        == 0
+    )
+    report = json.loads(report_path.read_text())
+    assert report["repeat_identical"] is True
+    assert report["metrics"]["counterfactual_content_match_rate"] == expected

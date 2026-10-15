@@ -339,7 +339,9 @@ def run(
                     record = record_for(variant, readout, logits)
                     options = sample.questions[0].options or []
                     original_content = prediction_content(original["prediction"], options)
-                    counterfactual_content = prediction_content(record["prediction"], options)
+                    counterfactual_content = prediction_content(
+                        record["prediction"], variant.questions[0].options or []
+                    )
                     record.update(
                         variant="counterfactual",
                         original_prediction=original["prediction"],
