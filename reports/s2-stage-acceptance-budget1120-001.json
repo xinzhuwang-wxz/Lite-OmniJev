@@ -1,0 +1,69 @@
+{
+  "status": "passed",
+  "stage": "S2",
+  "exit_code": 0,
+  "scope": "Frozen development image/screenshot/text decision-LoRA stage; not sealed holdout, calibration or release acceptance",
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+  "image_max_soft_tokens": 1120,
+  "metrics": {
+    "image_vs_onejev_delta": -0.016000000000000014,
+    "screenshot_vs_onejev_delta": 0.30199999999999994,
+    "text_regression": 0.0020000000000000018,
+    "counterfactual_flip_rate": 0.938,
+    "image_accuracy": 0.82,
+    "screenshot_accuracy": 0.964,
+    "text_accuracy": 0.994,
+    "image_ece15": 0.148204874789162,
+    "screenshot_ece15": 0.02806720733674247,
+    "image_cf_match": 0.938,
+    "screenshot_cf_match": 0.986
+  },
+  "gate_command": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "eval.gate",
+    "reports/s2-stage-metrics-budget1120-001.json",
+    "reports/s2-stage-thresholds-budget1120-001.json"
+  ],
+  "code_revision": "2b7c6df6530a9cb7209d74ccf43a6cf2b26f9aa0",
+  "runtime_code_revision": "ea3695e",
+  "training_execution_decision": "docs/adr/0020-s2-joint-training-execution.md",
+  "input_profile_decision": "docs/adr/0019-explicit-image-token-budget.md",
+  "evidence": {
+    "reports/s2-dev-eval-image-v2-budget1120-001.json": "c9e23d9696d2557b325d2c81ffdcba70d57e23855875b25c290b06f9ac1ceef2",
+    "reports/s2-dev-eval-screenshot-v2-budget1120-001.json": "49753a7d1ddc3688da8a63e2e1d9bba64a859bb05f41f2d60a5d4a0efb773546",
+    "reports/s2-dev-eval-text-v2-corrected-001.json": "58cc131a56f5a23d9401fab64a8e8b839956bd669be627037021e312a1679b6d",
+    "reports/s2-stage-metrics-budget1120-001.json": "142b37aa4ecc68da1e7b9f098b113915497bcbdc583c81cc9265019f114d8ac8",
+    "reports/s2-stage-thresholds-budget1120-001.json": "c34bab19f5b5dc7f8947d3fbf9dc9e5d3f1b29982bef8061830a43bef2854fd6",
+    "reports/s2-stage-gates-budget1120-001.json": "a093871ddeead8b3fb1d76adef7392cdb302ed29eda03b9a66e15da2c32a8dbf",
+    "reports/s2-budget1120-sidecar-audit-001.json": "1fce5ec1f6ff57dee5f45d174367e6aa7694df0123a67c00ef9309572d0001e6",
+    "reports/s2-text-evidence-reuse-001.json": "5aa2dee55848c9b21174391d3c9b5c427dffba250ca289b3becfcdcfff4c4838",
+    "reports/s2-joint-v2-run-001.json": "60d0e3c297ae51da0c7b068c4e1e4b46874a87bb4cce75de0f7180eadf3dda3e",
+    "reports/s2-smoke-run-001.json": "0fa2248be0a33b009c1370583ded746dcc89b6dfdd3e7de1da0e5f7de363ae98",
+    "reports/s2-training-exposure-audit-001.json": "6460351456bf604c82716d36481ecb3dbd05e088e92a18c4e9dd9b034dcfd11c",
+    "reports/s2-budget1120-hf-cpu-001.json": "5b2a7e9ef51d09df64bff1937ca8c95ff94e007c14037f856a3ab98c4d6712fc",
+    "reports/s2-budget1120-native-cpu-001.json": "8931ff8f7338369e3c32d3600028060b4abe4efbd82fa2e9cbb5d66dde497d99",
+    "reports/s2-integration-review-001.md": "feab35d2f27c76f51d76476ee0037ebe42b0d11a622d5ac2086d223b5622bb40"
+  },
+  "text_reuse": {
+    "report": "reports/s2-dev-eval-text-v2-corrected-001.json",
+    "validation": "reports/s2-text-evidence-reuse-001.json",
+    "interrupted_repeat": "The combined1800-second wrapper ended with KeyboardInterrupt during redundant text evaluation; not counted as a passing run. Original text double-pass evidence is reused after forward/readout/template, model/data/runtime identity checks."
+  },
+  "pending_release_checks": [
+    "Actual HTTP LoRA probabilities at selected image budget",
+    "API latency/throughput/memory and lower-cost final profile selection",
+    "S5 calibration and sealed gates",
+    "S6 single-GPU/edge release acceptance"
+  ],
+  "no_quality_threshold_change": true,
+  "recorded_at": "2026-10-15T19:17:09.310866+08:00",
+  "verification_source_sha256": {
+    "scripts/s2_gate.py": "1b512a768695ff585cccb2d827ea929964a114f270a21e0e11a00c50318e09dc",
+    "eval/gate.py": "8cb03407cb9e2dc7528b7cf50828efaaa5f869b8d6db93827897a5e2f84a4d50",
+    ".scratch/s2/verify-final-sidecars.py": "c8d77b297dfbfee6ccecdf107ebb8b90d462e6cf805516024ed555df7eab45dc"
+  }
+}

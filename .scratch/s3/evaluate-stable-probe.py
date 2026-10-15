@@ -41,7 +41,14 @@ for cohort in ["video", "audio", "image", "screenshot", "text"]:
         minimum = 18  # ceil(50 * .38 * .9); screening only.
         if cohort in {"image", "screenshot", "text"}:
             baseline = json.loads(
-                (root / f"reports/s2-dev-eval-{cohort}-v2-budget1120-001.json").read_text()
+                (
+                    root
+                    / (
+                        "reports/s2-dev-eval-text-v2-corrected-001.json"
+                        if cohort == "text"
+                        else f"reports/s2-dev-eval-{cohort}-v2-budget1120-001.json"
+                    )
+                ).read_text()
             )
             assert baseline["adapter_sha256"] == reference["adapter_sha256"]
             args = baseline["command"]

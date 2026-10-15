@@ -15,12 +15,15 @@ parser.add_argument(
     default=["image", "screenshot", "text"],
 )
 parser.add_argument("--output", type=Path, required=True)
+parser.add_argument("--text-report", type=Path)
 args = parser.parse_args()
 assert not args.output.exists()
 root = Path("/root/autodl-tmp/s1-text-lora-001")
 results = []
 for cohort in args.cohorts:
     path = root / f"reports/s2-dev-eval-{cohort}-v2-budget1120-001.json"
+    if cohort == "text" and args.text_report is not None:
+        path = args.text_report
     report = json.loads(path.read_text())
     assert report["status"] == "passed" and report["exit_code"] == 0
     assert report["samples"] == 500 and report["passes"] == 2 and report["repeat_identical"] is True
@@ -52,6 +55,7 @@ for cohort in args.cohorts:
     results.append(
         {
             "cohort": cohort,
+            "report_path": str(path),
             "report_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             "data_sha256": report["data_sha256"],
             "sidecar_sha256": report["sidecar_sha256"],

@@ -4,9 +4,9 @@ ID: s3:01
 Milestone: S3
 Category: enhancement
 Status: ready-for-agent
-Execution: open
-Owner: none
-Worktree: none
+Execution: claimed
+Owner: main-session
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
 Blocked by: s2:01
 
 ## What to build

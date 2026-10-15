@@ -4,9 +4,9 @@ ID: s2:01
 Milestone: S2
 Category: enhancement
 Status: ready-for-agent
-Execution: claimed
-Owner: main-session
-Worktree: /Users/bamboo/Githubs/Lite-OmniJev
+Execution: done
+Owner: none
+Worktree: none
 Blocked by: None
 
 ## What to build
@@ -40,3 +40,5 @@ E04–E07均未达固定dev150扩量条件，停止；见reports/explore/及对�
 新增视觉覆盖路线ADR0018：新family构建器2508a6f，远端含Pillow16项测试通过，本机10通过/6因无Pillow跳过；计划400唯一family、元信息及媒体哈希隔离，400个新family经下载、解码、重复媒体排除及ledger验证后已启动E08训练，见reports/s2-new-family-admission-001.json。
 
 E08扩量依据：reports/s2-new-family-ce-dev150-001.json 125/150达到固定规则；正在dev500单遍筛查。完整阶段门尚未重验，原v2门仍FAIL。
+
+S2已通过：reports/s2-stage-acceptance-budget1120-001.json。图像82.0%、截图96.4%、文本99.4%，cf93.8%/98.6%，各500题双遍一致、5000条原始记录复核。文本复用原同权重/输入/前向路径双遍证据；本次重复text被总链时限中断不算通过。全部原四质量门通过，部署性能/校准/封存仍待后续阶段。

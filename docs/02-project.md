@@ -2,7 +2,7 @@
 
 原始方案：[最终版](Lite-OmniJev设计方案-最终版.html)。此文负责执行顺序、命令和验收入口；原方案中的性能/资源估值按用户授权与ADR-0010用实测校准，调整有据可查。
 范围：单步多模态判断的 API、单卡包、E2B 端侧包；第十一节进阶优化/探索按ADR0015在对应阶段评估并自主开展有界实验；5b多步决策仍需范围决策。
-版本、成本、准确率、时延均需实测；P0工程闭环已完成（reports/p0-engineering-acceptance.md）。当前S0已按批准ADR0010/ADR0012通过：教师复现、数值/网关/浏览器、缓存实测、六开发cohort/30支持基线及预算汇总齐全；新增真人双标/κ/用户gate账号要求删除，改用现成可靠gold。s0:08已关闭；S1已通过（reports/s1-stage-acceptance-001.json）。S2迭代中，当前状态以plan/STATUS.md为准；S0交接plan/handoff-2026-10-15-s0-complete.md与reports/s0-stage-acceptance-001.json保留。
+版本、成本、准确率、时延均需实测；P0工程闭环已完成（reports/p0-engineering-acceptance.md）。当前S0已按批准ADR0010/ADR0012通过：教师复现、数值/网关/浏览器、缓存实测、六开发cohort/30支持基线及预算汇总齐全；新增真人双标/κ/用户gate账号要求删除，改用现成可靠gold。s0:08已关闭；S1已通过（reports/s1-stage-acceptance-001.json）。S2已通过（reports/s2-stage-acceptance-budget1120-001.json，v2+1120图像预算；非最终性能默认）；S3小批量推进中，当前状态以plan/STATUS.md为准；S0交接plan/handoff-2026-10-15-s0-complete.md与reports/s0-stage-acceptance-001.json保留。
 
 ## 当前基线与栈
 

@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "CPU sidecar/data/adapter verification; numerical gate remains separate",
+  "cohorts": [
+    {
+      "cohort": "image",
+      "report_path": "/root/autodl-tmp/s1-text-lora-001/reports/s2-dev-eval-image-v2-budget1120-001.json",
+      "report_sha256": "c9e23d9696d2557b325d2c81ffdcba70d57e23855875b25c290b06f9ac1ceef2",
+      "data_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+      "sidecar_sha256": "ee22ea137a61b768e0b6c3e8239c08a15f8de3150367a2a68e434e2087fbd19e",
+      "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+      "records": 2000,
+      "repeat_exact": true,
+      "recomputed_metrics_exact": true
+    },
+    {
+      "cohort": "screenshot",
+      "report_path": "/root/autodl-tmp/s1-text-lora-001/reports/s2-dev-eval-screenshot-v2-budget1120-001.json",
+      "report_sha256": "49753a7d1ddc3688da8a63e2e1d9bba64a859bb05f41f2d60a5d4a0efb773546",
+      "data_sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2",
+      "sidecar_sha256": "512cef99c33a2ca6ee053c6f9f459985864795ece4cf03924790acab1d51fbb6",
+      "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+      "records": 2000,
+      "repeat_exact": true,
+      "recomputed_metrics_exact": true
+    },
+    {
+      "cohort": "text",
+      "report_path": "reports/s2-dev-eval-text-v2-corrected-001.json",
+      "report_sha256": "58cc131a56f5a23d9401fab64a8e8b839956bd669be627037021e312a1679b6d",
+      "data_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+      "sidecar_sha256": "e1dbc2a31704f12ea675ca0192519d7e5b3f65485fd24da9c7a98124fe9aab30",
+      "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+      "records": 1000,
+      "repeat_exact": true,
+      "recomputed_metrics_exact": true
+    }
+  ]
+}
