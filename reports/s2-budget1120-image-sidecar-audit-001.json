@@ -1,0 +1,17 @@
+{
+  "status": "partial",
+  "exit_code": 0,
+  "scope": "CPU sidecar/data/adapter verification; numerical gate remains separate",
+  "cohorts": [
+    {
+      "cohort": "image",
+      "report_sha256": "c9e23d9696d2557b325d2c81ffdcba70d57e23855875b25c290b06f9ac1ceef2",
+      "data_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+      "sidecar_sha256": "ee22ea137a61b768e0b6c3e8239c08a15f8de3150367a2a68e434e2087fbd19e",
+      "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+      "records": 2000,
+      "repeat_exact": true,
+      "recomputed_metrics_exact": true
+    }
+  ]
+}

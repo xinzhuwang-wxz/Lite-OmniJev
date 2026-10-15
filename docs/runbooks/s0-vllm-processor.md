@@ -50,3 +50,23 @@ The original checkpoint files are preserved, including the second file's interru
 Primary 0.26 normal initialization, six cases and full100 now pass on the 150GiB/16CPU host. The official pinned checkpoint config has image `do_normalize=false` and video `do_normalize=true` (identity mean/std). Native 0.26 processes video frames through its image processor. Its default caused a maximum pixel difference of 5.96e-8. The supported per-request `mm_processor_kwargs={"images_kwargs":{"do_normalize":true}}` restores the official video normalization for video-only requests; image requests retain their defaults. HF preparation binds these kwargs by SHA, and both native comparison and actual HTTP transport use them. No engine patch or numerical tolerance is used. A one-ULP changed-pixel regression still fails.
 
 Reports: `reports/gpu-transition-input-and-hf-acceptance-001.json`; full raw evidence on the persistent remote tree `/root/autodl-tmp/gpu-transition-ba4b22a/artifacts/input-acceptance-001`. New references must come from the same installed processor/runtime, not historical Mac summaries. For the gateway fixed100 test, set `S0_CANONICAL_REFERENCE` to the new passed `hf-a.json`; the test validates its cohort manifest hash. This CPU input result is separate from live HF/vLLM probability acceptance.
+
+## Explicit image-budget profile (S2, 2026-10-15)
+
+`python -m scripts.s0_prepare ... --profile canonical_http --image-max-soft-tokens 1120`
+produces a separately frozen reference. Pass the same `--image-max-soft-tokens 1120`
+to `scripts.s0_vllm_processor`; a default-budget reference is rejected for this profile.
+The model assets remain unchanged. Video keeps its own frame budget and normalization.
+
+Real CPU evidence: `reports/s2-budget1120-hf-cpu-001.json` and
+`reports/s2-budget1120-native-cpu-001.json`, all100 public cases, exact input equality
+under pinned vLLM0.26. Runs used isolated remote checkout
+`/root/autodl-tmp/image-budget-cpu-check-001` at60528f2 while GPU quality evaluation
+continued in its unchanged checkout. HF/native elapsed41.03/70.13seconds are CPU
+preparation timings, not serving latency. Actual HTTP probabilities, LoRA serving and
+performance still need their release checks.
+
+Training uses `image_max_soft_tokens` in LoopConfig; evaluation uses
+`--image-max-soft-tokens`; gateway uses `LITE_IMAGE_MAX_SOFT_TOKENS`. Requested image
+budgets travel in hash-bound `mm_processor_kwargs.images_kwargs.max_soft_tokens`.
+Unspecified settings retain the official default and existing checkpoint identity.

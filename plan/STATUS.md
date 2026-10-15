@@ -48,3 +48,6 @@
 - reports/s3-stable-probe-preparation-001.json：五cohort各200行共1000、五ledger验证；数据SHA594be68b…、config SHA5c52f0b6…，远端artifacts/s3-stable-probe-001。
 - CPU预检reports/s3-stable-probe-preflight-001.json ready；lr2e-5、100步、lazy128MiB、图像1120/视频16帧。GPU入口/root/autodl-tmp/s3-stable-probe-train.sh硬性要求reports/s2-stage-acceptance-budget1120-001.json为passed/S2/exit0，当前无此通过报告，未运行训练。
 - 有界试验与退出条件见reports/explore/S3-E01-small-update-replay.md。S2完成后先提取现成video500 sidecar的固定150题基线，再启动训练与筛查，不重复GPU基线。
+
+- 后续筛查准备完成：reports/s3-video150-reference-001.json从已哈希GPU sidecar提取77/150基线，数据SHAe9b91fed…；扩量门95/150保持。/root/autodl-tmp/evaluate-stable-probe.py已上传，训练成功后先video150筛查、未达立即停，通过才audio/旧模态dev50；尚未执行。
+- reports/s2-budget1120-image-sidecar-audit-001.json独立CPU复核2000条image记录、两遍及重算指标精确一致，模型/data/sidecar SHA核验；全三cohort复核脚本/root/autodl-tmp/verify-final-sidecars.py等待其余报告。

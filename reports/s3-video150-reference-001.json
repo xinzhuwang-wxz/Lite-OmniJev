@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "scope": "CPU extraction of existing GPU development predictions; no new inference",
+  "count": 150,
+  "baseline_correct": 77,
+  "baseline_accuracy": 0.5133333333333333,
+  "expansion_required_correct": 95,
+  "video_frames": 16,
+  "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+  "parent_data_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+  "data_sha256": "e9b91fedecf2ccf7dc30e837ac11bcc4b233624d1f6c16812a40b1319c15b080",
+  "data_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-001/video-dev150.jsonl",
+  "sidecar_sha256": "a9fdee5bf5a8b0f36d564011513583cb745eb5ecf79104f02e9536a6bab8ff51",
+  "source_report_sha256": "c01a5637e5cb2a574a96dd895cdb53dd3ef777555a5551c7af674f857cb99bbd"
+}
