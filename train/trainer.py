@@ -48,6 +48,7 @@ from train.multimodal import (
     load_media,
     resolve_media,
 )
+from train.pair_objective import claim_pair_loss
 from train.template import check_answer_tokens, render_payload, render_prompt
 
 
@@ -103,11 +104,41 @@ class LoopConfig(Contract):
     )
     reference_replay_data: str | None = Field(default=None, exclude_if=lambda v: v is None)
     reference_replay_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    pair_loss_weight: float = Field(default=0.0, allow_inf_nan=False, exclude_if=lambda v: v == 0)
+    pair_sidecar: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    pair_sidecar_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    pair_ledger: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    pair_ledger_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
     preparation_mode: Literal["eager", "lazy"] = "eager"
     preparation_cache_bytes: int = Field(default=256 * 1024 * 1024, ge=0)
 
     @model_validator(mode="after")
     def validate_loop(self) -> LoopConfig:
+        if self.pair_loss_weight not in (0.0, 0.1):
+            raise ValueError("claim pair pilot weight must be 0 or 0.1")
+        pair_inputs = (
+            self.pair_sidecar,
+            self.pair_sidecar_sha256,
+            self.pair_ledger,
+            self.pair_ledger_sha256,
+        )
+        if self.pair_loss_weight:
+            if self.reference_kl_weight or self.brier_weight:
+                raise ValueError("claim pair pilot requires pure gold CE without KL/Brier")
+            if (self.seed, self.steps, self.accumulation, self.sample_count, self.modality) != (
+                42,
+                10,
+                12,
+                120,
+                "mixed",
+            ):
+                raise ValueError(
+                    "claim pair pilot requires seed42/mixed/10steps/accum12/120samples"
+                )
+            if not all(pair_inputs):
+                raise ValueError("claim pair pilot requires SHA-bound sidecar and TRAIN ledger")
+        elif any(pair_inputs):
+            raise ValueError("claim pair inputs require nonzero pair weight")
         if self.reference_kl_weight not in (0.0, 0.5):
             raise ValueError("reference pilot weight must be 0 or 0.5")
         if self.reference_kl_weight:
@@ -1027,6 +1058,108 @@ def log_training_metrics(
     )
 
 
+def claim_pair_row(
+    positive_draw: int,
+    positive_index: int,
+    negative_index: int,
+    positive: Sample,
+    negative: Sample,
+    positive_example: dict[str, Any],
+    negative_example: dict[str, Any],
+) -> dict[str, Any]:
+    """Bind controlled claims to actual shared image/audio components, not family names alone."""
+    if positive.meta.pool != "train" or negative.meta.pool != "train":
+        raise ValueError("claim pairs accept TRAIN only")
+    if positive.meta.family_id != negative.meta.family_id or positive.id == negative.id:
+        raise ValueError("claim pairs require distinct claims from the same family")
+    components = sorted((m.type, m.sha256) for m in positive.prefix.media)
+    if components != sorted((m.type, m.sha256) for m in negative.prefix.media) or [
+        kind for kind, _ in components
+    ] != ["audio", "image"]:
+        raise ValueError("claim pairs require identical image and audio component hashes")
+    for sample, example, gold in (
+        (positive, positive_example, "yes"),
+        (negative, negative_example, "no"),
+    ):
+        question = sample.questions[0]
+        mapping = example.get("answer_token_ids", {})
+        if (
+            len(sample.questions) != 1
+            or question.type != "noul"
+            or not isinstance(question.target, HardTarget)
+            or question.target.value != gold
+            or set(mapping) != {"yes", "no", "U"}
+            or len(set(mapping.values())) != 3
+            or any(type(v) is not int or v < 0 for v in mapping.values())
+            or example["token_ids"] != [mapping[t] for t in ("yes", "no", "U")]
+            or example["target"] != [float(t == gold) for t in ("yes", "no", "U")]
+            or not all(k in example for k in ("pixel_values", "input_features"))
+            or "pixel_values_videos" in example
+        ):
+            raise ValueError("claim pair gold/mapping/prepared crossmodal binding mismatch")
+    return {
+        "positive_draw": positive_draw,
+        "negative_draw": positive_draw + 1,
+        "positive_sample_index": positive_index,
+        "negative_sample_index": negative_index,
+        "positive_sample_sha256": hashlib.sha256(data_bytes([positive])).hexdigest(),
+        "negative_sample_sha256": hashlib.sha256(data_bytes([negative])).hexdigest(),
+        "positive_prepared_sha256": reference_prepared_hash(positive_example),
+        "negative_prepared_sha256": reference_prepared_hash(negative_example),
+        "family_id": positive.meta.family_id,
+        "components": [{"type": kind, "sha256": digest} for kind, digest in components],
+    }
+
+
+def load_claim_pairs(
+    config: LoopConfig,
+    samples: list[Sample],
+    examples: Sequence[dict[str, Any]],
+    data_path: Path | None,
+) -> dict[int, dict[str, Any]]:
+    """Audit every fixed pair before model loading, with external SHA-pinned TRAIN ledger."""
+    from scripts.train_s1 import verify_data_is_train_pool
+
+    if (
+        data_path is None
+        or len(samples) != 120
+        or len(examples) != 120
+        or any(s.meta.pool != "train" for s in samples)
+    ):
+        raise ValueError("claim pair pilot requires explicit TRAIN data")
+    ledger = reference_bound_file(Path(config.pair_ledger or ""), config.pair_ledger_sha256)
+    verify_data_is_train_pool(data_path, [ledger])
+    sidecar = reference_bound_file(Path(config.pair_sidecar or ""), config.pair_sidecar_sha256)
+    sidecar_bytes = sidecar.read_bytes()
+    if hashlib.sha256(sidecar_bytes).hexdigest() != config.pair_sidecar_sha256:
+        raise ValueError("claim pair sidecar changed while reading")
+    payload = json.loads(sidecar_bytes)
+    header = {
+        "schema": "train-claim-pairs-v1",
+        "data_sha256": hashlib.sha256(data_bytes(samples)).hexdigest(),
+        "ledger_sha256": config.pair_ledger_sha256,
+        "seed": config.seed,
+        "steps": config.steps,
+        "accumulation": config.accumulation,
+    }
+    if set(payload) != {"header", "pairs"} or payload["header"] != header:
+        raise ValueError("claim pair header/data/ledger/config mismatch")
+    order = reference_order(config, len(examples))
+    expected = []
+    for step in range(config.steps):
+        for offset in (0, 2):
+            draw = step * 12 + offset
+            pi, ni = order[draw], order[draw + 1]
+            expected.append(
+                claim_pair_row(draw, pi, ni, samples[pi], samples[ni], examples[pi], examples[ni])
+            )
+    if json.dumps(payload["pairs"], sort_keys=True) != json.dumps(expected, sort_keys=True):
+        raise ValueError("claim pair mask/draw/sample/prepared/component binding mismatch")
+    if file_sha256(ledger) != config.pair_ledger_sha256:
+        raise ValueError("claim pair ledger changed during audit")
+    return {row["positive_draw"]: row for row in expected}
+
+
 def train_smoke(
     config: TrainConfig,
     model_dir: Path,
@@ -1038,8 +1171,16 @@ def train_smoke(
     resume_step: int = 0,
     reference_rows: list[dict[str, Any]] | None = None,
     reference_samples: list[Sample] | None = None,
+    pair_rows: dict[int, dict[str, Any]] | None = None,
 ) -> None:
     """Execute 10 optimizer steps, each accumulating 10 single-sequence examples."""
+    pair_weight = getattr(config, "pair_loss_weight", 0.0)
+    if pair_weight and (
+        pair_rows is None
+        or sorted(pair_rows)
+        != [step * 12 + offset for step in range(config.steps) for offset in (0, 2)]
+    ):
+        raise ValueError("claim pair pilot fixed mask binding missing")
     torch = importlib.import_module("torch")
     transformers = importlib.import_module("transformers")
     os.environ["HF_HUB_OFFLINE"] = "1"
@@ -1128,6 +1269,8 @@ def train_smoke(
         modality_losses: dict[str, list[float]] = {}
         optimizer.zero_grad(set_to_none=True)
         losses = []
+        pair_losses: list[float] = []
+        pending_pair: tuple[Any, Any, dict[str, Any]] | None = None
         reference_ce, reference_kl, reference_enabled_count = [], [], 0
         for offset in range(config.accumulation):
             draw = step * config.accumulation + offset
@@ -1136,6 +1279,18 @@ def train_smoke(
             prepare_wait += time.perf_counter() - prepare_started
             input_tokens += len(example["input_ids"])
             samples_seen += 1
+            pair_row = (
+                pair_rows.get(draw - (offset % 2))
+                if pair_weight and offset < 4 and pair_rows is not None
+                else None
+            )
+            if pair_weight and offset < 4:
+                role = "positive" if offset % 2 == 0 else "negative"
+                if (
+                    pair_row is None
+                    or reference_prepared_hash(example) != pair_row[role + "_prepared_sha256"]
+                ):
+                    raise ValueError("claim pair runtime prepared/draw binding mismatch")
             ids = torch.tensor([example["input_ids"]], device="cuda", dtype=torch.long)
             # Only whitelisted modality keys the official processor produced get forwarded.
             media_inputs = {
@@ -1178,7 +1333,31 @@ def train_smoke(
                 reference_enabled_count += int(enabled)
             if not bool(torch.isfinite(loss)):
                 raise ValueError("nonfinite training loss")
-            (loss / config.accumulation).backward()
+            if pair_weight and offset < 4:
+                if offset % 2 == 0:
+                    pending_pair = (output.logits[0, -1], loss, example)
+                else:
+                    if pending_pair is None or pair_row is None:
+                        raise ValueError("claim pair positive graph missing")
+                    positive_logits, positive_ce, positive_example = pending_pair
+                    pair_loss = claim_pair_loss(
+                        positive_logits,
+                        output.logits[0, -1],
+                        positive_token_ids=positive_example["answer_token_ids"],
+                        negative_token_ids=example["answer_token_ids"],
+                        positive_gold="yes",
+                        negative_gold="no",
+                        positive_family_id=pair_row["family_id"],
+                        negative_family_id=pair_row["family_id"],
+                    )
+                    (
+                        (positive_ce + loss + pair_weight * pair_loss) / config.accumulation
+                    ).backward()
+                    pair_losses.append(float(pair_loss.detach().cpu()))
+                    pending_pair = None
+                    del positive_logits, positive_ce, positive_example, pair_loss
+            else:
+                (loss / config.accumulation).backward()
             observed_loss = float(loss.detach().cpu())
             losses.append(observed_loss)
             modalities = set(example.get("observed_modalities", [])) & {
@@ -1192,12 +1371,16 @@ def train_smoke(
                 modalities.add("crossmodal")
             for modality in modalities:
                 modality_losses.setdefault(modality, []).append(observed_loss)
+        if pair_weight and (len(pair_losses) != 2 or pending_pair is not None):
+            raise ValueError("claim pair step requires exactly two completed pairs")
         norm = torch.nn.utils.clip_grad_norm_(parameters, 1.0, error_if_nonfinite=True)
         if float(norm) <= 0:
             raise ValueError("no LoRA gradient reached the decision loss")
         optimizer.step()
         report["steps_completed"] = step + 1
         mean_loss = math.fsum(losses) / len(losses)
+        if pair_weight:
+            mean_loss += pair_weight * math.fsum(pair_losses) / config.accumulation
         report["losses"].append(mean_loss)
         torch.cuda.synchronize()
         step_metrics = {
@@ -1208,6 +1391,13 @@ def train_smoke(
             "input_tokens": float(input_tokens),
             "peak_cuda_bytes": float(torch.cuda.max_memory_allocated()),
         }
+        if pair_weight:
+            step_metrics.update(
+                gold_ce=math.fsum(losses) / len(losses),
+                pair_loss=math.fsum(pair_losses) / len(pair_losses),
+                pair_count=float(len(pair_losses)),
+                pair_loss_weight=pair_weight,
+            )
         if reference_ce:
             step_metrics.update(
                 gold_ce=math.fsum(reference_ce) / len(reference_ce),
@@ -1324,6 +1514,7 @@ def run(
     accepted_resume = False
     telemetry: Telemetry | None = None
     reference_rows = None
+    pair_rows = None
     try:
         if (init_adapter is None) != (init_adapter_sha256 is None):
             raise ValueError("init-adapter and init-adapter-sha256 must be supplied together")
@@ -1439,6 +1630,15 @@ def run(
                 "draws": len(reference_rows),
                 "weight": 0.5,
             }
+        if isinstance(config, LoopConfig) and config.pair_loss_weight:
+            pair_rows = load_claim_pairs(config, samples, examples, data_path)
+            report["claim_pairs"] = {
+                "pairs": len(pair_rows),
+                "weight": config.pair_loss_weight,
+                "sidecar_sha256": config.pair_sidecar_sha256,
+                "ledger_sha256": config.pair_ledger_sha256,
+                "objective": "gold CE + controlled claim softplus; not RL",
+            }
         resume_step = 0
         if execute and resume_from is not None:
             payload = data_bytes(samples)
@@ -1479,6 +1679,7 @@ def run(
                     resume_step=resume_step,
                     reference_rows=reference_rows,
                     reference_samples=samples if reference_rows is not None else None,
+                    pair_rows=pair_rows,
                 )
             finally:
                 telemetry.finish(report)
