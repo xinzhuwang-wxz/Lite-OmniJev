@@ -94,11 +94,49 @@ class LoopConfig(Contract):
     expected_data_versions: list[str] | None = Field(default=None, min_length=1)
     checkpoint_every: int | None = Field(default=None, ge=1)
     brier_weight: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+    reference_sidecar: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    reference_sidecar_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    reference_ledger: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    reference_ledger_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    reference_kl_weight: float = Field(
+        default=0.0, allow_inf_nan=False, exclude_if=lambda v: v == 0
+    )
+    reference_replay_data: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    reference_replay_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
     preparation_mode: Literal["eager", "lazy"] = "eager"
     preparation_cache_bytes: int = Field(default=256 * 1024 * 1024, ge=0)
 
     @model_validator(mode="after")
     def validate_loop(self) -> LoopConfig:
+        if self.reference_kl_weight not in (0.0, 0.5):
+            raise ValueError("reference pilot weight must be 0 or 0.5")
+        if self.reference_kl_weight:
+            if self.brier_weight != 0:
+                raise ValueError("reference pilot keeps gold CE without Brier")
+            if self.seed != 42 or self.steps * self.accumulation != 300 or self.sample_count != 300:
+                raise ValueError("reference pilot requires seed42 and exactly 300 unique draws")
+            if not all(
+                (
+                    self.reference_sidecar,
+                    self.reference_sidecar_sha256,
+                    self.reference_ledger,
+                    self.reference_ledger_sha256,
+                    self.reference_replay_data,
+                    self.reference_replay_sha256,
+                )
+            ):
+                raise ValueError("reference pilot requires SHA-bound sidecar and TRAIN ledger")
+        elif any(
+            (
+                self.reference_sidecar,
+                self.reference_sidecar_sha256,
+                self.reference_ledger,
+                self.reference_ledger_sha256,
+                self.reference_replay_data,
+                self.reference_replay_sha256,
+            )
+        ):
+            raise ValueError("reference inputs require nonzero reference KL weight")
         if not math.isfinite(self.learning_rate):
             raise ValueError("learning_rate must be finite")
         if self.midway_step is not None and self.midway_step > self.steps:
@@ -592,7 +630,14 @@ class BoundedPreparedExamples(Sequence[dict[str, Any]]):
 
 
 def decision_loss(
-    logits: Any, token_ids: list[int], target: list[float], *, brier_weight: float = 0.0
+    logits: Any,
+    token_ids: list[int],
+    target: list[float],
+    *,
+    brier_weight: float = 0.0,
+    reference_probs: Any = None,
+    reference_kl_weight: float = 0.0,
+    reference_enabled: bool = False,
 ) -> Any:
     """CE plus optional summed Brier on the joint legal-answer/U distribution in FP32."""
     torch = importlib.import_module("torch")
@@ -613,9 +658,195 @@ def decision_loss(
         raise ValueError("nonfinite legal-token logits")
     labels = torch.tensor(target, device=selected.device, dtype=torch.float32)
     ce = -(labels * selected.log_softmax(dim=-1)).sum()
-    if brier_weight == 0:
-        return ce
-    return ce + brier_weight * (selected.softmax(dim=-1) - labels).square().sum()
+    loss = (
+        ce
+        if brier_weight == 0
+        else ce + brier_weight * (selected.softmax(dim=-1) - labels).square().sum()
+    )
+    if reference_kl_weight == 0:
+        return loss
+    if reference_kl_weight != 0.5:
+        raise ValueError("reference pilot weight must be 0 or 0.5")
+    if reference_probs is None:
+        raise ValueError("reference distribution is required")
+    q = torch.as_tensor(reference_probs, device=selected.device, dtype=torch.float32).detach()
+    if q.shape != selected.shape or not bool(torch.isfinite(q).all()) or bool((q < 0).any()):
+        raise ValueError("invalid reference distribution")
+    if not bool(torch.isclose(q.sum(), q.new_tensor(1.0), atol=1e-6, rtol=0)):
+        raise ValueError("reference distribution must sum to one including U")
+    gold = [i for i, value in enumerate(target) if value == 1.0]
+    winners = (q == q.max()).nonzero().flatten().tolist()
+    enabled = reference_enabled and len(gold) == 1 and winners == gold
+    if not enabled:
+        return loss
+    positive = q > 0
+    kl = (q[positive] * (q[positive].log() - selected.log_softmax(-1)[positive])).sum()
+    return loss + reference_kl_weight * kl
+
+
+REFERENCE_FIELDS = (
+    "reference_sidecar",
+    "reference_sidecar_sha256",
+    "reference_ledger",
+    "reference_ledger_sha256",
+    "reference_kl_weight",
+    "reference_replay_data",
+    "reference_replay_sha256",
+)
+
+
+def reference_prepared_hash(example: dict[str, Any]) -> str:
+    """Bind actual IDs, gold, modality and every forwarded CPU tensor byte."""
+    record = {}
+    for key in sorted(example):
+        value = example[key]
+        if hasattr(value, "detach"):
+            tensor = value.detach().cpu().contiguous()
+            torch = importlib.import_module("torch")
+            value = {
+                "dtype": str(tensor.dtype),
+                "shape": list(tensor.shape),
+                "sha256": hashlib.sha256(
+                    tensor.reshape(-1).view(torch.uint8).numpy().tobytes()
+                ).hexdigest(),
+            }
+        record[key] = value
+    return hashlib.sha256(
+        json.dumps(record, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def reference_bound_file(path: Path, expected_sha256: str | None) -> Path:
+    if not path.is_absolute() or path.is_symlink() or not path.is_file():
+        raise ValueError("reference input must be an absolute regular file, not a symlink")
+    if (
+        not expected_sha256
+        or not re.fullmatch(r"[0-9a-f]{64}", expected_sha256)
+        or file_sha256(path) != expected_sha256
+    ):
+        raise ValueError("reference input SHA mismatch")
+    return path
+
+
+def reference_header(
+    config: LoopConfig,
+    samples: list[Sample],
+    identity: dict[str, str],
+    model_hashes: dict[str, str],
+) -> dict[str, Any]:
+    if any(sample.meta.pool != "train" for sample in samples):
+        raise ValueError("reference accepts TRAIN only")
+    replay_path = Path(config.reference_replay_data or "")
+    reference_bound_file(replay_path, config.reference_replay_sha256)
+    replay_bytes = replay_path.read_bytes()
+    if hashlib.sha256(replay_bytes).hexdigest() != config.reference_replay_sha256:
+        raise ValueError("reference replay data changed while reading")
+    replay = [
+        Sample.model_validate_json(line)
+        for line in replay_bytes.decode().splitlines()
+        if line.strip()
+    ]
+    if any(sample.meta.pool != "train" for sample in replay):
+        raise ValueError("reference replay source must be TRAIN only")
+    originals = {sample.id: data_bytes([sample]) for sample in replay}
+    if len(originals) != len(replay) or any(
+        "video" not in sample.meta.modality and originals.get(sample.id) != data_bytes([sample])
+        for sample in samples
+    ):
+        raise ValueError("non-video samples must match frozen TRAIN replay exactly")
+    return {
+        "schema": "train-reference-v1",
+        "data_sha256": hashlib.sha256(data_bytes(samples)).hexdigest(),
+        "reference_adapter": dict(identity),
+        "asset_hashes": dict(model_hashes),
+        "config": {k: v for k, v in config.model_dump().items() if k not in REFERENCE_FIELDS},
+        "ledger_sha256": config.reference_ledger_sha256,
+        "replay_data_sha256": config.reference_replay_sha256,
+    }
+
+
+def reference_order(config: TrainConfig, count: int) -> list[int]:
+    order = list(range(count))
+    random.Random(config.seed).shuffle(order)
+    return [order[draw % count] for draw in range(config.steps * config.accumulation)]
+
+
+def reference_row(
+    draw: int, index: int, sample: Sample, example: dict[str, Any], probabilities: list[float]
+) -> dict[str, Any]:
+    return {
+        "draw": draw,
+        "sample_index": index,
+        "id": sample.id,
+        "sample_sha256": hashlib.sha256(data_bytes([sample])).hexdigest(),
+        "prepared_sha256": reference_prepared_hash(example),
+        "token_ids": example["token_ids"],
+        "reference_probs": probabilities,
+    }
+
+
+def validate_reference_row(
+    row: dict[str, Any], draw: int, index: int, sample: Sample, example: dict[str, Any]
+) -> bool:
+    if (
+        sample.meta.pool != "train"
+        or type(row.get("draw")) is not int
+        or type(row.get("sample_index")) is not int
+    ):
+        raise ValueError("reference requires TRAIN and integer draw identity")
+    expected = reference_row(draw, index, sample, example, row.get("reference_probs", []))
+    if row != expected or len(set(row["token_ids"])) != len(row["token_ids"]):
+        raise ValueError("reference draw/sample/input/token binding mismatch")
+    probs = row["reference_probs"]
+    if (
+        len(probs) != len(example["target"])
+        or any(type(p) not in (float, int) or not math.isfinite(p) or p < 0 or p > 1 for p in probs)
+        or not math.isclose(math.fsum(probs), 1.0, abs_tol=1e-6)
+    ):
+        raise ValueError("invalid reference probabilities including U")
+    if (
+        list(example["answer_token_ids"])[-1] != "U"
+        or list(example["answer_token_ids"].values()) != row["token_ids"]
+    ):
+        raise ValueError("reference requires ordered complete answers including U")
+    gold = [i for i, p in enumerate(example["target"]) if p == 1.0]
+    winners = [i for i, p in enumerate(probs) if p == max(probs)]
+    return "video" not in sample.meta.modality and len(gold) == 1 and winners == gold
+
+
+def load_reference(
+    config: LoopConfig,
+    samples: list[Sample],
+    examples: Sequence[dict[str, Any]],
+    report: dict[str, Any],
+    data_path: Path | None,
+) -> list[dict[str, Any]]:
+    from scripts.train_s1 import verify_data_is_train_pool
+
+    if len(samples) != 300 or len(examples) != 300 or len({sample.id for sample in samples}) != 300:
+        raise ValueError("reference pilot requires 300 unique prepared TRAIN samples")
+    if data_path is None or not config.reference_ledger:
+        raise ValueError("reference requires explicit TRAIN data and ledger")
+    ledger = Path(config.reference_ledger)
+    reference_bound_file(ledger, config.reference_ledger_sha256)
+    verify_data_is_train_pool(data_path, [ledger])
+    path = Path(config.reference_sidecar or "")
+    reference_bound_file(path, config.reference_sidecar_sha256)
+    payload_bytes = path.read_bytes()
+    if hashlib.sha256(payload_bytes).hexdigest() != config.reference_sidecar_sha256:
+        raise ValueError("reference sidecar changed while reading")
+    payload = json.loads(payload_bytes)
+    if set(payload) != {"header", "rows"} or payload["header"] != reference_header(
+        config, samples, report["init_adapter"], report["asset_hashes"]
+    ):
+        raise ValueError("reference header/data/adapter/config binding mismatch")
+    order = reference_order(config, len(examples))
+    if len(payload["rows"]) != len(order):
+        raise ValueError("missing or extra reference draws")
+    for draw, index in enumerate(order):
+        validate_reference_row(payload["rows"][draw], draw, index, samples[index], examples[index])
+    result: list[dict[str, Any]] = payload["rows"]
+    return result
 
 
 def verified_assets(model_dir: Path, manifest_path: Path) -> dict[str, str]:
@@ -787,6 +1018,8 @@ def train_smoke(
     telemetry: Telemetry,
     resume_from: Path | None = None,
     resume_step: int = 0,
+    reference_rows: list[dict[str, Any]] | None = None,
+    reference_samples: list[Sample] | None = None,
 ) -> None:
     """Execute 10 optimizer steps, each accumulating 10 single-sequence examples."""
     torch = importlib.import_module("torch")
@@ -877,6 +1110,7 @@ def train_smoke(
         modality_losses: dict[str, list[float]] = {}
         optimizer.zero_grad(set_to_none=True)
         losses = []
+        reference_ce, reference_kl, reference_enabled_count = [], [], 0
         for offset in range(config.accumulation):
             draw = step * config.accumulation + offset
             prepare_started = time.perf_counter()
@@ -903,6 +1137,27 @@ def train_smoke(
                 example["target"],
                 brier_weight=getattr(config, "brier_weight", 0.0),
             )
+            if getattr(config, "reference_kl_weight", 0):
+                index = order[draw % len(examples)]
+                if reference_rows is None or reference_samples is None:
+                    raise ValueError("reference validation missing")
+                reference = reference_rows[draw]
+                enabled = validate_reference_row(
+                    reference, draw, index, reference_samples[index], example
+                )
+                ce = loss
+                loss = decision_loss(
+                    output.logits[0, -1],
+                    example["token_ids"],
+                    example["target"],
+                    brier_weight=getattr(config, "brier_weight", 0.0),
+                    reference_probs=reference["reference_probs"],
+                    reference_kl_weight=0.5,
+                    reference_enabled=enabled,
+                )
+                reference_ce.append(float(ce.detach().cpu()))
+                reference_kl.append(float(((loss - ce) / 0.5).detach().cpu()))
+                reference_enabled_count += int(enabled)
             if not bool(torch.isfinite(loss)):
                 raise ValueError("nonfinite training loss")
             (loss / config.accumulation).backward()
@@ -935,6 +1190,12 @@ def train_smoke(
             "input_tokens": float(input_tokens),
             "peak_cuda_bytes": float(torch.cuda.max_memory_allocated()),
         }
+        if reference_ce:
+            step_metrics.update(
+                gold_ce=math.fsum(reference_ce) / len(reference_ce),
+                reference_kl=math.fsum(reference_kl) / len(reference_kl),
+                reference_enabled_count=float(reference_enabled_count),
+            )
         for modality, observed_losses in modality_losses.items():
             step_metrics[f"{modality}/samples"] = float(len(observed_losses))
             step_metrics[f"{modality}/loss"] = math.fsum(observed_losses) / len(observed_losses)
@@ -1031,6 +1292,9 @@ def run(
     }
     # Historical CE checkpoints omitted this field. Keep that identity for zero weight;
     # nonzero weights remain in config and are checked by strict resume equality.
+    if not getattr(config, "reference_kl_weight", 0):
+        for field in REFERENCE_FIELDS:
+            report["config"].pop(field, None)
     if report["config"].get("brier_weight") == 0:
         report["config"].pop("brier_weight")
     if report["config"].get("preparation_mode") == "eager":
@@ -1041,6 +1305,7 @@ def run(
     created = False
     accepted_resume = False
     telemetry: Telemetry | None = None
+    reference_rows = None
     try:
         if (init_adapter is None) != (init_adapter_sha256 is None):
             raise ValueError("init-adapter and init-adapter-sha256 must be supplied together")
@@ -1149,6 +1414,13 @@ def run(
             raise ValueError("training preflight has blockers")
         order = list(range(len(examples)))
         random.Random(config.seed).shuffle(order)
+        if isinstance(config, LoopConfig) and config.reference_kl_weight:
+            reference_rows = load_reference(config, samples, examples, report, data_path)
+            report["reference"] = {
+                "sidecar_sha256": config.reference_sidecar_sha256,
+                "draws": len(reference_rows),
+                "weight": 0.5,
+            }
         resume_step = 0
         if execute and resume_from is not None:
             payload = data_bytes(samples)
@@ -1187,6 +1459,8 @@ def run(
                     telemetry,
                     resume_from=resume_from,
                     resume_step=resume_step,
+                    reference_rows=reference_rows,
+                    reference_samples=samples if reference_rows is not None else None,
                 )
             finally:
                 telemetry.finish(report)
