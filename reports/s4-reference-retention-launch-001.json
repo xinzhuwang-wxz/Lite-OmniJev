@@ -1,0 +1,17 @@
+{
+  "status": "running",
+  "pid": 796965,
+  "timeout_pid": 796964,
+  "tool_session_id": 67829,
+  "source_commit": "44214af",
+  "source_snapshot": "/root/autodl-tmp/s4-reference-code-fix-001",
+  "source_archive_sha256": "ed9220de8bf4e8c487b5dd5d5f42c43775351501ac8db66c8d1c497898b7bcb1",
+  "wrapper_remote": "/root/autodl-tmp/reference-retention-pilot-002.py",
+  "wrapper_sha256": "718d3e813ab7809326a23d76353fc64c6f534073ab438383606376cd00b09c1c",
+  "training_report": "/root/autodl-tmp/s1-text-lora-001/reports/s4-reference-retention-training-001.json",
+  "steps_requested": 30,
+  "wall_limit_seconds": 480,
+  "quality_passed": false,
+  "preflight_report_sha256": "fe0e31a6cc52c0289b06821d63055105a6314ac0ef9f6a7643332592c4a9a8cf",
+  "reference_sidecar_sha256": "b135b8626774eed995f293f66190583937192b23ea4339e3de9e2d53486f22c2"
+}
