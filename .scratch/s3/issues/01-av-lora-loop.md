@@ -24,7 +24,7 @@ Blocked by: s2:01
 
 ## Evidence
 
-Evidence: reports/s3-joint-preparation-001.json：21184行五模态联合池及500行均衡探针，五ledger核验通过，两次生成数据哈希一致；仅CPU准备，S2依赖保留；规格.scratch/s3/spec.md。池证据artifacts/s3-pools-{audio,video}-001(远端);候选驱动与扩展扫描日志留远端。基线:教师Jev-Omni audio 38.0%/video 69.8%,E4B零样本audio 63.4%/video 55.6%(s0-baseline-summary.md)。
+Evidence: reports/s3-joint-preparation-001.json：21184行五模态联合池及500行均衡探针，五ledger核验通过，两次生成数据哈希一致；reports/s3-probe-preflight-001.json官方处理器500例预检通过（最大1181 token）；仅CPU准备，S2依赖保留；规格.scratch/s3/spec.md。池证据artifacts/s3-pools-{audio,video}-001(远端);候选驱动与扩展扫描日志留远端。基线:教师Jev-Omni audio 38.0%/video 69.8%,E4B零样本audio 63.4%/video 55.6%(s0-baseline-summary.md)。
 
 ## Out of scope
 

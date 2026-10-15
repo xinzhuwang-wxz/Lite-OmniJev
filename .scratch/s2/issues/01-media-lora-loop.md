@@ -19,8 +19,8 @@ Blocked by: None
 - [x] 多模态训练扩展：LoopConfig支持image/screenshot/mixed（联合单LoRA为产品契约，"旧模态≤1pp"门的实现载体），vision/audio tower冻结+eval，官方processor，媒体sha预检+多树解析，LoRA仅decoder投影；账本校验支持多ledger并集；新增公共行为回归+静态通过。（115项回归、全仓ruff/format、mypy strict；fable子代理实现+主会话集成）
 - [ ] smoke：图像与截图各300步真实GPU，训练子集自测acc与loss下降记录（工程信号，非门）。
 - [ ] 主训练：图像与截图各samples-seen=min(10000,5×池)，50% midway adapter对照，SwanLab真实指标。
-- [ ] dev500同条件双遍：image与screenshot精确重复，字段与S0基线runner一致；文本回归评测（text dev500，S2 adapter）≥98.6%；反事实翻转双遍确定性，flip率实测。
-- [ ] 门槛报告：eval.gate原值判定原样记录（image≥80.6%、screenshot≥63.2%、text_regression≤1pp、flip≥.80）；未达标如实保留，结构性不可达按ADR0013格式另录。
+- [x] dev500同条件双遍：image与screenshot精确重复，字段与S0基线runner一致；文本回归评测（text dev500，S2 adapter）≥98.6%；反事实翻转双遍确定性，flip率实测。
+- [x] 门槛报告：eval.gate原值判定原样记录（image≥80.6%、screenshot≥63.2%、text_regression≤1pp、flip≥.80）；未达标如实保留，结构性不可达按ADR0013格式另录。
 - [ ] lint/type/build+新增回归；STATUS更新；commit带Lore trailers。
 
 ## Evidence
@@ -30,3 +30,5 @@ Evidence: 恢复修复bbdc041（65项相关回归通过）；reports/s2-counterf
 ## Out of scope
 
 音频/视频（S3）、E2B/量化（S6）、封存holdout构建（s0:05）、新数据源下载、门槛静默调整。
+
+恢复证据（2026-10-15）：reports/s2-stage-acceptance-v2-001.json（FAILED，仅图像78.8%<80.6%；其余门通过），三cohort报告逐记录双遍一致。勾选“生成评测/判定报告”不代表阶段通过，Execution保持claimed。E01/E02探针未达扩量条件停止；E03小批量方案见reports/explore/。
