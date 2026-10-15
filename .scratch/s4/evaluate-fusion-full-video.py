@@ -1,13 +1,17 @@
 """One complete public video-dev diagnostic after all fixed retention screens pass."""
 
+import argparse
 import hashlib
 import json
 import subprocess
 import time
 from pathlib import Path
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--alpha", choices=["050", "025"], required=True)
+args = parser.parse_args()
 root = Path("/root/autodl-tmp/s1-text-lora-001")
-retention = root / "reports/s4-fusion050-retention-001.json"
+retention = root / f"reports/s4-fusion{args.alpha}-retention-001.json"
 for _ in range(90):
     if retention.exists() and json.loads(retention.read_text())["status"] == "completed":
         break
@@ -24,11 +28,11 @@ assert (
     hashlib.sha256(Path(argv[argv.index("--data") + 1]).read_bytes()).hexdigest()
     == reference["data_sha256"]
 )
-adapter = root / "artifacts/s4-fusion050-002"
+adapter = root / f"artifacts/s4-fusion{args.alpha}-002"
 fusion = json.loads((adapter / "fusion_report.json").read_text())
 assert fusion["promotion_allowed"] and fusion["output"]["weights_sha256"] == r["adapter_sha256"]
-output = root / "artifacts/s4-fusion050-video-full-001"
-report = root / "reports/s4-fusion050-video-full-001.json"
+output = root / f"artifacts/s4-fusion{args.alpha}-video-full-001"
+report = root / f"reports/s4-fusion{args.alpha}-video-full-001.json"
 assert not output.exists() and not report.exists()
 for flag, value in [
     ("--adapter", str(adapter)),
@@ -60,7 +64,7 @@ if p.returncode == 0:
     result.update(
         metrics=evaluated["metrics"], report_sha256=hashlib.sha256(report.read_bytes()).hexdigest()
     )
-with (root / "reports/s4-fusion050-video-full-execution-001.json").open("x") as h:
+with (root / f"reports/s4-fusion{args.alpha}-video-full-execution-001.json").open("x") as h:
     json.dump(result, h, indent=2)
 print(json.dumps(result))
 raise SystemExit(p.returncode)
