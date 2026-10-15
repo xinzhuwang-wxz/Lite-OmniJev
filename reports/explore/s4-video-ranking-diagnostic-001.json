@@ -1,0 +1,214 @@
+{
+  "all": {
+    "count": 500,
+    "current_argmax_accuracy": 0.674,
+    "current_argmax_correct": 337,
+    "fn": {
+      "count": 122,
+      "p_yes_quantiles": {
+        "max": 0.46879062662624377,
+        "min": 0.029312230751356316,
+        "p10": 0.09773481061141034,
+        "p25": 0.18242552380635632,
+        "p50": 0.29421497216298875,
+        "p75": 0.37754066879814546,
+        "p90": 0.4378234991142019
+      }
+    },
+    "fp": {
+      "count": 41,
+      "p_yes_quantiles": {
+        "max": 0.9579122720843811,
+        "min": 0.5,
+        "p10": 0.5,
+        "p25": 0.5621765008857981,
+        "p50": 0.679178699175393,
+        "p75": 0.7981867777396212,
+        "p90": 0.8519528019683106
+      }
+    },
+    "no": 235,
+    "optimistic_gap_correct": 13,
+    "optimistic_gap_pp": 2.599999999999991,
+    "oracle_threshold_dev_fit": {
+      "accuracy_upper_bound": 0.7,
+      "best_correct": 350,
+      "threshold_exported_or_adopted": false,
+      "tie_preserving_cuts_tested": 71
+    },
+    "p_yes_roc_auc": 0.7745885186672019,
+    "residual_errors_after_oracle_fit": 150,
+    "yes": 265
+  },
+  "cost": null,
+  "coverage_binding": {
+    "adapter_sha256": "0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818",
+    "data_binding": {
+      "path": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/dev.jsonl",
+      "sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2"
+    },
+    "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "recorded_config": {
+      "image_max_soft_tokens": {
+        "effective": 280,
+        "requested": null
+      },
+      "media_root": "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/video-a/media",
+      "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+      "video_num_frames": 16
+    },
+    "report_binding": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-coverage-video-full-001.json",
+      "sha256": "c6c131adce7796a1c0c9cf53e72efac907816d23883087d60528b55883747488"
+    },
+    "script_sha256": "a678eb560a1bb1342718381441ee8f85bd4111d40958bba1b54daabca8d825f9",
+    "sidecar_binding": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-coverage-video-full-001/records.jsonl",
+      "sha256": "2e776a9b0b8e92a50799fdb6879afb2d2abee8c0ce5c4b31a0709fdada6e0804"
+    },
+    "versions": {
+      "accelerate": "1.15.0",
+      "peft": "0.21.2",
+      "safetensors": "0.8.0",
+      "torch": "2.13.0",
+      "transformers": "5.17.0"
+    }
+  },
+  "duration_seconds": 0.1988226231187582,
+  "existing_report_accuracy": 0.674,
+  "exit_code": 0,
+  "gpu_used": false,
+  "group_fit_boundary": "Each subgroup oracle is separately fit to its own DEV labels; these are extra optimistic upper bounds, not a joint policy.",
+  "helper_sha256": "4b766792ee897be4dd286297df14449be0785cc3b2c6a660d83506a8df775e2c",
+  "heuristic_groups": {
+    "existence": {
+      "count": 129,
+      "current_argmax_accuracy": 0.7674418604651163,
+      "current_argmax_correct": 99,
+      "fn": {
+        "count": 21,
+        "p_yes_quantiles": {
+          "max": 0.4378234991142019,
+          "min": 0.04208772791561884,
+          "p10": 0.0953494648991095,
+          "p25": 0.1480471980316895,
+          "p50": 0.22270013882530884,
+          "p75": 0.29421497216298875,
+          "p90": 0.4073334000459302
+        }
+      },
+      "fp": {
+        "count": 9,
+        "p_yes_quantiles": {
+          "max": 0.8670357598021706,
+          "min": 0.5,
+          "p10": 0.5,
+          "p25": 0.5,
+          "p50": 0.7981867777396212,
+          "p75": 0.8175744761936437,
+          "p90": 0.8549693935350826
+        }
+      },
+      "no": 63,
+      "optimistic_gap_correct": 1,
+      "optimistic_gap_pp": 0.7751937984496138,
+      "oracle_threshold_dev_fit": {
+        "accuracy_upper_bound": 0.7751937984496124,
+        "best_correct": 100,
+        "threshold_exported_or_adopted": false,
+        "tie_preserving_cuts_tested": 50
+      },
+      "p_yes_roc_auc": 0.8288840788840789,
+      "residual_errors_after_oracle_fit": 29,
+      "yes": 66
+    },
+    "motion": {
+      "count": 42,
+      "current_argmax_accuracy": 0.7380952380952381,
+      "current_argmax_correct": 31,
+      "fn": {
+        "count": 10,
+        "p_yes_quantiles": {
+          "max": 0.4378234991142019,
+          "min": 0.18242552380635632,
+          "p10": 0.19987445241497656,
+          "p25": 0.2342604594614804,
+          "p50": 0.3214300537484672,
+          "p75": 0.4073334000459302,
+          "p90": 0.4378234991142019
+        }
+      },
+      "fp": {
+        "count": 1,
+        "p_yes_quantiles": {
+          "max": 0.7057850278370112,
+          "min": 0.7057850278370112,
+          "p10": 0.7057850278370112,
+          "p25": 0.7057850278370112,
+          "p50": 0.7057850278370112,
+          "p75": 0.7057850278370112,
+          "p90": 0.7057850278370112
+        }
+      },
+      "no": 14,
+      "optimistic_gap_correct": 9,
+      "optimistic_gap_pp": 21.42857142857142,
+      "oracle_threshold_dev_fit": {
+        "accuracy_upper_bound": 0.9523809523809523,
+        "best_correct": 40,
+        "threshold_exported_or_adopted": false,
+        "tie_preserving_cuts_tested": 32
+      },
+      "p_yes_roc_auc": 0.9579081632653061,
+      "residual_errors_after_oracle_fit": 2,
+      "yes": 28
+    },
+    "temporal": {
+      "count": 329,
+      "current_argmax_accuracy": 0.6291793313069909,
+      "current_argmax_correct": 207,
+      "fn": {
+        "count": 91,
+        "p_yes_quantiles": {
+          "max": 0.46879062662624377,
+          "min": 0.029312230751356316,
+          "p10": 0.08509904500702024,
+          "p25": 0.18242552380635632,
+          "p50": 0.32082130082460697,
+          "p75": 0.37754066879814546,
+          "p90": 0.4378234991142019
+        }
+      },
+      "fp": {
+        "count": 31,
+        "p_yes_quantiles": {
+          "max": 0.9579122720843811,
+          "min": 0.5,
+          "p10": 0.5312093733737563,
+          "p25": 0.5621765008857981,
+          "p50": 0.679178699175393,
+          "p75": 0.7772998611746911,
+          "p90": 0.8354835371034369
+        }
+      },
+      "no": 158,
+      "optimistic_gap_correct": 11,
+      "optimistic_gap_pp": 3.3434650455927084,
+      "oracle_threshold_dev_fit": {
+        "accuracy_upper_bound": 0.662613981762918,
+        "best_correct": 218,
+        "threshold_exported_or_adopted": false,
+        "tie_preserving_cuts_tested": 66
+      },
+      "p_yes_roc_auc": 0.7252572359167963,
+      "residual_errors_after_oracle_fit": 111,
+      "yes": 171
+    }
+  },
+  "python": "3.11.17",
+  "quantile_method": "linear interpolation at q*(n-1)",
+  "same_input_boundary": "Same data + recorded config as prior diagnostic; prepared tensor/token input_sha absent. No GPU rerun.",
+  "scope": "DEV-only optimistic fit; not calibration, deployed threshold or generalization evidence",
+  "script_sha256": "ea6b67661ffa5069e9226afcf6c290cac0a97fdd209eb4c68860ee2673970f77",
+  "threshold_changed": false
+}
