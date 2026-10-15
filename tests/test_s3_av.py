@@ -43,7 +43,7 @@ def noul_row(
     modality: list[str] | None = None,
     media_count: int = 1,
     data_version: str = AUDIO_POOLS_VERSION,
-    source_dataset: str = "clotho-aqa",
+    source_dataset: str = "Clotho-AQA",
     target: str = "yes",
 ) -> dict:
     media = (
@@ -68,7 +68,7 @@ def noul_row(
         "meta": {
             "modality": modality or ([media_type] if media_type else ["text"]),
             "source_dataset": source_dataset,
-            "source_revision": "clotho-aqa-train-237c692e",
+            "source_revision": "zenodo-6473207",
             "source_sha256": "b" * 64,
             "license": "QA:MIT;media:CC0-1.0",
             "usage": "research",
@@ -293,8 +293,8 @@ POOL_SPECS: dict[str, dict[str, str]] = {
     "audio": {
         "id_prefix": "clotho-aqa-train",
         "family_prefix": "clotho",
-        "source_dataset": "clotho-aqa",
-        "source_revision": "clotho-aqa-train-237c692e",
+        "source_dataset": "Clotho-AQA",
+        "source_revision": "zenodo-6473207",
         "license": "QA:MIT;media:CC0-1.0",
         "media_type": "audio",
         "media_dir": "audio",

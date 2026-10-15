@@ -45,10 +45,9 @@ COHORT_SPECS: dict[str, dict[str, Any]] = {
         "calibration_reserve_count": 330,
     },
     "audio": {
-        # Clotho-AQA provenance lives outside this repo for now; the license string
-        # and dev/source digests must be supplied per run until the ledger is pinned.
-        "source_dataset": "clotho-aqa",
-        "source_revision": "clotho-aqa-train-237c692e",
+        # 值来自 s0-audio-dev-001 冻结 dev 的实际样本（reports 与 dev.jsonl 绑定）。
+        "source_dataset": "Clotho-AQA",
+        "source_revision": "zenodo-6473207",
         "license": None,
         "modality": "audio",
         "media_type": "audio",
