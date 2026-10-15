@@ -43,3 +43,8 @@
 - E09官方1120视觉token预算研究对照已启动（E08完整筛查未过门），见reports/explore/S2-E09-official-image-budget.md；独立进程覆盖processor参数，不修改模型资产/默认评测/运行中代码。单train样本CPU280→1120处理预检通过：实际image token260→1107，prompt339→1186。远端/root/autodl-tmp/image-budget1120.sh已准备，E08无收益且原链终止才timeout300启动。
 
 用户最新强调：快、低成本仍是核心产品目标；1120预算是已出现质量收益的候选，不是最终默认。正式全质量验收后必须联评服务性能/成本，批评测时长不冒充API延迟；不未经证据宣称优于Jev。
+
+## S3下一候选就绪（未启动）
+- reports/s3-stable-probe-preparation-001.json：五cohort各200行共1000、五ledger验证；数据SHA594be68b…、config SHA5c52f0b6…，远端artifacts/s3-stable-probe-001。
+- CPU预检reports/s3-stable-probe-preflight-001.json ready；lr2e-5、100步、lazy128MiB、图像1120/视频16帧。GPU入口/root/autodl-tmp/s3-stable-probe-train.sh硬性要求reports/s2-stage-acceptance-budget1120-001.json为passed/S2/exit0，当前无此通过报告，未运行训练。
+- 有界试验与退出条件见reports/explore/S3-E01-small-update-replay.md。S2完成后先提取现成video500 sidecar的固定150题基线，再启动训练与筛查，不重复GPU基线。

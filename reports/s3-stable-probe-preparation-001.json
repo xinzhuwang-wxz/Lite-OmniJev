@@ -1,0 +1,44 @@
+{
+  "status": "prepared",
+  "training_started": false,
+  "requires_s2_acceptance": true,
+  "scope": "CPU-only balanced train-pool preparation, not stage acceptance",
+  "inputs": {
+    "text": {
+      "train_sha256": "75206358039678400da9c52302b854468320562117f72041b1d01238006135a9",
+      "selected": 200
+    },
+    "image": {
+      "train_sha256": "96ed2bef6e4824cd6fb6b44e469007f9c180df789541caa95c8fd11d73f5ef8e",
+      "selected": 200
+    },
+    "screenshot": {
+      "train_sha256": "70468d9212d14fc1b9a0f0f7d4c75b18f8a4c696fce9df1eda3c19f91900056b",
+      "selected": 200
+    },
+    "audio": {
+      "train_sha256": "7fd14f3aad81ac096b2285b010e429ae883059c0966dc885d0244c90f7636b0c",
+      "selected": 200
+    },
+    "video": {
+      "train_sha256": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948",
+      "selected": 200
+    }
+  },
+  "rows": 1000,
+  "ledger_check": {
+    "ledger_rows": 27518,
+    "verified_train": 1000
+  },
+  "data_sha256": "594be68b56628751e6bd7fe904c0586bc7cec8ef8dfb036fa94b3cb158abea2f",
+  "config_sha256": "5c52f0b6fdb18aa7cc96b0f97e0d8a41fb898b532f8402b66e0469a40f2b4b2f",
+  "ledgers": [
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-a/allocation-ledger.jsonl",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-image-001/run-a/allocation-ledger.jsonl",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-screenshot-001/run-a/allocation-ledger.jsonl",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-audio-001/run-a/allocation-ledger.jsonl",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-video-001/run-a/allocation-ledger.jsonl"
+  ],
+  "init_adapter_if_s2_passes": "artifacts/s2-text-lora-001/joint-v2-001/adapter",
+  "init_adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee"
+}
