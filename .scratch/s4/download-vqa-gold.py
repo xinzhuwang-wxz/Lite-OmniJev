@@ -17,7 +17,15 @@ for row in requests:
  transport=candidates[row['image_id']]['attribution']['coco_url']
  assert transport==row['url'].replace('https:', 'http:', 1)
  row['transport_url']=transport
-out=private/'vqa-downloads-003';out.mkdir(mode=0o700)
+priorpath=private/'vqa-downloads-003/download-manifest.jsonl'
+assert hashlib.sha256(priorpath.read_bytes()).hexdigest()=='6916f228fc7a7109d39d23a0729dac7042853e7cff86d6511bdb749350e7b5e9'
+prior=[json.loads(line) for line in priorpath.read_text().splitlines()]
+for row in prior:
+ assert hashlib.sha256(Path(row['path']).read_bytes()).hexdigest()==row['sha256']
+prior_ids={r['image_id'] for r in prior}
+assert len(prior_ids)==1161 and prior_ids <= {r['image_id'] for r in requests}
+requests=[r for r in requests if r['image_id'] not in prior_ids]
+out=private/'vqa-downloads-004';out.mkdir(mode=0o700)
 for row in requests:
  assert row['file_name']==f"{row['image_id']:012d}.jpg"
  assert row['url']=='https://images.cocodataset.org/train2017/'+row['file_name']
@@ -52,16 +60,16 @@ def fetch(row):
 
 results=[fetch(row) for row in requests[:3]]
 if not any('error' in row for row in results):
- with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+ with concurrent.futures.ThreadPoolExecutor(max_workers=32) as pool:
   results.extend(pool.map(fetch,requests[3:]))
 else: stop.set()
-passed=[r for r in results if 'error' not in r]; errors=[r for r in results if 'error' in r]
+passed=prior+[r for r in results if 'error' not in r]; errors=[r for r in results if 'error' in r]
 def write(name,rows):
  fd=os.open(out/name,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
  with os.fdopen(fd,'w') as h:
   for row in rows:h.write(json.dumps(row,sort_keys=True)+'\n')
 write('download-manifest.jsonl',passed);write('failures.jsonl',errors)
-report={'scope':'selected official VQA2 images only, no gold admission','requested':len(requests),'attempted':len(results),'downloaded':len(passed),'failed':len(errors),'errors':dict(Counter(r['error'] for r in errors)),'stored_bytes':sum(r['bytes'] for r in passed),'plan_sha256':hashlib.sha256(planpath.read_bytes()).hexdigest(),'download_manifest_sha256':hashlib.sha256((out/'download-manifest.jsonl').read_bytes()).hexdigest(),'failure_manifest_sha256':hashlib.sha256((out/'failures.jsonl').read_bytes()).hexdigest(),'runner_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'elapsed_seconds':round(time.monotonic()-start,3),'exit_code':int(len(passed)!=4500)}
-with (root/'reports/s4-vqa-gold-download-003.json').open('x') as h:json.dump(report,h,indent=2)
+report={'scope':'selected official VQA2 images only, no gold admission','requested':4500,'already_verified':len(prior),'new_requested':len(requests),'attempted':len(results),'downloaded':len(passed),'failed':len(errors),'errors':dict(Counter(r['error'] for r in errors)),'stored_bytes':sum(r['bytes'] for r in passed),'plan_sha256':hashlib.sha256(planpath.read_bytes()).hexdigest(),'download_manifest_sha256':hashlib.sha256((out/'download-manifest.jsonl').read_bytes()).hexdigest(),'failure_manifest_sha256':hashlib.sha256((out/'failures.jsonl').read_bytes()).hexdigest(),'runner_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'elapsed_seconds':round(time.monotonic()-start,3),'exit_code':int(len(passed)!=4500)}
+with (root/'reports/s4-vqa-gold-download-004.json').open('x') as h:json.dump(report,h,indent=2)
 print(json.dumps(report))
 raise SystemExit(report['exit_code'])

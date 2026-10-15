@@ -1,0 +1,30 @@
+{
+  "schema_version": "clinc-gold-source-replay-v1",
+  "outcome": "matched_original_gold",
+  "exit_code": 0,
+  "full_gold_gate": "not_validated",
+  "private_job_permissions": "not_validated",
+  "counts": {
+    "holdout": 1000,
+    "calibration": 3000,
+    "train": 10750
+  },
+  "dev_count": 500,
+  "source_sha256": "30188119cf9f86fc9db27e1c22442d091cb5cb0913c9496f945fe11e7a02a28f",
+  "output_sha256": {
+    "holdout": "6bba594d544fdb67dc7dd95d37ce22de3570ad91d2db5dd0e633828eb87542c6",
+    "calibration": "6d3878168fbe135bb38bf1253ba8534d88b00b71654235c0bf619a2481a8a0c9",
+    "train": "75206358039678400da9c52302b854468320562117f72041b1d01238006135a9"
+  },
+  "source_revision": "155b9c710419136e17307b80d0a13e68cd46b4ec",
+  "license": "CC-BY-3.0",
+  "rule": "Pinned CLINC ClassLabel -> original Choice mapping -> frozen dev exclusion -> frozen S1 family split",
+  "code_sha256": {
+    "scripts.admit_clinc": "62f690a24b388ef26b9485d0ebccf5494defdb2ca243cda0f5df14d0eaaae8fe",
+    "scripts.s0_text_dev": "897064f8864990ece57776646ad239916193c16bb52821ea45085effadec2b1a",
+    "scripts.s1_text_pools": "3e32b0decd3af5eb202ab668295cd563f61e836de092e6a69a13fecf45642669"
+  },
+  "elapsed_seconds": 2.843,
+  "runner_sha256": "2db40a1c1081e3fe495e22263b38943b59ce93d0bc5df81c9d15c550506da418",
+  "python": "3.11.17"
+}

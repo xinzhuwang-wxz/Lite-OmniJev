@@ -7,12 +7,15 @@
 - 五模态500题双遍：image82.0%、screenshot96.4%、text99.4%、audio80.0%、video16帧63.6%；旧三模态与S2持平。video8帧60.8%，当前保留16帧。
 - 主干E4B ee0ef602…，S3 adapter1bebae31…；图像1120是当前质量配置，未定为最终低成本服务默认。
 - ADR0021记录真实100步/1000次均衡回放执行调整，原质量门不改；本候选训练+正式评测0.9075 H20活跃小时，不含其它作业/空闲，不等价租卡总费用或H100。
-- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。本轮两项Sol 6.1修复已整合；GUI重建002已成功、VQA下载003正在远端执行，无活跃子代理。
+- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。本轮两项Sol 6.1修复已整合；GUI重建002已成功、VQA续传004正在远端执行，无活跃子代理。
 
 ## 当前执行
-- 当前代码5096382；GUI/VQA修复在远端真实Python3.11/Pillow环境37项测试通过。源快照/root/autodl-tmp/s4-gold-code-5096382；远端主checkout仍869ee95。
+- CLINC源Parquet→原始Choice→S0dev排除→S1四池重放通过，3000cal/1000hold及10750train与原文件字节hash完全一致，dev500一致；reports/s4-text-gold-source-replay-001.json，2.843秒。
+- GUI002合并全历史审计零跨池冲突，reports/s4-gui-gold-isolation-002.json；仍不是完整来源/权限验收。
+- 新增crossmodal_gold_pools与gold_media_bundle已整合，126项相关测试通过。前者支持imageChoice+audioChoice/Noul、同池一对一AND、输出组件ledger与依赖组计数；后者显式根集合安全重写URI并绑定输出hash。两者真实构建尚未跑。组装顺序/冻结规则.scratch/s4/crossmodal-gold-policy.md；不能将媒体整理子集清单替代全历史。
+- 当前构建代码c590676；GUI真实执行快照5096382；GUI/VQA修复在远端真实Python3.11/Pillow环境37项测试通过。源快照/root/autodl-tmp/s4-gold-code-5096382；远端主checkout仍869ee95。
 - GUI构建001拒绝historical_pool_conflict（1460.889秒），原因是未使用的旧episode帧进入曝光关系。实际4141历史图片RGB审计、118438观测零跨池冲突（reports/s4-observed-image-rgb-audit-001.json）；所有历史图已SHA定位。修复分离候选关系、排除触碰历史组件、绑定私有RGB缓存5cb45603…并保留119/59原预留，8进程解码。真实重建002成功：91.44秒，3000cal/1000hold，178原预留完整保留，1100历史GUI媒体RGB完整验证；输出gui-gold-002/inventory-manifest.json SHAa80bf03f…，报告reports/s4-gui-gold-build-002.json。完整gold权限/源准入仍未通过。
-- VQA冻结3000cal/1000hold/500补充dev，每池20%color/20%integer/60%yesno，原AOK dev/门槛保留；见.scratch/s4/image-gold-policy.md。计划001因重复图仅4190唯一图作废，修复后计划002确认4500唯一图（SHA748dc460…）。HTTPS下载002前三例均503，0下载；003仅采用固定来源元数据中的官方同站HTTP原地址，禁止重定向，记录canonical/transport/final URL，正在执行（工具session40671），终态reports/s4-vqa-gold-download-003.json；不是gold准入。
+- VQA冻结3000cal/1000hold/500补充dev，每池20%color/20%integer/60%yesno，原AOK dev/门槛保留；见.scratch/s4/image-gold-policy.md。计划001因重复图仅4190唯一图作废，修复后计划002确认4500唯一图（SHA748dc460…）。HTTPS下载002前三例均503，0下载；003仅采用固定来源元数据中的官方同站HTTP原地址，禁止重定向，记录canonical/transport/final URL，003在1200秒预算后保留1161图/185.6MB，余3339未发起，无HTTP失败；报告s4-vqa-gold-download-003.json。已校验并复用全部1161图，32并发续传004（session88523），仍1200秒/8失败熔断；不是gold准入。
 - 音频真实gold已构建：Clotho1400/500（原120条完整保留，790媒体全解码，119.77秒）+LibriSpeech1600/500（另500诊断dev，159.76秒）。83项相关测试通过；配比/分层质量规则冻结于.scratch/s4/audio-gold-policy.md，原Clothodev500不替换。reports/s4-{clotho,speech}-gold-build-001.json。
 - 公开crossmodal固定50题单遍GPU探针完成：S3adapter33/50=66%，同输入同1120预算基座24/50=48%，prepared输入hash逐题一致。使用reports/s4-crossmodal-screen-recovered-002.json与paired-screen-002.json；001恢复报告因JSON yes/no顺序导致34%错误，保留但已废止。已修s0_development_baselines恢复顺序，22相关测试通过；原内存计算S0报告不受该恢复路径影响。候选原进程报告收尾参数错误exit1，CPU恢复完整50sidecar，无GPU重跑；完整墙钟/峰值丢失不补造。不能当S4质量放行。
 - GUI仅补179个固定revision标注文件（约4.16MB，首次178+单文件重试1），无需新截图下载。全缓存容量002实测4395新原题/569episode/566连通组，能整组补2881cal/941hold；缺图/缺标0，历史媒体碰撞7个episode剔除。reports/s4-gui-cached-capacity-002.json；后继按该冻结规则构建，仍须补历史RGB/来源lineage验收，不把容量当gold通过。
@@ -37,7 +40,7 @@
 - 音频/视频新gold部分使用file URI；正式gate前需转换成受信任根下的相对媒体manifest，不能放宽现有resolve_media路径边界。
 - LibriSpeech源审计发现5本书/20转录串跨官方split重叠，已按speaker/book/text/media合并成70组件并分配。选中2600条全部转为已写实长WAV；语音gold需保留分层质量门及原始别名ledger。源存于source-audit/librispeech-s4-candidate-001/mirror-002；作业均结束。
 - 用户重申产品必须兼顾快与低成本。S6/FINAL按同硬件、同输入长度/媒体预算、同并发报告端到端p50/p95、吞吐、峰值显存、每千次成功决策成本（含预处理与空闲摊销边界）；当前FP32正确性参考不能充当低成本产品。无同条件Jev测量时不声称追平或超越。
-- reports/s3-reserve-inventory-001.json：text预留3000/1000，其余不足。audio现按冻结真实环境声+语音组合已构建3000/1000并待完整gold权限验收；video新增validation3000/1000已构建且通过所提供历史/media隔离，完整权限边界仍待验收。crossmodal未分配。
+- reports/s3-reserve-inventory-001.json：text预留3000/1000，其余不足。audio现按冻结真实环境声+语音组合已构建3000/1000并待完整gold权限验收；video新增validation3000/1000已构建且通过所提供历史/media隔离，完整权限边界仍待验收。crossmodal构建器已就绪，等待VQA完整及合并媒体后实际分配。
 - Noul统计tie顺序已修复：规范yes/no，旧JSON顺序导致通用accuracy/ECE偏差；产品预测及S3门不变。原报告不覆盖，audio/video/video8 correction报告保留。远端旧代码的全记录审计已完成，现可同步。
 - 高预算FP32派生副本GPU/HTTP数值对照现已通过，但不是低成本API性能、BF16/FP16发布质量/校准或最终浏览器验收；真实服务方案仍须S5/S6同版本测试。
 - S4质量/封存/外榜、S5稳健性/校准、S6量化/E2B/三运行时/性能、FINAL三档发布与真实浏览器均未完成。

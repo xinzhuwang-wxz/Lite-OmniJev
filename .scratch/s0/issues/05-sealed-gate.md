@@ -30,5 +30,7 @@ Blocked by: p0:04
 
 2026-10-15：GUI实际构建001拒绝；历史实际使用4141图片RGB审计零跨池冲突，已修复未使用帧引入虚假曝光边并启动002。VQA唯一图选择修复后计划002为4500唯一图；官方HTTPS503后003按固定COCO元数据原始HTTP传输执行。远端37项GUI/VQA回归通过，代码5096382；GUI002已成功构建3000cal/1000hold，178原预留完整保留，91.44秒；报告s4-gui-gold-build-002.json。VQA下载结果待收集，完整准入仍不勾选。
 
+2026-10-15：CLINC原始Parquet全链重放匹配原dev/train/3000cal/1000hold哈希（s4-text-gold-source-replay-001.json）；GUI002全历史隔离通过。跨模态及媒体整理构建器集成126测试通过，实际组装待VQA下载完成；冻结策略.scratch/s4/crossmodal-gold-policy.md。VQA003仅因20分钟预算结束，1161图已校验复用，004续传剩余3339图。
+
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。
