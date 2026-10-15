@@ -1,6 +1,6 @@
 # STATUS
 
-更新：2026-10-15（Asia/Shanghai，18:25）。**S2图像原门仍未过：v2 78.8% vs80.6%；其它三门通过。停止旧池六条无扩量收益路线，新增1811条已许可/同train-family人工一致问题；新gold监督两臂均未达扩量条件，停止。S3训练技术路径已通，质量仍需改进。**
+更新：2026-10-15（Asia/Shanghai，18:31）。**S2图像原门仍未过：v2 78.8% vs80.6%；其它三门通过。停止旧池六条无扩量收益路线，新增1811条已许可/同train-family人工一致问题；新gold监督两臂均未达扩量条件，停止。S3训练技术路径已通，质量仍需改进。**
 
 ## 已验证（不重跑）
 - S1通过；S2 v2 image78.8%/cf88.6%、screenshot96.6%/cf98.4%、text99.4%，各dev500双遍一致；reports/s2-stage-acceptance-v2-001.json仅image FAIL。
@@ -19,8 +19,9 @@
 - 全池21184行lazy CPU预检完成：29.54秒、进程峰值1559654400 bytes；reports/s3-lazy-full-preflight-001.json及resource报告。仅全量metadata+4个代表样本，不宣称全部媒体读取。
 - E08准入完成：400新family，颜色160/数字160/yesno80；排除原AOKtrain全部family、现有ledger与3832张图片SHA。首批下载400张62.63MB/252秒，其中coco:265843解码截断，已记录排除并确定性补选1张。最终plan artifacts/s2-new-family-plan-004，候选SHA8a9cf9a5…；媒体未删除。
 - 构建输出artifacts/s2-new-family-gold-001，train SHA7d0f1583…；混合池artifacts/s2-new-family-probe-001为1000行（新image400/旧image400/text100/screenshot100），SHA88dab83e…，四ledger验证通过。构建器2508a6f远端16测试通过；无活跃子代理。
-- 当前唯一GPU链：/root/autodl-tmp/vqa-new-family-inner.sh，外层timeout900，日志artifacts/s2-text-lora-001/new-family-ce-001.log；输出artifacts/s2-text-lora-001/new-family-ce-001，报告reports/s2-new-family-ce-{run,dev150}-001.json。从v2初始化、lr2e-5/100步CE，自动接image dev150。训练PID266665已确认存活，不重复派发；运行中不切远端2508a6f代码。
-- 下一步：收取E08，达到125/150才扩大旧模态/完整S2门，否则停止候选并复盘数据/任务匹配，不扫参数。s2:01仍claimed，S3依赖不解除。
+- E08训练完成100步/357.78秒，adapter d5ca009c26495a1fc5bd8c9eb84da554b436c629a8cef2cf7c6ff22545c2490c；dev150=125/150（83.33%）、ECE .14844、35.44秒，达到扩量规则。reports/s2-new-family-ce-{run,dev150}-001.json。
+- 当前唯一GPU作业：/root/autodl-tmp/new-family-screen.sh，timeout300，日志artifacts/s2-text-lora-001/new-family-screen-001.log；500题单遍原题筛查，报告reports/s2-new-family-ce-dev500-screen-001.json，输出同名artifacts/s2-text-lora-001目录。运行中保持远端2508a6f。
+- 下一步：若500题accuracy≥.806，再做同候选image双遍+cf、screenshot双遍+cf、text双遍并重建完整S2门；若不达，保存结果停止该候选，再运行已准备E09。单遍screen不能关票。s2:01仍claimed，S3依赖不解除。
 
 ## 授权与研究
 - 原生goal active；用户强调按开机总时长计费，CPU准备与GPU重叠、停止无收益路线、避免重复验证/空转。
@@ -29,5 +30,5 @@
 - 不push/付费/自动开关卡/生产部署；许可和封存隔离保持。暂无需用户操作的阻塞；凭据不入仓。GPU链已启动，未请求关卡。
 
 ## 本轮并行准备
-- E08训练PID266665仍存活，未重启。CPU开发题型审计reports/s2-question-family-audit-001.json：颜色19/计数18/why54/其它409，属于粗词法分组，不当语义真值。
-- E09官方1120视觉token预算研究对照已准备（仅E08无收益才启动），见reports/explore/S2-E09-official-image-budget.md；独立进程覆盖processor参数，不修改模型资产/默认评测/运行中代码。单train样本CPU280→1120处理预检通过：实际image token260→1107，prompt339→1186。远端/root/autodl-tmp/image-budget1120.sh已准备，E08无收益且原链终止才timeout300启动。
+- E08原训练PID266665及原链已结束。CPU开发题型审计reports/s2-question-family-audit-001.json：颜色19/计数18/why54/其它409，属于粗词法分组，不当语义真值。
+- E09官方1120视觉token预算研究对照已准备、因E08达到扩量条件暂缓，见reports/explore/S2-E09-official-image-budget.md；独立进程覆盖processor参数，不修改模型资产/默认评测/运行中代码。单train样本CPU280→1120处理预检通过：实际image token260→1107，prompt339→1186。远端/root/autodl-tmp/image-budget1120.sh已准备，E08无收益且原链终止才timeout300启动。
