@@ -288,7 +288,9 @@ def main(argv: list[str] | None = None) -> int:
             result = native(
                 prepared.prompt,
                 native.info.parse_mm_data(mm_data),
-                hf_processor_mm_kwargs=native_processor_kwargs(prepared.http_media_io_kwargs),
+                hf_processor_mm_kwargs=native_processor_kwargs(
+                    prepared.http_media_io_kwargs, prepared.http_image_max_soft_tokens
+                ),
             )
             compared = compare_native(prepared, result)
             compared.update(
