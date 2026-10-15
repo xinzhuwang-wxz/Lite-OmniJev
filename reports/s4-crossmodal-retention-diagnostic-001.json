@@ -1,0 +1,86 @@
+{
+  "scope": "50 fixed original public-dev paired diagnosis, not stage acceptance",
+  "sources": {
+    "retained": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-crossmodal-original-001/records.jsonl",
+      "sha256": "b131edca9ed47b420482343d6fc4390f42efed97d19a8cb81f758395e36b3b15"
+    },
+    "video_ce": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-crossmodal-original-001/records.jsonl",
+      "sha256": "331c3ecda3c8e2841add71b065c55f01fec0a72cb31b05a867569fcb87b40c1d"
+    },
+    "reference_kl": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-reference-retention-screen-001/original/records.jsonl",
+      "sha256": "ad846d5a8fa90dca4c8e25dcfdd93072b2773ba4e8eb62e74be25d88e07add71"
+    },
+    "coverage": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-retention-screen-001/original/records.jsonl",
+      "sha256": "1a90e21444e39124d57ff7441b8baaa384bb1cf96b2e2e5665ad062f80fe3431"
+    }
+  },
+  "models": {
+    "retained": {
+      "correct": 35,
+      "count": 50,
+      "confusion": {
+        "yes->yes": 23,
+        "no->no": 12,
+        "no->yes": 10,
+        "yes->no": 5
+      },
+      "mean_p_yes": 0.5677896131908831
+    },
+    "video_ce": {
+      "correct": 33,
+      "count": 50,
+      "confusion": {
+        "yes->yes": 25,
+        "no->no": 8,
+        "no->yes": 14,
+        "yes->no": 3
+      },
+      "mean_p_yes": 0.6402047948987826
+    },
+    "reference_kl": {
+      "correct": 33,
+      "count": 50,
+      "confusion": {
+        "yes->yes": 25,
+        "no->no": 8,
+        "no->yes": 14,
+        "yes->no": 3
+      },
+      "mean_p_yes": 0.6517173924009161
+    },
+    "coverage": {
+      "correct": 34,
+      "count": 50,
+      "confusion": {
+        "yes->yes": 24,
+        "no->no": 10,
+        "no->yes": 12,
+        "yes->no": 4
+      },
+      "mean_p_yes": 0.6182455294461121
+    }
+  },
+  "paired": {
+    "video_ce": {
+      "corrected": 2,
+      "regressed": 4,
+      "unchanged_predictions": 44
+    },
+    "reference_kl": {
+      "corrected": 2,
+      "regressed": 4,
+      "unchanged_predictions": 44
+    },
+    "coverage": {
+      "corrected": 1,
+      "regressed": 2,
+      "unchanged_predictions": 47
+    }
+  },
+  "coverage_vs_ce_changed_predictions": 3,
+  "interpretation": "Coverage improved original cross by one vs video CE, but missed the frozen retention minimum. This paired public-dev diagnostic does not establish gradient conflict or stage acceptance."
+}
