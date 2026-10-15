@@ -1,6 +1,6 @@
 # S2-E09：官方视觉token预算对照
 
-状态：running，2026-10-15。E08失败才启动；不修改官方模型资产或在训练链运行时切代码。
+状态：qualified-for-expansion，2026-10-15。E08失败才启动；不修改官方模型资产或在训练链运行时切代码。
 
 依据：实际processor_config.json默认max_soft_tokens=280；Google官方https://ai.google.dev/gemma/docs/capabilities/vision/image说明所有Gemma4支持70/140/280/560/1120，官方示例修改image_processor.max_soft_tokens控制细节与速度。保持冻结E4B、同v2 adapter、模板、原图与概率语义，仅用官方1120预算单次前向；不是新增分类头/推理引擎。
 
@@ -9,3 +9,5 @@
 .scratch/s2/image-budget-probe.py只在独立进程覆盖官方processor参数，调用原评测代码，报告额外记录research_input_profile、代码哈希、原/新预算；原模型目录不变。若有收益，必须正式贯通训练/服务配置、校准和部署性能，并重新完整验收，不能把研究参数混入默认基线或直接宣称S2通过。
 
 CPU官方处理器实测通过：同一train图片在280/1120预算下分别260/1107个实际图像token，prompt339/1186，pixel tensor分别[1,2520,768]/[1,10080,768]，均小于2048序列上限。reports/s2-image-budget-preflight-001.json。CPU耗时含冷启动差异，不作为速度收益证据。
+
+GPU dev150结果：126/150=84.0%，ECE .14332，耗时68.44秒；同v2默认123/150。达到预设125/150扩量规则，开始500题单遍筛查，正式配置接入按ADR0019。尚未证明全阶段收益。

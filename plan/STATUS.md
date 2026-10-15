@@ -21,8 +21,10 @@
 - 构建输出artifacts/s2-new-family-gold-001，train SHA7d0f1583…；混合池artifacts/s2-new-family-probe-001为1000行（新image400/旧image400/text100/screenshot100），SHA88dab83e…，四ledger验证通过。构建器2508a6f远端16测试通过；无活跃子代理。
 - E08训练完成100步/357.78秒，adapter d5ca009c26495a1fc5bd8c9eb84da554b436c629a8cef2cf7c6ff22545c2490c；dev150=125/150（83.33%）、ECE .14844、35.44秒，达到扩量规则。reports/s2-new-family-ce-{run,dev150}-001.json。
 - E08完整image dev500单遍=399/500=79.8%，较v2提高1pp但低于80.6%；停止此候选完整阶段扩量，保留adapter。reports/s2-new-family-ce-dev500-screen-001.json，77.97秒。当前最好图像单遍不代表三模态整体最优。
-- 当前唯一GPU作业：E09 /root/autodl-tmp/image-budget1120.sh，timeout300；日志artifacts/s2-text-lora-001/image-budget1120-001.log，报告reports/s2-image-budget1120-dev150-001.json；同v2 adapter/dev150，官方processor预算1120，一次前向、不重训。独立进程脚本/root/autodl-tmp/image-budget-probe.py，源代码.scratch/s2/image-budget-probe.py。
-- 下一步：E09≥125/150才扩大；若有收益先正式固化可追踪image budget并核验训练/服务路径，再做完整门。若无收益停止预算路线，不扫所有档位。s2:01保持claimed，S3依赖不解除。
+- E09 dev150=126/150=84.0%，ECE .14332，68.44秒；同v2默认123/150，达到扩量条件。reports/s2-image-budget1120-dev150-001.json。
+- 当前唯一GPU作业：/root/autodl-tmp/image-budget1120-screen.sh，timeout600，日志artifacts/s2-text-lora-001/image-budget1120-screen-001.log；研究wrapper+v2 adapter+1120预算，500题单遍，报告reports/s2-image-budget1120-dev500-screen-001.json。尚非阶段验收。
+- 原生子代理image_budget_config独立worktree /Users/bamboo/.codex/worktrees/image-token-budget/Lite-OmniJev，负责train/eval/HF服务显式预算配置及测试，按ADR0019；无模型资产修改，默认仍官方值，训练报告/checkpoint追踪非默认。主会话负责集成、GPU验收、票据。
+- 下一步：收取500题结果与子代理代码；若达.806，正式配置复验双遍+cf、screenshot及text，统一门报告；若不达则保留对照结论，不能重复扫预算。s2:01保持claimed，S3依赖不解除。
 
 ## 授权与研究
 - 原生goal active；用户强调按开机总时长计费，CPU准备与GPU重叠、停止无收益路线、避免重复验证/空转。
