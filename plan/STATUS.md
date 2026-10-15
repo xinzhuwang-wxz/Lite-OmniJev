@@ -6,8 +6,9 @@
 - s0:05 done：reports/s4-gold-gate-engineering-acceptance-001.json。数据准入、私有数据审计、固定私有模型入口、失败拒绝和真实GPU双遍工程验证齐全；不代表S4/5/6质量通过。
 - s4:01 claimed main-session，主树 /Users/bamboo/Githubs/Lite-OmniJev；规格.scratch/s4/spec.md，规则iteration-policy.md。继续有界训练→固定dev筛选→完整dev→冻结候选→私有holdout/外榜→S4机器门。
 - Sol6.1构建器已合入87c766c，真实200对TRAIN组合构建通过：reports/s4-crossmodal-train-build-001.json；train SHA d3b0be2a…，新完整inventory SHA244a5c4f…，100/50/50 AND规则，原始train图像/音频各200唯一组件。源与媒体SHA及全库存隔离均通过；主树22针对测试通过。
-- Sol6.1子代理s4_crossmodal_train正在原worktree准备1200条六类回放、首轮30步配置（独占.scratch/s4/prepare-joint-pilot.py）；s4_step_telemetry在独立worktree补train/trainer.py逐步真实耗时/曝光/峰值/损失日志和测试。现有midway只保存不暂停，resume要求config完全一致；先结束30步并评测，不伪称支持30→60精确续跑。
-- 当前没有运行中的GPU/下载作业。最后两次私有工程GPU作业均结束，下一上卡工作是通过准备检查的S4小候选，不重复已经通过的工程探针。
+- 首个S4候选实际运行中：30步/300曝光，池1200六类各200且固定shuffle前300每类50；LR2e-5、accum10、1120/16帧、S3 adapter初始化。准备/预检/启动见reports/s4-joint-pilot-{preparation,preflight,launch}-001.json；预检ready无blocker、SwanLab online。
+- 远端源码/root/autodl-tmp/s4-pilot-code-f592776，timeout PID381944、python381945，1800秒上限；run状态artifacts/s4-joint-pilot-train-001/run.json，最终reports/s4-joint-pilot-train-001.json。已观察step3真实更新，每步约9–10秒，峰值34.9GB；running期间exit_code1是初始默认，不能据此认定失败。下一步30步完成后先固定dev筛选，不自动追加。
+- Sol6.1监控实现f592776已合入，67相关CPU测试通过，主树24针对测试通过；真实step_metrics和online日志已产生。Luna子代理s4_preflight_monitor只读监控训练。Sol6.1 s4_crossmodal_train正在独立worktree准备5旧cohort的SHA-bound筛选脚本；主会话准备两个crossmodal固定50评测。实验冻结.scratch/s4/pilot-001.md。
 - 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。不为每个小切片另写handoff。
 
 ## 已验收数据与入口
