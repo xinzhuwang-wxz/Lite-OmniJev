@@ -140,6 +140,9 @@ def test_admission_exact_binding_and_no_stage_subset(tmp_path: Path) -> None:
         pool="holdout",
         subset_limit=None,
         admission={"path": str(receipt), "sha256": job.sha256_file(receipt)},
+        selected_manifest={"path": str(receipt), "sha256": job.sha256_file(receipt)},
+        data_admission={"path": str(receipt), "sha256": job.sha256_file(receipt)},
+        evidence_root=str(tmp_path),
     )
     stage = job.Spec.model_validate(values)
     with pytest.raises(job.Rejected):
@@ -182,6 +185,9 @@ def test_timeout_and_interrupt_reap(
         pid = 99999999
         calls = 0
 
+        def poll(self) -> int:
+            return 0
+
         def wait(self, timeout: int | None = None) -> int:
             self.calls += 1
             if timeout is not None:
@@ -213,6 +219,9 @@ def test_raw_backend_exception_and_stdout_never_export(
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             kwargs["stdout"].write(b"SECRET prompt labels traceback")
             kwargs["stdout"].flush()
+
+        def poll(self) -> int:
+            return 0
 
         def wait(self, timeout: int | None = None) -> int:
             return 1
@@ -263,6 +272,9 @@ def test_supervisor_rejects_malformed_or_mismatched_receipt(
             else:
                 result["exit_code"] = 1
             (private_spec.parent / "receipt.json").write_text(json.dumps(result))
+
+        def poll(self) -> int:
+            return 0
 
         def wait(self, timeout: int | None = None) -> int:
             return 0
@@ -369,3 +381,279 @@ def test_failure_receipt_is_durable_and_never_overwrites(tmp_path: Path, monkeyp
     with pytest.raises(job.Rejected, match="report_exists"):
         job.execute(path, report)
     assert report.read_bytes() == original
+
+
+def catalog_fixture(tmp_path: Path) -> job.Spec:
+    _, base = fixture(tmp_path)
+    cohorts = {"text", "image", "screenshot", "audio", "video", "crossmodal"}
+    counts = {name: {"calibration": 3000, "holdout": 1000} for name in cohorts}
+    original = {name: 500 for name in cohorts}
+    inventory = "c" * 64
+    selected = tmp_path / "selected.json"
+    selected.write_text(
+        json.dumps(
+            {
+                "schema_version": "s4-selected-gold-manifest-v1",
+                "inventory": {"sha256": inventory},
+                "selected": [
+                    {
+                        "cohort": "text",
+                        "pool": "holdout",
+                        "path": base.data.path,
+                        "sha256": base.data.sha256,
+                        "expected_questions": 3,
+                    }
+                ],
+                "auxiliary": [],
+            }
+        )
+    )
+    selected_hash = job.sha256_file(selected)
+    reports: list[dict[str, Any]] = [
+        {
+            "outcome": "selected_counts_and_targets_verified",
+            "manifest_sha256": selected_hash,
+            "inventory_sha256": inventory,
+            "selected_question_counts": counts,
+            "original_development": original,
+        },
+        {
+            "outcome": "mechanical_source_bindings_verified",
+            "sources": [
+                {"source": name, "status": "verified"}
+                for name in (
+                    "gui",
+                    "clotho",
+                    "speech",
+                    "video",
+                    "vqa",
+                    "crossmodal",
+                    "crossmodal_dev",
+                )
+            ],
+        },
+        {
+            "jobs": [
+                {"source": name, "mismatched_or_missing": 0}
+                for name in (
+                    "text",
+                    "gui",
+                    "clotho",
+                    "speech",
+                    "video",
+                    "vqa",
+                    "crossmodal",
+                    "crossmodal_dev",
+                )
+            ]
+        },
+        {"outcome": "matched_original_gold"},
+        {"outcome": "original_mapping_verified", "preserved_items": 120},
+        {"outcome": "uri_only_changes_verified"},
+        {"outcome": "known_exposures_reconciled", "inventory_sha256": inventory},
+        {
+            "outcome": "isolated",
+            "receipt": {"manifest_sha256": inventory, "isolation": {"overlapping_components": 0}},
+        },
+        {
+            "outcome": "isolated",
+            "ordinary_identity_boundary": True,
+            "source_manifest_sha256": inventory,
+            "code_sha256": "d" * 64,
+        },
+        {
+            "passed": True,
+            "code_sha256": "d" * 64,
+            "checks": {
+                name: True
+                for name in (
+                    "valid",
+                    "invalid",
+                    "overlap",
+                    "cli_redaction",
+                    "hash_rejection",
+                    "overwrite_rejected",
+                    "malformed_receipt_rejected",
+                    "extra_receipt_rejected",
+                    "private_log_captured",
+                    "exception_rejected",
+                    "private_log_denied_after_run",
+                    "timeout_reaped",
+                    "exported_surfaces_redacted",
+                )
+            },
+        },
+        {
+            name: True
+            for name in (
+                "live_unregistered_identity_rejected",
+                "used_identity_rejected",
+                "retained_runs_root_only",
+                "prior_workers_denied_retained_runs",
+            )
+        },
+    ]
+    (tmp_path / "reports").mkdir()
+    evidence = {}
+    for name, report in zip(job.REQUIRED_EVIDENCE, reports, strict=True):
+        path = tmp_path / "reports" / name
+        path.write_text(json.dumps({**report, "exit_code": 0}))
+        evidence["reports/" + name] = job.sha256_file(path)
+    bundle = job.sha256_json(evidence)
+    global_path = tmp_path / "data-admission.json"
+    global_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "s4-gold-data-admission-v1",
+                "status": "data_admitted",
+                "exit_code": 0,
+                "selected_manifest_sha256": selected_hash,
+                "inventory_sha256": inventory,
+                "evidence_bundle_sha256": bundle,
+                "evidence": evidence,
+                "counts": counts,
+                "original_development": original,
+            }
+        )
+    )
+    per_data = tmp_path / "per-data.json"
+    per_data.write_text(
+        json.dumps(
+            {
+                "schema_version": "private-stage-data-admission-v1",
+                "status": "admitted",
+                "data_sha256": base.data.sha256,
+                "selected_manifest_sha256": selected_hash,
+                "evidence_bundle_sha256": bundle,
+                "pool": "holdout",
+                "cohort": "text",
+                "expected_rows": 3,
+            }
+        )
+    )
+    values = base.model_dump()
+    values.update(
+        mode="S4",
+        pool="holdout",
+        subset_limit=None,
+        evidence_root=str(tmp_path),
+        selected_manifest={"path": str(selected), "sha256": selected_hash},
+        data_admission={"path": str(global_path), "sha256": job.sha256_file(global_path)},
+        admission={"path": str(per_data), "sha256": job.sha256_file(per_data)},
+    )
+    return job.Spec.model_validate(values)
+
+
+@pytest.mark.parametrize(
+    "tamper", [None, "mutated_evidence", "missing_report", "nonmember", "self_declared"]
+)
+def test_admission_rechecks_bound_catalog(tmp_path: Path, tamper: str | None) -> None:
+    spec = catalog_fixture(tmp_path)
+    assert spec.data_admission and spec.selected_manifest
+    if tamper == "mutated_evidence":
+        (tmp_path / "reports" / job.REQUIRED_EVIDENCE[0]).write_text("{}")
+    elif tamper == "missing_report":
+        path = Path(spec.data_admission.path)
+        report = json.loads(path.read_text())
+        report["evidence"].pop("reports/" + job.REQUIRED_EVIDENCE[0])
+        path.write_text(json.dumps(report))
+        spec.data_admission.sha256 = job.sha256_file(path)
+    elif tamper == "nonmember":
+        spec.data = job.Artifact(path=spec.data.path, sha256="e" * 64)
+    elif tamper == "self_declared":
+        spec.selected_manifest = None
+        spec.data_admission = None
+    if tamper is None:
+        job.verify_catalog(spec)  # synthetic catalog validates mechanics, not actual gold
+    else:
+        with pytest.raises(job.Rejected, match="admission_mismatch"):
+            job.verify_catalog(spec)
+
+
+@pytest.mark.parametrize("signum", [job.signal.SIGTERM, job.signal.SIGHUP])
+def test_real_supervisor_signal_kills_and_reaps_worker(tmp_path: Path, signum: int) -> None:
+    import os
+    import time
+
+    path, _ = fixture(tmp_path, timeout_seconds=60)
+    report = tmp_path / "signal-report.json"
+    pidfile = tmp_path / "worker.pid"
+    program = """
+import subprocess,sys
+from pathlib import Path
+from scripts import private_stage_eval as job
+spawn=subprocess.Popen
+sleeper=("import os,time; from pathlib import Path; Path("+repr(sys.argv[3])
+         +").write_text(str(os.getpid())); print('PRIVATE signal test'); time.sleep(60)")
+def sleeping_worker(command, **kwargs):
+    return spawn([sys.executable,'-c',sleeper], **kwargs)
+job.subprocess.Popen=sleeping_worker
+try:
+    job.execute(Path(sys.argv[1]),Path(sys.argv[2]))
+except job.Rejected:
+    raise SystemExit(1)
+"""
+    supervisor = subprocess.Popen(
+        [job.sys.executable, "-c", program, str(path), str(report), str(pidfile)],
+        cwd=Path(job.__file__).resolve().parents[1],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    try:
+        deadline = time.monotonic() + 10
+        while not pidfile.exists() and time.monotonic() < deadline:
+            time.sleep(0.02)
+        assert pidfile.exists()
+        worker_pid = int(pidfile.read_text())
+        supervisor.send_signal(signum)
+        stdout, stderr = supervisor.communicate(timeout=10)
+        assert supervisor.returncode == 1
+        assert b"PRIVATE" not in stdout + stderr
+        receipt = job.FailureReceipt.model_validate_json(report.read_text())
+        assert receipt.category == "interrupted" and receipt.exit_code == -9
+        with pytest.raises(ProcessLookupError):
+            os.kill(worker_pid, 0)
+    finally:
+        if supervisor.poll() is None:
+            supervisor.kill()
+            supervisor.wait()
+
+
+def test_scoped_signal_handlers_restore(tmp_path: Path, monkeypatch: Any) -> None:
+    path, _ = fixture(tmp_path)
+    before = {sig: job.signal.getsignal(sig) for sig in (job.signal.SIGTERM, job.signal.SIGHUP)}
+
+    def fail(*args: Any) -> Any:
+        raise job.Rejected("backend_failed", 1)
+
+    monkeypatch.setattr(job, "_execute", fail)
+    with pytest.raises(job.Rejected):
+        job.execute(path, tmp_path / "report.json")
+    assert all(job.signal.getsignal(sig) == handler for sig, handler in before.items())
+
+
+def test_file_uri_canonicalization_is_bound_and_never_mutates_input(tmp_path: Path) -> None:
+    _, spec = fixture(tmp_path, cohort="image")
+    media = tmp_path / "image.png"
+    media.write_bytes(b"synthetic validation only")
+    rows = [_sample(i) for i in range(3)]
+    for row in rows:
+        row["prefix"]["media"] = [
+            {"type": "image", "uri": media.as_uri(), "sha256": job.sha256_file(media)}
+        ]
+        row["meta"]["modality"] = ["image"]
+    data = Path(spec.data.path)
+    data.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    before = data.read_bytes()
+    spec.data.sha256 = job.sha256_file(data)
+    samples, evidence = job.validate(spec)
+    assert all(sample.prefix.media[0].uri == "image.png" for sample in samples)
+    assert evidence["canonicalized_input_sha256"] == job.sha256_json(
+        [sample.model_dump(mode="json") for sample in samples]
+    )
+    assert data.read_bytes() == before
+    rows[0]["prefix"]["media"][0]["uri"] = "file://remote-host/image.png"
+    data.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    spec.data.sha256 = job.sha256_file(data)
+    with pytest.raises(job.Rejected, match="input_rejected"):
+        job.validate(spec)

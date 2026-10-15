@@ -2,6 +2,7 @@
 
 The supervisor exports aggregates only; worker streams and per-item records stay private.
 No arbitrary command, Python, environment, or backend selector is accepted.
+TERM/HUP are controlled interruptions; SIGKILL cannot guarantee child cleanup.
 """
 
 from __future__ import annotations
@@ -17,25 +18,21 @@ import subprocess
 import sys
 import time
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Literal, Never
+from urllib.parse import unquote, urlsplit
 
 from pydantic import Field, model_validator
 
 from data.schema import Contract, HardTarget, Sha256
 from scripts import s0_development_baselines as baseline
 from scripts.s0_public_baselines import configure_torch_runtime, sha256_file, sha256_json
-from train.multimodal import configure_image_processor
+from train.multimodal import configure_image_processor, resolve_media
 
 FROZEN_REVISION = "ee0ef6023621cff504d758262d4e04895a5af4a2"
 MAX_RECEIPT = 65536
-CODE_FILES = (
-    *baseline.REQUIRED_CODE_FILES,
-    "scripts/private_stage_eval.py",
-    "train/trainer.py",
-    "scripts/s1_dev_eval.py",
-)
 
 
 class Rejected(ValueError):
@@ -75,6 +72,9 @@ class Spec(Contract):
     adapter_dir: str | None = None
     adapter_files: dict[str, Sha256] | None = None
     admission: Artifact | None = None
+    selected_manifest: Artifact | None = None
+    data_admission: Artifact | None = None
+    evidence_root: str | None = None
     expected_rows: int = Field(gt=0)
     subset_limit: int | None = Field(default=None, ge=1, le=50)
     seed: Literal[42] = 42
@@ -86,9 +86,29 @@ class Spec(Contract):
     @model_validator(mode="after")
     def scope(self) -> Spec:
         if self.mode == "engineering":
-            if self.pool != "dev" or self.admission is not None:
+            if self.pool != "dev" or any(
+                value is not None
+                for value in (
+                    self.admission,
+                    self.selected_manifest,
+                    self.data_admission,
+                    self.evidence_root,
+                )
+            ):
                 raise ValueError("engineering_scope")
-        elif self.pool == "dev" or self.subset_limit is not None or self.admission is None:
+        elif (
+            self.pool == "dev"
+            or self.subset_limit is not None
+            or any(
+                value is None
+                for value in (
+                    self.admission,
+                    self.selected_manifest,
+                    self.data_admission,
+                    self.evidence_root,
+                )
+            )
+        ):
             raise ValueError("stage_scope")
         if (self.adapter_dir is None) != (self.adapter_files is None):
             raise ValueError("adapter_binding")
@@ -159,6 +179,7 @@ class Receipt(Contract):
     answer_map_sha256: Sha256
     config_sha256: Sha256
     admission_sha256: Sha256 | None
+    canonicalized_input_sha256: Sha256
     records_sha256: Sha256
     seed: Literal[42] = 42
     source_rows: int = Field(gt=0)
@@ -265,6 +286,191 @@ def bind_files(directory: str, files: dict[str, str], *, adapter: bool = False) 
     return sha256_json(files)
 
 
+REQUIRED_EVIDENCE = (
+    "s4-selected-gold-audit-001.json",
+    "s4-source-evidence-chain-001.json",
+    "s4-source-code-closure-001.json",
+    "s4-text-gold-source-replay-001.json",
+    "s4-clotho-preserved-source-001.json",
+    "s4-media-normalization-attestation-001.json",
+    "s4-known-exposure-reconciliation-001.json",
+    "s4-observed-image-rgb-audit-002.json",
+    "s4-private-inventory-job-003.json",
+    "s4-private-failure-probes-002.json",
+    "s4-private-identity-negative-probes-001.json",
+)
+
+
+def verify_catalog(spec: Spec) -> None:
+    """Recheck actual local catalog bytes and fixed observed proof, never a pass flag alone."""
+    try:
+        if (
+            not spec.selected_manifest
+            or not spec.data_admission
+            or not spec.evidence_root
+            or not spec.admission
+        ):
+            raise ValueError
+        selected = json.loads(read_json(binding(spec.selected_manifest), 1024 * 1024))
+        global_receipt = json.loads(read_json(binding(spec.data_admission)))
+        admission = Admission.model_validate_json(read_json(binding(spec.admission)))
+        if (
+            global_receipt["schema_version"] != "s4-gold-data-admission-v1"
+            or global_receipt["status"] != "data_admitted"
+            or global_receipt["exit_code"] != 0
+            or selected["schema_version"] != "s4-selected-gold-manifest-v1"
+            or global_receipt["selected_manifest_sha256"] != spec.selected_manifest.sha256
+            or admission.selected_manifest_sha256 != spec.selected_manifest.sha256
+            or global_receipt["inventory_sha256"] != selected["inventory"]["sha256"]
+        ):
+            raise ValueError
+        evidence = global_receipt["evidence"]
+        if not isinstance(evidence, dict) or set(evidence) != {
+            "reports/" + name for name in REQUIRED_EVIDENCE
+        }:
+            raise ValueError
+        bundle = sha256_json(evidence)
+        if (
+            bundle != global_receipt["evidence_bundle_sha256"]
+            or bundle != admission.evidence_bundle_sha256
+        ):
+            raise ValueError
+        root = absolute(spec.evidence_root)
+        reports = []
+        for name in REQUIRED_EVIDENCE:
+            relative = "reports/" + name
+            path = binding(Artifact(path=str(root / relative), sha256=evidence[relative]))
+            report = json.loads(read_json(path, 8 * 1024 * 1024))
+            if type(report.get("exit_code")) is not int or report["exit_code"] != 0:
+                raise ValueError
+            reports.append(report)
+        (
+            selection,
+            source,
+            closure,
+            text,
+            clotho,
+            normalization,
+            exposure,
+            rgb,
+            inventory,
+            probes,
+            identities,
+        ) = reports
+        if (
+            selection["outcome"] != "selected_counts_and_targets_verified"
+            or selection["manifest_sha256"] != spec.selected_manifest.sha256
+        ):
+            raise ValueError
+        if (
+            source["outcome"] != "mechanical_source_bindings_verified"
+            or {item["source"] for item in source["sources"]}
+            != {"gui", "clotho", "speech", "video", "vqa", "crossmodal", "crossmodal_dev"}
+            or any(item["status"] != "verified" for item in source["sources"])
+        ):
+            raise ValueError
+        if {item["source"] for item in closure["jobs"]} != {
+            "text",
+            "gui",
+            "clotho",
+            "speech",
+            "video",
+            "vqa",
+            "crossmodal",
+            "crossmodal_dev",
+        } or any(item["mismatched_or_missing"] != 0 for item in closure["jobs"]):
+            raise ValueError
+        if (
+            text["outcome"] != "matched_original_gold"
+            or clotho["outcome"] != "original_mapping_verified"
+            or clotho["preserved_items"] != 120
+            or normalization["outcome"] != "uri_only_changes_verified"
+            or exposure["outcome"] != "known_exposures_reconciled"
+        ):
+            raise ValueError
+        inventory_sha = global_receipt["inventory_sha256"]
+        if (
+            rgb["outcome"] != "isolated"
+            or rgb["receipt"]["isolation"]["overlapping_components"] != 0
+            or inventory["outcome"] != "isolated"
+            or inventory["ordinary_identity_boundary"] is not True
+        ):
+            raise ValueError
+        if any(
+            value != inventory_sha
+            for value in (
+                selection["inventory_sha256"],
+                exposure["inventory_sha256"],
+                inventory["source_manifest_sha256"],
+                rgb["receipt"]["manifest_sha256"],
+            )
+        ):
+            raise ValueError
+        required_checks = {
+            "valid",
+            "invalid",
+            "overlap",
+            "cli_redaction",
+            "hash_rejection",
+            "overwrite_rejected",
+            "malformed_receipt_rejected",
+            "extra_receipt_rejected",
+            "private_log_captured",
+            "exception_rejected",
+            "private_log_denied_after_run",
+            "timeout_reaped",
+            "exported_surfaces_redacted",
+        }
+        if (
+            probes["passed"] is not True
+            or set(probes["checks"]) != required_checks
+            or any(value is not True for value in probes["checks"].values())
+            or probes["code_sha256"] != inventory["code_sha256"]
+        ):
+            raise ValueError
+        if any(
+            identities[key] is not True
+            for key in (
+                "live_unregistered_identity_rejected",
+                "used_identity_rejected",
+                "retained_runs_root_only",
+                "prior_workers_denied_retained_runs",
+            )
+        ):
+            raise ValueError
+        cohorts = {"text", "image", "screenshot", "audio", "video", "crossmodal"}
+        counts = selection["selected_question_counts"]
+        if (
+            set(counts) != cohorts
+            or global_receipt["counts"] != counts
+            or global_receipt["original_development"] != selection["original_development"]
+        ):
+            raise ValueError
+        for cohort in cohorts:
+            if (
+                counts[cohort]["calibration"] != 3000
+                or counts[cohort]["holdout"] != 1000
+                or selection["original_development"][cohort] != 500
+            ):
+                raise ValueError
+        members = [
+            item
+            for item in selected["selected"]
+            if (
+                item["cohort"],
+                item["pool"],
+                item["path"],
+                item["sha256"],
+                item["expected_questions"],
+            )
+            == (spec.cohort, spec.pool, spec.data.path, spec.data.sha256, spec.expected_rows)
+        ]
+        if len(members) != 1:
+            raise ValueError
+    except Exception:
+        raise Rejected("admission_mismatch") from None
+
+
 def validate(spec: Spec) -> tuple[list[Any], dict[str, Any]]:
     data = binding(spec.data)
     model_hash = bind_files(spec.model_dir, spec.model_files)
@@ -275,6 +481,7 @@ def validate(spec: Spec) -> tuple[list[Any], dict[str, Any]]:
     )
     admission_hash = None
     if spec.admission:
+        verify_catalog(spec)
         path = binding(spec.admission)
         admitted = Admission.model_validate_json(read_json(path))
         if (admitted.data_sha256, admitted.pool, admitted.cohort, admitted.expected_rows) != (
@@ -286,6 +493,25 @@ def validate(spec: Spec) -> tuple[list[Any], dict[str, Any]]:
             raise Rejected("admission_mismatch")
         admission_hash = spec.admission.sha256
     samples = baseline.load_samples(data)
+    canonical = []
+    for sample in samples:
+        media_items = []
+        for media_item in sample.prefix.media:
+            if media_item.uri.startswith("file:"):
+                parsed = urlsplit(media_item.uri)
+                if parsed.scheme != "file" or parsed.netloc or parsed.query or parsed.fragment:
+                    raise Rejected("input_rejected")
+                root = absolute(spec.media_root)
+                local = absolute(unquote(parsed.path))
+                if not local.is_relative_to(root):
+                    raise Rejected("input_rejected")
+                relative = str(local.relative_to(root))
+                resolve_media(root, relative, media_item.sha256, max_bytes=baseline.MAX_MEDIA_BYTES)
+                media_item = media_item.model_copy(update={"uri": relative})
+            media_items.append(media_item)
+        prefix = sample.prefix.model_copy(update={"media": media_items})
+        canonical.append(sample.model_copy(update={"prefix": prefix}))
+    samples = canonical
     if len(samples) != spec.expected_rows:
         raise Rejected("row_count_mismatch")
     ids: set[str] = set()
@@ -329,6 +555,9 @@ def validate(spec: Spec) -> tuple[list[Any], dict[str, Any]]:
         "adapter_manifest_sha256": adapter_hash,
         "admission_sha256": admission_hash,
         "unique_families": len(families),
+        "canonicalized_input_sha256": sha256_json(
+            [sample.model_dump(mode="json") for sample in samples]
+        ),
     }
 
 
@@ -554,6 +783,9 @@ def _execute(spec_path: Path, report: Path) -> Receipt:
         except BaseException:
             code = terminate(process)
             raise Rejected("interrupted", code) from None
+        finally:
+            if process.poll() is None:
+                terminate(process)
     if exit_code != 0:
         raise Rejected("backend_failed", exit_code)
     try:
@@ -602,7 +834,28 @@ def _execute(spec_path: Path, report: Path) -> Receipt:
     return receipt
 
 
+@contextmanager
+def interrupt_handlers() -> Iterator[None]:
+    def interrupt(signum: int, frame: Any) -> Never:
+        raise Rejected("interrupted")
+
+    prior = {signum: signal.getsignal(signum) for signum in (signal.SIGTERM, signal.SIGHUP)}
+    try:
+        for signum in prior:
+            signal.signal(signum, interrupt)
+        yield
+    finally:
+        for signum, handler in prior.items():
+            signal.signal(signum, handler)
+
+
 def execute(spec_path: Path, report: Path) -> Receipt:
+    with interrupt_handlers():
+        return execute_managed(spec_path, report)
+
+
+def execute_managed(spec_path: Path, report: Path) -> Receipt:
+
     started = time.monotonic()
     absolute(str(report))
     if report.exists():
