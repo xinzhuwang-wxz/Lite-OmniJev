@@ -100,7 +100,11 @@ def version_mapping(inventory: Manifest) -> dict[str, str]:
 
 
 def pilot_paths(
-    root: Path, *, crossmodal_retention: bool = False, claim_pair: bool = False
+    root: Path,
+    *,
+    crossmodal_retention: bool = False,
+    claim_pair: bool = False,
+    temporal_curriculum: bool = False,
 ) -> list[tuple[str, Path, Path, Path]]:
     paths = [
         (
@@ -111,7 +115,7 @@ def pilot_paths(
         )
         for name in PILOTS
     ]
-    if crossmodal_retention or claim_pair:
+    if crossmodal_retention or claim_pair or temporal_curriculum:
         paths.append(
             (
                 "s4-crossmodal-retention",
@@ -120,7 +124,7 @@ def pilot_paths(
                 root / "artifacts/s4-crossmodal-retention-pilot-002",
             )
         )
-    if claim_pair:
+    if claim_pair or temporal_curriculum:
         paths.extend(
             (
                 "s4-claim-pair-" + arm,
@@ -130,7 +134,28 @@ def pilot_paths(
             )
             for arm in ("ce0", "pair01")
         )
+    if temporal_curriculum:
+        paths.append(
+            (
+                "s4-temporal-curriculum",
+                root / "reports/s4-temporal-curriculum-training-001.json",
+                root / "artifacts/s4-temporal-curriculum-train-001",
+                root / "artifacts/s4-temporal-curriculum-pilot-001",
+            )
+        )
     return paths
+
+
+def temporal_preparation_passed(report: dict[str, Any]) -> None:
+    require(
+        report.get("status") == "ready_for_preflight"
+        and report.get("exit_code") == 0
+        and report.get("data_ready_for_preflight") is True
+        and report.get("inventory_isolation") == "isolated"
+        and report.get("source_admission") == "verified_existing_scope"
+        and report.get("total_draws") == 120,
+        "temporal_preparation_not_passed",
+    )
 
 
 def preparation_passed(report: dict[str, Any], *, claim_pair: bool = False) -> None:
@@ -174,8 +199,27 @@ def claim_terminal(report: dict[str, Any], name: str) -> None:
 
 
 def base_inventory(
-    root: Path, *, crossmodal_retention: bool, claim_pair: bool = False
+    root: Path,
+    *,
+    crossmodal_retention: bool,
+    claim_pair: bool = False,
+    temporal_curriculum: bool = False,
 ) -> tuple[Path, dict[str, str] | None]:
+    if temporal_curriculum:
+        exposure = root / "artifacts/s4-pilot-exposure-004"
+        report, binding = read_json(exposure / "report.json")
+        require(
+            report.get("status") == "known_pilot_exposures_reconciled"
+            and report.get("exit_code") == 0
+            and report.get("unknown_update_bearing_inputs") == 0,
+            "exposure004_not_passed",
+        )
+        path = exposure / "inventory-manifest.json"
+        require(
+            sha(path) == report["output_sha256"]["inventory-manifest.json"],
+            "base_inventory_preparation_sha",
+        )
+        return path, binding
     if claim_pair:
         preparation = root / "artifacts/s4-claim-pair-pilot-001"
         report, binding = read_json(preparation / "report.json")
@@ -210,6 +254,7 @@ def prepare(
     *,
     crossmodal_retention: bool = False,
     claim_pair: bool = False,
+    temporal_curriculum: bool = False,
 ) -> dict[str, Any]:
     started = time.monotonic()
     require(
@@ -220,7 +265,10 @@ def prepare(
     output.mkdir(parents=True, mode=0o700)
     try:
         inventory_path, base_preparation_binding = base_inventory(
-            root, crossmodal_retention=crossmodal_retention, claim_pair=claim_pair
+            root,
+            crossmodal_retention=crossmodal_retention,
+            claim_pair=claim_pair,
+            temporal_curriculum=temporal_curriculum,
         )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
@@ -233,14 +281,18 @@ def prepare(
             bindings[base_preparation_binding["path"]] = base_preparation_binding["sha256"]
         pilots, new_artifacts = [], []
         for name, final_path, run_dir, preparation_dir in pilot_paths(
-            root, crossmodal_retention=crossmodal_retention, claim_pair=claim_pair
+            root,
+            crossmodal_retention=crossmodal_retention,
+            claim_pair=claim_pair,
+            temporal_curriculum=temporal_curriculum,
         ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
             terminal_report(final)
             terminal_report(runtime_report)
-            is_claim = claim_pair and name.startswith("s4-claim-pair-")
-            if is_claim:
+            is_claim = (claim_pair or temporal_curriculum) and name.startswith("s4-claim-pair-")
+            is_temporal = temporal_curriculum and name == "s4-temporal-curriculum"
+            if is_claim or is_temporal:
                 claim_terminal(final, name)
                 claim_terminal(runtime_report, name)
                 require(
@@ -253,7 +305,33 @@ def prepare(
             runtime_binding = bind(runtime_data)
             require(runtime_binding["sha256"] == final.get("data_sha256"), "runtime_data_sha")
             prep_report, prep_report_binding = read_json(preparation_dir / "report.json")
-            preparation_passed(prep_report, claim_pair=is_claim)
+            if is_temporal:
+                temporal_preparation_passed(prep_report)
+                for filename in (
+                    "allocation-ledger.jsonl",
+                    "config-ce.json",
+                    "draw-recipe.json",
+                    "inventory-manifest.json",
+                    "inventory-audit.json",
+                ):
+                    b = bind(preparation_dir / filename)
+                    require(
+                        b["sha256"] == prep_report["output_sha256"][filename],
+                        "temporal_preparation_output_sha",
+                    )
+                    require(
+                        b["path"] not in bindings or bindings[b["path"]] == b["sha256"],
+                        "mutable_report",
+                    )
+                    bindings[b["path"]] = b["sha256"]
+                require(
+                    final.get("init_adapter")
+                    == runtime_report.get("init_adapter")
+                    == prep_report["init_adapter"],
+                    "temporal_init_binding",
+                )
+            else:
+                preparation_passed(prep_report, claim_pair=is_claim)
             preparation_data = preparation_dir / "train.jsonl"
             preparation_binding = bind(preparation_data)
             expected = prep_report["output_sha256"].get(
@@ -261,7 +339,7 @@ def prepare(
             )
             require(preparation_binding["sha256"] == expected, "preparation_data_sha")
             comparison = equivalent(runtime_data, preparation_data)
-            if is_claim:
+            if is_claim or is_temporal:
                 require(comparison["rows"] == 120, "claim_runtime_count")
             require(
                 all(version in mappings for version in comparison["data_versions"]),
@@ -419,12 +497,15 @@ def prepare(
             "runner_sha256": sha(Path(__file__)),
             "cost": None,
         }
-        if crossmodal_retention or claim_pair:
+        if crossmodal_retention or claim_pair or temporal_curriculum:
             report.update(
                 base_preparation_report=base_preparation_binding, crossmodal_retention_included=True
             )
-        if claim_pair:
+        if claim_pair or temporal_curriculum:
             report["claim_pair_included"] = True
+        if temporal_curriculum:
+            report["temporal_curriculum_included"] = True
+            report["base_exposure_report"] = base_preparation_binding
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -473,6 +554,11 @@ def main() -> int:
         action="store_true",
         help="Bind claim pilot inventory and both terminal 10-step arms; includes older pilots",
     )
+    parser.add_argument(
+        "--temporal-curriculum",
+        action="store_true",
+        help="Use terminal exposure004 base and include temporal training plus all older pilots",
+    )
     args = parser.parse_args()
     try:
         report = prepare(
@@ -483,6 +569,7 @@ def main() -> int:
             or args.root / "artifacts/s4-gold-inventory-001/historical-training-index.json",
             crossmodal_retention=args.crossmodal_retention,
             claim_pair=args.claim_pair,
+            temporal_curriculum=args.temporal_curriculum,
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
