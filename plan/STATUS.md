@@ -8,7 +8,8 @@
 - prepare001失败candidate_versions_not_covered；真实确认由同id历史22行混入两个旧版本所致，360候选并无缺失。47abc7a按(id,data_version)严格匹配，旧失败保留。prepare002完整库存审计isolated/ledger检查通过，reports/s4-crossmodal-retention-preparation-002.json。训练数据SHA c886baf002fb54e8786c3ec957e03a10e1eccf40363a8c4d5cee43e64616e8ef；inventory SHA 7c4133c7d1ca2ae10484f3acedc0552663a0e4085c170e9142d9e31e662c7a88。
 - preflight ready（27.97秒）；训练已完成30步/360实际draw，全部逐步数值有限，449.90秒、峰值37.14GB，adapter0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818。96086终态0，PID909317结束。源/root/autodl-tmp/s4-reference-code-fix-001（44214af，archive ed9220de…）；准备根artifacts/s4-crossmodal-retention-pilot-002，训练根artifacts/s4-crossmodal-retention-train-001；reports/s4-crossmodal-retention-{training,launch}-001.json。
 - 本轮筛选已停止：video108/150（motion10/14、temporal65/97）通过，原cross34/50<35失败；87821终态2，PID984760结束，余下5项不运行。reports/s4-crossmodal-retention-screening/diagnostic-001。较首轮纠正1/退化2，no→yes10→12；不推广。
-- 下一步是TRAIN-only梯度诊断，不更新参数：首轮adapter、当前360训练顺序前3×12draw，video/cross/other分组，最多180秒GPU。规格reports/explore/s4-gradient-interference-001.md；Sol6.1独立worktree s4-gradient-diagnostic实现入口/CPU测试中，尚未上卡。
+- TRAIN梯度诊断已真实完成：d96d580，4项CPU测试通过，36draw无optimizer更新，GPU112.81秒/峰值36.47GB；17079终态0。video/cross仅1/3负内积，sum/cross三组均正，不符合冻结条件，因此不启动投影训练。reports/s4-gradient-probe-{preflight,gpu,launch}-001；源码/root/autodl-tmp/s4-gradient-probe-code-001，archive f4f8fa30…。此为固定初始权重3组TRAIN局部测量，不排除训练后段冲突。
+- 下一有界假设：首轮6bb与新coverage0deef的有效delta仅alpha=.5一个中间更新候选；区别于已失败14496融合，不扫比例，原七项筛选不变。Sol6.1独立worktree s4-gradient-diagnostic准备来源绑定和复用筛选入口，尚未生成权重/上卡。
 - 曝光helper29a2c36已真实执行成功，会话66041终态0：42份已知update-bearing报告，新增本轮canonical TRAIN输入，完整库存isolated。当前inventory artifacts/s4-pilot-exposure-003，reports/s4-pilot-exposure-reconciliation-003.json；正式S4封存前仍需刷新gold准入绑定。
 - 保留候选仍为首轮6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac，报告s4-joint-pilot-train-001。video99/150、原cross35/50、补充40/50，仅通过小筛选。
 
@@ -22,7 +23,7 @@
 ## 外部基准准备
 - JevBench：adapter入口ba5ca19及真实CPU preflight通过；候选231题GPU待最终候选冻结。远端/root/autodl-tmp/s4-public-code-ba5ca19；禁止将公开231题当教师195题协议。
 - Decision Index：真实1530文件/5.90GB映射+私有materialize通过，work artifacts/s4-index-work-001；ready=false。Forecast36动态引用齐全，latest-llm未被固定recipe引用。cl100k缓存已下载SHA/离线加载验证，artifacts/decision-index-tiktoken-001（重建设置TIKTOKEN_CACHE_DIR），reports/decision-index-tiktoken-offline-001。
-- 仍待：评价许可、Git来源修复、完整rebuild/verify。materialized7目录会错误继承父repo869ee95，1目录缺失；原8真实Git roots/pins均验证，详见reports/explore/decision-index-closure-001.md。不得以父Git revision伪记数据来源，不运行raw pickle。原料许可不因下载成功而准入。
+- 仍待：评价许可、Git来源修复真实执行、完整rebuild/verify。Git修复helper b5eeea3已集成，27项CPU测试通过；尚未生成/安装真实bundle。materialized7目录会错误继承父repo869ee95，1目录缺失；原8真实Git roots/pins均验证，详见reports/explore/decision-index-closure-001.md。不得以父Git revision伪记数据来源，不运行raw pickle。原料许可不因下载成功而准入。
 - OpenAI Decisions对照按用户2026-10-16明确要求暂缓，不接入、不请求凭据、不付费。
 - 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。小切片不另写handoff。
 

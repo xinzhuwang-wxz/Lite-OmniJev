@@ -1,0 +1,71 @@
+{
+  "status": "preflight_verified",
+  "exit_code": 0,
+  "gpu_requested": false,
+  "code_revision": "unavailable",
+  "code_revision_source": "observed local git; unavailable in archives; external receipt must bind archive",
+  "script_sha256": "e3a855678155be1859e2915af6b13f213b747ae98cf9b44f8343e922b6c4e213",
+  "cost": null,
+  "ledger_audit": {
+    "ledger_rows": 27718,
+    "verified_train": 360
+  },
+  "adapter": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/adapter",
+    "weights_sha256": "6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac",
+    "config_sha256": "6eb4080806ed4e4c7e1cc304268468b08da355437df7b02db3e6a69bae97ff62"
+  },
+  "asset_hashes": {
+    "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+    "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+    "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+    "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+    "model.safetensors": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503",
+    "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+    "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+  },
+  "config": {
+    "seed": 42,
+    "sample_count": 360,
+    "steps": 30,
+    "accumulation": 12,
+    "max_length": 4096,
+    "learning_rate": 2e-05,
+    "rank": 16,
+    "alpha": 32,
+    "dtype": "bfloat16",
+    "modality": "mixed",
+    "video_num_frames": 16,
+    "image_max_soft_tokens": 1120,
+    "media_root": null,
+    "media_roots": [
+      "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources/aokvqa/coco-ccby-publicdomain-images",
+      "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+      "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+      "/root/autodl-tmp/s3-media-candidates-001/video/media",
+      "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-train-001"
+    ],
+    "midway_step": 15,
+    "expected_data_version": null,
+    "expected_data_versions": [
+      "aokvqa-train-image-choice-s2-pools-v1",
+      "clevrer-train-video-noul-s3-pools-v1",
+      "clinc-oos-plus-train-v1-s1-pools-v1",
+      "clotho-aqa-s3-pools-v1",
+      "crossmodal-train-pilot-v1",
+      "gui-v2-screenshot-s2-pools-v1"
+    ],
+    "checkpoint_every": 15,
+    "brier_weight": 0.0,
+    "preparation_mode": "lazy",
+    "preparation_cache_bytes": 134217728
+  },
+  "bindings": {
+    "config": "6829564f3eb58122d166b1cee486b51244fabffc9a4cc862f72ed2bf904b7a46",
+    "data": "c886baf002fb54e8786c3ec957e03a10e1eccf40363a8c4d5cee43e64616e8ef",
+    "ledger": "9d083c679c300d612d9b2f50f7ece2c6a8cb24f377acb8941bb0e8299006eec1",
+    "asset_manifest": "207ce3a8b2ddc8a3a31f199935842bbb42e72ea029febf14978d895d120b1461"
+  },
+  "duration_seconds": 19.479367742314935
+}
