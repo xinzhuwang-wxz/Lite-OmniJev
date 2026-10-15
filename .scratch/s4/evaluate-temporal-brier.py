@@ -8,6 +8,7 @@ from pathlib import Path
 
 SOURCE = Path("/root/autodl-tmp/s4-monitored-eval-code-001")
 os.chdir(SOURCE)
+os.sys.path.insert(0, str(SOURCE))
 spec = importlib.util.spec_from_file_location(
     "screen", SOURCE / ".scratch/s4/screen-crossmodal-retention.py"
 )
