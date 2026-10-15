@@ -1,0 +1,11 @@
+{
+  "scope": "hash binding of previously staged pinned-revision cache; not independent remote re-download attestation",
+  "revision": "61632d0f3f4d51d7e9561ce4f84347dd06b2019d",
+  "plan_sha256": "661a56214ee442ae0c694b21c41b374fc02dad0ea1a962bb8d9638b3d393c0c4",
+  "annotations": 1679,
+  "media": 25809,
+  "index_sha256": "35398d33d0121f4f6cc13cbb5c492cca5d263b27901d69303c198e9ebed8d658",
+  "script_sha256": "182b234220e8ea62ebf88bc512219f57584e2da96b1931fd9033eb997791b9ee",
+  "elapsed_seconds": 125.22,
+  "exit_code": 0
+}

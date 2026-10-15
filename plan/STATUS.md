@@ -7,9 +7,12 @@
 - 五模态500题双遍：image82.0%、screenshot96.4%、text99.4%、audio80.0%、video16帧63.6%；旧三模态与S2持平。video8帧60.8%，当前保留16帧。
 - 主干E4B ee0ef602…，S3 adapter1bebae31…；图像1120是当前质量配置，未定为最终低成本服务默认。
 - ADR0021记录真实100步/1000次均衡回放执行调整，原质量门不改；本候选训练+正式评测0.9075 H20活跃小时，不含其它作业/空闲，不等价租卡总费用或H100。
-- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。CLEVRER gold储备已整合并真实CPU构建/隔离复审通过，音频gold与视觉容量子代理均已整合，无活跃子代理。
+- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。本轮两项Sol 6.1修复已整合；GUI重建002已成功、VQA下载003正在远端执行，无活跃子代理。
 
 ## 当前执行
+- 当前代码5096382；GUI/VQA修复在远端真实Python3.11/Pillow环境37项测试通过。源快照/root/autodl-tmp/s4-gold-code-5096382；远端主checkout仍869ee95。
+- GUI构建001拒绝historical_pool_conflict（1460.889秒），原因是未使用的旧episode帧进入曝光关系。实际4141历史图片RGB审计、118438观测零跨池冲突（reports/s4-observed-image-rgb-audit-001.json）；所有历史图已SHA定位。修复分离候选关系、排除触碰历史组件、绑定私有RGB缓存5cb45603…并保留119/59原预留，8进程解码。真实重建002成功：91.44秒，3000cal/1000hold，178原预留完整保留，1100历史GUI媒体RGB完整验证；输出gui-gold-002/inventory-manifest.json SHAa80bf03f…，报告reports/s4-gui-gold-build-002.json。完整gold权限/源准入仍未通过。
+- VQA冻结3000cal/1000hold/500补充dev，每池20%color/20%integer/60%yesno，原AOK dev/门槛保留；见.scratch/s4/image-gold-policy.md。计划001因重复图仅4190唯一图作废，修复后计划002确认4500唯一图（SHA748dc460…）。HTTPS下载002前三例均503，0下载；003仅采用固定来源元数据中的官方同站HTTP原地址，禁止重定向，记录canonical/transport/final URL，正在执行（工具session40671），终态reports/s4-vqa-gold-download-003.json；不是gold准入。
 - 音频真实gold已构建：Clotho1400/500（原120条完整保留，790媒体全解码，119.77秒）+LibriSpeech1600/500（另500诊断dev，159.76秒）。83项相关测试通过；配比/分层质量规则冻结于.scratch/s4/audio-gold-policy.md，原Clothodev500不替换。reports/s4-{clotho,speech}-gold-build-001.json。
 - 公开crossmodal固定50题单遍GPU探针完成：S3adapter33/50=66%，同输入同1120预算基座24/50=48%，prepared输入hash逐题一致。使用reports/s4-crossmodal-screen-recovered-002.json与paired-screen-002.json；001恢复报告因JSON yes/no顺序导致34%错误，保留但已废止。已修s0_development_baselines恢复顺序，22相关测试通过；原内存计算S0报告不受该恢复路径影响。候选原进程报告收尾参数错误exit1，CPU恢复完整50sidecar，无GPU重跑；完整墙钟/峰值丢失不补造。不能当S4质量放行。
 - GUI仅补179个固定revision标注文件（约4.16MB，首次178+单文件重试1），无需新截图下载。全缓存容量002实测4395新原题/569episode/566连通组，能整组补2881cal/941hold；缺图/缺标0，历史媒体碰撞7个episode剔除。reports/s4-gui-cached-capacity-002.json；后继按该冻结规则构建，仍须补历史RGB/来源lineage验收，不把容量当gold通过。
@@ -28,8 +31,10 @@
 - 远端/root/autodl-tmp/s1-text-lora-001，SSH mux /tmp/omnijev-ssh-root-final、端口48926；训练Python before-gpu-teacher-job-final-001，GPU H20。模型/媒体/凭据沿runbook。
 
 ## 已知缺口与决定
+- 用户指定子代理分工：简单执行/下载/监控优先gpt-6-luna，常规实现/测试gpt-6.1-sol；主会话负责分析、规划、统筹与验收。已有运行中的构建任务完成后采用新分工，不重启浪费。
 - 用户再次要求S4按实测监控、多迭代/创新，避免盲跑全量；执行规则冻结.scratch/s4/iteration-policy.md：小批固定dev筛选、中途checkpoint/指标、退化/无收益停止、有效才放大，原阶段门槛与封存纪律保留。
-- 当前train.trainer与s1_dev_eval仅接受单媒体；S4联合模态训练/正式候选评测需扩展image+audio准备路径，复用已验证S0组合读出；不是更换模型/新增头。公开探针正向但尚无完整crossmodal候选门槛。
+- train.trainer/s1_dev_eval已支持image+audio，并保留官方mm_token_type_ids；63项相关测试通过，真实CPU processor 10例与S0路径逐张量一致（reports/s4-crossmodal-preparation-parity-001.json）。尚未执行联合模态优化器更新，不计训练质量通过。
+- 音频/视频新gold部分使用file URI；正式gate前需转换成受信任根下的相对媒体manifest，不能放宽现有resolve_media路径边界。
 - LibriSpeech源审计发现5本书/20转录串跨官方split重叠，已按speaker/book/text/media合并成70组件并分配。选中2600条全部转为已写实长WAV；语音gold需保留分层质量门及原始别名ledger。源存于source-audit/librispeech-s4-candidate-001/mirror-002；作业均结束。
 - 用户重申产品必须兼顾快与低成本。S6/FINAL按同硬件、同输入长度/媒体预算、同并发报告端到端p50/p95、吞吐、峰值显存、每千次成功决策成本（含预处理与空闲摊销边界）；当前FP32正确性参考不能充当低成本产品。无同条件Jev测量时不声称追平或超越。
 - reports/s3-reserve-inventory-001.json：text预留3000/1000，其余不足。audio现按冻结真实环境声+语音组合已构建3000/1000并待完整gold权限验收；video新增validation3000/1000已构建且通过所提供历史/media隔离，完整权限边界仍待验收。crossmodal未分配。

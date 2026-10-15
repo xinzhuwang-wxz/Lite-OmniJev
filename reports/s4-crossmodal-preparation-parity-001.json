@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "scope": "real official CPU processor parity for existing public crossmodal dev, not training or model quality",
+  "samples": 10,
+  "exact_input_ids_answer_mapping_and_media_tensors": true,
+  "tensor_keys": [
+    "image_position_ids",
+    "input_features",
+    "input_features_mask",
+    "mm_token_type_ids",
+    "pixel_values"
+  ],
+  "image_max_soft_tokens": 1120,
+  "data_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+  "trainer_sha256": "ab2805e3b3c7fbef2a13c338011597546c3ea1d7d74ba574dd8de6d2c832aa2d",
+  "baseline_sha256": "68a173f47b5161c49c2fe250eb445506bc8e760a62d19b2577fd3719197298d4",
+  "runner_sha256": "52cdc0de0da7f04a3db425ec9ce1f22fc22c2f204c99054ffc4e0550184fec94",
+  "elapsed_seconds": 11.398,
+  "exit_code": 0
+}

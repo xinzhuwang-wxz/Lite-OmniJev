@@ -28,5 +28,7 @@ Blocked by: p0:04
 
 2026-10-15：音频真实构建3000cal/1000hold（Clotho1400/500+speech1600/500），原120Clotho预留题完全保留，旧文件作为历史曝光保留。83项构建回归通过；reports/s4-audio-gold-isolation-002.json合并历史零跨池冲突，provenance001绑定1f02a8a代码包。最新私有总清单with-audio-gold-manifest-001.json SHA0d583307…；speech原始别名在allocation.jsonl。截图仅补179标注文件后测得4395新原题，容量足够，构建/完整权限及其余cohort仍未通过。
 
+2026-10-15：GUI实际构建001拒绝；历史实际使用4141图片RGB审计零跨池冲突，已修复未使用帧引入虚假曝光边并启动002。VQA唯一图选择修复后计划002为4500唯一图；官方HTTPS503后003按固定COCO元数据原始HTTP传输执行。远端37项GUI/VQA回归通过，代码5096382；GUI002已成功构建3000cal/1000hold，178原预留完整保留，91.44秒；报告s4-gui-gold-build-002.json。VQA下载结果待收集，完整准入仍不勾选。
+
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。

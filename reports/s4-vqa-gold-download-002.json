@@ -1,0 +1,17 @@
+{
+  "scope": "selected official VQA2 images only, no gold admission",
+  "requested": 4500,
+  "attempted": 3,
+  "downloaded": 0,
+  "failed": 3,
+  "errors": {
+    "http_503": 3
+  },
+  "stored_bytes": 0,
+  "plan_sha256": "748dc460c65953c30f6d7cd21a37034ce3c49c4eddf235a2c584fd6559b9bb1f",
+  "download_manifest_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "failure_manifest_sha256": "85e04ebf0efff4aee4da916e926b5edd2463533600170c5892f02b09711cabfd",
+  "runner_sha256": "446408b57c786e18688b592f775661fe6e233662f89695a04ae95f9e4bdcee1d",
+  "elapsed_seconds": 5.681,
+  "exit_code": 1
+}
