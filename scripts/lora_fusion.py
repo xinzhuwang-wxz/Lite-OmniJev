@@ -124,6 +124,9 @@ def fuse(
     start = time.monotonic()
     report: dict[str, Any] = {
         "status": "rejected",
+        "exit_code": 1,
+        "code_sha256": sha256(Path(__file__)),
+        "gpu_used": False,
         "alpha": alpha,
         "seed": seed,
         "source_paths": [str(first.resolve()), str(second.resolve())],
@@ -159,6 +162,7 @@ def fuse(
         report["max_relative_frobenius_error"] = maximum
         report["promotion_allowed"] = maximum <= 1e-3
         report["status"] = "ready_for_gpu_evaluation" if maximum <= 1e-3 else "rejected_residual"
+        report["exit_code"] = 0 if maximum <= 1e-3 else 2
         weight_path = output / "adapter_model.safetensors"
         save_file(result, str(weight_path))
         config_path = output / "adapter_config.json"
