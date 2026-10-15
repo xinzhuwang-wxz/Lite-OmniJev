@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "matched dev150 subset baseline for checkpoint probe, no new GPU calls",
+  "subset_sha256": "ca02e7126870706bf0ca57fbdad68f650e28e87fa8a21605a5958790ba768c25",
+  "results": {
+    "v1": {
+      "full_accuracy": 0.772,
+      "probe_accuracy": 0.7733333333333333,
+      "probe_correct": 116,
+      "probe_samples": 150,
+      "sidecar_sha256": "5a8edc6eb79ffcbe6e7837f99b8af028d61a4dcdbca3054fd5bf5363562d8c87"
+    },
+    "v2": {
+      "full_accuracy": 0.788,
+      "probe_accuracy": 0.82,
+      "probe_correct": 123,
+      "probe_samples": 150,
+      "sidecar_sha256": "6ee15c2e10bfe6970774423f9fe570d567da2020fe876013193ad768372c2db7"
+    }
+  }
+}

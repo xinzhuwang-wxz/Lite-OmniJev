@@ -38,3 +38,7 @@ State: 一个闭环;沿用ADR0013校准原则与s2:01联合单LoRA架构
 ## Out of scope
 
 量化/E2B(S6)、封存holdout构建(s0:05)、新数据源、门槛静默调整。
+
+## 2026-10-15恢复会话准备
+
+联合池与500行探针已用`.scratch/s3/prepare-joint.py`生成并两次核验一致，报告`reports/s3-joint-preparation-001.json`。每cohort选100行训练数据的均衡探针；30步仅作首次媒体/耗时诊断，不代替300步smoke或质量验收。候选配置在同目录main-config.json/probe-config.json，max_length=4096为视频输入预留，须实测预处理长度和显存后冻结。不读取holdout内容，不启动S3主训练；先完成S2门与小批量前向。

@@ -1,0 +1,71 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "method": "CPU rescore of hash-verified original GPU prediction sidecars; deterministic permutation and target-content correspondence verified; original files unchanged",
+  "code_revision": "bbdc041d3988de8602c50454ed5cb053f6712847",
+  "audit_script_sha256": "edcf1673c5aefa1db0201293a1e79c83e756f8ef5393525b266e404638c76b9e",
+  "results": [
+    {
+      "source_report": "/root/autodl-tmp/s1-text-lora-001/reports/s2-dev-eval-image-001.json",
+      "source_report_sha256": "2cdd1a159eb0f8b1c8ced0d96e9b338ddd75aadcd85f7ec7069600402b0872c3",
+      "data_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+      "sidecar_sha256": "5a8edc6eb79ffcbe6e7837f99b8af028d61a4dcdbca3054fd5bf5363562d8c87",
+      "samples": 500,
+      "passes": 2,
+      "old_invalid_letter_match_rate": 0.288,
+      "corrected_content_match_rates": [
+        0.918,
+        0.918
+      ]
+    },
+    {
+      "source_report": "/root/autodl-tmp/s1-text-lora-001/reports/s2-dev-eval-screenshot-001.json",
+      "source_report_sha256": "13134e5ed57e4d45a97b8dcc5be59e9566f006cca3e3c80d4f72970f52dfca49",
+      "data_sha256": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2",
+      "sidecar_sha256": "98eebc1636ca77787d569296995360c27f04ef13315c4d6493550ecdea7563ee",
+      "samples": 500,
+      "passes": 2,
+      "old_invalid_letter_match_rate": 0.28,
+      "corrected_content_match_rates": [
+        0.966,
+        0.966
+      ]
+    },
+    {
+      "source_report": "/root/autodl-tmp/s1-text-lora-001/reports/s2-probe-v3-eval-image-001.json",
+      "source_report_sha256": "cab9d17dfafeba1c97d36f9a3c84d440ceb7989266910d3e42c0ea33a314ebd3",
+      "data_sha256": "ca02e7126870706bf0ca57fbdad68f650e28e87fa8a21605a5958790ba768c25",
+      "sidecar_sha256": "5a84126cb70f2bdaea871b352fbc30db885710121774645c8345a151699b9e2d",
+      "samples": 150,
+      "passes": 1,
+      "old_invalid_letter_match_rate": 0.3,
+      "corrected_content_match_rates": [
+        0.92
+      ]
+    },
+    {
+      "source_report": "/root/autodl-tmp/s1-text-lora-001/reports/s2-probe-v3-eval-screenshot-001.json",
+      "source_report_sha256": "096751c2eb0cca9eb5df0ca5a802c93c2b78634a6bdd5a95ae692179125f1bae",
+      "data_sha256": "a1448368629c7383867d2648047139a30d50c9bdac23c644393025eb350e976c",
+      "sidecar_sha256": "9cd9b38e7c0f36a44f8179e0ac4517b9690e31f4327ea062ce7fede5ec9bef2d",
+      "samples": 150,
+      "passes": 1,
+      "old_invalid_letter_match_rate": 0.2866666666666667,
+      "corrected_content_match_rates": [
+        0.9466666666666667
+      ]
+    },
+    {
+      "source_report": "/root/autodl-tmp/s1-text-lora-001/reports/s2-probe-zeroshot-image-001.json",
+      "source_report_sha256": "5705a10c68f6cf96d32ca5cff64ac1b94b9b0ea9541948b4fc43c66c4f8c9f61",
+      "data_sha256": "ca02e7126870706bf0ca57fbdad68f650e28e87fa8a21605a5958790ba768c25",
+      "sidecar_sha256": "365732fd0e165ce301d2d766dce7be70a401dc0e9a6fbcdbb7737558fe341649",
+      "samples": 150,
+      "passes": 1,
+      "old_invalid_letter_match_rate": 0.2866666666666667,
+      "corrected_content_match_rates": [
+        0.8733333333333333
+      ]
+    }
+  ]
+}

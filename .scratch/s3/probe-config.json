@@ -1,0 +1,28 @@
+{
+  "seed": 42,
+  "sample_count": 500,
+  "steps": 30,
+  "accumulation": 10,
+  "max_length": 4096,
+  "learning_rate": 0.0001,
+  "rank": 16,
+  "alpha": 32,
+  "dtype": "bfloat16",
+  "modality": "mixed",
+  "video_num_frames": 16,
+  "midway_step": 15,
+  "checkpoint_every": 15,
+  "expected_data_versions": [
+    "clinc-oos-plus-train-v1-s1-pools-v1",
+    "aokvqa-train-image-choice-s2-pools-v1",
+    "gui-v2-screenshot-s2-pools-v1",
+    "clotho-aqa-s3-pools-v1",
+    "clevrer-train-video-noul-s3-pools-v1"
+  ],
+  "media_roots": [
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources/aokvqa/coco-ccby-publicdomain-images",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+    "/root/autodl-tmp/s3-media-candidates-001/video/media"
+  ]
+}

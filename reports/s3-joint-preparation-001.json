@@ -1,0 +1,64 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "CPU pool/config preparation only; S2 prerequisite remains; no S3 training or media forward acceptance",
+  "inputs": {
+    "text": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-a/train.jsonl",
+      "sha256": "75206358039678400da9c52302b854468320562117f72041b1d01238006135a9",
+      "count": 10750,
+      "ledger_sha256": "ce49ae4bbb3e6885d401c89c0b98a4bd3e4df313ec338a17acc28af87bd929e4",
+      "report_sha256": "176ce59ac71d6ec25432fbcc55ca8c1262a077d567305d62d5a6c94cb35bf023"
+    },
+    "image": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-image-001/run-a/train.jsonl",
+      "sha256": "96ed2bef6e4824cd6fb6b44e469007f9c180df789541caa95c8fd11d73f5ef8e",
+      "count": 1389,
+      "ledger_sha256": "8b3a53b6d0264dc0f48800649756447ba7563d48943551a98de20bc1e785d821",
+      "report_sha256": "7725360a21270bd6dd2f736daf7ca7c0b6e0666b108e4c3888dc276edab03ba1"
+    },
+    "screenshot": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-screenshot-001/run-a/train.jsonl",
+      "sha256": "70468d9212d14fc1b9a0f0f7d4c75b18f8a4c696fce9df1eda3c19f91900056b",
+      "count": 420,
+      "ledger_sha256": "85bd0fedb8ff1175d617662c6d4802b487bf8adc6f7afa14b05a8197116aa9a5",
+      "report_sha256": "fb756c070e259f3b7f8197ce2fbab8baceda873aebf0ff3145dc32b7c2dba229"
+    },
+    "audio": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-audio-001/run-a/train.jsonl",
+      "sha256": "7fd14f3aad81ac096b2285b010e429ae883059c0966dc885d0244c90f7636b0c",
+      "count": 326,
+      "ledger_sha256": "23889f3c2da24917124a8fb8fa312c765603c80ad2352aeec3eb0c80cfc8c1e1",
+      "report_sha256": "4131f84aa1d5aa881a0836432a8d5b71a8f8c9c61a34b755bdebc18343d85cf3"
+    },
+    "video": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-video-001/run-a/train.jsonl",
+      "sha256": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948",
+      "count": 8299,
+      "ledger_sha256": "3049be487ca4884273397c5f6c9e17e934887d9a96ad3997d5a4561afe159e92",
+      "report_sha256": "e4f095274fb649f3b8621306695378d18f5d19f2edecd953f1d19b8d22e2b70c"
+    }
+  },
+  "total_rows": 21184,
+  "probe_rows": 500,
+  "probe_per_cohort": 100,
+  "ledger_check": {
+    "ledger_rows": 27518,
+    "verified_train": 21184
+  },
+  "joint_sha256": "0110867f7bbfe9b4ef13a420b5cdb6a29211470aca8fc901fa9d824c894b8b60",
+  "probe_sha256": "656b33ed88af1b813e3b27cbde107964ffced8f84db192f06d7ac12b7165333d",
+  "config_hashes": {
+    "main": "91e008700d267ae600683da1711ee5fa61fdec53abbdf777c14a196a5572b67e",
+    "probe": "1adcc37c2415f3ededfd8a9547b1ab0749cf8ee291c3cfbeb35b61f9c58f3282"
+  },
+  "script_sha256": "77fbb5d85e1e85f3c55d22dc68a0c862045d38151267bc402424cf36fe4a6616",
+  "code_revision": "bbdc041d3988de8602c50454ed5cb053f6712847",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "seed": 42,
+  "holdout_content_accessed": false,
+  "gpu_used": false,
+  "cost": null,
+  "duration_seconds": 1.5005154609680176
+}

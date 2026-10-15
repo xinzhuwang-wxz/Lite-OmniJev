@@ -25,7 +25,7 @@ Blocked by: None
 
 ## Evidence
 
-Evidence: 待执行；规格.scratch/s2/spec.md；复用s1:01机制与ADR0013原则。基线：OneJev4 image 83.6%/screenshot 66.2%，E4B 74.4%/51.4%（s0-baseline-summary.md）。
+Evidence: 恢复修复bbdc041（65项相关回归通过）；reports/s2-counterfactual-rescore-001.json证明旧cf统计错误，ADR0014结构性结论失效；v2修正版GPU双遍评测运行中，原质量门保持，未关票。历史规格与证据：规格.scratch/s2/spec.md；复用s1:01机制与ADR0013原则。基线：OneJev4 image 83.6%/screenshot 66.2%，E4B 74.4%/51.4%（s0-baseline-summary.md）。
 
 ## Out of scope
 
