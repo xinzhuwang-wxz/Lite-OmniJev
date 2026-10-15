@@ -59,6 +59,50 @@ def canonical_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+class PartialJournal:
+    """Incomplete evidence only; never read as evaluation input or a resume checkpoint."""
+
+    def __init__(self, output_dir: Path, identity: dict[str, Any]) -> None:
+        self.output_dir = output_dir
+        self.handle = (output_dir / "records.partial.jsonl").open("x", encoding="utf-8")
+        self.progress: dict[str, Any] = {
+            "status": "incomplete",
+            "identity": identity,
+            "records_completed": 0,
+            "passes_completed": 0,
+            "pass": None,
+            "variant": None,
+            "variant_counts": {},
+        }
+
+    def append(self, record: dict[str, Any], pass_index: int) -> None:
+        self.handle.write(canonical_json({**record, "pass": pass_index}) + "\n")
+        self.progress["records_completed"] += 1
+        self.progress["pass"] = pass_index
+        self.progress["variant"] = record["variant"]
+        counts = self.progress["variant_counts"]
+        counts[record["variant"]] = counts.get(record["variant"], 0) + 1
+        if self.progress["records_completed"] % 25 == 0:
+            self.checkpoint()
+
+    def checkpoint(self) -> None:
+        if not self.handle.closed:
+            self.handle.flush()
+            os.fsync(self.handle.fileno())
+        temporary = self.output_dir / "progress.json.tmp"
+        with temporary.open("w", encoding="utf-8") as handle:
+            handle.write(canonical_json(self.progress) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.replace(self.output_dir / "progress.json")
+
+    def close(self) -> None:
+        try:
+            self.checkpoint()
+        finally:
+            self.handle.close()
+
+
 def load_samples(path: Path, *, media_root: Path | None = None) -> list[Sample]:
     samples: list[Sample] = []
     with path.open(encoding="utf-8") as handle:
@@ -284,7 +328,21 @@ def run(
     started_at = time.time()
     output_dir.mkdir(parents=True, exist_ok=False)
     image_profile = {"requested": image_max_soft_tokens, "effective": None}
+    identity: dict[str, Any] = {
+        "data_sha256": None,
+        "model_revision": model_dir.name,
+        "adapter_sha256": None,
+        "adapter_dir": str(adapter_dir) if adapter_dir else None,
+        "image_max_soft_tokens": image_profile,
+        "video_num_frames": video_frames,
+        "script_sha256": script_sha256(),
+        "max_length": max_length,
+        "passes": passes,
+        "counterfactual": counterfactual,
+    }
+    journal = PartialJournal(output_dir, identity)
     try:
+        journal.checkpoint()
         validate_image_max_soft_tokens(image_max_soft_tokens)
         torch = importlib.import_module("torch")
         transformers = importlib.import_module("transformers")
@@ -303,6 +361,11 @@ def run(
             image_profile["effective"] = configure_image_processor(processor, image_max_soft_tokens)
         elif image_max_soft_tokens is not None:
             raise DevEvalError("image_max_soft_tokens requires media evaluation")
+        identity["data_sha256"] = sha256_file(data_path)
+        identity["adapter_sha256"] = (
+            sha256_file(adapter_dir / "adapter_model.safetensors") if adapter_dir else None
+        )
+        journal.checkpoint()
         variants = [counterfactual_variant(sample) for sample in samples] if counterfactual else []
         base = transformers.Gemma4ForConditionalGeneration.from_pretrained(
             str(model_dir),
@@ -316,7 +379,7 @@ def run(
         model = model.to("cuda").eval()
         tokenizer = OfficialTokenizerAdapter(model_dir)
         all_passes: list[list[dict[str, Any]]] = []
-        for _ in range(passes):
+        for pass_index in range(passes):
             records: list[dict[str, Any]] = []
             for sample in samples:
                 logits, readout = forward_readout(
@@ -331,12 +394,14 @@ def run(
                 record = record_for(sample, readout, logits)
                 record["variant"] = "original"
                 records.append(record)
+                journal.append(record, pass_index)
             if counterfactual:
                 originals = list(records)
                 for sample, variant, original in zip(samples, variants, originals, strict=True):
                     if variant is None:
                         # Noul offers no option permutation; keep the row out of match rate.
                         records.append({**original, "variant": "not_applicable"})
+                        journal.append(records[-1], pass_index)
                         continue
                     logits, readout = forward_readout(
                         model,
@@ -362,7 +427,10 @@ def run(
                         content_match=original_content == counterfactual_content,
                     )
                     records.append(record)
+                    journal.append(record, pass_index)
             all_passes.append(records)
+            journal.progress["passes_completed"] += 1
+            journal.checkpoint()
         repeat_identical = repeat_identical_over(all_passes)
         sidecar = output_dir / "records.jsonl"
         with sidecar.open("w", encoding="utf-8") as handle:
@@ -422,9 +490,14 @@ def run(
             "timing": {"started_at": started_at, "finished_at": time.time()},
         }
         code = 1
+    finally:
+        journal.close()
     report["image_max_soft_tokens"] = image_profile
     report_out.parent.mkdir(parents=True, exist_ok=True)
     report_out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if code == 0:
+        journal.progress["status"] = "complete"
+        journal.checkpoint()
     return code
 
 
