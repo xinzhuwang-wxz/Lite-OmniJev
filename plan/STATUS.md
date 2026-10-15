@@ -11,7 +11,8 @@
 
 ## 当前执行
 - 数据侧准入已通过，s0:05验收1–4勾选，第5未完成；reports/s4-gold-data-admission-001.json evidenceSHA9cf11cea…绑定真实证据。六cohort各3000cal/1000hold，原dev各500保留；source code128绑定/source链154工件、Clotho保留120完整字段回放、13500规范化记录仅URI改动/19973媒介路径校验、已知34训练报告/18输入/7dev版本全部覆盖。不是模型gate或S4通过。
-- 新增固定私有模型入口由Sol6.1子代理private_stage_eval实现，worktree /Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-private-stage-eval，独占scripts/private_stage_eval.py及tests/test_private_stage_eval.py。下一步整合CPU否定测试、独立review、真实GPU engineering50，之后收口s0:05。
+- 固定私有模型入口已整合4aaba14，47 CPU测试通过；独立review发现TERM/HUP未回收worker、stage数据准入引用未实际验证两项阻断，Sol6.1 private_stage_eval正在原worktree修复。独占scripts/private_stage_eval.py/tests/test_private_stage_eval.py。修复/复核后才跑GPU engineering50；未关闭s0:05。
+- 真实工程spec已准备：private-stage-engineering-input-001.json SHA b0cecb6a…，7基座文件+2adapter文件已hash，model/data固定；reports/s4-private-stage-engineering-prep-001.json。输出根artifacts/s4-private-stage-eval-001未启动。4aaba14源码archive已传至/root/autodl-tmp/omnijev-stage-eval-4aaba14.tar但不要用于真实run，等待修复新快照。全局data-admission报告已同步远端reports。
 - matched50 GPU对照通过：S3候选80%/ECE.1673，基座66%/ECE.2546，prepared输入逐题相同，candidate_only_correct14/base_only_correct7；合计86.6秒。reports/s4-crossmodal-matched-paired-001.json。两作业结束，无当前GPU作业；下一GPU作业为私有入口工程验证，不重复当前对照。
 - 最终图像RGB审计002：16963引用全部SHA定位、12463唯一文件实解码，144938历史/当前观测零跨池冲突；reports/s4-image-history-resolution-004.json、s4-observed-image-rgb-audit-002.json，RGB缓存SHA45ab0b7a…，89.479秒。
 - 私有job003已对最新总清单6eb32249…运行通过。真实Linux失败探针002的13项全部通过：非法样本/池重叠/哈希/重复输出/恶意receipt/私有stdout-stderr异常/超时回收与redaction。001测试脚本误用os.pause导致timeout项失败，改signal.pause后新UID重跑，失败保留。reports/s4-private-failure-probes-{001,002}.json；launcher codeSHA b6372817…与job003一致。621xx/622xx测试UID、62301/2已使用，不复用。
