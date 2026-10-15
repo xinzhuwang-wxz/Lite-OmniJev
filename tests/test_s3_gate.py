@@ -101,3 +101,12 @@ def test_cli_writes_metrics_for_gate(tmp_path: Path) -> None:
         args.extend([f"--s2-{name}", str(path)])
     assert main([*args, "--video8", str(control), "--output", str(output)]) == 0
     assert json.loads(output.read_text())["frame_ab_complete"] == 1
+
+
+def test_regression_rejects_changed_image_input_budget(tmp_path):
+    current, previous, control = reports(tmp_path)
+    data = json.loads(current["image"].read_text())
+    data["image_max_soft_tokens"] = {"requested": 1120, "effective": 1120}
+    current["image"].write_text(json.dumps(data))
+    with pytest.raises(GateInputError, match="budgets must match"):
+        assemble_metrics(current, previous, control)

@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from scripts.s2_gate import (
+    FROZEN_DEV_SHA256,
     ONEJEV4_IMAGE_DEV500,
     ONEJEV4_SCREENSHOT_DEV500,
     S1_TEXT_DEV500_ADAPTER,
@@ -39,12 +40,19 @@ def smoke_run_report(**overrides: object) -> dict:
 
 
 def dev_eval_report(
-    accuracy: float, ece15: float | None = 0.02, cf_match: float | None = 0.9, **overrides: object
+    accuracy: float,
+    ece15: float | None = 0.02,
+    cf_match: float | None = 0.9,
+    cohort: str = "image",
+    **overrides: object,
 ) -> dict:
     # cf_match 评测未覆盖时报告里是 null，脚本必须按无效报告拒绝。
     report: dict = {
         "status": "passed",
         "exit_code": 0,
+        "model_revision": "a" * 40,
+        "adapter_sha256": "b" * 64,
+        "data_sha256": FROZEN_DEV_SHA256[cohort],
         "repeat_identical": True,
         "samples": 500,
         "passes": 2,
@@ -62,9 +70,10 @@ def write_inputs(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
     return (
         write_report(tmp_path / "image.json", dev_eval_report(0.82, ece15=0.03, cf_match=0.85)),
         write_report(
-            tmp_path / "screenshot.json", dev_eval_report(0.70, ece15=0.04, cf_match=0.80)
+            tmp_path / "screenshot.json",
+            dev_eval_report(0.70, ece15=0.04, cf_match=0.80, cohort="screenshot"),
         ),
-        write_report(tmp_path / "text.json", dev_eval_report(0.99)),
+        write_report(tmp_path / "text.json", dev_eval_report(0.99, cohort="text")),
         write_report(tmp_path / "smoke-run.json", smoke_run_report()),
     )
 
@@ -186,7 +195,8 @@ def test_counterfactual_flip_rate_takes_the_weaker_modality(
     paths = list(write_inputs(tmp_path))
     paths[0] = write_report(tmp_path / "image.json", dev_eval_report(0.82, 0.03, image_cf))
     paths[1] = write_report(
-        tmp_path / "screenshot.json", dev_eval_report(0.70, 0.04, screenshot_cf)
+        tmp_path / "screenshot.json",
+        dev_eval_report(0.70, 0.04, screenshot_cf, cohort="screenshot"),
     )
     out = tmp_path / "metrics.json"
     assert main(argv_for(*paths, out)) == 0
@@ -197,7 +207,7 @@ def test_counterfactual_flip_rate_takes_the_weaker_modality(
 @pytest.mark.parametrize("accuracy", [0.98, 1.0])
 def test_text_regression_direction(tmp_path: Path, accuracy: float) -> None:
     paths = list(write_inputs(tmp_path))
-    paths[2] = write_report(tmp_path / "text.json", dev_eval_report(accuracy))
+    paths[2] = write_report(tmp_path / "text.json", dev_eval_report(accuracy, cohort="text"))
     out = tmp_path / "metrics.json"
     assert main(argv_for(*paths, out)) == 0
     metrics = json.loads(out.read_text(encoding="utf-8"))
@@ -221,3 +231,33 @@ def test_baseline_overrides_change_deltas(tmp_path: Path) -> None:
     assert metrics["image_vs_onejev_delta"] == pytest.approx(0.82 - 0.80)
     assert metrics["screenshot_vs_onejev_delta"] == pytest.approx(0.70 - 0.60)
     assert metrics["text_regression"] == pytest.approx(0.95 - 0.99)
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"adapter_sha256": "c" * 64},
+        {"model_revision": "c" * 40},
+        {"data_sha256": "c" * 64},
+        {"research_input_profile": {}},
+        {"image_max_soft_tokens": {"requested": 1120, "effective": 280}},
+        {"image_max_soft_tokens": {"requested": 1120, "effective": 1120}},
+    ],
+)
+def test_rejects_incompatible_candidate_evidence(tmp_path, change):
+    paths = write_inputs(tmp_path)
+    value = json.loads(paths[0].read_text())
+    value.update(change)
+    write_report(paths[0], value)
+    output = tmp_path / "metrics.json"
+    assert main(argv_for(*paths, output)) == 1
+    assert not output.exists()
+
+
+def test_matching_explicit_image_profiles_accepted(tmp_path):
+    paths = write_inputs(tmp_path)
+    for path in paths[:2]:
+        value = json.loads(path.read_text())
+        value["image_max_soft_tokens"] = {"requested": 1120, "effective": 1120}
+        write_report(path, value)
+    assert main(argv_for(*paths, tmp_path / "metrics.json")) == 0

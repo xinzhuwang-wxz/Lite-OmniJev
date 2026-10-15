@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from scripts.assets import write_json
-from scripts.s2_gate import GateInputError, load_dev_report, load_report
+from scripts.s2_gate import GateInputError, image_budget, load_dev_report, load_report
 
 # Matched S0 Jev-Omni dev500 baselines: reports/s0-baseline-summary.md.
 AUDIO_TEACHER_ACCURACY = 0.38
@@ -50,6 +50,10 @@ def assemble_metrics(
     if next(iter(old_identities))[0] != next(iter(identities))[0]:
         raise GateInputError("S2 and S3 must use the same base model revision")
     for name, (report, _) in reference.items():
+        if name in {"image", "screenshot"} and image_budget(report) != image_budget(
+            measured[name][0]
+        ):
+            raise GateInputError(f"S2/S3 {name} image budgets must match")
         if report.get("data_sha256") != measured[name][0].get("data_sha256") or not report.get(
             "data_sha256"
         ):

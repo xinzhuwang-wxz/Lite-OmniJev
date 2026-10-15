@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import sys
 from pathlib import Path
 from typing import Any, TypeGuard
@@ -25,6 +26,13 @@ S1_TEXT_DEV500_ADAPTER = 0.996
 # S2 dev 评测协议：500 题、两遍完全一致。
 DEV_SAMPLES = 500
 DEV_PASSES = 2
+
+
+FROZEN_DEV_SHA256 = {
+    "image": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+    "screenshot": "19c9d2c3652cb6554b490573754cb02ee0367d89a1161e570b9ee01e8b7689a2",
+    "text": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+}
 
 
 class GateInputError(ValueError):
@@ -75,6 +83,24 @@ def load_dev_report(path: Path, label: str) -> dict[str, Any]:
     return report
 
 
+def image_budget(report: dict[str, Any]) -> int:
+    """Legacy frozen reports used official 280; new profiles must be explicit and effective."""
+    if "research_input_profile" in report:
+        raise GateInputError("research input overrides are not formal stage evidence")
+    profile = report.get("image_max_soft_tokens")
+    if profile is None:
+        return 280
+    if not isinstance(profile, dict):
+        raise GateInputError("invalid image budget profile")
+    effective = profile.get("effective")
+    requested = profile.get("requested")
+    if type(effective) is not int or effective not in (70, 140, 280, 560, 1120):
+        raise GateInputError("invalid effective image budget")
+    if requested is not None and (type(requested) is not int or requested != effective):
+        raise GateInputError("requested image budget was not applied")
+    return effective
+
+
 def assemble_metrics(
     *,
     image_path: Path,
@@ -94,6 +120,22 @@ def assemble_metrics(
     screenshot = load_dev_report(screenshot_path, "screenshot dev")
     text = load_dev_report(text_path, "text dev")
     smoke_run = load_report(smoke_run_path, "smoke run")
+
+    reports = {"image": image, "screenshot": screenshot, "text": text}
+    identities = {(r.get("model_revision"), r.get("adapter_sha256")) for r in reports.values()}
+    if len(identities) != 1 or any(
+        not isinstance(model, str)
+        or not re.fullmatch(r"[a-f0-9]{40}", model)
+        or not isinstance(adapter, str)
+        or not re.fullmatch(r"[a-f0-9]{64}", adapter)
+        for model, adapter in identities
+    ):
+        raise GateInputError("all S2 reports must identify the same model revision and adapter")
+    for name, report in reports.items():
+        if report.get("data_sha256") != FROZEN_DEV_SHA256[name]:
+            raise GateInputError(f"{name} must use its frozen development dataset")
+    if image_budget(image) != image_budget(screenshot):
+        raise GateInputError("image and screenshot must use the same deployed image budget")
 
     config = smoke_run.get("config")
     steps = config.get("steps") if isinstance(config, dict) else None
