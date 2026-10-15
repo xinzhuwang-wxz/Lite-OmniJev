@@ -5,7 +5,8 @@
 ## 当前票与下一步
 - s0:05 done：reports/s4-gold-gate-engineering-acceptance-001.json。数据准入、私有数据审计、固定私有模型入口、失败拒绝和真实GPU双遍工程验证齐全；不代表S4/5/6质量通过。
 - s4:01 claimed main-session，主树 /Users/bamboo/Githubs/Lite-OmniJev；规格.scratch/s4/spec.md，规则iteration-policy.md。继续有界训练→固定dev筛选→完整dev→冻结候选→私有holdout/外榜→S4机器门。
-- 原生Sol6.1子代理s4_crossmodal_train正在独立worktree /Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-crossmodal-train 实现200对TRAIN-only image+audio程序真值构建器；独占scripts/s4_crossmodal_train.py及tests/test_s4_crossmodal_train.py。不读取实际私有数据、不启动GPU。主会话整合并实际构建后准备首个小训练候选。
+- Sol6.1构建器已合入87c766c，真实200对TRAIN组合构建通过：reports/s4-crossmodal-train-build-001.json；train SHA d3b0be2a…，新完整inventory SHA244a5c4f…，100/50/50 AND规则，原始train图像/音频各200唯一组件。源与媒体SHA及全库存隔离均通过；主树22针对测试通过。
+- Sol6.1子代理s4_crossmodal_train正在原worktree准备1200条六类回放、首轮30步配置（独占.scratch/s4/prepare-joint-pilot.py）；s4_step_telemetry在独立worktree补train/trainer.py逐步真实耗时/曝光/峰值/损失日志和测试。现有midway只保存不暂停，resume要求config完全一致；先结束30步并评测，不伪称支持30→60精确续跑。
 - 当前没有运行中的GPU/下载作业。最后两次私有工程GPU作业均结束，下一上卡工作是通过准备检查的S4小候选，不重复已经通过的工程探针。
 - 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。不为每个小切片另写handoff。
 
@@ -13,7 +14,7 @@
 - .scratch/s4/selected-gold-manifest-001.json SHA e073a601…：六cohort各3000cal/1000hold，原dev各500；image/audio/crossmodal额外dev各500单列。旧AOK623/211、video900/300保留为来源诊断及历史曝光，不重复计入主配额。
 - reports/s4-gold-data-admission-001.json evidenceSHA9cf11cea…：来源代码128绑定、source链154工件、CLINC原始Parquet全链重放、Clotho保留120完整字段重放、13500条整理记录仅URI变化、19973媒体路径SHA验证均通过。
 - 已知34份实际更新训练报告、18份输入和7个旧dev版本全部纳入当前库存（s4-known-exposure-reconciliation-001）。不假称覆盖未知外部作业。
-- 当前远端总清单：artifacts/s4-gold-inventory-001/crossmodal-dev-002/inventory-manifest.json SHA6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769。144938当前/历史观测零跨池；16963图像引用全定位、12463唯一图像RGB实解码通过，缓存observed-image-rgb-cache-002.json SHA45ab0b7a…。
+- gold准入绑定的远端总清单（新增TRAIN组合之后仍保留其原始绑定）：artifacts/s4-gold-inventory-001/crossmodal-dev-002/inventory-manifest.json SHA6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769。144938当前/历史观测零跨池；16963图像引用全定位、12463唯一图像RGB实解码通过，缓存observed-image-rgb-cache-002.json SHA45ab0b7a…。
 - GUI3000/1000保留原178；audio为Clotho1400/500+speech1600/500，原Clotho120保留；video为CLEVRER validation3000/1000；image为VQA原题3000/1000；crossmodal同池组件AND3000/1000。crossmodal校准/封存依赖组610/206，不声称IID或有效N。
 - speech-gold-001/allocation.jsonl原始speaker/book/text/media别名、quarantined-reserves/exclusions.json SHA8901483c…继续保留。新增训练组合必须只用train并维护组件账本，不能挪预留数据。
 - 来源/池/规范化精确规则见.scratch/s4/{image-gold-policy,audio-gold-policy,crossmodal-gold-policy}.md。真实构建失败及修正报告均保留。
