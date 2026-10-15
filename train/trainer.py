@@ -117,6 +117,7 @@ MEDIA_REQUIRED_KEYS: dict[str, tuple[str, ...]] = {
 # Everything a prepared media example may carry into the forward pass.
 MEDIA_FORWARD_KEYS = (
     "pixel_values",
+    "image_position_ids",
     "input_features",
     "input_features_mask",
     "pixel_values_videos",
