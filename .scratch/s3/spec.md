@@ -42,3 +42,5 @@ State: 一个闭环;沿用ADR0013校准原则与s2:01联合单LoRA架构
 ## 2026-10-15恢复会话准备
 
 联合池与500行探针已用`.scratch/s3/prepare-joint.py`生成并两次核验一致，报告`reports/s3-joint-preparation-001.json`。每cohort选100行训练数据的均衡探针；30步仅作首次媒体/耗时诊断，不代替300步smoke或质量验收。候选配置在同目录main-config.json/probe-config.json，max_length=4096为视频输入预留，须实测预处理长度和显存后冻结。不读取holdout内容，不启动S3主训练；先完成S2门与小批量前向。
+
+门槛汇总入口：`uv run python -m scripts.s3_gate --audio REPORT --video REPORT --image REPORT --screenshot REPORT --text REPORT --s2-image REPORT --s2-screenshot REPORT --s2-text REPORT --video8 REPORT --output METRICS`。CPU报告夹具验证CLI与拒绝不匹配数据/adapter路径；真实S3报告仍待训练，不作通过声称。
