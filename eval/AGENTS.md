@@ -4,3 +4,4 @@
 - 缺指标/NaN不能视为通过 → 数值gate不证明来源 → 阶段报告另核验真实模型、split、revision、样本量和运行身份，缺证据保持blocked。
 - 高预算全链评测超时丢失重复工作 → 总链预算不等于单cohort可行预算 → 按实测分配单cohort时限；相同权重/数据/前向与运行库的有效双遍证据经哈希和代码核验可复用，中断的重复作业不算通过。
 - 长评测仅末尾写结果会丢失已算记录 → 当前runner每25条刷records.partial.jsonl及progress.json → 部分记录仅诊断，不作续跑或通过凭据；完整records.jsonl、正式报告和所有门仍必需。
+- JSON键排序会把Noul的yes/no改成no/yes，改变并列概率argmax及ECE → 指标和原始logits复算必须用规范答案顺序 → 历史报告保留，完整sidecar可在CPU生成显式修正汇总，不重跑GPU或改产品预测。

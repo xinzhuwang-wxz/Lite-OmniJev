@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from data.schema import Sample, answer_tokens
 from scripts.s1_dev_eval import metrics_from_records
 from scripts.s3_gate import FROZEN_S3_DEV_SHA256, validate_identity
 from train.readout import read_probabilities
@@ -61,7 +62,9 @@ def verify(root: Path, cohort: str) -> dict:
             assert row["family_hash"] == sample["meta"]["family_id"]
             assert row["pool"] == sample["meta"]["pool"] == "dev"
             readout = read_probabilities(
-                row["raw_logits"], list(row["probabilities"]), temperature=1.0
+                row["raw_logits"],
+                list(answer_tokens(Sample.model_validate(sample).questions[0])),
+                temperature=1.0,
             )
             for key in (
                 "probabilities",

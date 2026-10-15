@@ -230,7 +230,8 @@ def metrics_from_records(records: list[dict[str, Any]]) -> dict[str, Any]:
     targets: list[int] = []
     for record in records:
         probabilities = record["probabilities"]
-        order = sorted(probabilities)
+        # JSON sorting must not reverse Noul's canonical yes/no tie-break.
+        order = ["yes", "no"] if set(probabilities) == {"yes", "no"} else sorted(probabilities)
         rows.append([probabilities[token] for token in order])
         targets.append(order.index(str(record["target"])))
     core = evaluate(rows, targets)

@@ -355,6 +355,22 @@ def test_counterfactual_match_rate_ignores_not_applicable_rows() -> None:
     assert counterfactual_match_rate([]) is None
 
 
+@pytest.mark.parametrize("serialized_order", [("yes", "no"), ("no", "yes")])
+def test_noul_metric_ties_follow_canonical_answer_order(serialized_order: tuple[str, str]) -> None:
+    records = [
+        {
+            "probabilities": dict.fromkeys(serialized_order, 0.5),
+            "prediction": "yes",
+            "target": "yes",
+            "p_insufficient": 0.0,
+        }
+    ]
+    metrics = metrics_from_records(records)
+    assert metrics["accuracy"] == metrics["product_accuracy"] == 1.0
+    assert metrics["ece15"] == 0.5
+    assert metrics["coverage_at_error"] == 1.0
+
+
 def test_metrics_from_records_indexes_noul_targets_in_row_order() -> None:
     def noul_record(p_yes: float, target: str, prediction: str) -> dict:
         return {
@@ -369,7 +385,7 @@ def test_metrics_from_records_indexes_noul_targets_in_row_order() -> None:
         noul_record(0.3, "yes", "yes"),
     ]
     metrics = metrics_from_records(records)
-    # Row order is sorted tokens ("no", "yes"); the second row answers "no".
+    # Canonical Noul order is yes/no; the second distribution answers no.
     assert metrics["accuracy"] == 0.5
     assert metrics["product_accuracy"] == 1.0
     assert metrics["count"] == 2
