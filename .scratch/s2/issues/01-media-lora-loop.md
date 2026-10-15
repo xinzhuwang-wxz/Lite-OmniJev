@@ -1,0 +1,32 @@
+# 01: 图像/截图数据→多模态决策LoRA→dev500同条件评测闭环
+
+ID: s2:01
+Milestone: S2
+Category: enhancement
+Status: ready-for-agent
+Execution: claimed
+Owner: main-session
+Worktree: /Users/bamboo/Githubs/Lite-OmniJev
+Blocked by: None
+
+## What to build
+
+按.scratch/s2/spec.md在一个闭环内完成：图像/截图池冻结（媒体sha校验+预留holdout/calibration family）→多模态训练扩展（pixel_values过冻结vision tower，LoRA仍仅decoder）→smoke→图像与截图主训练→dev500同条件双遍评测+文本回归+反事实翻转→S2机器门报告。
+
+## Acceptance criteria
+
+- [ ] 图像池冻结：候选=允许集排除dev500 family后全部样本，holdout200/calib600/train其余，双遍字节一致，媒体逐文件sha校验通过，ledger+报告绑定SHA；截图池冻结：同理holdout110/calib330。
+- [ ] 多模态训练扩展：LoopConfig支持image/screenshot，vision tower冻结+eval，官方processor，媒体sha预检，LoRA仅decoder投影，损失/读出与文本一致；新增公共行为回归+静态通过。
+- [ ] smoke：图像与截图各300步真实GPU，训练子集自测acc与loss下降记录（工程信号，非门）。
+- [ ] 主训练：图像与截图各samples-seen=min(10000,5×池)，50% midway adapter对照，SwanLab真实指标。
+- [ ] dev500同条件双遍：image与screenshot精确重复，字段与S0基线runner一致；文本回归评测（text dev500，S2 adapter）≥98.6%；反事实翻转双遍确定性，flip率实测。
+- [ ] 门槛报告：eval.gate原值判定原样记录（image≥80.6%、screenshot≥63.2%、text_regression≤1pp、flip≥.80）；未达标如实保留，结构性不可达按ADR0013格式另录。
+- [ ] lint/type/build+新增回归；STATUS更新；commit带Lore trailers。
+
+## Evidence
+
+Evidence: 待执行；规格.scratch/s2/spec.md；复用s1:01机制与ADR0013原则。基线：OneJev4 image 83.6%/screenshot 66.2%，E4B 74.4%/51.4%（s0-baseline-summary.md）。
+
+## Out of scope
+
+音频/视频（S3）、E2B/量化（S6）、封存holdout构建（s0:05）、新数据源下载、门槛静默调整。

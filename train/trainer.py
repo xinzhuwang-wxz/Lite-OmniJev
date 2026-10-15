@@ -1,4 +1,4 @@
-"""Bounded text-only decision LoRA smoke; no quality or GPU-parity claims."""
+"""Bounded text/image decision LoRA smoke; no quality or GPU-parity claims."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from data.schema import (
     Contract,
     HardTarget,
     InsufficientTarget,
+    Prefix,
     Sample,
     SoftTarget,
     answer_tokens,
@@ -38,7 +39,8 @@ from train.checkpoint import (
     verify_resume_request,
 )
 from train.monitoring import SwanLabConfig, Telemetry, start_swanlab
-from train.template import check_answer_tokens, render_prompt
+from train.multimodal import load_media, resolve_media
+from train.template import check_answer_tokens, render_payload, render_prompt
 
 
 class SmokeConfig(Contract):
@@ -72,7 +74,8 @@ class LoopConfig(Contract):
     rank: Literal[16] = 16
     alpha: Literal[32] = 32
     dtype: Literal["bfloat16"] = "bfloat16"
-    modality: Literal["text"] = "text"
+    modality: Literal["text", "image", "screenshot"] = "text"
+    media_root: str | None = None
     midway_step: int | None = Field(default=None, ge=1)
     expected_data_version: str | None = None
     checkpoint_every: int | None = Field(default=None, ge=1)
@@ -83,6 +86,8 @@ class LoopConfig(Contract):
             raise ValueError("learning_rate must be finite")
         if self.midway_step is not None and self.midway_step > self.steps:
             raise ValueError("midway_step must not exceed steps")
+        if self.modality in {"image", "screenshot"} and not (self.media_root or "").strip():
+            raise ValueError(f"{self.modality} training requires a nonempty media_root")
         return self
 
 
@@ -95,6 +100,8 @@ def smoke_samples(
     *,
     expected_data_version: str | None = None,
 ) -> list[Sample]:
+    if data_path is None and config.modality != "text":
+        raise ValueError("image/screenshot cohorts require a frozen data file")
     if data_path is None:
         samples = generate_samples(config.sample_count, config.seed)
         # Keep exactly one question per source sample, balanced across four target tasks.
@@ -112,7 +119,18 @@ def smoke_samples(
         )
     validate_pool_isolation(samples)
     for sample in samples:
-        if sample.meta.pool != "train" or sample.meta.modality != ["text"] or sample.prefix.media:
+        if config.modality != "text":
+            if sample.meta.pool != "train":
+                raise ValueError("smoke accepts training-pool samples")
+            if (
+                len(sample.prefix.media) != 1
+                or sample.prefix.media[0].type != "image"
+                or "image" not in sample.meta.modality
+            ):
+                raise ValueError(
+                    f"{config.modality} training requires exactly one image per sample"
+                )
+        elif sample.meta.pool != "train" or sample.meta.modality != ["text"] or sample.prefix.media:
             raise ValueError("smoke accepts text-only training-pool samples")
         if expected_data_version is not None and sample.meta.data_version != expected_data_version:
             raise ValueError("training data_version does not match the frozen allocation")
@@ -158,6 +176,96 @@ def prepare_examples(
             }
         )
     return examples
+
+
+def verified_media_file(media_root: Path, uri: str, sha256: str) -> Path:
+    """Streaming-sha-verified local media path under media_root, per the S0 asset rules."""
+    return resolve_media(media_root, uri, sha256, max_bytes=64 * 1024 * 1024)
+
+
+def prepare_media_example(
+    sample: Sample,
+    processor: Any,
+    media_root: Path,
+    *,
+    max_length: int,
+) -> dict[str, Any]:
+    """Official-processor rendering for one image sample, isomorphic to s0_baseline_cpu."""
+    question = sample.questions[0]
+    if len(sample.prefix.media) != 1 or sample.prefix.media[0].type != "image":
+        raise ValueError(f"sample {sample.id} must carry exactly one image")
+    item = sample.prefix.media[0]
+    image = load_media(
+        verified_media_file(media_root, item.uri, item.sha256),
+        "image",
+        num_frames=16,
+        max_seconds=60,
+    )
+    payload = render_payload(Prefix(state=sample.prefix.state), question)
+    prompt = processor.apply_chat_template(
+        [
+            {
+                "role": "user",
+                "content": [{"type": "image"}, {"type": "text", "text": payload}],
+            }
+        ],
+        tokenize=False,
+        add_generation_prompt=True,
+        enable_thinking=False,
+    )
+    if not isinstance(prompt, str) or not prompt:
+        raise ValueError("official image template returned empty prompt")
+    tokenizer = processor.tokenizer
+    tokens = (*answer_tokens(question), "U")
+    mapping = check_answer_tokens(tokenizer, question)
+    inputs = processor(text=[prompt], images=[[image]], return_tensors="pt", truncation=False)
+    input_ids = inputs["input_ids"][0].tolist()
+    if "pixel_values" not in inputs:
+        raise ValueError("processor omitted pixel_values")
+    if not input_ids or len(input_ids) > max_length:
+        raise ValueError("empty or over-length multimodal prompt; truncation is forbidden")
+    prompt_ids = tokenizer.encode(prompt, add_special_tokens=False)
+    for token in tokens:
+        if tokenizer.encode(prompt + token, add_special_tokens=False) != prompt_ids + [
+            mapping[token]
+        ]:
+            raise ValueError(f"answer token changes at generation boundary: {token}")
+    target = question.target
+    if isinstance(target, HardTarget):
+        expected = [float(t == str(target.value)) for t in tokens]
+    elif isinstance(target, SoftTarget):
+        expected = [*target.probs, 0.0]
+    elif isinstance(target, InsufficientTarget):
+        expected = [0.0] * (len(tokens) - 1) + [1.0]
+    else:
+        raise ValueError("sample lacks supervision")
+    return {
+        "id": sample.id,
+        "input_ids": input_ids,
+        "pixel_values": inputs["pixel_values"],
+        "token_ids": [mapping[t] for t in tokens],
+        "answer_token_ids": mapping,
+        "target": expected,
+    }
+
+
+def prepare_multimodal_examples(
+    samples: list[Sample],
+    model_dir: Path,
+    media_root: Path,
+    max_length: int,
+) -> list[dict[str, Any]]:
+    """Cohort wrapper: load the official processor once, render every sample."""
+    transformers = importlib.import_module("transformers")
+    processor = transformers.AutoProcessor.from_pretrained(
+        str(model_dir),
+        local_files_only=True,
+        trust_remote_code=False,
+    )
+    return [
+        prepare_media_example(sample, processor, media_root, max_length=max_length)
+        for sample in samples
+    ]
 
 
 def decision_loss(logits: Any, token_ids: list[int], target: list[float]) -> Any:
@@ -313,8 +421,12 @@ def train_smoke(
         attn_implementation="sdpa",
     )
     model = attach_lora(base, config).to("cuda")
+    for name, parameter in model.named_parameters():
+        if ".vision_tower." in name or ".audio_tower." in name:
+            if parameter.requires_grad:
+                raise ValueError(f"encoder tower must stay frozen under decision LoRA: {name}")
     model.train()
-    # Encoders stay in eval mode as well as frozen; this smoke never supplies media.
+    # Encoders stay in eval mode as well as frozen; media cohorts only pass pixels through.
     for name, module in model.named_modules():
         if name.endswith(("vision_tower", "audio_tower")):
             module.eval()
@@ -349,13 +461,23 @@ def train_smoke(
             draw = step * config.accumulation + offset
             example = examples[order[draw % len(examples)]]
             ids = torch.tensor([example["input_ids"]], device="cuda", dtype=torch.long)
-            output = model(
-                input_ids=ids,
-                attention_mask=torch.ones_like(ids),
-                use_cache=False,
-                logits_to_keep=1,
-                return_dict=True,
-            )
+            if "pixel_values" in example:
+                output = model(
+                    input_ids=ids,
+                    attention_mask=torch.ones_like(ids),
+                    pixel_values=example["pixel_values"].to(ids.device),
+                    use_cache=False,
+                    logits_to_keep=1,
+                    return_dict=True,
+                )
+            else:
+                output = model(
+                    input_ids=ids,
+                    attention_mask=torch.ones_like(ids),
+                    use_cache=False,
+                    logits_to_keep=1,
+                    return_dict=True,
+                )
             loss = decision_loss(output.logits[0, -1], example["token_ids"], example["target"])
             if not bool(torch.isfinite(loss)):
                 raise ValueError("nonfinite training loss")
@@ -481,8 +603,15 @@ def run(
                 blockers.append(f"{field}: {type(exc).__name__}: {exc}")
         examples = []
         try:
-            adapter = OfficialTokenizerAdapter(model_dir)
-            examples = prepare_examples(samples, adapter, config.max_length)
+            if config.modality == "text":
+                adapter = OfficialTokenizerAdapter(model_dir)
+                examples = prepare_examples(samples, adapter, config.max_length)
+            else:
+                if not config.media_root:
+                    raise ValueError("image/screenshot training requires media_root")
+                examples = prepare_multimodal_examples(
+                    samples, model_dir, Path(config.media_root), config.max_length
+                )
             report["examples"] = len(examples)
             report["max_prompt_tokens"] = max(len(e["input_ids"]) for e in examples)
         except Exception as exc:

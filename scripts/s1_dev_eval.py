@@ -1,4 +1,4 @@
-"""Same-condition dev evaluation for a text decision adapter; two identical passes."""
+"""Same-condition dev evaluation for a text/image decision adapter; two identical passes."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ import importlib.metadata
 import json
 import os
 import platform
+import random
 import subprocess
 import sys
 import time
@@ -20,6 +21,7 @@ from eval.metrics import evaluate
 from scripts.check_tokens import OfficialTokenizerAdapter
 from train.readout import read_probabilities
 from train.template import check_answer_tokens, render_prompt
+from train.trainer import prepare_media_example
 
 
 class DevEvalError(ValueError):
@@ -52,7 +54,7 @@ def canonical_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
-def load_samples(path: Path) -> list[Sample]:
+def load_samples(path: Path, *, media_root: Path | None = None) -> list[Sample]:
     samples: list[Sample] = []
     with path.open(encoding="utf-8") as handle:
         for line_no, line in enumerate(handle, start=1):
@@ -63,7 +65,21 @@ def load_samples(path: Path) -> list[Sample]:
                 sample = Sample.model_validate_json(stripped)
             except ValueError as exc:
                 raise DevEvalError(f"invalid sample JSON at line {line_no}") from exc
-            if sample.meta.modality != ["text"] or sample.prefix.media:
+            media = sample.prefix.media
+            if media:
+                if media_root is None:
+                    raise DevEvalError(
+                        f"sample {sample.id} carries media but --media-root is unset"
+                    )
+                if (
+                    len(media) > 1
+                    or media[0].type != "image"
+                    or "image" not in sample.meta.modality
+                ):
+                    raise DevEvalError(
+                        f"sample {sample.id} media disagrees with its declared modality"
+                    )
+            elif sample.meta.modality != ["text"]:
                 raise DevEvalError(f"sample {sample.id} is not text-only")
             if len(sample.questions) != 1 or sample.questions[0].type != "choice":
                 raise DevEvalError(f"sample {sample.id} is not a single Choice question")
@@ -82,27 +98,51 @@ def forward_readout(
     tokenizer: OfficialTokenizerAdapter,
     sample: Sample,
     max_length: int,
+    *,
+    processor: Any = None,
+    media_root: Path | None = None,
 ) -> tuple[dict[str, float], Any]:
     """Boundary-verified original logits for every legal answer token plus U."""
     torch = importlib.import_module("torch")
     question = sample.questions[0]
-    prompt = render_prompt(tokenizer, sample.prefix, question)
-    input_ids = tokenizer.encode(prompt, add_special_tokens=False)
-    if not input_ids or len(input_ids) > max_length:
-        raise DevEvalError(f"sample {sample.id} has an empty or over-length prompt")
-    mapping = check_answer_tokens(tokenizer, question)
-    for token, index in mapping.items():
-        if tokenizer.encode(prompt + token, add_special_tokens=False) != input_ids + [index]:
-            raise DevEvalError(f"answer token for {sample.id} changes at the generation boundary")
+    pixel_values = None
+    if sample.prefix.media:
+        if processor is None or media_root is None:
+            raise DevEvalError(f"sample {sample.id} requires a processor and media root")
+        prepared = prepare_media_example(sample, processor, media_root, max_length=max_length)
+        input_ids = prepared["input_ids"]
+        mapping = prepared["answer_token_ids"]
+        pixel_values = prepared["pixel_values"]
+    else:
+        prompt = render_prompt(tokenizer, sample.prefix, question)
+        input_ids = tokenizer.encode(prompt, add_special_tokens=False)
+        if not input_ids or len(input_ids) > max_length:
+            raise DevEvalError(f"sample {sample.id} has an empty or over-length prompt")
+        mapping = check_answer_tokens(tokenizer, question)
+        for token, index in mapping.items():
+            if tokenizer.encode(prompt + token, add_special_tokens=False) != input_ids + [index]:
+                raise DevEvalError(
+                    f"answer token for {sample.id} changes at the generation boundary"
+                )
     ids = torch.tensor([input_ids], device="cuda", dtype=torch.long)
     with torch.no_grad():
-        output = model(
-            input_ids=ids,
-            attention_mask=torch.ones_like(ids),
-            use_cache=False,
-            logits_to_keep=1,
-            return_dict=True,
-        )
+        if pixel_values is None:
+            output = model(
+                input_ids=ids,
+                attention_mask=torch.ones_like(ids),
+                use_cache=False,
+                logits_to_keep=1,
+                return_dict=True,
+            )
+        else:
+            output = model(
+                input_ids=ids,
+                attention_mask=torch.ones_like(ids),
+                pixel_values=pixel_values.to(ids.device),
+                use_cache=False,
+                logits_to_keep=1,
+                return_dict=True,
+            )
     row = output.logits[0, -1]
     logits = {token: float(row[index]) for token, index in mapping.items()}
     readout = read_probabilities(logits, list(answer_tokens(question)), temperature=1.0)
@@ -165,6 +205,46 @@ def repeat_identical_over(passes_records: list[list[dict[str, Any]]]) -> bool | 
     )
 
 
+def counterfactual_seed(sample_id: str) -> int:
+    """Deterministic per-sample permutation seed derived from the id's SHA256."""
+    return int.from_bytes(hashlib.sha256(sample_id.encode()).digest()[:8], "big")
+
+
+def prediction_content(prediction: str, options: list[str]) -> str:
+    """Map an answer letter to its option content; U stays U."""
+    if prediction == "U":
+        return "U"
+    return options[ord(prediction) - ord("A")]
+
+
+def build_counterfactual(sample: Sample, seed: int) -> Sample:
+    """Deterministically permute Choice options; the target follows its content."""
+    question = sample.questions[0]
+    options = question.options
+    if question.type != "choice" or options is None:
+        raise DevEvalError("counterfactual permutation requires a Choice question")
+    target = question.target
+    if not isinstance(target, HardTarget) or type(target.value) is not str:
+        raise DevEvalError("counterfactual permutation requires a hard letter target")
+    order = list(range(len(options)))
+    random.Random(seed).shuffle(order)
+    permuted = [options[index] for index in order]
+    content = options[ord(str(target.value)) - ord("A")]
+    moved = chr(ord("A") + permuted.index(content))
+    return sample.model_copy(
+        update={
+            "questions": [
+                question.model_copy(
+                    update={
+                        "options": permuted,
+                        "target": target.model_copy(update={"value": moved}),
+                    }
+                )
+            ]
+        }
+    )
+
+
 def run(
     *,
     model_dir: Path,
@@ -175,6 +255,8 @@ def run(
     max_length: int,
     passes: int,
     command: list[str],
+    media_root: Path | None = None,
+    counterfactual: bool = False,
 ) -> int:
     started_at = time.time()
     output_dir.mkdir(parents=True, exist_ok=False)
@@ -185,7 +267,19 @@ def run(
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
         os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
         torch.use_deterministic_algorithms(True)
-        samples = load_samples(data_path)
+        samples = load_samples(data_path, media_root=media_root)
+        processor = None
+        if any(sample.prefix.media for sample in samples):
+            processor = transformers.AutoProcessor.from_pretrained(
+                str(model_dir),
+                local_files_only=True,
+                trust_remote_code=False,
+            )
+        variants = (
+            [build_counterfactual(sample, counterfactual_seed(sample.id)) for sample in samples]
+            if counterfactual
+            else []
+        )
         base = transformers.Gemma4ForConditionalGeneration.from_pretrained(
             str(model_dir),
             local_files_only=True,
@@ -199,10 +293,43 @@ def run(
         tokenizer = OfficialTokenizerAdapter(model_dir)
         all_passes: list[list[dict[str, Any]]] = []
         for _ in range(passes):
-            records = []
+            records: list[dict[str, Any]] = []
             for sample in samples:
-                logits, readout = forward_readout(model, tokenizer, sample, max_length)
-                records.append(record_for(sample, readout, logits))
+                logits, readout = forward_readout(
+                    model,
+                    tokenizer,
+                    sample,
+                    max_length,
+                    processor=processor,
+                    media_root=media_root,
+                )
+                record = record_for(sample, readout, logits)
+                record["variant"] = "original"
+                records.append(record)
+            if counterfactual:
+                originals = list(records)
+                for sample, variant, original in zip(samples, variants, originals, strict=True):
+                    logits, readout = forward_readout(
+                        model,
+                        tokenizer,
+                        variant,
+                        max_length,
+                        processor=processor,
+                        media_root=media_root,
+                    )
+                    record = record_for(variant, readout, logits)
+                    options = sample.questions[0].options or []
+                    original_content = prediction_content(original["prediction"], options)
+                    counterfactual_content = prediction_content(record["prediction"], options)
+                    record.update(
+                        variant="counterfactual",
+                        original_prediction=original["prediction"],
+                        counterfactual_prediction=record["prediction"],
+                        original_prediction_content=original_content,
+                        counterfactual_prediction_content=counterfactual_content,
+                        content_match=original_content == counterfactual_content,
+                    )
+                    records.append(record)
             all_passes.append(records)
         repeat_identical = repeat_identical_over(all_passes)
         sidecar = output_dir / "records.jsonl"
@@ -210,7 +337,14 @@ def run(
             for pass_index, records in enumerate(all_passes):
                 for record in records:
                     handle.write(canonical_json({**record, "pass": pass_index}) + "\n")
-        metrics = metrics_from_records(all_passes[0])
+        original_records = [record for record in all_passes[0] if record["variant"] == "original"]
+        counterfactual_records = [
+            record for record in all_passes[0] if record["variant"] == "counterfactual"
+        ]
+        metrics = metrics_from_records(original_records)
+        if counterfactual:
+            matches = [record["content_match"] for record in counterfactual_records]
+            metrics["counterfactual_content_match_rate"] = sum(matches) / len(matches)
         report = {
             "status": "passed" if repeat_identical is not False else "passed_unstable_repeat",
             "exit_code": 0,
@@ -225,6 +359,7 @@ def run(
             "passes": passes,
             "repeat_identical": repeat_identical,
             "metrics": metrics,
+            "counterfactual": counterfactual,
             "code_revision": git_head(),
             "script_sha256": script_sha256(),
             "python": platform.python_version(),
@@ -272,6 +407,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--max-length", type=int, default=2048)
     parser.add_argument("--passes", type=int, default=2)
+    parser.add_argument(
+        "--media-root",
+        type=Path,
+        default=None,
+        help="media asset root required when samples carry image media",
+    )
+    parser.add_argument(
+        "--counterfactual",
+        action="store_true",
+        help="additionally read out option-permuted counterfactual variants",
+    )
     return parser.parse_args(argv)
 
 
@@ -286,6 +432,8 @@ def main(argv: list[str] | None = None) -> int:
         max_length=args.max_length,
         passes=args.passes,
         command=[sys.executable, "-m", "scripts.s1_dev_eval", *(argv or sys.argv[1:])],
+        media_root=args.media_root.resolve() if args.media_root else None,
+        counterfactual=args.counterfactual,
     )
 
 
