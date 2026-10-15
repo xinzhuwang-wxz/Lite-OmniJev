@@ -5,8 +5,10 @@ processor and the real audio/video forward pass need the pinned model and GPU;
 those paths are exercised by the GPU runbooks, not here.
 """
 
+import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from pydantic import ValidationError
@@ -17,6 +19,7 @@ from scripts.s1_dev_eval import (
     counterfactual_variant,
     load_samples,
     metrics_from_records,
+    parse_args,
 )
 from scripts.s2_media_pools import main as pools_main
 from scripts.s2_media_pools import sha256_bytes
@@ -200,6 +203,96 @@ def test_media_processor_kwargs_match_the_official_protocol() -> None:
     # Every key prepare demands from the processor must be forwardable.
     for keys in MEDIA_REQUIRED_KEYS.values():
         assert set(keys) <= set(MEDIA_FORWARD_KEYS)
+
+
+def test_loop_config_video_num_frames_must_be_8_or_16(tmp_path: Path) -> None:
+    assert media_loop_config("video", tmp_path).video_num_frames == 16
+    assert media_loop_config("video", tmp_path, video_num_frames=8).video_num_frames == 8
+    assert media_loop_config("video", tmp_path, video_num_frames=16).video_num_frames == 16
+    for bad in (7, 9):
+        with pytest.raises(ValidationError):
+            media_loop_config("video", tmp_path, video_num_frames=bad)
+
+
+def test_video_frames_cli_choices_and_default() -> None:
+    base = ["--model-dir", "m", "--data", "d", "--output-dir", "o", "--report", "r"]
+    assert parse_args(base).video_frames == 16
+    assert parse_args([*base, "--video-frames", "8"]).video_frames == 8
+    assert parse_args([*base, "--video-frames", "16"]).video_frames == 16
+    with pytest.raises(SystemExit):
+        parse_args([*base, "--video-frames", "7"])
+    with pytest.raises(SystemExit):
+        parse_args([*base, "--video-frames", "9"])
+
+
+class NoulTokenizer:
+    """Single-token yes/no/U encoding with a stable prompt boundary."""
+
+    TOKENS = {"yes": 2000, "no": 2001, "U": 2002}
+
+    def encode(self, text: str, *, add_special_tokens: bool = False) -> list[int]:
+        for word, token in self.TOKENS.items():
+            if text == word:
+                return [token]
+        for word, token in self.TOKENS.items():
+            if text.startswith("official:") and text.endswith(word):
+                return [ord(char) for char in text[: -len(word)]] + [token]
+        return [ord(char) for char in text]
+
+
+class FakeVideoProcessor:
+    """Processor stand-in exposing the official video kwarg contract."""
+
+    def __init__(self) -> None:
+        self.tokenizer = NoulTokenizer()
+        self.calls: list[dict] = []
+
+    def apply_chat_template(self, messages, **kwargs) -> str:
+        content = messages[0]["content"]
+        assert content[0] == {"type": "video"}
+        assert kwargs["enable_thinking"] is False
+        return "official:" + content[1]["text"]
+
+    def __call__(self, **kwargs) -> dict:
+        assert kwargs["text"] and kwargs["return_tensors"] == "pt"
+        assert kwargs["truncation"] is False
+        self.calls.append(kwargs)
+        return {
+            "input_ids": [SimpleNamespace(tolist=lambda: [1, 2, 3])],
+            "pixel_values_videos": "pixel-values-videos",
+            "video_position_ids": "video-position-ids",
+        }
+
+
+def test_prepare_media_example_threads_video_num_frames(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "media"
+    root.mkdir()
+    payload = b"video-bytes"
+    (root / "clip-00000.bin").write_bytes(payload)
+    row = noul_row(0, media_type="video")
+    row["prefix"]["media"][0]["uri"] = "clip-00000.bin"
+    row["prefix"]["media"][0]["sha256"] = hashlib.sha256(payload).hexdigest()
+    sample = Sample.model_validate(row)
+    decoded: dict[str, object] = {}
+
+    def fake_load_media(path, kind, *, num_frames, max_seconds):
+        decoded.update(kind=kind, num_frames=num_frames, max_seconds=max_seconds)
+        return {"frames": [f"frame-{i}" for i in range(num_frames)], "metadata": {"fps": 5.0}}
+
+    monkeypatch.setattr("train.trainer.load_media", fake_load_media)
+    processor = FakeVideoProcessor()
+    example = prepare_media_example(sample, processor, root, max_length=100, video_num_frames=8)
+    assert decoded == {"kind": "video", "num_frames": 8, "max_seconds": 60}
+    assert example["video_num_frames"] == 8
+    assert example["pixel_values_videos"] == "pixel-values-videos"
+    assert example["video_position_ids"] == "video-position-ids"
+    assert processor.calls[0]["videos"] == [[f"frame-{i}" for i in range(8)]]
+    assert processor.calls[0]["video_metadata"] == [{"fps": 5.0}]
+    assert processor.calls[0]["do_sample_frames"] is False
+    with pytest.raises(ValueError, match="video_num_frames"):
+        prepare_media_example(sample, processor, root, max_length=100, video_num_frames=7)
 
 
 def test_prepare_media_example_dispatch_rejects_bad_media_before_rendering(tmp_path: Path) -> None:

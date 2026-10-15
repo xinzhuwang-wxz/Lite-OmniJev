@@ -75,6 +75,7 @@ class LoopConfig(Contract):
     alpha: Literal[32] = 32
     dtype: Literal["bfloat16"] = "bfloat16"
     modality: Literal["text", "image", "screenshot", "audio", "video", "mixed"] = "text"
+    video_num_frames: Literal[8, 16] = 16
     media_root: str | None = None
     media_roots: list[str] | None = None
     midway_step: int | None = Field(default=None, ge=1)
@@ -288,8 +289,11 @@ def prepare_media_example(
     media_root: Path,
     *extra_roots: Path,
     max_length: int,
+    video_num_frames: int = 16,
 ) -> dict[str, Any]:
     """Official-processor rendering for one media sample, isomorphic to s0_baseline_cpu."""
+    if video_num_frames not in (8, 16):
+        raise ValueError("video_num_frames must be 8 or 16")
     question = sample.questions[0]
     if len(sample.prefix.media) != 1 or sample.prefix.media[0].type not in MEDIA_TYPES:
         raise ValueError(f"sample {sample.id} must carry exactly one image, audio or video item")
@@ -304,7 +308,7 @@ def prepare_media_example(
     loaded = load_media(
         media_path,
         media_type,
-        num_frames=16,
+        num_frames=video_num_frames,
         max_seconds=30 if media_type == "audio" else 60,
     )
     payload = render_payload(Prefix(state=sample.prefix.state), question)
@@ -361,6 +365,8 @@ def prepare_media_example(
     for key in MEDIA_FORWARD_KEYS:
         if key in inputs:
             example[key] = inputs[key]
+    if media_type == "video":
+        example["video_num_frames"] = video_num_frames
     return example
 
 
@@ -370,6 +376,7 @@ def prepare_multimodal_examples(
     media_root: Path,
     max_length: int,
     extra_roots: list[Path] | None = None,
+    video_num_frames: int = 16,
 ) -> list[dict[str, Any]]:
     """Cohort wrapper: load the official processor once, render every sample."""
     transformers = importlib.import_module("transformers")
@@ -380,7 +387,12 @@ def prepare_multimodal_examples(
     )
     return [
         prepare_media_example(
-            sample, processor, media_root, *(extra_roots or []), max_length=max_length
+            sample,
+            processor,
+            media_root,
+            *(extra_roots or []),
+            max_length=max_length,
+            video_num_frames=video_num_frames,
         )
         for sample in samples
     ]
@@ -394,11 +406,17 @@ def prepare_mixed_example(
     *,
     max_length: int,
     extra_roots: list[Path] | None = None,
+    video_num_frames: int = 16,
 ) -> dict[str, Any]:
     """Route one sample by its own media; mixed text rows stay tokenizer-only."""
     if sample.prefix.media:
         return prepare_media_example(
-            sample, processor, media_root, *(extra_roots or []), max_length=max_length
+            sample,
+            processor,
+            media_root,
+            *(extra_roots or []),
+            max_length=max_length,
+            video_num_frames=video_num_frames,
         )
     return prepare_examples([sample], tokenizer, max_length)[0]
 
@@ -409,6 +427,7 @@ def prepare_mixed_examples(
     media_root: Path,
     max_length: int,
     extra_roots: list[Path] | None = None,
+    video_num_frames: int = 16,
 ) -> list[dict[str, Any]]:
     """Mixed-cohort wrapper: one tokenizer plus one processor, per-sample routing."""
     transformers = importlib.import_module("transformers")
@@ -420,7 +439,13 @@ def prepare_mixed_examples(
     tokenizer = OfficialTokenizerAdapter(model_dir)
     return [
         prepare_mixed_example(
-            sample, tokenizer, processor, media_root, max_length=max_length, extra_roots=extra_roots
+            sample,
+            tokenizer,
+            processor,
+            media_root,
+            max_length=max_length,
+            extra_roots=extra_roots,
+            video_num_frames=video_num_frames,
         )
         for sample in samples
     ]
@@ -770,13 +795,24 @@ def run(
                 else:
                     primary_root = Path(config.media_root or "")
                     extra_roots = []
+                video_num_frames = getattr(config, "video_num_frames", 16)
                 if config.modality == "mixed":
                     examples = prepare_mixed_examples(
-                        samples, model_dir, primary_root, config.max_length, extra_roots=extra_roots
+                        samples,
+                        model_dir,
+                        primary_root,
+                        config.max_length,
+                        extra_roots=extra_roots,
+                        video_num_frames=video_num_frames,
                     )
                 else:
                     examples = prepare_multimodal_examples(
-                        samples, model_dir, primary_root, config.max_length, extra_roots
+                        samples,
+                        model_dir,
+                        primary_root,
+                        config.max_length,
+                        extra_roots,
+                        video_num_frames=video_num_frames,
                     )
             report["examples"] = len(examples)
             report["max_prompt_tokens"] = max(len(e["input_ids"]) for e in examples)

@@ -292,7 +292,7 @@ def test_mixed_prepare_routes_each_sample_by_its_own_media(
     )
     monkeypatch.setattr(
         "train.trainer.prepare_media_example",
-        lambda sample, processor, media_root, *, max_length: (
+        lambda sample, processor, media_root, *, max_length, video_num_frames=16: (
             routed.append(("media", sample.id))
             or {
                 "id": sample.id,

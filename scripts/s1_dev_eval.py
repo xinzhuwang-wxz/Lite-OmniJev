@@ -102,6 +102,7 @@ def forward_readout(
     *,
     processor: Any = None,
     media_root: Path | None = None,
+    video_num_frames: int = 16,
 ) -> tuple[dict[str, float], Any]:
     """Boundary-verified original logits for every legal answer token plus U."""
     torch = importlib.import_module("torch")
@@ -110,7 +111,13 @@ def forward_readout(
     if sample.prefix.media:
         if processor is None or media_root is None:
             raise DevEvalError(f"sample {sample.id} requires a processor and media root")
-        prepared = prepare_media_example(sample, processor, media_root, max_length=max_length)
+        prepared = prepare_media_example(
+            sample,
+            processor,
+            media_root,
+            max_length=max_length,
+            video_num_frames=video_num_frames,
+        )
         input_ids = prepared["input_ids"]
         mapping = prepared["answer_token_ids"]
         media_inputs = {key: prepared[key] for key in MEDIA_FORWARD_KEYS if key in prepared}
@@ -266,6 +273,7 @@ def run(
     command: list[str],
     media_root: Path | None = None,
     counterfactual: bool = False,
+    video_frames: int = 16,
 ) -> int:
     started_at = time.time()
     output_dir.mkdir(parents=True, exist_ok=False)
@@ -307,6 +315,7 @@ def run(
                     max_length,
                     processor=processor,
                     media_root=media_root,
+                    video_num_frames=video_frames,
                 )
                 record = record_for(sample, readout, logits)
                 record["variant"] = "original"
@@ -325,6 +334,7 @@ def run(
                         max_length,
                         processor=processor,
                         media_root=media_root,
+                        video_num_frames=video_frames,
                     )
                     record = record_for(variant, readout, logits)
                     options = sample.questions[0].options or []
@@ -362,6 +372,7 @@ def run(
             "data_sha256": sha256_file(data_path),
             "samples": len(samples),
             "passes": passes,
+            "video_num_frames": video_frames,
             "repeat_identical": repeat_identical,
             "metrics": metrics,
             "counterfactual": counterfactual,
@@ -423,6 +434,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="additionally read out option-permuted counterfactual variants",
     )
+    parser.add_argument(
+        "--video-frames",
+        type=int,
+        choices=(8, 16),
+        default=16,
+        help="video decode frame count for the 8/16 frame AB comparison",
+    )
     return parser.parse_args(argv)
 
 
@@ -439,6 +457,7 @@ def main(argv: list[str] | None = None) -> int:
         command=[sys.executable, "-m", "scripts.s1_dev_eval", *(argv or sys.argv[1:])],
         media_root=args.media_root.resolve() if args.media_root else None,
         counterfactual=args.counterfactual,
+        video_frames=args.video_frames,
     )
 
 
