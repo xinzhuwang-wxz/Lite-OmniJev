@@ -20,6 +20,7 @@ from train.monitoring import (
     start_swanlab,
 )
 from train.trainer import (
+    LoopConfig,
     SmokeConfig,
     attach_lora,
     data_bytes,
@@ -31,6 +32,85 @@ from train.trainer import (
     smoke_samples,
     verified_assets,
 )
+
+
+@pytest.mark.parametrize("target", [[1.0, 0.0, 0.0], [0.6, 0.3, 0.1], [0.0, 0.0, 1.0]])
+def test_brier_loss_matches_joint_distribution_value_and_gradient(target):
+    torch = pytest.importorskip("torch")
+    # The huge illegal logit must have no effect on either loss or gradient.
+    logits = torch.tensor([100.0, 0.2, -0.3, 0.7], requires_grad=True)
+    loss = decision_loss(logits, [1, 2, 3], target, brier_weight=0.7)
+    probabilities = torch.softmax(logits.detach()[1:], dim=0)
+    labels = torch.tensor(target)
+    expected = -(labels * probabilities.log()).sum() + 0.7 * (probabilities - labels).square().sum()
+    assert loss.item() == pytest.approx(expected.item())
+    loss.backward()
+    difference = probabilities - labels
+    expected_gradient = difference + 1.4 * probabilities * (
+        difference - (probabilities * difference).sum()
+    )
+    torch.testing.assert_close(logits.grad[1:], expected_gradient)
+    assert logits.grad[0].item() == 0
+    updated = logits.detach() - 0.01 * logits.grad
+    assert decision_loss(updated, [1, 2, 3], target, brier_weight=0.7) < loss
+
+
+def test_zero_brier_is_bitwise_legacy_ce_including_gradient():
+    torch = pytest.importorskip("torch")
+    logits = torch.tensor([0.2, -0.3, 0.7], dtype=torch.bfloat16, requires_grad=True)
+    reference = logits.detach().clone().requires_grad_(True)
+    target = [0.6, 0.3, 0.1]
+    actual = decision_loss(logits, [0, 1, 2], target, brier_weight=0.0)
+    expected = -(torch.tensor(target) * reference.float().log_softmax(dim=-1)).sum()
+    assert torch.equal(actual, expected)
+    actual.backward()
+    expected.backward()
+    assert torch.equal(logits.grad, reference.grad)
+
+
+@pytest.mark.parametrize("weight", [-0.1, math.nan, math.inf, -math.inf])
+def test_invalid_brier_weight_rejected_by_config_and_loss(weight):
+    with pytest.raises(ValidationError):
+        LoopConfig(sample_count=100, steps=10, accumulation=10, brier_weight=weight)
+    torch = pytest.importorskip("torch")
+    with pytest.raises(ValueError, match="brier_weight"):
+        decision_loss(torch.zeros(3), [0, 1, 2], [1.0, 0.0, 0.0], brier_weight=weight)
+
+
+@pytest.mark.parametrize(
+    "old_weight,new_weight", [(0.0, 0.0), (1.0, 1.0), (0.0, 1.0), (1.0, 0.0), (1.0, 0.5)]
+)
+def test_brier_resume_preserves_objective_and_legacy_identity(
+    monkeypatch, tmp_path, old_weight, new_weight
+):
+    output_dir, original_report = prepare_resume_run(monkeypatch, tmp_path)
+    config = LoopConfig(sample_count=100, steps=10, accumulation=10, brier_weight=new_weight)
+    saved_config = config.model_dump()
+    if old_weight:
+        saved_config["brier_weight"] = old_weight
+    else:
+        saved_config.pop("brier_weight")
+    order = list(range(100))
+    __import__("random").Random(config.seed).shuffle(order)
+    checkpoint = make_cpu_checkpoint(output_dir, config=saved_config, order=order)
+    calls = []
+    monkeypatch.setattr("train.trainer.train_smoke", lambda *args, **kwargs: calls.append(args))
+    report = run(
+        config,
+        tmp_path / ("a" * 40),
+        tmp_path / "manifest.json",
+        output_dir,
+        execute=True,
+        resume_from=checkpoint,
+    )
+    if old_weight == new_weight:
+        assert report["status"] == "completed", report
+        assert calls[0][0].brier_weight == new_weight
+        assert report["config"] == saved_config
+    else:
+        assert "checkpoint config does not match" in report["error"]
+        assert not calls
+        assert (output_dir / "run.json").read_bytes() == original_report
 
 
 def test_smoke_samples_are_reproducible_text_train_and_all_targets():

@@ -83,6 +83,7 @@ class LoopConfig(Contract):
     expected_data_version: str | None = None
     expected_data_versions: list[str] | None = Field(default=None, min_length=1)
     checkpoint_every: int | None = Field(default=None, ge=1)
+    brier_weight: float = Field(default=0.0, ge=0, allow_inf_nan=False)
 
     @model_validator(mode="after")
     def validate_loop(self) -> LoopConfig:
@@ -452,9 +453,13 @@ def prepare_mixed_examples(
     ]
 
 
-def decision_loss(logits: Any, token_ids: list[int], target: list[float]) -> Any:
-    """CE on all legal original logits including U, with differentiable FP32 reduction."""
+def decision_loss(
+    logits: Any, token_ids: list[int], target: list[float], *, brier_weight: float = 0.0
+) -> Any:
+    """CE plus optional summed Brier on the joint legal-answer/U distribution in FP32."""
     torch = importlib.import_module("torch")
+    if not math.isfinite(brier_weight) or brier_weight < 0:
+        raise ValueError("brier_weight must be finite and nonnegative")
     if logits.ndim != 1 or not 3 <= len(token_ids) <= 21 or len(token_ids) != len(target):
         raise ValueError("loss expects one vocabulary vector and 2–20 answers plus U")
     if len(set(token_ids)) != len(token_ids) or any(
@@ -469,7 +474,10 @@ def decision_loss(logits: Any, token_ids: list[int], target: list[float]) -> Any
     if not bool(torch.isfinite(selected).all()):
         raise ValueError("nonfinite legal-token logits")
     labels = torch.tensor(target, device=selected.device, dtype=torch.float32)
-    return -(labels * selected.log_softmax(dim=-1)).sum()
+    ce = -(labels * selected.log_softmax(dim=-1)).sum()
+    if brier_weight == 0:
+        return ce
+    return ce + brier_weight * (selected.softmax(dim=-1) - labels).square().sum()
 
 
 def verified_assets(model_dir: Path, manifest_path: Path) -> dict[str, str]:
@@ -708,7 +716,12 @@ def train_smoke(
                 return_dict=True,
                 **media_inputs,
             )
-            loss = decision_loss(output.logits[0, -1], example["token_ids"], example["target"])
+            loss = decision_loss(
+                output.logits[0, -1],
+                example["token_ids"],
+                example["target"],
+                brier_weight=getattr(config, "brier_weight", 0.0),
+            )
             if not bool(torch.isfinite(loss)):
                 raise ValueError("nonfinite training loss")
             (loss / config.accumulation).backward()
@@ -804,6 +817,10 @@ def run(
         "cost": None,
         "steps_completed": 0,
     }
+    # Historical CE checkpoints omitted this field. Keep that identity for zero weight;
+    # nonzero weights remain in config and are checked by strict resume equality.
+    if report["config"].get("brier_weight") == 0:
+        report["config"].pop("brier_weight")
     monitoring_config = monitoring or SwanLabConfig.from_env()
     report["monitoring"] = monitoring_config.describe()
     created = False
