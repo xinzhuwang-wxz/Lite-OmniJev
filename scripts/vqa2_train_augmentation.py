@@ -242,7 +242,7 @@ def build(
         ]
         payload["meta"].update(
             source_dataset="VQA-v2",
-            source_revision="2.0-2017-04-26",
+            source_revision="v2-annotations-sha256:" + hashes[f"{row['split']}_annotations"],
             source_sha256=sha256_bytes(canonical_json(record).encode()),
             license=LICENSE,
             data_version=VERSION,
