@@ -129,6 +129,74 @@ def inverse_arrange(original_draws: list, added: list) -> list:
     return arranged
 
 
+def candidate_cohorts(data: list[dict[str, Any]], inventory: Manifest) -> dict[str, str]:
+    """Use only exact candidate ID/version pairs, requiring every pair and no conflict."""
+    pairs = {(row["id"], row["meta"]["data_version"]) for row in data}
+    require(len(pairs) == len(data), "duplicate_candidate_pairs")
+    matched: set[tuple[str, str]] = set()
+    versions: dict[str, str] = {}
+    for artifact in inventory.samples:
+        if artifact.expected_pool != "train":
+            continue
+        for line in bound_lines(artifact):
+            row = json.loads(line)
+            pair = (row["id"], row["meta"]["data_version"])
+            if pair not in pairs:
+                continue
+            cohort = artifact.cohort or (artifact.cohorts_by_data_version or {}).get(pair[1])
+            require(cohort is not None, "missing_prior_cohort")
+            require(
+                pair[1] not in versions or versions[pair[1]] == cohort, "cohort_version_conflict"
+            )
+            versions[pair[1]] = cohort
+            matched.add(pair)
+    require(
+        matched == pairs and set(versions) == {version for _, version in pairs},
+        "candidate_versions_not_covered",
+    )
+    return versions
+
+
+def test_candidate_cohorts_ignores_old_version_but_rejects_missing_and_conflict(tmp_path):
+    """Small metadata-only regression: same ID appeared in several historical versions."""
+
+    def artifact(name, version, cohort="image"):
+        path = tmp_path / name
+        path.write_text(json.dumps({"id": "same-id", "meta": {"data_version": version}}) + "\n")
+        return {
+            "path": str(path),
+            "sha256": sha(path),
+            "cohort": cohort,
+            "exposure": "historical",
+            "expected_pool": "train",
+        }
+
+    current = artifact("candidate.jsonl", "candidate")
+    old = artifact("history.jsonl", "old-soft")
+    data = [{"id": "same-id", "meta": {"data_version": "candidate"}}]
+
+    def manifest(items):
+        return Manifest.model_validate(
+            {
+                "schema_version": "gold-inventory-manifest-v1",
+                "samples": items,
+                "component_ledgers": [],
+            }
+        )
+
+    require(
+        candidate_cohorts(data, manifest([old, current])) == {"candidate": "image"},
+        "history_superset_regression",
+    )
+    for items in ([old], [current, artifact("conflict.jsonl", "candidate", "screenshot")]):
+        try:
+            candidate_cohorts(data, manifest(items))
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("missing or conflicting candidate mapping accepted")
+
+
 def prepare(args: argparse.Namespace) -> dict:
     root, out = args.root, args.output_dir
     require(
@@ -281,24 +349,8 @@ def prepare(args: argparse.Namespace) -> dict:
         combined = inventory.model_dump(mode="json", exclude_none=True)
         superseded = []
         selected_ids = {row["id"] for row in data}
-        versions = {}
-        # Recover exact prior cohort mapping; do not infer screenshot from image modality.
-        for artifact in inventory.samples:
-            if artifact.expected_pool != "train":
-                continue
-            for line in bound_lines(artifact):
-                row = json.loads(line)
-                if row["id"] in selected_ids:
-                    cohort = artifact.cohort or (artifact.cohorts_by_data_version or {}).get(
-                        row["meta"]["data_version"]
-                    )
-                    require(cohort is not None, "missing_prior_cohort")
-                    version = row["meta"]["data_version"]
-                    require(
-                        version not in versions or versions[version] == cohort,
-                        "cohort_version_conflict",
-                    )
-                    versions[version] = cohort
+        # Historical records with the same ID but another version cannot supply mapping.
+        versions = candidate_cohorts(data, inventory)
         for index, artifact in enumerate(inventory.samples):
             if (
                 artifact.expected_pool == "train"
@@ -453,7 +505,7 @@ def main() -> int:
         "--python", default="/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python"
     )
     args = parser.parse_args()
-    args.output_dir = args.output_dir or args.root / "artifacts/s4-crossmodal-retention-pilot-001"
+    args.output_dir = args.output_dir or args.root / "artifacts/s4-crossmodal-retention-pilot-002"
     os.umask(0o077)
     try:
         report = prepare(args)
