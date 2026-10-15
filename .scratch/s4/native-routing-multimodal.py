@@ -1,4 +1,4 @@
-"""Eight public-dev native routing probes; separate CPU/HF/vLLM/compare phases.
+"""Bounded public-dev native routing probes; separate CPU/HF/vLLM/compare phases.
 
 No server startup, merged weights, synthetic cases, or stage admission. HF must
 finish and release its CUDA allocation before an operator starts vLLM.
@@ -49,16 +49,18 @@ def bound(item: dict[str, str]) -> Path:
     return path
 
 
-def selection(manifest_path: Path) -> list[tuple[str, Path, list[PreparationCase]]]:
+def selection(
+    manifest_path: Path, per_cohort: int
+) -> list[tuple[str, Path, list[PreparationCase]]]:
     manifest = json.loads(manifest_path.read_text())
     selected = []
     for cohort in COHORTS:
         source = next(item for item in manifest["sources"] if item["cohort"] == cohort)
         path = bound(source["data"])
         cases = []
-        # Only the first two already-public dev samples, no calibration/holdout files.
+        # Fixed prefix of already-public dev samples; no calibration/holdout files.
         with path.open() as stream:
-            for _ in range(2):
+            for _ in range(per_cohort):
                 sample = Sample.model_validate_json(next(stream))
                 if sample.meta.pool != "dev" or len(sample.questions) != 1:
                     raise ValueError("exactly one question and pool=dev required")
@@ -125,8 +127,12 @@ def same_inputs(actual: list, prepared: dict) -> None:
 
 def compare_small(hf: list, serving: list) -> dict:
     left, right = parity.rows_from_json(hf), parity.rows_from_json(serving)
-    if len(left) != 8 or len(right) != 8 or len({r.id_sha256 for r in left}) != 8:
-        raise ValueError("exactly eight unique probe rows required")
+    if (
+        len(left) not in {8, 100}
+        or len(right) != len(left)
+        or len({r.id_sha256 for r in left}) != len(left)
+    ):
+        raise ValueError("exactly 8 or 100 unique probe rows required")
     maxima = dict.fromkeys(("raw_probabilities", "joint", "conditional", "p_U"), 0.0)
     for expected, actual in zip(left, right, strict=True):
         for key in ("id_sha256", "input_sha256", "media_sha256", "token_ids"):
@@ -144,7 +150,7 @@ def compare_small(hf: list, serving: list) -> dict:
     passed = all(value < 1e-3 for value in maxima.values())
     return {
         "passed": passed,
-        "samples": 8,
+        "samples": len(left),
         "max_differences": maxima,
         "threshold_exclusive": 1e-3,
         "release_or_stage_acceptance": False,
@@ -185,6 +191,7 @@ def main() -> int:
     parser.add_argument(
         "--manifest", type=Path, default=ROOT / "artifacts/s4-pilot-five-screen-001/manifest.json"
     )
+    parser.add_argument("--per-cohort", type=int, choices=(2, 25), default=2)
     parser.add_argument("--prepared", type=Path)
     parser.add_argument("--hf-report", type=Path)
     parser.add_argument("--vllm-report", type=Path)
@@ -227,7 +234,7 @@ def main() -> int:
                 "vllm": sha(args.vllm_report),
             }
         else:
-            selected = selection(args.manifest)
+            selected = selection(args.manifest, args.per_cohort)
             processor = parity.load_official_processor(MODEL)
             report["inputs"] = inputs(processor, selected)
             if args.phase != "prepare":
