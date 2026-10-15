@@ -1,4 +1,4 @@
-"""One completed pilot arm, 100 paired public-dev originals, bounded to 180s."""
+"""One pilot arm: fixed original100 or supplemental50 dev, bounded to 180s."""
 
 import argparse
 import hashlib
@@ -14,6 +14,7 @@ from train.trainer import data_bytes
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--arm", choices=("ce0", "pair01"), required=True)
+parser.add_argument("--source", choices=("original", "supplemental"), default="original")
 args = parser.parse_args()
 ROOT = Path("/root/autodl-tmp/s1-text-lora-001")
 MODULE = Path("/root/autodl-tmp/s4-cross-batch-code-001/evaluate-coverage-crossmodal-full.py")
@@ -21,7 +22,8 @@ spec = importlib.util.spec_from_file_location("cross_batch", MODULE)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-output = ROOT / f"artifacts/s4-claim-pair-{args.arm}-original100-001"
+count = 100 if args.source == "original" else 50
+output = ROOT / f"artifacts/s4-claim-pair-{args.arm}-{args.source}{count}-001"
 output.mkdir(exist_ok=False)
 start = time.monotonic()
 report = {
@@ -30,8 +32,8 @@ report = {
     "arm": args.arm,
     "stage_gate": False,
     "budget_seconds": 180,
-    "source": "original",
-    "count": 100,
+    "source": args.source,
+    "count": count,
 }
 
 
@@ -67,16 +69,18 @@ try:
     assert hashlib.sha256(data_bytes(samples)).hexdigest() == train["data_sha256"]
     adapter = ROOT / f"artifacts/s4-claim-pair-{args.arm}-train-001/adapter"
     assert module.sha(adapter / "adapter_model.safetensors") == train["adapter_sha256"]
-    data, media = module.cross_source("original")
-    selected = module.full_samples("original", data)[:100]
-    paired_path = ROOT / "artifacts/s4-cross-batch100-original-coverage-001/records.jsonl"
-    assert (
-        module.sha(paired_path)
-        == "580c7d7155fb083080a7273510b5640bf00640e563e935a1204c2093239bb3be"
-    )
+    data, media = module.cross_source(args.source)
+    selected = module.full_samples(args.source, data)[:count]
+    if args.source == "original":
+        paired_path = ROOT / "artifacts/s4-cross-batch100-original-coverage-001/records.jsonl"
+        expected_paired_sha = "580c7d7155fb083080a7273510b5640bf00640e563e935a1204c2093239bb3be"
+    else:
+        paired_path = ROOT / "artifacts/s4-cross-batch50-supplemental-coverage-001/records.jsonl"
+        expected_paired_sha = "899f2326c3388964cda4afc38846b7a2cf3982676eab0a0c07fe3f22be02d660"
+    assert module.sha(paired_path) == expected_paired_sha
     rows = [json.loads(x) for x in paired_path.read_text().splitlines()]
     paired = {r["id"]: r for r in rows}
-    assert len(paired) == len(rows) == 100 and set(paired) == {s.id for s in selected}
+    assert len(paired) == len(rows) == count and set(paired) == {s.id for s in selected}
     report.update(
         training_report_sha256=module.sha(train_path),
         data_sha256=module.sha(data),
@@ -88,7 +92,7 @@ try:
     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
     signal.alarm(180)
     report.update(module.full_forward(selected, media, adapter, output, paired))
-    report["paired_inputs_verified"] = 100
+    report["paired_inputs_verified"] = count
 except Exception as error:
     report.update(status="failed", exit_code=1, error=f"{type(error).__name__}: {error}")
 finally:

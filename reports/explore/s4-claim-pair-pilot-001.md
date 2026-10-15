@@ -1,6 +1,6 @@
 # S4 受控claim成对监督短对照
 
-状态：CPU准备中，未训练。用户授权小步创新、机时优先；不放量、不改变最终门槛。
+状态：两arm已真实完成；pair目标不采用，不扫权重，保留CE数据更新作为工作候选。用户授权小步创新、机时优先；不放量、不改变最终门槛。
 
 证据：coverage0deef相较S3完整视频提升3.8pp，原cross100相较首轮少1题（72/73），补充cross50多1题（41/40），旧四模态短测保留。先前TRAIN构建每个组件只出现一次，缺少同组件受控正负对；新构建200group/600变体仍待最新全库存隔离。完整instruction因claim改变，不声称完全相同语义下标签翻转。
 
@@ -13,3 +13,5 @@ CE arm使用原损失。Pair arm增加0.1×softplus(1−(s_positive−s_negative
 先CPU身份/全库存隔离/公式梯度与legacy兼容验证，再GPU。任何非有限值、错误身份/池、OOM或超预算立即停止并留证据。实际CPU准备或训练失败不冒称已完成。
 
 评估优先固定original cross100+supplemental cross50，复用已有初始模型证据，报告配对纠正/退化与NLL（若已实现）、Brier/ECE、资源；有方向性收益再检查video150/旧模态50。小样本的一题差异由负责人结合多个来源、概率损失和成本判断，不为凑单题扫参。只有证据支持才扩大，完整S4验收仍pending。
+
+结果：两arm在原cross100、补充cross50分别同为73/100、43/50，逐题预测完全相同；pair原来源NLL/Brier略差、补充略好，无一致收益，显存56.94GB高于CE约36.9GB。CE短保留video109/150（父108），old4持平。46份实际更新报告全部绑定，库存isolated。既有S4正式门仍未过；不宣称RL或新目标有效。证据见s4-claim-pair-{original100,supplemental50}-comparison-001与s4-claim-ce-retention-001。

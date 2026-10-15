@@ -1,0 +1,72 @@
+{
+  "status": "compared",
+  "scope": "fixed original dev100; no stage gate or significance claim",
+  "same_inputs_verified": 100,
+  "same_initialization_data_config_except_pair": true,
+  "models": {
+    "coverage": {
+      "count": 100,
+      "accuracy": 0.72,
+      "ece15": 0.1122522471760404,
+      "brier": 0.37100603477356436,
+      "coverage_at_error": 0.07,
+      "max_error": 0.05,
+      "joint_k_plus_u_nll": 0.5622679955948812,
+      "correct": 72,
+      "evaluation_seconds": 85.11346340179443
+    },
+    "ce0": {
+      "count": 100,
+      "accuracy": 0.73,
+      "ece15": 0.10654553312074883,
+      "brier": 0.3731159646416842,
+      "coverage_at_error": 0.22,
+      "max_error": 0.05,
+      "joint_k_plus_u_nll": 0.5535286775517839,
+      "correct": 73,
+      "evaluation_seconds": 93.75316928513348
+    },
+    "pair01": {
+      "count": 100,
+      "accuracy": 0.73,
+      "ece15": 0.12132437857695336,
+      "brier": 0.3792263051881074,
+      "coverage_at_error": 0.23,
+      "max_error": 0.05,
+      "joint_k_plus_u_nll": 0.560783356674931,
+      "correct": 73,
+      "evaluation_seconds": 85.10286607779562
+    }
+  },
+  "paired": {
+    "coverage->ce0": {
+      "corrected": 7,
+      "regressed": 6,
+      "changed_predictions": 13
+    },
+    "coverage->pair01": {
+      "corrected": 7,
+      "regressed": 6,
+      "changed_predictions": 13
+    },
+    "ce0->pair01": {
+      "corrected": 0,
+      "regressed": 0,
+      "changed_predictions": 0
+    }
+  },
+  "bindings": {
+    "coverage": {
+      "receipt_sha256": "c3e854747fd1f5533389d76a6e954ef7c1cf36b6c0c53a0715ae8be29f6440ea",
+      "records_sha256": "580c7d7155fb083080a7273510b5640bf00640e563e935a1204c2093239bb3be"
+    },
+    "ce0": {
+      "receipt_sha256": "efdf4d08508e4b83907efdbc282222722c6a2e876da7830c7c28e79ddd1b083d",
+      "records_sha256": "2c4d954003d40cd9155136a640ffd6d3ed288c2bf17dfd361fd0ec9546532217"
+    },
+    "pair01": {
+      "receipt_sha256": "c3363621944e0d4a1827acf117a445d342acb2fb680e605bab4265beb8a61365",
+      "records_sha256": "3bac5cab2a0cb561f2d665572d8f098c26c00c1223a8431eba4703e713f6662f"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "status": "compared",
+  "scope": "fixed supplemental dev50; no stage gate or significance claim",
+  "same_inputs_verified": 50,
+  "same_initialization_data_config_except_pair": true,
+  "models": {
+    "coverage": {
+      "count": 50,
+      "accuracy": 0.82,
+      "ece15": 0.0986761251341788,
+      "brier": 0.2661845128043392,
+      "coverage_at_error": 0.5,
+      "max_error": 0.05,
+      "joint_k_plus_u_nll": 0.4052401042567994,
+      "correct": 41,
+      "evaluation_seconds": 48.09326106123626
+    },
+    "ce0": {
+      "count": 50,
+      "accuracy": 0.86,
+      "ece15": 0.09543141664203138,
+      "brier": 0.22337817782866648,
+      "coverage_at_error": 0.64,
+      "max_error": 0.05,
+      "joint_k_plus_u_nll": 0.3429747929498778,
+      "correct": 43,
+      "evaluation_seconds": 49.256290439516306
+    },
+    "pair01": {
+      "count": 50,
+      "accuracy": 0.86,
+      "ece15": 0.10371267025149364,
+      "brier": 0.21639443928218755,
+      "coverage_at_error": 0.66,
+      "max_error": 0.05,
+      "joint_k_plus_u_nll": 0.33438526588407136,
+      "correct": 43,
+      "evaluation_seconds": 49.473872097209096
+    }
+  },
+  "paired": {
+    "coverage->ce0": {
+      "corrected": 3,
+      "regressed": 1,
+      "changed_predictions": 4
+    },
+    "coverage->pair01": {
+      "corrected": 3,
+      "regressed": 1,
+      "changed_predictions": 4
+    },
+    "ce0->pair01": {
+      "corrected": 0,
+      "regressed": 0,
+      "changed_predictions": 0
+    }
+  },
+  "bindings": {
+    "coverage": {
+      "receipt_sha256": "92c0729c556ca743de48a1332f867563f4d2fc4f4fc16d5b2e2b1f1a0d0badce",
+      "records_sha256": "899f2326c3388964cda4afc38846b7a2cf3982676eab0a0c07fe3f22be02d660"
+    },
+    "ce0": {
+      "receipt_sha256": "53c4fbfab71e948ff06b357568c07d851bc38764e62fdc8ef8deb8c6c974ab67",
+      "records_sha256": "68589794eeedb70f27feb7ebdbf2c0d1397b7800c5c5f1c462e83d4564a2da30"
+    },
+    "pair01": {
+      "receipt_sha256": "07bd1b37b89744c81d6d8ee3686c9ac99e9d8e2d7586392da8d1dc11ea5c048a",
+      "records_sha256": "94d0b0ca6ea44f143772ed8c0a550b8e530b6eb691d56da75106bd9dfc60aecc"
+    }
+  }
+}

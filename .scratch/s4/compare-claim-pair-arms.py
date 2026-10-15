@@ -1,5 +1,6 @@
 """Read-only same-input arm comparison; descriptive evidence, not stage acceptance."""
 
+import argparse
 import hashlib
 import json
 import math
@@ -8,9 +9,21 @@ from pathlib import Path
 from scripts.s0_development_baselines import answer_tokens_for_record, score_records
 
 ROOT = Path("/root/autodl-tmp/s1-text-lora-001")
+parser = argparse.ArgumentParser()
+parser.add_argument("--source", choices=("original", "supplemental"), default="original")
+args = parser.parse_args()
+count = 100 if args.source == "original" else 50
 paths = {
-    "coverage": ROOT / "artifacts/s4-cross-batch100-original-coverage-001",
-    **{arm: ROOT / f"artifacts/s4-claim-pair-{arm}-original100-001" for arm in ("ce0", "pair01")},
+    "coverage": ROOT
+    / (
+        "artifacts/s4-cross-batch100-original-coverage-001"
+        if args.source == "original"
+        else "artifacts/s4-cross-batch50-supplemental-coverage-001"
+    ),
+    **{
+        arm: ROOT / f"artifacts/s4-claim-pair-{arm}-{args.source}{count}-001"
+        for arm in ("ce0", "pair01")
+    },
 }
 
 
@@ -30,7 +43,7 @@ for key, path in paths.items():
     assert report["status"] == "completed" and report["exit_code"] == 0
     assert sha(path / "records.jsonl") == report["records_sha256"]
     rows[key] = [json.loads(x) for x in (path / "records.jsonl").read_text().splitlines()]
-    assert len(rows[key]) == 100 and len({r["id"] for r in rows[key]}) == 100
+    assert len(rows[key]) == count and len({r["id"] for r in rows[key]}) == count
 for a, b, c in zip(rows["coverage"], rows["ce0"], rows["pair01"], strict=True):
     for field in ["id", "input_sha256", "input_summary_sha256", "answer_token_ids", "target_index"]:
         assert a[field] == b[field] == c[field]
@@ -59,8 +72,8 @@ configs = {
 assert configs["ce0"] == configs["pair01"]
 result = {
     "status": "compared",
-    "scope": "fixed original dev100; no stage gate or significance claim",
-    "same_inputs_verified": 100,
+    "scope": f"fixed {args.source} dev{count}; no stage gate or significance claim",
+    "same_inputs_verified": count,
     "same_initialization_data_config_except_pair": True,
     "models": {},
     "paired": {},
@@ -80,7 +93,7 @@ for key, records in rows.items():
         )
     result["models"][key] = {
         **score_records(records),
-        "joint_k_plus_u_nll": math.fsum(nll) / 100,
+        "joint_k_plus_u_nll": math.fsum(nll) / count,
         "correct": sum(prediction(r) == r["target_index"] for r in records),
         "evaluation_seconds": reports[key]["duration_seconds"],
     }
@@ -97,6 +110,6 @@ for before, after in [("coverage", "ce0"), ("coverage", "pair01"), ("ce0", "pair
         "regressed": regressed,
         "changed_predictions": changed,
     }
-with (ROOT / "reports/s4-claim-pair-original100-comparison-001.json").open("x") as f:
+with (ROOT / f"reports/s4-claim-pair-{args.source}{count}-comparison-001.json").open("x") as f:
     json.dump(result, f, indent=2)
 print(json.dumps(result))
