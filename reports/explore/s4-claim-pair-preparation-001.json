@@ -1,0 +1,100 @@
+{
+  "cohorts": {
+    "audio": 10,
+    "crossmodal": 40,
+    "image": 10,
+    "screenshot": 10,
+    "text": 10,
+    "video": 40
+  },
+  "config_changes": {
+    "checkpoint_every": {
+      "new": 5,
+      "old": 15
+    },
+    "expected_data_versions": {
+      "new": [
+        "aokvqa-train-image-choice-s2-pools-v1",
+        "clevrer-train-video-noul-s3-pools-v1",
+        "clinc-oos-plus-train-v1-s1-pools-v1",
+        "clotho-aqa-s3-pools-v1",
+        "crossmodal-controlled-train-pairs-v1",
+        "gui-v2-screenshot-s2-pools-v1"
+      ],
+      "old": [
+        "aokvqa-train-image-choice-s2-pools-v1",
+        "clevrer-train-video-noul-s3-pools-v1",
+        "clinc-oos-plus-train-v1-s1-pools-v1",
+        "clotho-aqa-s3-pools-v1",
+        "crossmodal-train-pilot-v1",
+        "gui-v2-screenshot-s2-pools-v1"
+      ]
+    },
+    "media_roots": {
+      "new": [
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources/aokvqa/coco-ccby-publicdomain-images",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+        "/root/autodl-tmp/s3-media-candidates-001/video/media",
+        "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-train-001",
+        "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-pairs-001"
+      ],
+      "old": [
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources/aokvqa/coco-ccby-publicdomain-images",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+        "/root/autodl-tmp/s3-media-candidates-001/video/media",
+        "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-train-001"
+      ]
+    },
+    "midway_step": {
+      "new": 5,
+      "old": 15
+    },
+    "sample_count": {
+      "new": 120,
+      "old": 360
+    },
+    "steps": {
+      "new": 10,
+      "old": 30
+    }
+  },
+  "cost": null,
+  "draws": 120,
+  "duration_seconds": 40.935715828090906,
+  "exit_code": 0,
+  "expanded_isolation": "isolated",
+  "gpu_used": false,
+  "init_adapter": {
+    "config_sha256": "7c1a933ff570ff2c256d4123e7cd8a7cd28f24729562d8a93879f77d99ef4217",
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-retention-train-001/adapter",
+    "weights_sha256": "0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818"
+  },
+  "input_report_sha256": {
+    "coverage": "4da8a49c512a2725368eb159e444107130487ec69d7d74970df6a479436ef882",
+    "exposure": "f4d851c683bd9ec377c0893a093b60ff84dcf43d69e1049684e07dd80e4f3dd8",
+    "pairs": "8eb7ce290ab05f98332df601fa83151f822432eab24f7f7e5b7504dda57391be"
+  },
+  "negative_rules": {
+    "image_false_audio_true": 10,
+    "image_true_audio_false": 10
+  },
+  "output_sha256": {
+    "allocation-ledger.jsonl": "c2376c1b83da4bfe45308e827690f95d71422232d925e4057da083f378c3bee8",
+    "config-ce0.json": "3bca7236bc4e2fe8db9ef4742858f5a3ad257288f10d714693e16380e1ea2145",
+    "draw-recipe.json": "cb628127e95cf1fb0d7259b6c890d480817d3d3af6822aa9785bf4e0f0b6f5d7",
+    "inventory-audit.json": "1c36a4f19a915891d8dd497883618720b2a19ff29ade5c0e89ffbf659fbe06be",
+    "inventory-expanded-audit.json": "42e38e4a38ee518c1d491a44297e39e35881d7523e7ad22f34728499779221e4",
+    "inventory-expanded.json": "3fc8acce06c8d159b6bea783b19f96ad76243badfd7c9bd27587003f970f8cbb",
+    "inventory-manifest.json": "9646925d69a25e822ff080c7a7505c29b5be4f73881d444421164008e5eca8f9",
+    "pair-override-recipe.json": "2eee4748a076067e946ec6820e8dea032f96da2e00a7e04d2b0ad0636e9e3ea2",
+    "train.jsonl": "72c9bbf0b3cd8b931feeb4ce3b63128634d714dc1caadeb2117a27aa583e81fe"
+  },
+  "pair_count": 20,
+  "pilot_isolation": "isolated",
+  "python": "3.11.17",
+  "script_sha256": "e69d76cbb94a6f695b26f42d1d6f2c3d2a154dcf4c3dc1064402121f8b75be98",
+  "status": "prepared_pending_pair_hashes",
+  "training_started": false
+}
