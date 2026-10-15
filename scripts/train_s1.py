@@ -42,12 +42,15 @@ def verify_data_is_train_pool(data_path: Path, ledger_paths: list[Path]) -> dict
     if len(set(data_ids)) != len(data_ids):
         raise ValueError("training data contains duplicate ids")
 
+    variant_suffixes = ("-cf1", "-rot1", "-rot2")
+
     def ledger_pool(item_id: str) -> str | None:
         """Deterministic variant ids resolve to their parent's frozen pool."""
         if item_id in pools:
             return pools[item_id]
-        if item_id.endswith("-cf1") and item_id[:-4] in pools:
-            return pools[item_id[:-4]]
+        for suffix in variant_suffixes:
+            if item_id.endswith(suffix) and item_id[: -len(suffix)] in pools:
+                return pools[item_id[: -len(suffix)]]
         return None
 
     reserved = [

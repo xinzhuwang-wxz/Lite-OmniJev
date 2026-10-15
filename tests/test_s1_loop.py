@@ -171,3 +171,11 @@ def test_variant_ids_resolve_to_parent_pool(tmp_path: Path) -> None:
     c["id"] = "img-1-cf1"
     data2 = write_jsonl(tmp_path / "d2.jsonl", [c])
     assert verify_data_is_train_pool(data2, [ledger])["verified_train"] == 1
+
+
+def test_rotation_variant_ids_resolve_to_parent_pool(tmp_path: Path) -> None:
+    ledger = write_jsonl(tmp_path / "l.jsonl", [{"item_id": "img-1", "pool": "train"}])
+    row = sample_row(0)
+    row["id"] = "img-1-rot2"
+    data = write_jsonl(tmp_path / "d.jsonl", [row])
+    assert verify_data_is_train_pool(data, [ledger])["verified_train"] == 1
