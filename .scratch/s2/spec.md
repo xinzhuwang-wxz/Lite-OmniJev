@@ -18,8 +18,9 @@ State: 一个闭环；池/训练扩展/评测/修复都在票内清单
 ## 训练协议扩展
 
 在s1:01已验证机制上最小扩展：LoopConfig.modality增加image/screenshot；样本经官方processor产生pixel_values（媒体按sha256校验后读取，总量/尺寸预检沿用P0媒体约束）；vision/audio tower保持冻结+eval，LoRA仍只挂decoder q/k/v/o+gate/up/down；损失仍为最后位置全部合法答案logits（含U）FP32 log-softmax交叉熵。thinking关、固定seed42、lr1e-4。
-- smoke：300步、训练子集=min(500,池)、工程健全性（不设门，S2无smoke门）。
-- 主训练：samples-seen=min(10000, 5×池)（约5 epoch上限，约束小池过拟合；文本3ep已收敛为依据）；midway在50% samples-seen处存adapter对照。
+- 执行预算按ADR0020实测调整：一次300步三模态joint smoke；图像/截图均真实参与，loss下降只作工程信号。原“各300步”不再单独重跑。
+- 主训练采用可追踪的joint主训练与文本回放，保留midway对照；现有候选v2为1600步/16000样本曝光，image3108、screenshot930，分别覆盖1341/420个全部训练family。具体输入/adapter SHA、各run曝光与调整理由见ADR0020和reports/s2-training-exposure-audit-001.json。
+- 是否推进仍取决于以下原质量门，不能用曝光或loss代替质量验收。
 
 ## 评测协议
 

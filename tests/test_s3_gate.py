@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from scripts.s2_gate import GateInputError
-from scripts.s3_gate import assemble_metrics
+from scripts.s3_gate import FROZEN_S3_DEV_SHA256, assemble_metrics
 
 
 def reports(tmp_path: Path) -> tuple[dict[str, Path], dict[str, Path], Path]:
@@ -29,9 +29,9 @@ def reports(tmp_path: Path) -> tuple[dict[str, Path], dict[str, Path], Path]:
                         "samples": 500,
                         "passes": 2,
                         "repeat_identical": True,
-                        "model_revision": "same-base",
-                        "adapter_sha256": stage,
-                        "data_sha256": name,
+                        "model_revision": "a" * 40,
+                        "adapter_sha256": ("3" if stage == "s3" else "2") * 64,
+                        "data_sha256": FROZEN_S3_DEV_SHA256[name],
                         "video_num_frames": 16,
                         "metrics": {"product_accuracy": score},
                     }
@@ -109,4 +109,23 @@ def test_regression_rejects_changed_image_input_budget(tmp_path):
     data["image_max_soft_tokens"] = {"requested": 1120, "effective": 1120}
     current["image"].write_text(json.dumps(data))
     with pytest.raises(GateInputError, match="budgets must match"):
+        assemble_metrics(current, previous, control)
+
+
+@pytest.mark.parametrize("cohort", ["audio", "video", "image", "screenshot", "text"])
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"data_sha256": None},
+        {"data_sha256": "c" * 64},
+        {"research_input_profile": {}},
+        {"adapter_sha256": None},
+    ],
+)
+def test_rejects_unbound_or_research_stage_reports(tmp_path, cohort, change):
+    current, previous, control = reports(tmp_path)
+    row = json.loads(current[cohort].read_text())
+    row.update(change)
+    current[cohort].write_text(json.dumps(row))
+    with pytest.raises(GateInputError):
         assemble_metrics(current, previous, control)

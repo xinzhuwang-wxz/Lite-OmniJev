@@ -4,16 +4,40 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
 
 from scripts.assets import write_json
-from scripts.s2_gate import GateInputError, image_budget, load_dev_report, load_report
+from scripts.s2_gate import (
+    FROZEN_DEV_SHA256,
+    GateInputError,
+    image_budget,
+    load_dev_report,
+    load_report,
+)
 
 # Matched S0 Jev-Omni dev500 baselines: reports/s0-baseline-summary.md.
 AUDIO_TEACHER_ACCURACY = 0.38
 VIDEO_TEACHER_ACCURACY = 0.698
+
+FROZEN_S3_DEV_SHA256 = {
+    **FROZEN_DEV_SHA256,
+    "audio": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+    "video": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+}
+
+
+def validate_identity(report: dict[str, Any], cohort: str) -> None:
+    if "research_input_profile" in report:
+        raise GateInputError("research overrides are not formal S3 gate evidence")
+    if report.get("data_sha256") != FROZEN_S3_DEV_SHA256[cohort]:
+        raise GateInputError(f"{cohort} data must match its frozen teacher cohort")
+    for key, length in (("model_revision", 40), ("adapter_sha256", 64)):
+        value = report.get(key)
+        if not isinstance(value, str) or not re.fullmatch(rf"[a-f0-9]{{{length}}}", value):
+            raise GateInputError(f"invalid S3 evidence {key}")
 
 
 def accuracy(path: Path, label: str) -> tuple[dict[str, Any], float]:
@@ -35,6 +59,9 @@ def assemble_metrics(
         raise GateInputError("five current modalities and three S2 references are required")
     measured = {name: accuracy(path, name) for name, path in current.items()}
     reference = {name: accuracy(path, f"S2 {name}") for name, path in previous.items()}
+    for reports in (measured, reference):
+        for name, (report, _) in reports.items():
+            validate_identity(report, name)
     identities = {
         (report.get("model_revision"), report.get("adapter_sha256"))
         for report, _ in measured.values()
@@ -59,6 +86,7 @@ def assemble_metrics(
         ):
             raise GateInputError(f"S2/S3 {name} must use the same frozen dev data")
     control = load_report(video8, "8-frame video control")
+    validate_identity(control, "video")
     video = measured["video"][0]
     if (
         video.get("video_num_frames") != 16
