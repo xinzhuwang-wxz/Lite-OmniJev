@@ -690,6 +690,113 @@ def model_evidence(
     )
 
 
+def adapter_evidence(
+    adapter_dir: Path | None,
+    expected_sha256: str | None,
+    model: Mapping[str, Any],
+    directory: Path,
+) -> dict[str, str] | None:
+    """Bind a local, standard decoder-only E4B decision LoRA before any forward."""
+    if adapter_dir is None:
+        if expected_sha256 is not None:
+            raise PublicBaselineError("adapter SHA requires --adapter-dir")
+        return None
+    if model["model_id"] != "gemma4-e4b-it":
+        raise PublicBaselineError("adapter supports only gemma4-e4b-it")
+    if (
+        expected_sha256 is None
+        or len(expected_sha256) != 64
+        or any(c not in "0123456789abcdef" for c in expected_sha256)
+    ):
+        raise PublicBaselineError("adapter requires expected lowercase weights SHA256")
+    directory_adapter = adapter_dir.resolve(strict=True)
+    weights = directory_adapter / "adapter_model.safetensors"
+    config_path = directory_adapter / "adapter_config.json"
+    if weights.is_symlink() or config_path.is_symlink():
+        raise PublicBaselineError("adapter files must not be symlinks")
+    if sha256_file(weights) != expected_sha256:
+        raise PublicBaselineError("adapter weights hash mismatch")
+    saved = load_json(config_path)
+    targets = saved.get("target_modules")
+    projections = {"q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"}
+    if (
+        not isinstance(targets, list)
+        or not targets
+        or any(
+            not isinstance(name, str)
+            or len(name.split(".")) != 6
+            or not name.startswith("model.language_model.layers.")
+            or not name.split(".")[3].isdigit()
+            or name.split(".")[4] not in {"self_attn", "mlp"}
+            for name in targets
+        )
+    ):
+        raise PublicBaselineError("adapter targets must be decoder projections")
+    if {name.split(".")[-1] for name in targets} != projections:
+        raise PublicBaselineError("adapter decoder projections incomplete")
+    peft = importlib.import_module("peft")
+    expected = peft.LoraConfig(
+        r=16,
+        lora_alpha=32,
+        lora_dropout=0.0,
+        target_modules=targets,
+        bias="none",
+        inference_mode=True,
+    ).to_dict()
+    metadata = {
+        "auto_mapping",
+        "peft_version",
+        "base_model_name_or_path",
+        "revision",
+        "inference_mode",
+    }
+    if not {"peft_type", "r", "lora_alpha", "target_modules"} <= saved.keys():
+        raise PublicBaselineError("adapter config incomplete")
+    for key in saved.keys() | expected.keys():
+        if key in metadata:
+            continue
+        actual = saved.get(key, expected.get(key))
+        wanted = expected.get(key)
+        if key == "target_modules":
+            actual, wanted = set(actual), set(wanted)
+        if actual != wanted:
+            raise PublicBaselineError(f"adapter config mismatch: {key}")
+    base = saved.get("base_model_name_or_path")
+    if base not in {str(directory), str(directory.resolve()), model["repo_id"]}:
+        if not isinstance(base, str) or (
+            Path(base).name != model["revision"]
+            or Path(base).parent.name != str(model["repo_id"]).replace("/", "__")
+        ):
+            raise PublicBaselineError("adapter base model mismatch")
+    if saved.get("revision") not in {None, model["revision"]}:
+        raise PublicBaselineError("adapter base revision mismatch")
+    return {
+        "path": str(directory_adapter),
+        "weights_sha256": expected_sha256,
+        "config_sha256": sha256_file(config_path),
+        "base_model_name_or_path": str(base),
+    }
+
+
+def attach_public_adapter(model: Any, evidence: Mapping[str, str]) -> Any:
+    path = Path(evidence["path"])
+    if (
+        sha256_file(path / "adapter_model.safetensors") != evidence["weights_sha256"]
+        or sha256_file(path / "adapter_config.json") != evidence["config_sha256"]
+    ):
+        raise PublicBaselineError("adapter binding changed before load")
+    peft = importlib.import_module("peft")
+    adapted = peft.PeftModel.from_pretrained(
+        model,
+        str(path),
+        local_files_only=True,
+        is_trainable=False,
+    )
+    if any(parameter.requires_grad for _, parameter in adapted.named_parameters()):
+        raise PublicBaselineError("evaluation adapter exposes trainable parameters")
+    return adapted.eval()
+
+
 def preflight_report(
     *,
     source_root: Path,
@@ -698,9 +805,12 @@ def preflight_report(
     model_root: Path,
     model_id: str,
     tokenizer_factory: TokenizerFactory = default_tokenizer_factory,
+    adapter_dir: Path | None = None,
+    adapter_weights_sha256: str | None = None,
 ) -> dict[str, Any]:
     tasks = load_public_source(source_root, source_config)
     model, directory = model_evidence(asset_manifest, model_root, model_id, require_weights=False)
+    adapter = adapter_evidence(adapter_dir, adapter_weights_sha256, model, directory)
     tokenizer = tokenizer_factory(directory)
     prepared = prepare_questions(tasks, tokenizer)
     rows = render_preflight_rows(prepared)
@@ -721,6 +831,7 @@ def preflight_report(
             "release_or_stage_acceptance": False,
         },
         "model": model,
+        **({"adapter": adapter} if adapter else {}),
         "jevbench": public_protocol_summary(tasks),
         "source_config": {"path": str(source_config), "sha256": sha256_file(source_config)},
         "source_root": str(source_root),
@@ -767,7 +878,12 @@ def prepared_model_inputs(item: PreparedQuestion, torch: Any) -> dict[str, Any]:
 
 
 def real_forward_factory(
-    *, model_dir_path: Path, model_id: str, tokenizer: ChatTokenizer, dtype_name: str
+    *,
+    model_dir_path: Path,
+    model_id: str,
+    tokenizer: ChatTokenizer,
+    dtype_name: str,
+    adapter: Mapping[str, str] | None = None,
 ) -> tuple[ForwardFn, Callable[[], None]]:
     torch = ensure_cuda_available()
     configure_torch_runtime(torch)
@@ -786,6 +902,8 @@ def real_forward_factory(
         attn_implementation="sdpa",
     )
     model.requires_grad_(False)
+    if adapter is not None:
+        model = attach_public_adapter(model, adapter)
     model.eval()
     model.to("cuda")
 
@@ -822,11 +940,14 @@ def run_baseline_report(
     | None = None,
     fake_forward: bool = False,
     records_sidecar: Path | None = None,
+    adapter_dir: Path | None = None,
+    adapter_weights_sha256: str | None = None,
 ) -> dict[str, Any]:
     if dtype not in ALLOWED_DTYPES:
         raise PublicBaselineError(f"unsupported dtype: {dtype}")
     tasks = load_public_source(source_root, source_config)
     model, directory = model_evidence(asset_manifest, model_root, model_id, require_weights=True)
+    adapter = adapter_evidence(adapter_dir, adapter_weights_sha256, model, directory)
     tokenizer = tokenizer_factory(directory)
     prepared = prepare_questions(tasks, tokenizer)
     factory = forward_factory or (
@@ -835,6 +956,7 @@ def run_baseline_report(
             model_id=model_id,
             tokenizer=tok,
             dtype_name=dtype_name,
+            adapter=adapter,
         )
     )
     forward, cleanup = factory(directory, tokenizer, dtype)
@@ -869,6 +991,7 @@ def run_baseline_report(
             "no_holdout": True,
         },
         "model": model,
+        **({"adapter": adapter} if adapter else {}),
         "precision": {
             "dtype": dtype,
             "seed": SEED,
@@ -920,6 +1043,8 @@ def command_report(action: str, args: argparse.Namespace) -> int:
                 asset_manifest=args.asset_manifest,
                 model_root=args.model_root,
                 model_id=args.model_id,
+                adapter_dir=args.adapter_dir,
+                adapter_weights_sha256=args.adapter_weights_sha256,
             )
         elif action == "run":
             body = run_baseline_report(
@@ -928,6 +1053,8 @@ def command_report(action: str, args: argparse.Namespace) -> int:
                 asset_manifest=args.asset_manifest,
                 model_root=args.model_root,
                 model_id=args.model_id,
+                adapter_dir=args.adapter_dir,
+                adapter_weights_sha256=args.adapter_weights_sha256,
                 dtype=args.dtype,
                 records_sidecar=records_sidecar,
             )
@@ -981,6 +1108,8 @@ def build_parser() -> argparse.ArgumentParser:
         child.add_argument("--model-root", type=Path, required=True)
         child.add_argument("--model-id", required=True)
         child.add_argument("--report", type=Path, required=True)
+        child.add_argument("--adapter-dir", type=Path)
+        child.add_argument("--adapter-weights-sha256")
 
     preflight = sub.add_parser("preflight")
     add_common(preflight)

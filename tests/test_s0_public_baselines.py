@@ -486,3 +486,202 @@ def test_sidecar_keeps_completed_records_when_forward_raises(tmp_path: Path) -> 
     lines = sidecar.read_text().splitlines()
     assert len(lines) == 2
     assert [json.loads(line)["pass_index"] for line in lines] == [1, 1]
+
+
+def _write_adapter(tmp_path: Path, base: Path) -> tuple[Path, str]:
+    peft = pytest.importorskip("peft")
+    directory = tmp_path / "adapter"
+    directory.mkdir()
+    targets = [
+        f"model.language_model.layers.0.{kind}.{projection}"
+        for kind, projection in [
+            ("self_attn", "q_proj"),
+            ("self_attn", "k_proj"),
+            ("self_attn", "v_proj"),
+            ("self_attn", "o_proj"),
+            ("mlp", "gate_proj"),
+            ("mlp", "up_proj"),
+            ("mlp", "down_proj"),
+        ]
+    ]
+    config = peft.LoraConfig(
+        r=16,
+        lora_alpha=32,
+        lora_dropout=0.0,
+        target_modules=targets,
+        bias="none",
+        inference_mode=True,
+    ).to_dict()
+    config["target_modules"] = targets
+    config["base_model_name_or_path"] = str(base)
+    (directory / "adapter_config.json").write_text(json.dumps(config))
+    weights = directory / "adapter_model.safetensors"
+    weights.write_bytes(b"test hash binding, no actual GPU weights")
+    return directory, sha256_file(weights)
+
+
+def test_adapter_preflight_and_run_preserve_inputs_and_scores(tmp_path: Path) -> None:
+    source_root, source_config = _write_source(tmp_path)
+    model_root, manifest = _write_model_assets(tmp_path, include_weights=True)
+    base = model_root / "google__gemma-4-E4B-it" / ("e" * 40)
+    adapter_dir, weights_sha = _write_adapter(tmp_path, base)
+    common = dict(
+        source_root=source_root,
+        source_config=source_config,
+        asset_manifest=manifest,
+        model_root=model_root,
+        model_id="gemma4-e4b-it",
+        tokenizer_factory=lambda _: FakeTokenizer(),
+    )
+    original = baseline.preflight_report(**common)
+    adapted = baseline.preflight_report(
+        **common,
+        adapter_dir=adapter_dir,
+        adapter_weights_sha256=weights_sha,
+    )
+    assert original["rows"] == adapted["rows"]
+    assert "adapter" not in original
+    assert adapted["adapter"]["weights_sha256"] == weights_sha
+    assert adapted["adapter"]["config_sha256"] == sha256_file(adapter_dir / "adapter_config.json")
+    before = baseline.run_baseline_report(
+        **common, forward_factory=_fake_factory, fake_forward=True
+    )
+    after = baseline.run_baseline_report(
+        **common,
+        forward_factory=_fake_factory,
+        fake_forward=True,
+        adapter_dir=adapter_dir,
+        adapter_weights_sha256=weights_sha,
+    )
+    assert before["score_pass_1"] == after["score_pass_1"]
+    assert after["adapter"] == adapted["adapter"]
+    assert not after["acceptance"]["release_or_stage_acceptance"]
+
+
+@pytest.mark.parametrize(
+    "case", ["missing_hash", "hash", "model", "base", "head", "rank", "targets"]
+)
+def test_adapter_rejects_invalid_bindings_before_forward(tmp_path: Path, case: str) -> None:
+    source_root, source_config = _write_source(tmp_path)
+    model_root, manifest = _write_model_assets(tmp_path, include_weights=True)
+    base = model_root / "google__gemma-4-E4B-it" / ("e" * 40)
+    directory, expected = _write_adapter(tmp_path, base)
+    path = directory / "adapter_config.json"
+    config = json.loads(path.read_text())
+    changes = {
+        "base": {"base_model_name_or_path": "google/gemma-4-E2B-it"},
+        "head": {"modules_to_save": ["lm_head"]},
+        "rank": {"r": 8},
+        "targets": {"target_modules": ["q_proj"]},
+    }
+    config.update(changes.get(case, {}))
+    path.write_text(json.dumps(config))
+    with pytest.raises(baseline.PublicBaselineError, match="adapter"):
+        baseline.run_baseline_report(
+            source_root=source_root,
+            source_config=source_config,
+            asset_manifest=manifest,
+            model_root=model_root,
+            model_id="gemma4-e2b-it" if case == "model" else "gemma4-e4b-it",
+            tokenizer_factory=lambda _: pytest.fail("invalid adapter reached tokenizer"),
+            adapter_dir=directory,
+            adapter_weights_sha256=None
+            if case == "missing_hash"
+            else "0" * 64
+            if case == "hash"
+            else expected,
+        )
+
+
+def test_public_adapter_load_is_local_frozen_eval_and_rechecks_config(
+    monkeypatch, tmp_path: Path
+) -> None:
+    import sys
+    from types import SimpleNamespace
+
+    path = tmp_path / "adapter"
+    path.mkdir()
+    weights = path / "adapter_model.safetensors"
+    weights.write_bytes(b"test")
+    config = path / "adapter_config.json"
+    config.write_text("{}")
+    evidence = {
+        "path": str(path),
+        "weights_sha256": sha256_file(weights),
+        "config_sha256": sha256_file(config),
+    }
+    calls = []
+    adapted = SimpleNamespace(
+        named_parameters=lambda: [("lora", SimpleNamespace(requires_grad=False))],
+        eval=lambda: "frozen_eval",
+    )
+
+    def load(model, directory, **kwargs):
+        calls.append((model, directory, kwargs))
+        return adapted
+
+    monkeypatch.setitem(
+        sys.modules, "peft", SimpleNamespace(PeftModel=SimpleNamespace(from_pretrained=load))
+    )
+    assert baseline.attach_public_adapter("base", evidence) == "frozen_eval"
+    assert calls == [("base", str(path), {"local_files_only": True, "is_trainable": False})]
+    adapted.named_parameters = lambda: [("lora", SimpleNamespace(requires_grad=True))]
+    with pytest.raises(baseline.PublicBaselineError, match="trainable"):
+        baseline.attach_public_adapter("base", evidence)
+    config.write_text('{"changed": true}')
+    with pytest.raises(baseline.PublicBaselineError, match="binding changed"):
+        baseline.attach_public_adapter("base", evidence)
+
+
+def test_cli_adapter_options_reach_default_forward_factory(monkeypatch, tmp_path: Path) -> None:
+    source_root, source_config = _write_source(tmp_path)
+    model_root, manifest = _write_model_assets(tmp_path, include_weights=True)
+    base = model_root / "google__gemma-4-E4B-it" / ("e" * 40)
+    directory, expected = _write_adapter(tmp_path, base)
+    args = baseline.build_parser().parse_args(
+        [
+            "run",
+            "--source-root",
+            str(source_root),
+            "--source-config",
+            str(source_config),
+            "--asset-manifest",
+            str(manifest),
+            "--model-root",
+            str(model_root),
+            "--model-id",
+            "gemma4-e4b-it",
+            "--report",
+            str(tmp_path / "run.json"),
+            "--adapter-dir",
+            str(directory),
+            "--adapter-weights-sha256",
+            expected,
+        ]
+    )
+    assert args.adapter_dir == directory
+    assert args.adapter_weights_sha256 == expected
+    calls = []
+
+    def factory(**kwargs):
+        calls.append(kwargs)
+        return _fake_forward, lambda: None
+
+    monkeypatch.setattr(baseline, "real_forward_factory", factory)
+    report = baseline.run_baseline_report(
+        source_root=source_root,
+        source_config=source_config,
+        asset_manifest=manifest,
+        model_root=model_root,
+        model_id=args.model_id,
+        tokenizer_factory=lambda _: FakeTokenizer(),
+        fake_forward=True,
+        adapter_dir=args.adapter_dir,
+        adapter_weights_sha256=args.adapter_weights_sha256,
+    )
+    assert calls[0]["model_dir_path"] == base
+    assert calls[0]["model_id"] == "gemma4-e4b-it"
+    assert calls[0]["adapter"] == report["adapter"]
+    assert calls[0]["adapter"]["weights_sha256"] == expected
+    with pytest.raises(baseline.PublicBaselineError, match="SHA requires"):
+        baseline.adapter_evidence(None, expected, report["model"], base)
