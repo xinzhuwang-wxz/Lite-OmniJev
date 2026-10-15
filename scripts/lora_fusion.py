@@ -105,6 +105,17 @@ def read_adapter(
         )
         if counterpart not in tensors:
             raise ValueError("missing paired LoRA tensor")
+    targets = config.get("target_modules")
+    actual_targets = {
+        key.removeprefix("base_model.model.").removesuffix(".lora_A.weight")
+        for key in tensors
+        if key.endswith(".lora_A.weight")
+    }
+    if not isinstance(targets, list) or any(not isinstance(t, str) for t in targets):
+        raise ValueError("explicit decoder target list required")
+    if len(targets) != len(set(targets)) or set(targets) != actual_targets:
+        raise ValueError("configured targets do not match decoder tensors")
+    config = {**config, "target_modules": sorted(targets)}
     return config, tensors, {"weights_sha256": digest, "config_sha256": sha256(config_path)}
 
 

@@ -13,12 +13,26 @@ BKEY = KEY.replace("lora_A", "lora_B")
 
 def adapter(path: Path, *, tensors=None, config=None):
     path.mkdir()
+    tensors = tensors or {KEY: torch.randn(16, 40), BKEY: torch.randn(36, 16)}
     save_file(
-        tensors or {KEY: torch.randn(16, 40), BKEY: torch.randn(36, 16)},
+        tensors,
         str(path / "adapter_model.safetensors"),
     )
     (path / "adapter_config.json").write_text(
-        json.dumps(config or {"peft_type": "LORA", "r": 16, "lora_alpha": 32, "bias": "none"})
+        json.dumps(
+            config
+            or {
+                "peft_type": "LORA",
+                "r": 16,
+                "lora_alpha": 32,
+                "bias": "none",
+                "target_modules": [
+                    k.removeprefix("base_model.model.").removesuffix(".lora_A.weight")
+                    for k in tensors
+                    if k.endswith(".lora_A.weight")
+                ],
+            }
+        )
     )
     return sha256(path / "adapter_model.safetensors")
 
@@ -82,3 +96,14 @@ def test_lossy_mix_cannot_promote(tmp_path):
     report = fuse(first, second, one, two, tmp_path / "out", 0.25)
     assert report["status"] == "rejected_residual"
     assert not report["promotion_allowed"]
+
+
+def test_target_order_does_not_change_adapter_semantics(tmp_path):
+    first, second = tmp_path / "first", tmp_path / "second"
+    tensors = {KEY: torch.randn(16, 40), BKEY: torch.randn(36, 16)}
+    tensors.update({k.replace("layers.0", "layers.1"): v.clone() for k, v in list(tensors.items())})
+    one = adapter(first, tensors=tensors)
+    config = json.loads((first / "adapter_config.json").read_text())
+    config["target_modules"].reverse()
+    two = adapter(second, tensors=tensors, config=config)
+    assert fuse(first, second, one, two, tmp_path / "out", 0.5)["promotion_allowed"]
