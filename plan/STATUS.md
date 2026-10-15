@@ -1,22 +1,26 @@
 # STATUS
 
-更新：2026-10-15，**S3已通过，进入S4。原生goal仍active，产品未交付。**
+更新：2026-10-16，**S3已通过，进入S4。原生goal仍active，产品未交付。**
 
 ## 当前状态
 - s3:01 done；reports/s3-stage-acceptance-stable-001.json原四门通过，5500条完整记录审计和独立review通过。
 - 五模态500题双遍：image82.0%、screenshot96.4%、text99.4%、audio80.0%、video16帧63.6%；旧三模态与S2持平。video8帧60.8%，当前保留16帧。
 - 主干E4B ee0ef602…，S3 adapter1bebae31…；图像1120是当前质量配置，未定为最终低成本服务默认。
 - ADR0021记录真实100步/1000次均衡回放执行调整，原质量门不改；本候选训练+正式评测0.9075 H20活跃小时，不含其它作业/空闲，不等价租卡总费用或H100。
-- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。本轮两项Sol 6.1修复已整合；GUI重建002已成功、VQA续传004正在远端执行，私有作业入口只读方案已返回，无活跃子代理；未运行GPU作业。
+- 当前接续入口：plan/handoff-2026-10-15-s3-complete.md。VQA与跨模态储备已实际构建；补充crossmodaldev002已成功，私有job修复及Linux否定探针完成，无活跃子代理；未运行GPU作业。
 
 ## 当前执行
+- VQA004下载4500齐全/726891084字节/零失败，815.064秒；VQA真构建144.64秒，3000cal/1000hold/500补充dev，reports/s4-vqa-gold-{download-004,build-001}.json。
+- crossmodal真实组装79.76秒：3000cal/1000hold，固定AND规则，音频来源1400/1600与500/500。cal/hold实际依赖组610/206，最大音频family复用151/182，不声称IID/有效N；reports/s4-crossmodal-gold-assembly-001.json。全历史142938观测零跨池冲突；当前私有crossmodal-gold-001/inventory-manifest.json SHA9c3e02cc…，包含GUI/VQA/音频重定位及组件ledger。
+- 固定private_gold_job已实现，代码35829c0。初版001权限claim被review否决，已撤销旧run根访问并保留失败/纠正证据。新版002实际独立UID审计18秒成功，真实live UID/重复UID拒绝和保留目录访问拒绝通过；reports/s4-private-{inventory-job-002,identity-negative-probes-001,job-review-correction-001}.json。仅普通身份/单work-root权限边界，network未强制隔离，不防root；完整日志/失败注入与source准入仍待验收。固定work-root /var/tmp/omnijev-gold-jobs-001，62041/42、62051/52已用；每次需新UID。
+- source-matched补充crossmodaldev构建器04a5239已整合105相关测试通过。001因3个Clotho原始相对文件名含#被旧整理器误解为URLfragment而失败；d4112a6修复literal filename解析，31测试通过。002已成功57.405秒，新增500dev（250Clotho+250speech，258依赖组），原500dev保留；输出crossmodal-dev-002，最新总清单SHA6eb32249…，reports/s4-crossmodal-dev-assembly-002.json。所有真实构建作业均结束；下一步全来源准入、全新媒体RGB审计与受控日志/错误拒绝验收。
 - 音频媒体整理001成功：4000引用、2991唯一媒体、1249458520字节；四个原artifact不改，仅新URI。原始文件作为historical、新文件current并入GUI002全清单，126438观测零跨池冲突，清单with-audio-relocated-inventory-001.json SHA48d41081…；reports/s4-audio-{media-bundle,relocated-isolation,media-provenance}-001.json。训练resolve_media实查全部4000引用通过（s4-audio-bundle-resolver-001.json，2.174秒）。不是完整gate准入。
 - CLINC源Parquet→原始Choice→S0dev排除→S1四池重放通过，3000cal/1000hold及10750train与原文件字节hash完全一致，dev500一致；reports/s4-text-gold-source-replay-001.json，2.843秒。
 - GUI002合并全历史审计零跨池冲突，reports/s4-gui-gold-isolation-002.json；仍不是完整来源/权限验收。
-- 新增crossmodal_gold_pools与gold_media_bundle已整合，126项相关测试通过。前者支持imageChoice+audioChoice/Noul、同池一对一AND、输出组件ledger与依赖组计数；后者显式根集合安全重写URI并绑定输出hash。音频媒体整理已实跑，跨模态构建待VQA完成。组装顺序/冻结规则.scratch/s4/crossmodal-gold-policy.md；不能将媒体整理子集清单替代全历史。
+- 新增crossmodal_gold_pools与gold_media_bundle已整合，126项相关测试通过。前者支持imageChoice+audioChoice/Noul、同池一对一AND、输出组件ledger与依赖组计数；后者显式根集合安全重写URI并绑定输出hash。音频媒体整理已实跑，跨模态储备构建已成功，补充dev002已成功。组装顺序/冻结规则.scratch/s4/crossmodal-gold-policy.md；不能将媒体整理子集清单替代全历史。
 - 当前构建代码c590676；GUI真实执行快照5096382；GUI/VQA修复在远端真实Python3.11/Pillow环境37项测试通过。源快照/root/autodl-tmp/s4-gold-code-5096382；远端主checkout仍869ee95。
 - GUI构建001拒绝historical_pool_conflict（1460.889秒），原因是未使用的旧episode帧进入曝光关系。实际4141历史图片RGB审计、118438观测零跨池冲突（reports/s4-observed-image-rgb-audit-001.json）；所有历史图已SHA定位。修复分离候选关系、排除触碰历史组件、绑定私有RGB缓存5cb45603…并保留119/59原预留，8进程解码。真实重建002成功：91.44秒，3000cal/1000hold，178原预留完整保留，1100历史GUI媒体RGB完整验证；输出gui-gold-002/inventory-manifest.json SHAa80bf03f…，报告reports/s4-gui-gold-build-002.json。完整gold权限/源准入仍未通过。
-- VQA冻结3000cal/1000hold/500补充dev，每池20%color/20%integer/60%yesno，原AOK dev/门槛保留；见.scratch/s4/image-gold-policy.md。计划001因重复图仅4190唯一图作废，修复后计划002确认4500唯一图（SHA748dc460…）。HTTPS下载002前三例均503，0下载；003仅采用固定来源元数据中的官方同站HTTP原地址，禁止重定向，记录canonical/transport/final URL，003在1200秒预算后保留1161图/185.6MB，余3339未发起，无HTTP失败；报告s4-vqa-gold-download-003.json。已校验并复用全部1161图，32并发续传004（session88523），仍1200秒/8失败熔断；不是gold准入。
+- VQA冻结3000cal/1000hold/500补充dev，每池20%color/20%integer/60%yesno，原AOK dev/门槛保留；见.scratch/s4/image-gold-policy.md。计划001因重复图仅4190唯一图作废，修复后计划002确认4500唯一图（SHA748dc460…）。HTTPS下载002前三例均503，0下载；003仅采用固定来源元数据中的官方同站HTTP原地址，禁止重定向，记录canonical/transport/final URL，003在1200秒预算后保留1161图/185.6MB，余3339未发起，无HTTP失败；报告s4-vqa-gold-download-003.json。已校验并复用全部1161图，32并发续传004已成功；所有4500下载齐全，真实materialize已通过，仍不是完整gold准入。
 - 音频真实gold已构建：Clotho1400/500（原120条完整保留，790媒体全解码，119.77秒）+LibriSpeech1600/500（另500诊断dev，159.76秒）。83项相关测试通过；配比/分层质量规则冻结于.scratch/s4/audio-gold-policy.md，原Clothodev500不替换。reports/s4-{clotho,speech}-gold-build-001.json。
 - 公开crossmodal固定50题单遍GPU探针完成：S3adapter33/50=66%，同输入同1120预算基座24/50=48%，prepared输入hash逐题一致。使用reports/s4-crossmodal-screen-recovered-002.json与paired-screen-002.json；001恢复报告因JSON yes/no顺序导致34%错误，保留但已废止。已修s0_development_baselines恢复顺序，22相关测试通过；原内存计算S0报告不受该恢复路径影响。候选原进程报告收尾参数错误exit1，CPU恢复完整50sidecar，无GPU重跑；完整墙钟/峰值丢失不补造。不能当S4质量放行。
 - GUI仅补179个固定revision标注文件（约4.16MB，首次178+单文件重试1），无需新截图下载。全缓存容量002实测4395新原题/569episode/566连通组，能整组补2881cal/941hold；缺图/缺标0，历史媒体碰撞7个episode剔除。reports/s4-gui-cached-capacity-002.json；后继按该冻结规则构建，仍须补历史RGB/来源lineage验收，不把容量当gold通过。
@@ -42,7 +46,7 @@
 - 音频gold已完成相对媒体manifest与真实训练resolver验证；视频新gold仍有file URI，正式gate前需按显式根整理，不能放宽resolve_media路径边界。
 - LibriSpeech源审计发现5本书/20转录串跨官方split重叠，已按speaker/book/text/media合并成70组件并分配。选中2600条全部转为已写实长WAV；语音gold需保留分层质量门及原始别名ledger。源存于source-audit/librispeech-s4-candidate-001/mirror-002；作业均结束。
 - 用户重申产品必须兼顾快与低成本。S6/FINAL按同硬件、同输入长度/媒体预算、同并发报告端到端p50/p95、吞吐、峰值显存、每千次成功决策成本（含预处理与空闲摊销边界）；当前FP32正确性参考不能充当低成本产品。无同条件Jev测量时不声称追平或超越。
-- reports/s3-reserve-inventory-001.json：text预留3000/1000，其余不足。audio现按冻结真实环境声+语音组合已构建3000/1000并待完整gold权限验收；video新增validation3000/1000已构建且通过所提供历史/media隔离，完整权限边界仍待验收。crossmodal构建器已就绪，等待VQA完整及合并媒体后实际分配。
+- reports/s3-reserve-inventory-001.json：text预留3000/1000，其余不足。audio现按冻结真实环境声+语音组合已构建3000/1000并待完整gold权限验收；video新增validation3000/1000已构建且通过所提供历史/media隔离，完整权限边界仍待验收。crossmodal3000/1000已实际构建，依赖组计数单列，完整准入未完成。
 - Noul统计tie顺序已修复：规范yes/no，旧JSON顺序导致通用accuracy/ECE偏差；产品预测及S3门不变。原报告不覆盖，audio/video/video8 correction报告保留。远端旧代码的全记录审计已完成，现可同步。
 - 高预算FP32派生副本GPU/HTTP数值对照现已通过，但不是低成本API性能、BF16/FP16发布质量/校准或最终浏览器验收；真实服务方案仍须S5/S6同版本测试。
 - S4质量/封存/外榜、S5稳健性/校准、S6量化/E2B/三运行时/性能、FINAL三档发布与真实浏览器均未完成。

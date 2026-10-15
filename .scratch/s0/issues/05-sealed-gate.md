@@ -34,5 +34,7 @@ Blocked by: p0:04
 
 2026-10-15：音频媒体整理实跑4000引用，2991文件全部SHA校验；原始artifact保留historical后合并全历史126438观测零跨池冲突，训练原resolver4000引用通过。新总清单with-audio-relocated-inventory-001.json SHA48d41081…；媒体与隔离报告均为001，非完整gold/权限准入。
 
+2026-10-16：VQA4500图全量齐全并materialize3000cal/1000hold/500dev通过；crossmodal3000cal/1000hold组装通过，依赖组610/206单列，完整隔离142938观测零跨池。独立UID固定audit002和真实live/reused UID/保留目录访问拒绝探针通过，001权限claim已纠正；完整source准入及日志错误注入未完成。补充crossmodaldev002成功新增500题，原500dev保留；当前总清单crossmodal-dev-002/inventory-manifest.json SHA6eb32249…。
+
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。

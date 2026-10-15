@@ -1,0 +1,9 @@
+{
+  "live_unregistered_identity_rejected": true,
+  "used_identity_rejected": true,
+  "retained_runs_root_only": true,
+  "prior_workers_denied_retained_runs": true,
+  "scope": "observed Linux ordinary-identity denial only; not root or network isolation",
+  "retained_run_count": 2,
+  "exit_code": 0
+}
