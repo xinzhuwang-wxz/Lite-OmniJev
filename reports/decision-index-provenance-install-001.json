@@ -1,0 +1,31 @@
+{
+  "status": "installed_and_lookup_verified",
+  "exit_code": 0,
+  "ready": false,
+  "upstream_rebuild_executed": false,
+  "source_patch_is_original_upstream": false,
+  "original_source": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/source",
+  "derived_source": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-derived-source-001",
+  "bundle_receipt_sha256": "ac667cab9eed7581d3e737c8c077b9a2e4c8f4048eab6d9a3fa9c7197fbeadda",
+  "original_layout_sha256": "21d36d35cf8c5369cadbd2f509e1dc508b6dae3ec3d408447643895ffade38fb",
+  "derived_layout_sha256": "fc9e5c84dc4e7760f634a23e2b911fd9055e1da55cbad730c3d2a0a3fefd29af",
+  "revision_map_sha256": "3aa79d8feffe06f57319df5bde29dff245d2b2fe609958e6f598e8dcfe039fd9",
+  "verified_repositories": {
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/contractnli": "eced6528dd3c1d14d73f9a87df8f7bdbc03126f9",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/esci": "7916cdf6ab75a462e77f20ab40428a10923998d5",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/habermas_machine": "7923b71966c14136077c78d7841bc9e1a182dfe0",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/isarcasm": "dfc708b53bde1bb571abfb5692f63231c2232195",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/nli4ct": "7f32fa6c7db43e577f22e9fc6c28eef1cc6d223e",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/pop909cl": "be9094392903c471a930519e1c0bacf8b6be5d62",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/sata": "371dd0c18fe75a96fbbcf2d1507ceeaf0d5263c5",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-index-work-001/work/artifacts/benchmark-suite/raw/repos/searchless_chess": "90ae0e6b121673fc3079aaeffa047580bb600c0a"
+  },
+  "unknown_parent_rejected": true,
+  "script_sha256": "08a4c7b6799cea9966b499ba3bae0f59614e734584814ff6423dc92b6d5af089",
+  "wall_seconds": 1.4638945553451777,
+  "remaining": [
+    "evaluation admissions",
+    "dependency/network closure",
+    "full rebuild and independent verify"
+  ]
+}
