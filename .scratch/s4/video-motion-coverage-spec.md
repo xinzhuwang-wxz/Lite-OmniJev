@@ -34,3 +34,29 @@ Any later paired public-dev50 temporal experiment must hold16frames and every
 other input/model/processor setting fixed. Production integration waits for
 benefit evidence. The previous CE+.1pair route was stopped after prediction ties
 and increased memory; this is a separate sampling hypothesis, not another sweep.
+
+
+## Frozen dev50 experiment (before GPU)
+
+Use CE0 working adapter `4b8e422f3ca29e863999d2cd713bb9fd3f0a46e5360faa259a3bb8a4a9814bed`
+from `artifacts/s4-claim-pair-ce0-train-001/adapter`. This supersedes the proposed
+coverage parent before any GPU sampling evidence; both policies use CE0.
+Select the first50 samples by SHA256(`42:s4-motion-coverage:`+id) from accepted
+original video dev500 SHA79ed30be… whose whitespace-split instruction contains
+before/after/when/while. Require all500source rows to be dev, unique and valid.
+
+`.scratch/s4/evaluate-video-motion-coverage.py` defaults to CPU preparation,
+≤120seconds, deduplicating per-video manifests. GPU requires both `--execute`
+and one `--policy uniform|motion`; each fresh policy directory has a180second
+alarm, progress at25 and50originals, and a failure receipt. Run a fresh uniform50
+reference with the same CE0, not an older adapter's evidence. Both use16frames,
+70video soft tokens/frame,4096max prompt tokens, BF16, one pass, the same official
+processor/template/readout, and the same pinned input videos. Only indices vary.
+The explicit process-local baseline loader hook calls real `load_media` with
+`frame_indices`; production defaults remain uniform and unchanged.
+
+CPU validation:91targeted local tests passed; one RGB-parity test skipped for
+missing local Pillow. A real remote existing-runtime synthetic40frame CPU test confirmed
+implicit versus explicit-uniform RGB bytes and metadata exactly equal, explicit
+alternative indices retained FPS/count/duration, and source SHA unchanged.
+No real dev50 preparation or GPU evaluation has run in this slice.

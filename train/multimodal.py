@@ -104,8 +104,17 @@ _DECODE_INPUT_OPTIONS = [
 ]
 
 
-def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) -> Any:
-    """Decode only preverified local files; reject overlong inputs before decoding."""
+def load_media(
+    path: Path,
+    kind: str,
+    *,
+    num_frames: int,
+    max_seconds: float,
+    frame_indices: list[int] | None = None,
+) -> Any:
+    """Decode verified files; optional explicit16-frame video selection is experimental."""
+    if frame_indices is not None and kind != "video":
+        raise ValueError("explicit frame indices are reserved for video")
     if kind == "image":
         image_module = importlib.import_module("PIL.Image")
         with image_module.open(path) as source:
@@ -169,7 +178,23 @@ def load_media(path: Path, kind: str, *, num_frames: int, max_seconds: float) ->
     total_frames = int(stream["nb_frames"])
     if fps <= 0 or total_frames < num_frames:
         raise ValueError("video lacks sufficient frame metadata")
-    indices = [round(i * (total_frames - 1) / (num_frames - 1)) for i in range(num_frames)]
+    if frame_indices is None:
+        indices = [round(i * (total_frames - 1) / (num_frames - 1)) for i in range(num_frames)]
+    else:
+        if (
+            num_frames != 16
+            or len(frame_indices) != 16
+            or any(
+                type(index) is not int or not 0 <= index < total_frames for index in frame_indices
+            )
+            or any(
+                left >= right for left, right in zip(frame_indices, frame_indices[1:], strict=False)
+            )
+        ):
+            raise ValueError(
+                "explicit video indices require16strictly increasing unique in-range integers"
+            )
+        indices = list(frame_indices)
     selection = "+".join(f"eq(n\\,{index})" for index in indices)
     image_module = importlib.import_module("PIL.Image")
     with tempfile.TemporaryDirectory(prefix="omnijev-video-") as directory:
