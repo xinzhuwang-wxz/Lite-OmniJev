@@ -1,6 +1,6 @@
 # STATUS
 
-更新：2026-10-15（Asia/Shanghai，18:42）。**S2图像原门仍未过：v2 78.8% vs80.6%；其它三门通过。停止旧池六条无扩量收益路线，新增1811条已许可/同train-family人工一致问题；新gold监督两臂均未达扩量条件，停止。S3训练技术路径已通，质量仍需改进。**
+更新：2026-10-15（Asia/Shanghai，18:51）。**S2候选v2+1120预算image500单遍82.0%（门80.6%）；正式全模态双遍验收仍运行，尚未关票。高预算HF/native CPU100例精确一致通过；实际HTTP与服务性能待验证。**
 
 ## 已验证（不重跑）
 - S1通过；S2 v2 image78.8%/cf88.6%、screenshot96.6%/cf98.4%、text99.4%，各dev500双遍一致；reports/s2-stage-acceptance-v2-001.json仅image FAIL。
@@ -23,9 +23,11 @@
 - E08完整image dev500单遍=399/500=79.8%，较v2提高1pp但低于80.6%；停止此候选完整阶段扩量，保留adapter。reports/s2-new-family-ce-dev500-screen-001.json，77.97秒。当前最好图像单遍不代表三模态整体最优。
 - E09 dev150=126/150=84.0%，ECE .14332，68.44秒；同v2默认123/150，达到扩量条件。reports/s2-image-budget1120-dev150-001.json。
 - E09 image dev500单遍=410/500=82.0%，ECE .14820，194.81秒；reports/s2-image-budget1120-dev500-screen-001.json。超过图像门但未完成阶段验收。
-- 正式配置ea3695e已整合并同步：训练eager/mixed/lazy、eval --image-max-soft-tokens、gateway LITE_IMAGE_MAX_SOFT_TOKENS与SHA绑定的vLLM images_kwargs；默认checkpoint身份保持。主树83测试通过/15真实fixture跳过；子代理160通过/53跳过，native+实际HTTP高预算一致性待验证。
+- 正式配置ea3695e已整合并同步：训练eager/mixed/lazy、eval --image-max-soft-tokens、gateway LITE_IMAGE_MAX_SOFT_TOKENS与SHA绑定的vLLM images_kwargs；默认checkpoint身份保持。主树83测试通过/15真实fixture跳过；子代理160通过/53跳过，native CPU100例已精确通过，实际HTTP高预算概率与性能待验证。
 - 当前唯一GPU链：/root/autodl-tmp/budget1120-full-gates.sh，timeout1800；日志artifacts/s2-text-lora-001/budget1120-full-gates-001.log。原v2 adapter，image/screenshot预算1120，各500题双遍+cf；text500双遍。每cohort检查质量/repeat失败即停。报告reports/s2-dev-eval-{image,screenshot,text}-v2-budget1120-001.json；输出同名artifacts/s2-text-lora-001目录。运行中不切远端ea3695e。
-- 子代理image_budget_config已完成91c5566→ea3695e，无活跃子代理。下一步收齐正式全链，scripts/s2_gate组装机器门并集中独立review；全部通过才关S2/展开S3。高预算native/HTTP parity仍是未验证部署项，不能混用默认S0证据。s2:01保持claimed。
+- 独立CPU工作树/root/autodl-tmp/image-budget-cpu-check-001，代码60528f2：HF100例41.03秒/native vLLM0.26 100例70.13秒均passed，精确token/tensor匹配；reports/s2-budget1120-{hf,native}-cpu-001.json。本机CPU工作树无需保留训练产物，暂留证据；不加载权重、不占GPU。
+- e48dd73加固S2报告同模型/adapter、冻结devSHA、图像预算一致性，S3回归也拒绝预算变化。52项门槛测试通过，历史v2指标逐值不变。GPU主树仍ea3695e，运行中不合并。
+- 活跃独立review子代理s2_integration_review，worktree /Users/bamboo/.codex/worktrees/s2-integration-review/Lite-OmniJev，readonly，评估配置/运输/训练/验收风险及旧训练清单与联合训练证据的契合。主会话收齐正式全链后组装S2门、修复review阻断项，全绿才关闭S2/展开S3。实际HTTP与服务性能仍待实测。
 
 ## 授权与研究
 - 原生goal active；用户强调按开机总时长计费，CPU准备与GPU重叠、停止无收益路线、避免重复验证/空转。
