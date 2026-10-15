@@ -12,7 +12,8 @@
 ## 当前执行
 - s0:05 claimed main-session：S4现成可靠gold/独立自动gate。实现边界reports/s4-gold-gate-implementation-assessment-001.md。
 - eval/gold_gate.py已实现严格元数据四池family/media/component传递隔离，79测试通过；实际gold来源、完整历史账本、独立作业权限/日志和真实封存仍未完成。
-- S3全GPU链已结束、全sidecar已审计。下一步同步已验证新代码，启动S3候选+1120的非封存100例HF/native概率对照，CPU数据准备并行；作业启动后补PID，不假称已跑。
+- S3全GPU链已结束、全sidecar已审计。远端已安全ff至869ee95，17个精确路径冲突的旧untracked证据保存在/root/autodl-tmp/s2-evidence-recovery/pre-s3-serving-reference。
+- 当前真实作业/root/autodl-tmp/s3-serving-reference.sh：HF float32、S3 adapter+图像1120、公开100例双遍；timeout1200 PID812231/python812232。日志artifacts/s3-serving-reference-001/run.log，退出码exit-code.txt，报告reports/s3-serving-hf1120-reference-001.json。它是非封存数值参考，不代表正式性能/发布；native HTTP对照待HF完成再启动。运行中不改远端代码、不重启。
 - 远端/root/autodl-tmp/s1-text-lora-001，SSH mux /tmp/omnijev-ssh-root-final、端口48926；训练Python before-gpu-teacher-job-final-001，GPU H20。模型/媒体/凭据沿runbook。
 
 ## 已知缺口与决定
