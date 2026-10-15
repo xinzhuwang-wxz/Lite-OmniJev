@@ -136,7 +136,11 @@ def test_eval_reports_actual_loaded_processor_budget(monkeypatch, tmp_path, budg
     monkeypatch.setattr(
         s1_dev_eval,
         "load_samples",
-        lambda *args, **kwargs: [SimpleNamespace(prefix=SimpleNamespace(media=[object()]))],
+        lambda *args, **kwargs: [
+            SimpleNamespace(
+                prefix=SimpleNamespace(media=[object()]), meta=SimpleNamespace(pool="dev")
+            )
+        ],
     )
     monkeypatch.setitem(
         sys.modules,

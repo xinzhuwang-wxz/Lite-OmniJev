@@ -62,9 +62,21 @@ def canonical_json(value: Any) -> str:
 class PartialJournal:
     """Incomplete evidence only; never read as evaluation input or a resume checkpoint."""
 
-    def __init__(self, output_dir: Path, identity: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        output_dir: Path,
+        identity: dict[str, Any],
+        *,
+        enabled: bool = True,
+        original_total: int = 0,
+    ) -> None:
         self.output_dir = output_dir
-        self.handle = (output_dir / "records.partial.jsonl").open("x", encoding="utf-8")
+        self.enabled = enabled
+        self.started = self.batch_started = time.monotonic()
+        self.original_pass: int | None = None
+        self.handle = (
+            (output_dir / "records.partial.jsonl").open("x", encoding="utf-8") if enabled else None
+        )
         self.progress: dict[str, Any] = {
             "status": "incomplete",
             "identity": identity,
@@ -73,19 +85,61 @@ class PartialJournal:
             "pass": None,
             "variant": None,
             "variant_counts": {},
+            "phase": "preparing",
+            "original_total": original_total,
+            "original_completed": 0,
+            "original_correct": 0,
+            "original_accuracy": None,
+            "last_original_batch_seconds": None,
+            "original_statistics_scope": (
+                "current pass, original rows only; excludes all CF variants"
+            ),
         }
 
+    def set_phase(self, phase: str) -> None:
+        self.progress["phase"] = phase
+        if phase == "evaluating":
+            self.batch_started = time.monotonic()
+        self.checkpoint()
+
     def append(self, record: dict[str, Any], pass_index: int) -> None:
+        if not self.enabled or self.handle is None:
+            return
+        if record.get("pool") != "dev":
+            raise DevEvalError("public progress accepts dev rows only")
         self.handle.write(canonical_json({**record, "pass": pass_index}) + "\n")
         self.progress["records_completed"] += 1
         self.progress["pass"] = pass_index
         self.progress["variant"] = record["variant"]
         counts = self.progress["variant_counts"]
         counts[record["variant"]] = counts.get(record["variant"], 0) + 1
+        if record["variant"] == "original":
+            if self.original_pass != pass_index:
+                self.original_pass = pass_index
+                self.progress.update(
+                    original_completed=0,
+                    original_correct=0,
+                    original_accuracy=None,
+                    last_original_batch_seconds=None,
+                )
+                self.batch_started = time.monotonic()
+            self.progress["original_completed"] += 1
+            self.progress["original_correct"] += int(record["prediction"] == record["target"])
+            self.progress["original_accuracy"] = (
+                self.progress["original_correct"] / self.progress["original_completed"]
+            )
+            if self.progress["original_completed"] % 25 == 0:
+                now = time.monotonic()
+                self.progress["last_original_batch_seconds"] = now - self.batch_started
+                self.batch_started = now
+                self.checkpoint()
         if self.progress["records_completed"] % 25 == 0:
             self.checkpoint()
 
     def checkpoint(self) -> None:
+        if not self.enabled or self.handle is None:
+            return
+        self.progress["elapsed_seconds"] = time.monotonic() - self.started
         if not self.handle.closed:
             self.handle.flush()
             os.fsync(self.handle.fileno())
@@ -100,7 +154,8 @@ class PartialJournal:
         try:
             self.checkpoint()
         finally:
-            self.handle.close()
+            if self.handle is not None:
+                self.handle.close()
 
 
 def load_samples(path: Path, *, media_root: Path | None = None) -> list[Sample]:
@@ -339,9 +394,18 @@ def run(
         "passes": passes,
         "counterfactual": counterfactual,
     }
-    journal = PartialJournal(output_dir, identity)
+    journal: PartialJournal | None = None
     try:
+        # Determine privacy scope before creating any public progress or partial journal.
+        samples = load_samples(data_path, media_root=media_root)
+        journal = PartialJournal(
+            output_dir,
+            identity,
+            enabled=bool(samples) and all(s.meta.pool == "dev" for s in samples),
+            original_total=len(samples),
+        )
         journal.checkpoint()
+        journal.set_phase("loading_dependencies")
         validate_image_max_soft_tokens(image_max_soft_tokens)
         torch = importlib.import_module("torch")
         transformers = importlib.import_module("transformers")
@@ -349,9 +413,9 @@ def run(
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
         os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
         torch.use_deterministic_algorithms(True)
-        samples = load_samples(data_path, media_root=media_root)
         processor = None
         if any(sample.prefix.media for sample in samples):
+            journal.set_phase("loading_processor")
             processor = transformers.AutoProcessor.from_pretrained(
                 str(model_dir),
                 local_files_only=True,
@@ -366,6 +430,7 @@ def run(
         )
         journal.checkpoint()
         variants = [counterfactual_variant(sample) for sample in samples] if counterfactual else []
+        journal.set_phase("loading_model")
         base = transformers.Gemma4ForConditionalGeneration.from_pretrained(
             str(model_dir),
             local_files_only=True,
@@ -374,11 +439,23 @@ def run(
             dtype=torch.bfloat16,
             attn_implementation="sdpa",
         )
+        journal.set_phase("loading_adapter")
         model = attach_adapter(base, adapter_dir) if adapter_dir else base
         model = model.to("cuda").eval()
         tokenizer = OfficialTokenizerAdapter(model_dir)
+        journal.set_phase("evaluating")
         all_passes: list[list[dict[str, Any]]] = []
         for pass_index in range(passes):
+            journal.original_pass = pass_index
+            journal.progress.update(
+                original_completed=0,
+                original_correct=0,
+                original_accuracy=None,
+                last_original_batch_seconds=None,
+                **{"pass": pass_index},
+            )
+            journal.batch_started = time.monotonic()
+            journal.checkpoint()
             records: list[dict[str, Any]] = []
             for sample in samples:
                 logits, readout = forward_readout(
@@ -490,13 +567,14 @@ def run(
         }
         code = 1
     finally:
-        journal.close()
+        if journal is not None:
+            journal.close()
     report["image_max_soft_tokens"] = image_profile
     report_out.parent.mkdir(parents=True, exist_ok=True)
     report_out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    if code == 0:
+    if code == 0 and journal is not None:
         journal.progress["status"] = "complete"
-        journal.checkpoint()
+        journal.set_phase("complete")
     return code
 
 

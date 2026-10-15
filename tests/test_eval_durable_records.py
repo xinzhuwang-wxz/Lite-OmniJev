@@ -192,3 +192,60 @@ def test_report_write_failure_keeps_progress_incomplete(evaluation):
     assert len((output / "records.partial.jsonl").read_text().splitlines()) == 120
     progress = json.loads((output / "progress.json").read_text())
     assert progress["status"] == "incomplete"
+
+
+def test_live_original_metrics_and_loading_phases(evaluation, monkeypatch):
+    output = evaluation["output_dir"]
+    seen = 0
+
+    def loading(*args, **kwargs):
+        progress = json.loads((output / "progress.json").read_text())
+        assert progress["phase"] == "loading_model"
+        assert progress["original_completed"] == 0
+        assert progress["original_total"] == 30
+        model = SimpleNamespace()
+        model.to = lambda device: model
+        model.eval = lambda: model
+        return model
+
+    monkeypatch.setattr(
+        sys.modules["transformers"].Gemma4ForConditionalGeneration, "from_pretrained", loading
+    )
+
+    def observe(*args, **kwargs):
+        nonlocal seen
+        if seen == 25:
+            progress = json.loads((output / "progress.json").read_text())
+            assert progress["phase"] == "evaluating"
+            assert progress["original_completed"] == progress["original_correct"] == 25
+            assert progress["original_accuracy"] == 1
+            assert progress["elapsed_seconds"] >= progress["last_original_batch_seconds"] >= 0
+            assert "sample-" not in json.dumps(progress)
+        if seen == 35:
+            # Five counterfactual records do not change original correctness or denominator.
+            progress = json.loads((output / "progress.json").read_text())
+            assert progress["original_completed"] == 25  # last original batch checkpoint
+            raise RuntimeError("stop within CF")
+        seen += 1
+        return predict()
+
+    monkeypatch.setattr(runner, "forward_readout", observe)
+    with pytest.raises(RuntimeError):
+        runner.run(**evaluation)
+    progress = json.loads((output / "progress.json").read_text())
+    assert progress["original_completed"] == progress["original_correct"] == 30
+    assert progress["original_accuracy"] == 1
+    assert progress["records_completed"] == 35
+    assert progress["status"] == "incomplete"
+
+
+@pytest.mark.parametrize("pool", ["calibration", "holdout"])
+def test_private_pool_creates_no_public_progress_or_partial_journal(evaluation, pool):
+    path = evaluation["data_path"]
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
+    for row in rows:
+        row["meta"]["pool"] = pool
+    path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    assert runner.run(**evaluation) == 0
+    assert not (evaluation["output_dir"] / "progress.json").exists()
+    assert not (evaluation["output_dir"] / "records.partial.jsonl").exists()
