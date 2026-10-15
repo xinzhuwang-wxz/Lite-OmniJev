@@ -46,6 +46,7 @@ def valid() -> dict:
         "schema_version": "gold-admission-input-v1",
         "inventory_sha256": manifest,
         "inventory_artifact_sha256": artifacts,
+        "bound_source_artifact_sha256": [digest("raw-source")],
         "selection_audit_sha256": digest("selection-report"),
         "selection_audit_code_sha256": digest("selection-code"),
         "selection_audit_inventory_sha256": manifest,
@@ -77,7 +78,7 @@ def valid() -> dict:
                 "report_sha256": digest("source-report"),
                 "code_sha256": code,
                 "source_manifest_sha256": manifest,
-                "source_artifact_sha256": artifacts,
+                "source_artifact_sha256": [digest("raw-source")],
                 "output_artifact_sha256": artifacts,
                 "status": "replayed",
             }
@@ -142,3 +143,21 @@ def test_rejections(mutation: str, category: str) -> None:
     result = assemble_admission(data)
     assert result.structural_admission == "rejected"
     assert category in result.categories
+
+
+def test_raw_source_catalogue_is_distinct_from_sample_inventory() -> None:
+    data = valid()
+    raw_hash = data["sources"][0]["source_artifact_sha256"][0]
+    assert raw_hash not in data["inventory_artifact_sha256"]
+    assert assemble_admission(data).structural_admission == "passed"
+    data["bound_source_artifact_sha256"] = [digest("tampered-raw-catalogue")]
+    assert "source_binding" in assemble_admission(data).categories
+
+
+def test_catalogues_require_unique_digests_not_historical_observations() -> None:
+    data = valid()
+    data["inventory_artifact_sha256"].append(data["inventory_artifact_sha256"][0])
+    assert "inventory_binding" in assemble_admission(data).categories
+    data = valid()
+    data["bound_source_artifact_sha256"] *= 2
+    assert "source_binding" in assemble_admission(data).categories

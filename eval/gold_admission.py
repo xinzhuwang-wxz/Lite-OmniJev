@@ -42,7 +42,12 @@ class Selection(Contract):
 
 
 class SourceEvidence(Contract):
-    """A claimed adapter output binding, requiring external execution verification."""
+    """A claimed adapter output binding, requiring external execution verification.
+
+    source_manifest_sha256 binds the verifier wrapper to the current inventory,
+    not the original builder receipt. source_artifact_sha256 identifies pinned
+    raw archives/annotations/Parquet, distinct from selected sample outputs.
+    """
 
     adapter: Literal[
         "text-source-replay-v1",
@@ -71,9 +76,17 @@ class RuntimeEvidence(Contract):
 
 
 class AdmissionInput(Contract):
+    """Hash catalogues contain unique digests, not one entry per historical path.
+
+    The private extractor must deduplicate repeated artifact observations before
+    assembly and independently hash-check both catalogues. Raw source catalogue
+    membership does not establish licensing or trustworthy label provenance.
+    """
+
     schema_version: Literal["gold-admission-input-v1"]
     inventory_sha256: Sha256
     inventory_artifact_sha256: list[Sha256] = Field(min_length=1)
+    bound_source_artifact_sha256: list[Sha256] = Field(min_length=1)
     selection_audit_sha256: Sha256
     selection_audit_code_sha256: Sha256
     selection_audit_inventory_sha256: Sha256
@@ -156,6 +169,9 @@ def assemble_admission(metadata: object) -> AdmissionSummary:
         or runtime.log_redaction != "passed"
     ):
         errors.append("runtime_binding")
+    raw_sources = data.bound_source_artifact_sha256
+    if len(set(raw_sources)) != len(raw_sources):
+        errors.append("source_binding")
     sources = {source.report_sha256: source for source in data.sources}
     if len(sources) != len(data.sources):
         errors.append("source_binding")
@@ -163,7 +179,7 @@ def assemble_admission(metadata: object) -> AdmissionSummary:
         if (
             source.status != "replayed"
             or source.source_manifest_sha256 != data.inventory_sha256
-            or not set(source.source_artifact_sha256) <= set(inventory)
+            or not set(source.source_artifact_sha256) <= set(raw_sources)
             or len(set(source.output_artifact_sha256)) != len(source.output_artifact_sha256)
         ):
             errors.append("source_binding")
