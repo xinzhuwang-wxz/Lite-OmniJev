@@ -647,7 +647,11 @@ def answer_tokens_for_record(record: Mapping[str, Any]) -> tuple[str, ...]:
     mapping = record["answer_token_ids"]
     if not isinstance(mapping, Mapping):
         raise DevelopmentBaselineError("record lacks answer token mapping")
-    return tuple(token for token in mapping if token != "U")
+    tokens = {token for token in mapping if token != "U"}
+    # target_index uses the schema order, which JSON key sorting must not change.
+    if tokens == {"yes", "no"}:
+        return ("yes", "no")
+    return tuple(sorted(tokens))
 
 
 def ensure_output(path: Path) -> None:

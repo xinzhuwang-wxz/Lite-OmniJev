@@ -482,3 +482,22 @@ def test_audio_uses_canonical_pcm_roundtrip_waveform(
     assert kwargs["sampling_rate"] == 16000
     assert identity["canonical_media"] == [Canonical.summary]
     assert messages[0]["content"][0] == {"type": "audio"}
+
+
+@pytest.mark.parametrize(
+    ("mapping", "probabilities"),
+    [
+        ({"yes": 31, "no": 32, "U": 33}, {"yes": 0.9, "no": 0.1}),
+        ({"yes": 31, "no": 32, "U": 33}, {"yes": 0.5, "no": 0.5}),
+        ({"B": 32, "A": 31, "U": 33}, {"A": 0.9, "B": 0.1}),
+    ],
+)
+def test_metrics_keep_canonical_targets_after_sorted_json_roundtrip(mapping, probabilities):
+    record = {
+        "answer_token_ids": mapping,
+        "conditional_without_u": probabilities,
+        "target_index": 0,
+    }
+    restored = json.loads(json.dumps(record, sort_keys=True))
+    assert baseline.score_records([record])["accuracy"] == 1.0
+    assert baseline.score_records([restored]) == baseline.score_records([record])
