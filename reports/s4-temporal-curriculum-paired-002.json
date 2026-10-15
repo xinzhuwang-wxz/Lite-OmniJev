@@ -1,0 +1,260 @@
+{
+  "bindings": {
+    "baseline_records_sha256": "223d5a02347886f40db12db50f372851e85bc845aa6c760e0b8178e4dc3488e3",
+    "baseline_report_sha256": "466bcca439b2c38a312d4a6cdaf555b2c10fdff1f98a10de3dcd2e3341805646",
+    "baseline_summary_sha256": "bcbe0a384494d232fc077a2054c8171a953ecaf0679ddb3c429f4a4c3561dc99",
+    "candidate_records_sha256": "b275067b567b36624c80be8daf51a459e1018cf1fb839a69b1fd172a8be8c02a",
+    "candidate_report_sha256": "9762a9f3b83aed3a765652beac839e3c6bffdd8e7b2c46b4808c80bc27bb3c4c",
+    "data_sha256": "e9b91fedecf2ccf7dc30e837ac11bcc4b233624d1f6c16812a40b1319c15b080",
+    "runner_sha256": "f2fa4821d37f46694baa94b573db562ffa3108b0d29953e00a6bcf6dad5e0aff"
+  },
+  "changed_predictions": [
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "no",
+      "brier_delta": -0.7111910978446796,
+      "candidate_correct": true,
+      "candidate_prediction": "yes",
+      "group": "temporal",
+      "id": "clevrer-train-04930-10",
+      "nll_delta": -0.7493675968249462,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "no",
+      "brier_delta": -0.20250739740223467,
+      "candidate_correct": true,
+      "candidate_prediction": "yes",
+      "group": "temporal",
+      "id": "clevrer-train-09880-5",
+      "nll_delta": -0.20497608357989705,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "no",
+      "brier_delta": -0.3470109231032977,
+      "candidate_correct": true,
+      "candidate_prediction": "yes",
+      "group": "temporal",
+      "id": "clevrer-train-02731-5",
+      "nll_delta": -0.35186243569873454,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "no",
+      "brier_delta": -0.5391885780739507,
+      "candidate_correct": true,
+      "candidate_prediction": "yes",
+      "group": "temporal",
+      "id": "clevrer-train-01676-5",
+      "nll_delta": -0.5609315862360589,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.3706663998162789,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "motion",
+      "id": "clevrer-train-06467-10",
+      "nll_delta": 0.375,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 1.3457543710231654,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-01979-10",
+      "nll_delta": 1.7400570049280724,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "no",
+      "brier_delta": 0.26297809417698215,
+      "candidate_correct": false,
+      "candidate_prediction": "yes",
+      "group": "temporal",
+      "id": "clevrer-train-09045-10",
+      "nll_delta": 0.26552422882267024,
+      "target": "no"
+    }
+  ],
+  "exit_code": 0,
+  "gpu_used": false,
+  "input_hash_limitation": "historical sidecars did not record input/tensor hashes; family_hash is not an input hash",
+  "paired_input_hashes_verified": null,
+  "probability_loss_definition": "conditional gold NLL and summed multiclass Brier without U; p_U separately",
+  "scope": "public dev paired diagnostic; no causal or quality-gate conclusion",
+  "stage_gate": false,
+  "status": "completed",
+  "summaries": {
+    "all": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 109,
+      "brier": {
+        "baseline": 0.3518168935146902,
+        "candidate": 0.37491449849149466,
+        "delta": 0.023097604976804464
+      },
+      "candidate_correct": 110,
+      "corrected": 4,
+      "count": 150,
+      "gold_counts": {
+        "no": 68,
+        "yes": 82
+      },
+      "nll": {
+        "baseline": 0.5258044233327674,
+        "candidate": 0.5571620909635646,
+        "delta": 0.03135766763079717
+      },
+      "no_predictions": {
+        "baseline": 71,
+        "candidate": 68
+      },
+      "p_U": {
+        "baseline": 1.6281998280889212e-06,
+        "candidate": 3.7267904035937536e-06,
+        "delta": 2.0985905755048324e-06
+      },
+      "probability_loss_improved": 51,
+      "probability_loss_worsened": 90,
+      "regressed": 3,
+      "yes_predictions": {
+        "baseline": 79,
+        "candidate": 82
+      }
+    },
+    "existence": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 30,
+      "brier": {
+        "baseline": 0.2638762074580007,
+        "candidate": 0.31625261961394086,
+        "delta": 0.05237641215594013
+      },
+      "candidate_correct": 30,
+      "corrected": 0,
+      "count": 39,
+      "gold_counts": {
+        "no": 21,
+        "yes": 18
+      },
+      "nll": {
+        "baseline": 0.41975828150738037,
+        "candidate": 0.4974874168747041,
+        "delta": 0.07772913536732373
+      },
+      "no_predictions": {
+        "baseline": 18,
+        "candidate": 18
+      },
+      "p_U": {
+        "baseline": 1.8062120662203248e-06,
+        "candidate": 3.473014305896122e-06,
+        "delta": 1.6668022396757972e-06
+      },
+      "probability_loss_improved": 14,
+      "probability_loss_worsened": 24,
+      "regressed": 0,
+      "yes_predictions": {
+        "baseline": 21,
+        "candidate": 21
+      }
+    },
+    "motion": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 11,
+      "brier": {
+        "baseline": 0.2821981484424988,
+        "candidate": 0.29964506163463517,
+        "delta": 0.01744691319213637
+      },
+      "candidate_correct": 10,
+      "corrected": 0,
+      "count": 14,
+      "gold_counts": {
+        "no": 4,
+        "yes": 10
+      },
+      "nll": {
+        "baseline": 0.4051164105089387,
+        "candidate": 0.4199287436713952,
+        "delta": 0.014812333162456504
+      },
+      "no_predictions": {
+        "baseline": 5,
+        "candidate": 6
+      },
+      "p_U": {
+        "baseline": 7.731091070177328e-07,
+        "candidate": 1.8271863208465073e-06,
+        "delta": 1.0540772138287745e-06
+      },
+      "probability_loss_improved": 3,
+      "probability_loss_worsened": 11,
+      "regressed": 1,
+      "yes_predictions": {
+        "baseline": 9,
+        "candidate": 8
+      }
+    },
+    "temporal": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 68,
+      "brier": {
+        "baseline": 0.3972225552386239,
+        "candidate": 0.40936383243191354,
+        "delta": 0.012141277193289668
+      },
+      "candidate_correct": 70,
+      "corrected": 4,
+      "count": 97,
+      "gold_counts": {
+        "no": 43,
+        "yes": 54
+      },
+      "nll": {
+        "baseline": 0.5858604203505375,
+        "candidate": 0.6009618760311515,
+        "delta": 0.01510145568061394
+      },
+      "no_predictions": {
+        "baseline": 48,
+        "candidate": 44
+      },
+      "p_U": {
+        "baseline": 1.680043052912343e-06,
+        "candidate": 4.1029937537862186e-06,
+        "delta": 2.4229507008738757e-06
+      },
+      "probability_loss_improved": 34,
+      "probability_loss_worsened": 55,
+      "regressed": 2,
+      "yes_predictions": {
+        "baseline": 49,
+        "candidate": 53
+      }
+    }
+  }
+}
