@@ -19,7 +19,7 @@
 - 全池21184行lazy CPU预检完成：29.54秒、进程峰值1559654400 bytes；reports/s3-lazy-full-preflight-001.json及resource报告。仅全量metadata+4个代表样本，不宣称全部媒体读取。
 - E08准入完成：400新family，颜色160/数字160/yesno80；排除原AOKtrain全部family、现有ledger与3832张图片SHA。首批下载400张62.63MB/252秒，其中coco:265843解码截断，已记录排除并确定性补选1张。最终plan artifacts/s2-new-family-plan-004，候选SHA8a9cf9a5…；媒体未删除。
 - 构建输出artifacts/s2-new-family-gold-001，train SHA7d0f1583…；混合池artifacts/s2-new-family-probe-001为1000行（新image400/旧image400/text100/screenshot100），SHA88dab83e…，四ledger验证通过。构建器2508a6f远端16测试通过；无活跃子代理。
-- 当前唯一GPU链：/root/autodl-tmp/vqa-new-family-inner.sh，外层timeout900，日志artifacts/s2-text-lora-001/new-family-ce-001.log；输出artifacts/s2-text-lora-001/new-family-ce-001，报告reports/s2-new-family-ce-{run,dev150}-001.json。从v2初始化、lr2e-5/100步CE，自动接image dev150。启动后需核实进程，不重复派发；运行中不切远端2508a6f代码。
+- 当前唯一GPU链：/root/autodl-tmp/vqa-new-family-inner.sh，外层timeout900，日志artifacts/s2-text-lora-001/new-family-ce-001.log；输出artifacts/s2-text-lora-001/new-family-ce-001，报告reports/s2-new-family-ce-{run,dev150}-001.json。从v2初始化、lr2e-5/100步CE，自动接image dev150。训练PID266665已确认存活，不重复派发；运行中不切远端2508a6f代码。
 - 下一步：收取E08，达到125/150才扩大旧模态/完整S2门，否则停止候选并复盘数据/任务匹配，不扫参数。s2:01仍claimed，S3依赖不解除。
 
 ## 授权与研究

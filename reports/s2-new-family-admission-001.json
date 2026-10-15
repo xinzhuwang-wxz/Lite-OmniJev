@@ -1,0 +1,28 @@
+{
+  "sample_count": 400,
+  "category_counts": {
+    "color": 160,
+    "integer": 160,
+    "yes_no": 80
+  },
+  "candidates_sha256": "8a9cf9a5caa9116b2b5596f037b6e82587ec7f2eca650c5a9c7ae121907adc81",
+  "input_sha256": {
+    "aok_train": "94820c4452d29102365647598c54608d4f48f56bee01b514c996a09cc0972029",
+    "coco_metadata": "4b62086319480e0739ef390d04084515defb9c213ff13605a036061e33314317",
+    "ledger_0": "8b3a53b6d0264dc0f48800649756447ba7563d48943551a98de20bc1e785d821",
+    "ledger_1": "6b4a5eeadbcf54027f78b2a9be0f26cb0376e9d057aead688508dd405550ac0c",
+    "ledger_2": "90a9b2ec305f2acdd67914a98fd155f2f1fcb32e128cd99dc633e66dfd14eb96",
+    "train_annotations": "fb101bcefe91422c543c2bb6d70af11eb3119d0ff745ae283d09acdf66250853",
+    "train_questions": "05a64b6e2582d06d7585f5429674a9a33851878be1bff9f8668cdcf792df611e"
+  },
+  "output_sha256": {
+    "allocation-ledger.jsonl": "dd866ce943632846150d620c857541d16d3fbd98da414c5bcf3cb88e13f5173d",
+    "provenance.jsonl": "6feda163c4b8d9b8fb81df203547d4b1c4531f8b0d3c39103afb558a39f935f6",
+    "train.jsonl": "7d0f1583f4f2a798377296afcb56d91d9a456046e34fcc8712de1cb682628112"
+  },
+  "download_manifest_sha256": "6682988e543f0f6770ad05b8c6f18351f399f4b7a9a966bbc898f2d22f586024",
+  "status": "admitted-for-pilot",
+  "full_report_sha256": "26091fe29efb1e58822bef9519e75b98f06e739e673dc094601e6930f2a40fa0",
+  "full_report_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-new-family-gold-001/report.json",
+  "existing_media_sha_exclusions": 3832
+}
