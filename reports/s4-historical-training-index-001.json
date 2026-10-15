@@ -1,0 +1,9 @@
+{
+  "status": "indexed",
+  "input_files": 18,
+  "report_bindings": 34,
+  "rows_including_repeated_exposures": 78922,
+  "index_sha256": "0f6dff35cf4c14f84ecb88b1abee74a9ac3b95558c43bf54693b9f4eb4562b29",
+  "unresolved": [],
+  "scope": "Scoped known reports and run.json discovery; not proof of all historical jobs or pool isolation"
+}

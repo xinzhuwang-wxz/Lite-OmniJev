@@ -247,6 +247,11 @@ def audit_manifest(path: Path) -> Receipt:
                 # Pool/exposure changes remain visible to the isolation audit.
                 payload = sample.model_dump(mode="json")
                 del payload["meta"]["pool"]
+                # Supervision/version changes do not erase exposure to the same input.
+                # Target legality was validated above; gold correctness is not this audit.
+                del payload["meta"]["data_version"]
+                for question in payload["questions"]:
+                    del question["target"]
                 fingerprint = digest(json.dumps(payload, sort_keys=True).encode())
                 if sample.id in identities and identities[sample.id] != fingerprint:
                     raise Rejected("conflicting_identity")

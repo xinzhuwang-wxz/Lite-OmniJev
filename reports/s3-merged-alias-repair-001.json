@@ -1,0 +1,32 @@
+{
+  "status": "aliases_restored",
+  "exit_code": 0,
+  "scope": "Explicit export-key repair only; serving parity still pending",
+  "source_model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "restored_keys": [
+    "model.language_model.layers.24.self_attn.k_norm.weight",
+    "model.language_model.layers.25.self_attn.k_norm.weight",
+    "model.language_model.layers.26.self_attn.k_norm.weight",
+    "model.language_model.layers.27.self_attn.k_norm.weight",
+    "model.language_model.layers.28.self_attn.k_norm.weight",
+    "model.language_model.layers.29.self_attn.k_norm.weight",
+    "model.language_model.layers.30.self_attn.k_norm.weight",
+    "model.language_model.layers.31.self_attn.k_norm.weight",
+    "model.language_model.layers.32.self_attn.k_norm.weight",
+    "model.language_model.layers.33.self_attn.k_norm.weight",
+    "model.language_model.layers.34.self_attn.k_norm.weight",
+    "model.language_model.layers.35.self_attn.k_norm.weight",
+    "model.language_model.layers.36.self_attn.k_norm.weight",
+    "model.language_model.layers.37.self_attn.k_norm.weight",
+    "model.language_model.layers.38.self_attn.k_norm.weight",
+    "model.language_model.layers.39.self_attn.k_norm.weight",
+    "model.language_model.layers.40.self_attn.k_norm.weight",
+    "model.language_model.layers.41.self_attn.k_norm.weight"
+  ],
+  "restored_count": 18,
+  "shared_projection_keys_not_modified": 36,
+  "old_index_sha256": "259231ca98732624e55d072204dadf38135a25342804327851ecd0a15bd86e73",
+  "new_index_sha256": "0a0f55f50517d9d9016e89d6f0028c97b35e78666e7db1cbe629fd9081122012",
+  "alias_shard_sha256": "14ad35bcc2b571b913652d996318f4d67c0002ef193cc9619a258b87dee522c1",
+  "method": "Original norm tensors cast to float32; trained matrices unchanged"
+}

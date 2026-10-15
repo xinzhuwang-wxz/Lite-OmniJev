@@ -11,9 +11,12 @@
 
 ## 当前执行
 - s0:05 claimed main-session：S4现成可靠gold/独立自动gate。实现边界reports/s4-gold-gate-implementation-assessment-001.md。
-- eval/gold_gate.py已实现严格元数据四池family/media/component传递隔离，79测试通过；实际gold来源、完整历史账本、独立作业权限/日志和真实封存仍未完成。
+- eval/gold_gate.py元数据隔离与scripts/gold_inventory.py私有SHA绑定清单作业已实现。历史监督/版本变化不改变题面身份，目标合法性/跨池拒绝保留；90项相关测试、ruff/mypy通过。
+- 首轮真实33文件/106440记录审计reports/s4-training-reserve-inventory-002.json isolated；含18历史训练输入/34报告绑定、当前五模态train/calibration/holdout。历史dev、crossmodal组件、全部来源/lineage/权限仍待补齐，非完整gold准入；001误将监督版本变化当身份冲突的失败记录保留。
 - S3全GPU链已结束、全sidecar已审计。远端已安全ff至869ee95，17个精确路径冲突的旧untracked证据保存在/root/autodl-tmp/s2-evidence-recovery/pre-s3-serving-reference。
-- 当前真实作业/root/autodl-tmp/s3-serving-reference.sh：HF float32、S3 adapter+图像1120、公开100例双遍；timeout1200 PID812231/python812232。日志artifacts/s3-serving-reference-001/run.log，退出码exit-code.txt，报告reports/s3-serving-hf1120-reference-001.json。它是非封存数值参考，不代表正式性能/发布；native HTTP对照待HF完成再启动。运行中不改远端代码、不重启。
+- HF float32+S3 adapter+1120公开100例双遍完成，227.05秒/exit0/完全相同；reports/s3-serving-hf1120-summary-001.json绑定远端完整报告。
+- 原生LoRA FP32启动失败（内核仅FP16/BF16），改为独立FP32合并副本artifacts/s3-merged-fp32-reference-001（31.8GB），原基座/adapter未改；补18个原始k_norm别名并修复服务PATH后启动成功。materialization/alias-repair/启动失败报告保留；36个共享KV projection不改，不改推理引擎。
+- 当前本机服务PID826568，127.0.0.1:18001，/root/autodl-tmp/s3-serving-merged.sh限时900秒；native-merged-server-003.log。控制器PID826802运行/root/autodl-tmp/compare-merged-reference.py，正式公开100例双遍HTTP对照，日志compare.log、compare-exit-code.txt、报告reports/s3-serving-merged-parity-001.json。原始代码仍869ee95，运行中不切代码；完成后停自己开的服务进程，未获授权不关卡。
 - 远端/root/autodl-tmp/s1-text-lora-001，SSH mux /tmp/omnijev-ssh-root-final、端口48926；训练Python before-gpu-teacher-job-final-001，GPU H20。模型/媒体/凭据沿runbook。
 
 ## 已知缺口与决定

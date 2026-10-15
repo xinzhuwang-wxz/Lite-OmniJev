@@ -139,6 +139,27 @@ def test_family_hash_is_not_double_hashed(tmp_path: Path) -> None:
     assert result.categories == ["pool_overlap"]
 
 
+@pytest.mark.parametrize("current_pool", ["train", "holdout"])
+def test_supervision_versions_keep_original_exposure(tmp_path: Path, current_pool: str) -> None:
+    old, new = sample(pool="train"), sample(pool=current_pool)
+    old["meta"]["data_version"] = "old-supervision"
+    old["questions"][0]["target"]["value"] = "no"
+    result = audit_manifest(
+        manifest(
+            tmp_path,
+            [
+                spec(tmp_path, [old], exposure="historical", expected_pool="train"),
+                spec(tmp_path, [new], expected_pool=current_pool),
+            ],
+        )
+    )
+    if current_pool == "holdout":
+        assert result.categories == ["pool_overlap"]
+    else:
+        assert result.outcome == "isolated"
+        assert result.gold_provenance == "not_validated"
+
+
 @pytest.mark.parametrize("mutation", ["payload", "family", "duplicate"])
 def test_conflicting_ids_rejected(tmp_path: Path, mutation: str) -> None:
     first, second = sample(), sample()
