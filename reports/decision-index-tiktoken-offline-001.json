@@ -1,0 +1,13 @@
+{
+  "status": "offline_cache_verified",
+  "url": "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken",
+  "sha256": "223921b76ee99bde995b7ff738513eef100fb51d18c93597a113bcffe865b2a7",
+  "cache_key": "9b5ad71b2ce5302211f9c61530b329a4922fc6a4",
+  "bytes": 1681126,
+  "directory": "/root/autodl-tmp/s1-text-lora-001/artifacts/decision-index-tiktoken-001",
+  "wall_seconds": 3.953264571726322,
+  "benchmark_rebuilt": false,
+  "cache_miss_reads": 0,
+  "encoding": "cl100k_base",
+  "roundtrip": true
+}

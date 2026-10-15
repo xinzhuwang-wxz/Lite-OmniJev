@@ -11,3 +11,6 @@
 预算：仅一组lambda=0.5，不扫参；reference预计算≤240秒、训练≤480秒、第一轮筛选≤300秒。训练保持每步记录gold CE/KL/启用count，checkpoint15/30；NaN/Inf/契约失败立即停。先video固定150目标≥102且temporal≥60/motion≥7，再原cross固定50≥35、补充≥40，audio≥37，其余旧3不退。失败即止，不扩完整dev，不重用封存反馈。成功才完整dev/教师/独立holdout，不把小筛选当S4门。
 
 本候选需先完成真实CPU preflight及sidecar生成核验；入口实现通过不等于已训练。所有新增实际更新报告必须追加曝光库存；原数据池保持不变。
+
+## 实测结论：停止推广
+reference预计算300draw通过200.16秒，纯text mapping预检bug修复后完整CPU预检111.01秒通过；训练30步439.06秒完成，139个正确TRAIN replay实际启用KL，gold CE均值.352264、KL均值.002654。video113/150通过，但原cross33/50不满足35门；与普通video CE逐题预测完全相同（首轮对照纠正2/退化4，no→yes从10增14）。停止此λ候选，不跑补充及后续，不以argmax/损失改善替代阶段门。完整报告和sidecar哈希保留。

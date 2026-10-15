@@ -1,0 +1,201 @@
+{
+  "status": "known_pilot_exposures_reconciled",
+  "exit_code": 0,
+  "scope": "Known saved update-bearing report discovery; not all external jobs, gold readmission or S4 acceptance",
+  "gpu_used": false,
+  "base_inventory": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-001/inventory-manifest.json",
+    "sha256": "64f5cfc043ad06cf4683cfb0600041d0abed4f74fb6becd09a5df34238423177"
+  },
+  "historical_index": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/historical-training-index.json",
+    "sha256": "0f6dff35cf4c14f84ecb88b1abee74a9ac3b95558c43bf54693b9f4eb4562b29"
+  },
+  "pilots": [
+    {
+      "name": "s4-joint-pilot",
+      "status": "completed",
+      "steps_completed": 30,
+      "update_bearing": true,
+      "appended_historical_train": true,
+      "final_report": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-joint-pilot-train-001.json",
+        "sha256": "6045e4bca6a3bb23986a50dbd42589e13c78719fcba1d168d603f32db72b9872"
+      },
+      "run_report": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/run.json",
+        "sha256": "973dac6f50e0a7283575274941ce0ec17a119d46b32769290050fa3ec13d001d"
+      },
+      "runtime_data": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/data.jsonl",
+        "sha256": "98803d5ad626a5fd9970aba1a0a4ead89bc64394157a9546113debc7976245a0"
+      },
+      "preparation_data": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-001/train.jsonl",
+        "sha256": "6dd2d40a75c8d1fd48f1586210d76341a26f4aaa7636a33b3ad76d1642cd29d0"
+      },
+      "preparation_report": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-001/report.json",
+        "sha256": "8e0b3826d06211ed968f7657845ef7ad8c923e1e64f7fe5f46626c898edd27b8"
+      },
+      "canonical_equivalence": {
+        "rows": 1200,
+        "data_versions": [
+          "aokvqa-train-image-choice-s2-pools-v1",
+          "clevrer-train-video-noul-s3-pools-v1",
+          "clinc-oos-plus-train-v1-s1-pools-v1",
+          "clotho-aqa-s3-pools-v1",
+          "crossmodal-train-pilot-v1",
+          "gui-v2-screenshot-s2-pools-v1"
+        ]
+      }
+    },
+    {
+      "name": "s4-video-pilot",
+      "status": "completed",
+      "steps_completed": 30,
+      "update_bearing": true,
+      "appended_historical_train": true,
+      "final_report": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-video-pilot-train-001.json",
+        "sha256": "d3fcfbdf42da7fee4410ff822db6df7c5c8d3e21dcf2cd2d900da48c23d3748f"
+      },
+      "run_report": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-train-001/run.json",
+        "sha256": "9137fffec2c3892edd48e0dbcf595ef208c75dffb95823d50e79c8e3e3fe507d"
+      },
+      "runtime_data": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-train-001/data.jsonl",
+        "sha256": "aaae6e66516b0b95ed0eecb9a5867577fe61b72c109348d06c8105f5228fce9b"
+      },
+      "preparation_data": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-001/train.jsonl",
+        "sha256": "d3a4c62205d5f8f0664e38eeb32f06868fce65cb10341561b092e89501409edc"
+      },
+      "preparation_report": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-001/report.json",
+        "sha256": "5c22ed5712f9845a176cadd0254ed2817e9a491543d099110ee6a604fa304152"
+      },
+      "canonical_equivalence": {
+        "rows": 300,
+        "data_versions": [
+          "aokvqa-train-image-choice-s2-pools-v1",
+          "clevrer-train-video-noul-s3-pools-v1",
+          "clinc-oos-plus-train-v1-s1-pools-v1",
+          "clotho-aqa-s3-pools-v1",
+          "crossmodal-train-pilot-v1",
+          "gui-v2-screenshot-s2-pools-v1"
+        ]
+      }
+    }
+  ],
+  "appended_artifacts": [
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/data.jsonl",
+      "sha256": "98803d5ad626a5fd9970aba1a0a4ead89bc64394157a9546113debc7976245a0",
+      "cohorts_by_data_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": "image",
+        "clevrer-train-video-noul-s3-pools-v1": "video",
+        "clinc-oos-plus-train-v1-s1-pools-v1": "text",
+        "clotho-aqa-s3-pools-v1": "audio",
+        "crossmodal-train-pilot-v1": "crossmodal",
+        "gui-v2-screenshot-s2-pools-v1": "screenshot"
+      },
+      "exposure": "historical",
+      "expected_pool": "train"
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-train-001/data.jsonl",
+      "sha256": "aaae6e66516b0b95ed0eecb9a5867577fe61b72c109348d06c8105f5228fce9b",
+      "cohorts_by_data_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": "image",
+        "clevrer-train-video-noul-s3-pools-v1": "video",
+        "clinc-oos-plus-train-v1-s1-pools-v1": "text",
+        "clotho-aqa-s3-pools-v1": "audio",
+        "crossmodal-train-pilot-v1": "crossmodal",
+        "gui-v2-screenshot-s2-pools-v1": "screenshot"
+      },
+      "exposure": "historical",
+      "expected_pool": "train"
+    }
+  ],
+  "indexed_input_files": 18,
+  "discovered_update_bearing_reports": 40,
+  "unknown_update_bearing_inputs": 0,
+  "all_bound_input_sha256": {
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-001/inventory-manifest.json": "64f5cfc043ad06cf4683cfb0600041d0abed4f74fb6becd09a5df34238423177",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s4-joint-pilot-train-001.json": "6045e4bca6a3bb23986a50dbd42589e13c78719fcba1d168d603f32db72b9872",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/run.json": "973dac6f50e0a7283575274941ce0ec17a119d46b32769290050fa3ec13d001d",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/data.jsonl": "98803d5ad626a5fd9970aba1a0a4ead89bc64394157a9546113debc7976245a0",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-001/report.json": "8e0b3826d06211ed968f7657845ef7ad8c923e1e64f7fe5f46626c898edd27b8",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-001/train.jsonl": "6dd2d40a75c8d1fd48f1586210d76341a26f4aaa7636a33b3ad76d1642cd29d0",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s4-video-pilot-train-001.json": "d3fcfbdf42da7fee4410ff822db6df7c5c8d3e21dcf2cd2d900da48c23d3748f",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-train-001/run.json": "9137fffec2c3892edd48e0dbcf595ef208c75dffb95823d50e79c8e3e3fe507d",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-train-001/data.jsonl": "aaae6e66516b0b95ed0eecb9a5867577fe61b72c109348d06c8105f5228fce9b",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-001/report.json": "5c22ed5712f9845a176cadd0254ed2817e9a491543d099110ee6a604fa304152",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-video-pilot-001/train.jsonl": "d3a4c62205d5f8f0664e38eeb32f06868fce65cb10341561b092e89501409edc",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/historical-training-index.json": "0f6dff35cf4c14f84ecb88b1abee74a9ac3b95558c43bf54693b9f4eb4562b29",
+    "/root/autodl-tmp/lite-omnijev/artifacts/training/p0-20261013T131751Z/data.jsonl": "5b54c93e5a76fd09e1e5c64df2c74f2f9c640ba69d573e71333da7dff426889f",
+    "/root/autodl-tmp/lite-omnijev/artifacts/training/p0-20261013T131751Z/run.json": "4d7d556619bfc897abfef17836258ed2d0c0394e629d9335a8ce72d510d22689",
+    "/root/autodl-tmp/s1-text-lora-001/reports/gpu-train-smoke.json": "4d7d556619bfc897abfef17836258ed2d0c0394e629d9335a8ce72d510d22689",
+    "/root/autodl-tmp/lite-omnijev/artifacts/training/p0-gpu-resume-001/data.jsonl": "5b54c93e5a76fd09e1e5c64df2c74f2f9c640ba69d573e71333da7dff426889f",
+    "/root/autodl-tmp/lite-omnijev/artifacts/training/p0-gpu-resume-001/run.json": "a902fa54fdf555492cf388bb241d93a8fa9665b5eb20d64c408d8592c7941087",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-lora-001/main-001/data.jsonl": "75206358039678400da9c52302b854468320562117f72041b1d01238006135a9",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-lora-001/main-001/run.json": "dfdef1cf97e5b19ec4b3999cf800a6baab04635ec87aa0362d32092cbfe97004",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s1-main-run-001.json": "30f3f904170219d2a27e403b67f8c2452271ec4f83300fadcc1dd73ada22c3c8",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-lora-001/smoke-001/data.jsonl": "ff81d131e8d84bf14da4841a4caaa9e52550c302d1c5a480fc25e1267777f9e4",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-lora-001/smoke-001/run.json": "d4e603cb1d6be1899036ad7f719ff493f6fc32e50fbc2c1b9f6e40940e4a29b7",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s1-smoke-run-001.json": "35742dbfb464a21e82b68d9f9f0fa6be30d01bcbeee8cf1dc556d9feecd119ae",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/image-distill-001/data.jsonl": "656daf0f0ba6d60f18a19c6e7d0ebe4e86c36509bf4f442f8df5b581e1616ce5",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/image-distill-001/run.json": "f3dca35803560484da33374d81eaf7b8ec73493179e16e6a44582df1b4d53959",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-image-distill-run-001.json": "d910e81ba8831102109d36b3c6429a0bb22b4115e2553674185c584d1a0fad29",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/image-focus-001/data.jsonl": "79513dadcd92eb1c928ddca6c89ca01b8b3780e498903e886655498642720580",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/image-focus-001/run.json": "0457ac30f93d276806c74ce7c9aae8d80ca92b4d3696efeed7b6e0f06d4fc3d4",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-image-focus-run-001.json": "1d64124d8207bee9f2bca6af6846787741e67a5a77df7d30f3fad22966fa55bf",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/image-smooth-001/data.jsonl": "844b4953208b45c3b4ce7bc5bc2a5967de92b76bf4a309f9d66f7acded431190",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/image-smooth-001/run.json": "b60079cb963216c673432e4832666723372b75faf49fdce08647ab169b3a2fdc",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-image-smooth-run-001.json": "88c6e448824996ed930c6fa25ddebce482b08879c0490b675e7eefadcfe1f8e7",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-001/data.jsonl": "42d5241a1799d79a7eefda1a68f1d7deb5746ba57a479b2f66f0e3190d3aaf8f",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-001/run.json": "50768d6e7760533af1493e72911c46b95321991fd776d476a76179f234f0f5c7",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-joint-run-001.json": "0ac661d8da44173f38cbf56ea51f85188b7c45004929de170a2ac99a4a068891",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/data.jsonl": "5bb3090f4850301730960e2fb92e1aa60f10007c7edbbcb4b275e882ac07620b",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/run.json": "50ee015ee9c1e06c68ddf9647876b6f33421cfa92f3a27c1904f527861ef7c16",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-joint-v2-run-001.json": "60d0e3c297ae51da0c7b068c4e1e4b46874a87bb4cce75de0f7180eadf3dda3e",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/new-family-ce-001/data.jsonl": "c1294590560ecc6d90fd12cb22097125718a1e94f512b8e5da4f44f20b34cfc8",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/new-family-ce-001/run.json": "8455524e6d6b83f508fd0df7e05046c11e76f178282d89cafebc69ad2f50443b",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-new-family-ce-run-001.json": "0677affac6e04ee0b16c42cbb8e0d0e2ffaae5d149840f852a4b2a11a985c5b4",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/probe-001/data.jsonl": "5bb3090f4850301730960e2fb92e1aa60f10007c7edbbcb4b275e882ac07620b",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/probe-001/run.json": "d6ab0ff4f7f371af10d88462ff3c7d5ff666c53da31a126156f6d7a945f08282",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/probe-v3-001/data.jsonl": "788e499e21796aac2965fa1a9b5876ecc9cbb6b080f7bc01d52f17742c818766",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/probe-v3-001/run.json": "4e0cac9d49acaf5310906a99538426fa333715565965543612b46b1231e58d12",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-probe-v3-run-001.json": "013f8c50bf45034e74f69a664b551a31095e709192070c6630a73ad932d833db",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/smoke-001/data.jsonl": "d941c8413736b4a17a14fba2bbcc6e2c9cc41edcae316f71221f037add9ff17c",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/smoke-001/run.json": "217f96e4ce5181b31f2d8ee7f7271a274256baf5d4ed676bdd69a493eaca45da",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-smoke-run-001.json": "0fa2248be0a33b009c1370583ded746dcc89b6dfdd3e7de1da0e5f7de363ae98",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/vqa-brier-001/data.jsonl": "3fb88b5498fc6bcebf04f63e65338e13a5539c5ce261bdf44a58537b35dc0e65",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/vqa-brier-001/run.json": "99119fa14527a32b7a82e1431f99647979005d00386a296862e5a1294f7ce7c5",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-vqa-brier-run-001.json": "2ec6f1134b4563dacee22cb2aab9b15d2776505869997c63d3fbde130537b788",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/vqa-ce-001/data.jsonl": "3fb88b5498fc6bcebf04f63e65338e13a5539c5ce261bdf44a58537b35dc0e65",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/vqa-ce-001/run.json": "217de3de4dd1dc578fd046abfb94dd1fd9643e8fd86a4aa3966128c2b92b0a06",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s2-vqa-ce-run-001.json": "f81a5601b92b12f536623ea9bba36d0d87ba721199ebfa015c4f196f848591e6",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-lazy-parity-001/data.jsonl": "97357c9895a5f408f741d70783285e6ed107552cc789987789bc85a2d89b4a0b",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-lazy-parity-001/run.json": "17e061d611d71f9a9a0c3d244f55a070e12ac88a2c0909893cc3bcb368c78026",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s3-lazy-parity-001.json": "fce9bafcb118d40ddd8923422652f926121dcb3edbb42cbb704dd1d0487a910f",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/data.jsonl": "e120aca4ecf14019c37131ab0eea63a58b45ffc8e3efaf14473416b9722081ae",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/run.json": "8fa4f1b8d37371e7bca6e6e15623cdd216ecf25da1d0cfc75a0d198094d6d9ab",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s3-stable-probe-train-001.json": "aa8704944689047956c473ccaa1ad815e4c7076c17e89b6e94b969eea07d5d42",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-training-probe-001/data.jsonl": "97357c9895a5f408f741d70783285e6ed107552cc789987789bc85a2d89b4a0b",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-training-probe-001/run.json": "37d911aac34e66558d4862590561a348d75c3e40d57cecef6384e81f1195c786",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s3-training-probe-001.json": "9f5509b5494951267b6c7fbec0b327a028d3effef34a8fd3169e99e52af28b1f",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-reference-retention-train-001/run.json": "f26b9a573f8c5e29622ba087e53d6c6482ae669d56eed4d851def1cf1adec799",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s4-reference-retention-training-001.json": "1d56f7b53f70ea2a24f3284873adadcfd1fcf4874ea6582fde08ce8385c607ca"
+  },
+  "output_sha256": {
+    "inventory-manifest.json": "cfe34891af9439085e79dc83d6aa72e9cb992ceed037e149457275a809ed5b02",
+    "inventory-audit.json": "f09b3d8b4d570f5fd218d5f7ad8dcf631a91312a4618f95dccf3f4235143d9d3",
+    "discovered-update-reports.json": "1464dac34bc995de5045cc1ffd79c8724e1232847afe790e4dc65fe52e653f53"
+  },
+  "duration_seconds": 21.909558789804578,
+  "runner_sha256": "f56b2beb3e186ad1cbe7b9779bcc88ab570ac6ea548665f9829da30d01377cc1",
+  "cost": null
+}
