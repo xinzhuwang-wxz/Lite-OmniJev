@@ -3,7 +3,10 @@
 CLI: --manifest ABS --media-root ABS --output-dir ABS --report ABS.
 Manifest: inventory {path,sha256}, sources [{path,sha256,pool,dataset}], where
 pool is calibration/holdout and dataset is VQA-v2, Clotho-AQA, or LibriSpeech.
-Sources must exactly match current inventory artifacts. Canary quotas are explicit.
+Sources must exactly match current inventory artifacts. --mode supplemental-dev
+uses only registered dev artifacts (current or historical), with 250 audio items
+per source and 500 VQA items. Existing dev artifacts are preserved. Canary quotas
+are explicit and never establish real admission.
 """
 
 from __future__ import annotations
@@ -32,6 +35,9 @@ QUOTAS = {
     "calibration": {"Clotho-AQA": 1400, "LibriSpeech": 1600},
     "holdout": {"Clotho-AQA": 500, "LibriSpeech": 500},
 }
+
+
+DEV_QUOTAS = {"dev": {"Clotho-AQA": 250, "LibriSpeech": 250}}
 
 
 def rank(value: str) -> str:
@@ -207,21 +213,25 @@ def build(
     *,
     canary: bool = False,
     quotas: dict[str, dict[str, int]] | None = None,
+    mode: str = "reserves",
 ) -> dict[str, Any]:
     for path in (manifest_path, root, output):
         safe_path(path)
     if output.exists() or not root.is_dir():
         raise ValueError("output_path")
-    quotas = QUOTAS if quotas is None else quotas
+    if mode not in {"reserves", "supplemental-dev"}:
+        raise ValueError("mode")
+    expected_quotas = DEV_QUOTAS if mode == "supplemental-dev" else QUOTAS
+    quotas = expected_quotas if quotas is None else quotas
     if (
-        set(quotas) != set(QUOTAS)
+        set(quotas) != set(expected_quotas)
         or any(
             set(q) != {"Clotho-AQA", "LibriSpeech"}
             or any(type(n) is not int or n < 1 for n in q.values())
             or sum(q.values()) % 4
             for q in quotas.values()
         )
-        or (not canary and quotas != QUOTAS)
+        or (not canary and quotas != expected_quotas)
     ):
         raise ValueError("quota")
     config = json.loads(manifest_path.read_bytes())
@@ -235,7 +245,7 @@ def build(
     current = {
         (a.path, a.sha256, a.expected_pool, a.cohort)
         for a in inventory.samples
-        if a.exposure == "current"
+        if a.exposure == "current" or (mode == "supplemental-dev" and a.expected_pool == "dev")
     }
     sources: dict[tuple[str, str], list[Sample]] = defaultdict(list)
     seen_ids: set[str] = set()
@@ -247,7 +257,7 @@ def build(
         if (
             set(spec) != {"path", "sha256", "pool", "dataset"}
             or spec["dataset"] not in DATASETS
-            or spec["pool"] not in QUOTAS
+            or spec["pool"] not in expected_quotas
         ):
             raise ValueError("source_declaration")
         modality = DATASETS[spec["dataset"]]
@@ -269,11 +279,15 @@ def build(
             ):
                 raise ValueError("source_identity")
             legal_target(sample, modality)
+            if mode == "supplemental-dev" and sample.questions[0].type != (
+                "noul" if spec["dataset"] == "Clotho-AQA" else "choice"
+            ):
+                raise ValueError("source_task")
             media_uri(root, sample.prefix.media[0].uri, sample.prefix.media[0].sha256)
             seen_ids.add(sample.id)
             sources[(spec["pool"], spec["dataset"])].append(sample)
     selections = {}
-    for pool in QUOTAS:
+    for pool in expected_quotas:
         total = sum(quotas[pool].values())
         images = sorted(sources[(pool, "VQA-v2")], key=lambda s: rank("image:" + s.id))
         audios = []
@@ -341,6 +355,7 @@ def build(
         raise ValueError("composed_isolation")
     outputs["inventory"] = digest(inventory_path.read_bytes())
     return {
+        "mode": mode,
         "counts": counts,
         "input_sha256": input_hashes,
         "output_sha256": outputs,
@@ -375,6 +390,9 @@ def main(argv: list[str] | None = None) -> int:
             parser = PrivateParser(add_help=False)
             for name in ("manifest", "media-root", "output-dir", "report"):
                 parser.add_argument("--" + name, type=Path, required=True)
+            parser.add_argument(
+                "--mode", choices=("reserves", "supplemental-dev"), default="reserves"
+            )
             parser.add_argument("--synthetic-canary", action="store_true")
             parser.add_argument("--canary-per-source", type=int)
             args = parser.parse_args(argv)
@@ -386,7 +404,7 @@ def main(argv: list[str] | None = None) -> int:
             quotas = (
                 {
                     pool: dict.fromkeys(("Clotho-AQA", "LibriSpeech"), args.canary_per_source)
-                    for pool in QUOTAS
+                    for pool in (DEV_QUOTAS if args.mode == "supplemental-dev" else QUOTAS)
                 }
                 if args.synthetic_canary
                 else None
@@ -398,6 +416,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.output_dir,
                     canary=args.synthetic_canary,
                     quotas=quotas,
+                    mode=args.mode,
                 )
             )
             result.update(status="built", category="none", exit_code=0)

@@ -164,3 +164,88 @@ def test_cross_pool_alias_rejected_and_source_must_be_current(tmp_path: Path) ->
     path.write_text(json.dumps(config))
     with pytest.raises(ValueError, match="inventory_isolation"):
         build(path, tmp_path, tmp_path / "bad", canary=True, quotas=quotas())
+
+
+def dev_fixture(tmp_path: Path) -> tuple[Path, dict[str, Any]]:
+    path, config = fixture(tmp_path)
+    inventory_path = Path(config["inventory"]["path"])
+    inventory = json.loads(inventory_path.read_bytes())
+    dev_sources = []
+    for source in config["sources"][:3]:
+        source_path = Path(source["path"])
+        rows = [json.loads(line) for line in source_path.read_text().splitlines()]
+        for row in rows:
+            row["meta"]["pool"] = "dev"
+        source_path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        source.update(pool="dev", sha256=digest(source_path.read_bytes()))
+        for artifact in inventory["samples"]:
+            if artifact["path"] == source["path"]:
+                artifact.update(expected_pool="dev", sha256=source["sha256"])
+                if source["dataset"] == "Clotho-AQA":
+                    artifact["exposure"] = "historical"
+        dev_sources.append(source)
+    inventory_path.write_text(json.dumps(inventory))
+    config["inventory"]["sha256"] = digest(inventory_path.read_bytes())
+    config["sources"] = dev_sources
+    path.write_text(json.dumps(config))
+    return path, config
+
+
+def test_supplemental_dev_accepts_historical_sources_preserves_inventory(tmp_path: Path) -> None:
+    path, config = dev_fixture(tmp_path)
+    original = json.loads(Path(config["inventory"]["path"]).read_bytes())
+    output = tmp_path / "supplemental"
+    result = build(
+        path,
+        tmp_path,
+        output,
+        mode="supplemental-dev",
+        canary=True,
+        quotas={"dev": {"Clotho-AQA": 2, "LibriSpeech": 2}},
+    )
+    assert result["mode"] == "supplemental-dev"
+    assert set(result["counts"]) == {"dev"}
+    assert result["counts"]["dev"]["question_items"] == 4
+    assert not (output / "calibration.jsonl").exists()
+    combined = json.loads((output / "inventory-manifest.json").read_bytes())
+    assert combined["samples"][: len(original["samples"])] == original["samples"]
+    assert audit_manifest(output / "inventory-manifest.json").outcome == "isolated"
+    with pytest.raises(ValueError, match="source_declaration"):
+        build(path, tmp_path, tmp_path / "reserve", canary=True, quotas=quotas())
+
+
+def test_supplemental_dev_rejects_reserve_sources(tmp_path: Path) -> None:
+    path, _ = fixture(tmp_path)
+    with pytest.raises(ValueError, match="source_declaration"):
+        build(
+            path,
+            tmp_path,
+            tmp_path / "baddev",
+            mode="supplemental-dev",
+            canary=True,
+            quotas={"dev": {"Clotho-AQA": 2, "LibriSpeech": 2}},
+        )
+
+
+def test_supplemental_dev_cli_canary(tmp_path: Path, capsys: Any) -> None:
+    path, _ = dev_fixture(tmp_path)
+    args = [
+        "--manifest",
+        str(path),
+        "--media-root",
+        str(tmp_path),
+        "--output-dir",
+        str(tmp_path / "dev-output"),
+        "--report",
+        str(tmp_path / "receipt"),
+        "--mode",
+        "supplemental-dev",
+        "--synthetic-canary",
+        "--canary-per-source",
+        "2",
+    ]
+    assert main(args) == 0
+    captured = capsys.readouterr()
+    result = json.loads(captured.out)
+    assert result["synthetic_canary"] and result["full_gold_gate"] == "not_validated"
+    assert SECRET not in captured.out and str(tmp_path) not in captured.out and not captured.err
