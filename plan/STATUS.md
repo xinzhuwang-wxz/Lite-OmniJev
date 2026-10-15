@@ -12,7 +12,8 @@
 - 第二轮原crossmodal35→33/50，违反预设保留门，reports/s4-video-pilot-retention-001.json qualified_for_full_dev=false；未跑其余不必要筛选，不能推广。第一轮6bb86b09…仍为保留候选。当前GPU进程已实查为空，未关卡。
 - 有界融合pilot-003已结束，两比例均未全过：alpha.5原cross36/video107/audio39，但补充cross39<40；alpha.25两cross36/40，但video101<102。都不推广，不新增比例，不运行完整dev；报告两份s4-fusion*-screening、050-retention及crossmodal报告；025在video失败后未启其余保留评测。alpha.5/.25 CPU最大残差.000656/.000496均通过数值门；未证明任何S4质量门。首轮仍保留。
 - 原方案A4明确列有按模态路由多LoRA，ADR0015允许按实测干扰启动；已只读确认固定vLLM0.26 Gemma4ForConditionalGeneration声明SupportsLoRA，实际多LoRA运行/数值/成本仍未验证，不能据此称部署就绪。当前先检验B3输入预算。
-- 新瓶颈假设B3：官方加载的Gemma4 video_processor默认70soft tokens/帧，CPU固定6题×16帧70/140/280输入约1173/2229/4373（reports/s4-video-budget-cpu-001.json）。140仍在4096内；现已按reports/explore/s4-b3-video140-001.md启动唯一video140对照，首轮adapter、同dev150/16帧不变，≥102才继续，600秒timeout。当前session11581，远端/root/autodl-tmp/probe-video140.py，source f592776，输出reports/s4-video140-probe(-execution)-001.json。第一次启动因引用模块局部transformers属性失败、未启GPU；已改直接导入，日志001保留，当前日志002。
+- B3 video140对照已完成并停止：同首轮adapter/dev150/16帧仅视频soft tokens70→140，正确99→96、jobwall120.66→168.11秒，无收益。不推广140、不额外GPU试280；reports/s4-video140-probe-execution-001.json及native报告齐全。CPU6题已证实70/140/280输入约1173/2229/4373，属输入验证不是质量。所有本轮GPU作业已结束。
+- 下一可执行路线A4：原方案明确允许分模态LoRA/标准vLLM路由，当前实测视频专家113/150但跨模态退化触发模态干扰假设。先用固定vLLM0.26原生multi-LoRA做最小加载/概率一致性/资源验证（纯video→第二轮14496e28…，其他→首轮6bb86b09…），不能仅靠静态SupportsLoRA声明认定可发布；不换基座、不新增head、不改引擎、未作产品默认。若runtime验证通过，继续完整dev/同源教师/独立holdout阶段门，不把各自小分拼成已通过结论。
 - 两轮实际runtime canonical data SHA与准备JSONL不同，已逐ID完整Sample等价核验并追加historical TRAIN；reports/s4-pilot-exposure-reconciliation-001.json真实通过，38份已知update-bearing报告、追加2份canonical工件、全库存隔离通过。派生库存artifacts/s4-pilot-exposure-001/inventory-manifest.json；原gold11证据尚需在正式S4封存前刷新当前准入绑定。
 - 首轮训练+7筛选总jobwall665.642秒（reports/s4-pilot-resource-001.json），不是总租赁账单/服务时延；价格未知cost=null。第二轮损失/计时/曝光/SwanLab online真实记录齐全。
 - JevBench adapter入口ba5ca19已合入，主树26tests及真实CPU preflight通过；候选231题GPU仍待最终候选冻结。源/root/autodl-tmp/s4-public-code-ba5ca19。

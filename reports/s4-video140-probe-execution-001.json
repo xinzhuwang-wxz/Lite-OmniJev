@@ -1,0 +1,18 @@
+{
+  "scope": "fixed adapter/dev150/16 frames; only video140 changes; not stage acceptance",
+  "exit_code": 0,
+  "video_soft_tokens": 140,
+  "reference_video_soft_tokens": 70,
+  "reference_report_sha256": "86befe9fa4e77a586ed4222527a778e98feca67010f981e01ffc623c6ad61100",
+  "runner_sha256": "108f90fcea89df8c1c8d44c9c1b9fc2b55ad37ef3c4bb5d5b61b15a3c6df96ab",
+  "elapsed_seconds": 168.1118895765394,
+  "cost": null,
+  "reference_correct": 99,
+  "required_screen_correct": 102,
+  "maximum_wall_seconds": 600,
+  "correct": 96,
+  "count": 150,
+  "screen_pass": false,
+  "native_report_sha256": "0d51dd6770d29a2211f5882242633e3ee058320d8f5ea14ef6d1ada44c490010",
+  "baseline_job_wall_seconds": 120.65768003463745
+}
