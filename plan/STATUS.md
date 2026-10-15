@@ -24,6 +24,6 @@
 - 凭据仅项目外。暂无需用户操作的阻塞，GPU链运行，未请求关卡。独立CPU检查工作树/root/autodl-tmp/image-budget-cpu-check-001保留原始证据，未影响GPU checkout。
 
 ## 本轮新增证据
-- S3训练PID284934仍存活，step0050检查点已落盘，GPU100%（最新观测）；原1800秒链继续，不重启。
+- S3训练PID284934已结束：reports/s3-stable-probe-train-001.json completed100步/843.25秒、峰值CUDA30144239616 bytes，全部1000样本已访问；adapter1bebae31…。原链正在video150筛查，勿重复启动。
 - reports/s3-video-error-audit-002.json：训练标签4146yes/4153no，v2 dev500混淆145 FN/88 FP，yes概率AUC .57797；粗分temporal169/329、existence73/129、motion25/42。仅错误机制诊断，未调开发集阈值、未读封存。
 - 本地c243ed3评测分段日志：每25条/每遍/异常时刷盘，progress.json保存身份与未完成标记，完成后原records.jsonl及指标格式保持；不自动续跑、不把部分结果用于gate。主树60项评测/多模态测试及lint/mypy通过，GPU开销未测。运行中远端仍ea3695e，完成后再同步。
