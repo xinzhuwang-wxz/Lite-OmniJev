@@ -1,0 +1,61 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--adapter",
+    "artifacts/s1-text-lora-001/main-001/adapter",
+    "--data",
+    "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/dev.jsonl",
+    "--passes",
+    "2",
+    "--output-dir",
+    "artifacts/s1-text-lora-001/dev-eval-30k",
+    "--report",
+    "reports/s1-dev-eval-30k-001.json"
+  ],
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "1b6a9ab6a6cd7d0c10e865a495eea5a3f364aabacbfd56c746a3d54326ed4d53",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-lora-001/main-001/adapter",
+  "data_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+  "samples": 500,
+  "passes": 2,
+  "repeat_identical": true,
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.996,
+    "ece15": 0.003974735586695787,
+    "brier": 0.007971573978798056,
+    "coverage_at_error": 1.0,
+    "max_error": 0.05,
+    "product_accuracy": 0.996,
+    "mean_p_insufficient": 6.193742791043438e-10,
+    "max_p_insufficient": 1.672681750800951e-08,
+    "predicted_insufficient": 0
+  },
+  "code_revision": "96fcf2da1624ad89f6771188e76ebc928401ce73",
+  "script_sha256": "504c5e8db5c01b55204d85fb865395958fc8ddc28726d34bab9361fa66cf94a9",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "16f86d231c25e52d6ca0fb8f325e683003a98b9c253dae7e127f4a27c48ee700",
+  "timing": {
+    "started_at": 1792026066.7738802,
+    "finished_at": 1792026207.970506,
+    "duration_seconds": 141.19662594795227
+  }
+}

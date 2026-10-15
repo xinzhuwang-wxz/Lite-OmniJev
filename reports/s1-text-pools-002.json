@@ -1,0 +1,80 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "blocker": null,
+  "command": [
+    "/root/autodl-tmp/envs/root-main-offline-check/bin/python",
+    "-m",
+    "scripts.s1_text_pools",
+    "--source",
+    "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/train.jsonl",
+    "--dev",
+    "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/dev.jsonl",
+    "--exclusion-union",
+    "/root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/dev-exclusion-history-union-v2-001/dev-exclusion.jsonl",
+    "--train-out",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-b/train.jsonl",
+    "--calibration-out",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-b/calibration-reserve.jsonl",
+    "--holdout-out",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-b/holdout-reserve.jsonl",
+    "--allocation-ledger-out",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-b/allocation-ledger.jsonl",
+    "--report",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s1-text-pools-v1-001/run-b/report.json"
+  ],
+  "seed": 42,
+  "protocol": "s1-text-pools-v1",
+  "config": {
+    "protocol": "s1-text-pools-v1",
+    "seed": 42,
+    "allocation_prefix": "s1-text-pools-v1:42:",
+    "expected_source_sha256": "12a42005478ff1cd2f618fbe4951ced1af878b9e115a9a055c57d9d79578cb11",
+    "expected_source_rows": 14750,
+    "source_data_version": "clinc-oos-plus-train-v1-text-dev-excluded",
+    "pools_data_version": "clinc-oos-plus-train-v1-s1-pools-v1",
+    "holdout_reserve_count": 1000,
+    "calibration_reserve_count": 3000,
+    "config_sha256": "4e20895b2d13edf6eba56e460b5328abe9667ccf25d41c396f119865e98c66b9"
+  },
+  "training_admitted": false,
+  "quality_gate": "not_run",
+  "gpu_used": false,
+  "holdout_content_accessed": false,
+  "cost": null,
+  "source": {
+    "source_jsonl_sha256": "12a42005478ff1cd2f618fbe4951ced1af878b9e115a9a055c57d9d79578cb11",
+    "source_dataset": "clinc/clinc_oos",
+    "source_revision": "155b9c710419136e17307b80d0a13e68cd46b4ec",
+    "license": "CC-BY-3.0",
+    "families": 14750,
+    "rows": 14750,
+    "dev_families": 500,
+    "exclusion_union_families": 3000,
+    "exclusion_checked": true
+  },
+  "split": {
+    "train_items": 10750,
+    "calibration_reserve_items": 3000,
+    "holdout_reserve_items": 1000,
+    "dev_family_overlap": 0,
+    "exclusion_family_overlap": 0
+  },
+  "outputs": {
+    "train_jsonl_sha256": "75206358039678400da9c52302b854468320562117f72041b1d01238006135a9",
+    "calibration_reserve_jsonl_sha256": "6d3878168fbe135bb38bf1253ba8534d88b00b71654235c0bf619a2481a8a0c9",
+    "holdout_reserve_jsonl_sha256": "6bba594d544fdb67dc7dd95d37ce22de3570ad91d2db5dd0e633828eb87542c6",
+    "allocation_ledger_sha256": "ce49ae4bbb3e6885d401c89c0b98a4bd3e4df313ec338a17acc28af87bd929e4"
+  },
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "git_head": "7565adb1b770fbf7b6d9e8803ef150e38e111e57",
+    "script_sha256": "3e32b0decd3af5eb202ab668295cd563f61e836de092e6a69a13fecf45642669"
+  },
+  "timing": {
+    "started_at": 1792015644.2502418,
+    "finished_at": 1792015646.3412304,
+    "duration_seconds": 2.0909886360168457
+  }
+}

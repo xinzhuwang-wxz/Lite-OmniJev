@@ -1,37 +1,29 @@
 # STATUS
 
-更新：2026-10-15（Asia/Shanghai）。**S0按批准ADR0010/ADR0012已通过，s0:08 done；S1尚未开始，按用户要求由新session继续。** 原生goal工具仍为此前历史blocked，当前工具无resume操作；本地人标阻塞已解除，完整项目仍未完成。
+更新：2026-10-15（Asia/Shanghai）。**S1文本闭环已完成并通过阶段门（dev500 acc 99.6%，ECE15 0.004）；S2尚未开始，GPU仍在跑可继续排下一闭环。** s1:01 done；完整交接plan/handoff-2026-10-15-s0-complete.md仍为S0权威入口。
 
 ## 当前结果（已完成，不重跑）
 | 闭环 | 证据与边界 |
 |---|---|
-| P0/离线准备 | reports/p0-engineering-acceptance.md；真模型10步、7模型70文件121.09GB/29来源。资产就绪不是质量通过。 |
-| s0:01 教师技术 | reports/teacher-technical-admission-gpu-001.json；安全head转换及真实GPU等价。 |
-| s0:02 教师效果 | reports/s0-teacher-complete-acceptance-001.json；5600记录/2800精确对，MMAU62%，固定9任务MVBench54.222%，exit0。 |
-| s0:03 数值/服务/浏览器 | reports/s0-full100-gpu-acceptance-001.json；FP32 IEEE HF/native及gateway100题四概率严格<.001、真实Chromium153通过；仅数值参考。 |
-| s0:04 缓存 | reports/s0-cache-measured-baseline-acceptance-001.json；真实on/off冷暖与KV命中及四概率差通过。原≤2按ADR0010仅诊断目标，停止性能搜索。 |
-| s0:07 数据/基线 | reports/s0-baseline-expansion-acceptance-001.json及s0-baseline-summary.md；六cohort各500、30支持对×双轮=30000记录/15000精确对，6个unsupported明确留空，6模型公开231双轮齐全，token/耗时/版本/hash完备。 |
-| 数据与review | 六cohort真实双构建/媒体验证/四池工程隔离；跨模态复用dev组件。集中源码review唯一P2已关闭，34相关tests/全仓静态/build通过；GUIv2修复7定向tests/真实双构建通过；最终30份同cohort来源hash一致，无GPU重跑。 |
+| S0全部六门 | reports/s0-stage-acceptance-001.json；30/30开发基线、六公开模型双轮齐全。 |
+| s1:01 文本LoRA闭环 | reports/s1-stage-acceptance-001.json绑定13份证据SHA；池冻结10750/3000/1000双遍字节一致零交集；smoke自测99.8%≥.98；dev500：30k adapter 99.6%（超E4B零样本+6pp、超OneJev4+3pp）、ECE15 .0040、双遍完全一致；eval.gate校准后全过exit0。 |
+| 校准ADR0013 | docs/adr/0013-s1-measured-gate-calibration.md；30k_vs_10k原+2pp门在99.4%起点数学不可达（上限+0.6pp），原门判定s1-stage-gates-original-001.json如实FAIL留证，按用户2026-10-15授权校准为≥0；ECE由扩量改善（−24%）与Brier（−28%）承载。 |
 
-截图v1网格捷径使坐标规则497/500；旧分数superseded且证据保留。v2保留原500family（498原题/2同family几何重选），双构建一致；固定旧规则19/500。最终截图：E4B51.4%、E2B26.0%、OneJev4 66.2%、27B81.2%、教师74.0%、Valen73.0%。这些是原始零样本基线，不是训练产品达标。
+训练栈：E4B冻结+决策LoRA r16α32（3488万可训参数）、官方模板/thinking关/A..T+U单token边界探针、FP32 log-softmax、账本前置校验；教师环境python（torch2.13/TF5.17/peft0.21.2）增量加装swanlab0.10.2（--no-deps、freeze diff留证）；SwanLab online真实上传（key在远端/root/.s1-swanlab-env，不入仓）。
 
 ## 资源与恢复
-- **所有自有GPU评测/服务进程已结束。显存0MiB，无计算进程；已通知用户可关卡，未自动关机。** 磁盘800G/已用414G/余387G，费用未知null。
-- 最后27B /root/autodl-tmp/s0-screenshot-v2-final-001 HEAD7b4f382，artifacts/screenshot-27b-parallel-v2-001：1000记录、model/parent/kernel exit0/finished；2507.207秒。实测deadline由2400改4500，保留同一进程，watchdog已结束；reports/s0-screenshot-27b-deadline-handoff-001.json。
-- 原queue343888三模型exit0后已结束，原27B未启动；watcher遇zombie nvidia-smi安全暂停后已收口，错误日志保留，reports/s0-screenshot-parallel-handoff-001.json。禁止重启任何旧队列。
-- 完整新session交接：**plan/handoff-2026-10-15-s0-complete.md**；旧10-14接续入口仅指向这里。
-- 六数据路径入口configs/s0-development-cohorts-h20.json；当前截图/root/autodl-tmp/s0-gui-dev-v2-001/artifacts/run-a。历史dev排除union /root/autodl-tmp/s0-screenshot-v2-final-001/artifacts/dev-exclusion-history-union-v2-001/dev-exclusion.jsonl，SHA3110f9740d9e7dd9c39023b106d977e927b3446f5dfa82e168f729c127aeda1e。正式训练/未来校准同时拒绝family和历史媒体SHA，不能事后删训练账本制造隔离。
-- SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final；凭据不入仓。资产根/root/autodl-tmp/lite-omnijev/artifacts；H20 97871MiB/cgroup150GiB/16CPU。
-- primary /root/autodl-tmp/envs/serve-vllm026-offline-check/bin/python（TF5.13/Torch2.11+cu130/vLLM.26）；teacher /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python（TF5.17/Torch2.13+cu130）。冻结教师/IEEE树gpu-reference-fp32-complete-001 HEADdfdfd935不改。
+- GPU当前空闲（chain完成）；用户指示"卡开着尽量上卡，不要空转，尽量省卡时"——下一闭环应立即接续排卡或由用户决定关卡。
+- S1工作树/root/autodl-tmp/s1-text-lora-001（HEAD 96fcf2d+未跟踪artifacts）；adapter三份（smoke/10k/30k）、sidecar、池输出、chain日志均在远端持久盘，本地reports/为判定层证据。
+- SSH root@region-42.seetacloud.com:48926，mux /tmp/omnijev-ssh-root-final（失效则向用户要密码，凭据不入仓）。同步方式：git bundle增量+远端fetch。
+- 执行中修复已收口：eval zip成对strict错误、单遍repeat语义、blocker留全消息；训练器checkpoint_every防磁盘爆量；S1配置JSON无尾逗号。
 
-## 当前下一步与后续数据任务
-- 用户明确删除新增真人双标/κ/用户外部gate账号要求（ADR0012，取代0011延期）；不再以缺真人阻塞S0或S1–3，也不在S4再要求用户组织标注。
-- s0:05改为S4现成gold封存与自动gate工程票，needs-triage/open，不是人类阻塞。六类各1000独立holdout、可靠真值来源/许可/hash、数据隔离仍须实际构建/验收；FINAL直接依赖05。
-- 新session展开一个S1文本数据→LoRA→同条件评测闭环。入训前冻结分池/预留未训练holdout和calibration family，禁止把现有dev或教师标签当最终gold。
-- reports/s0-stage-acceptance-001.json：实际六机器门全通过，证据SHA完备；52相关核心/阶段门回归通过，S4缺gold来源证明/缺holdout_gate仍拒绝，不重跑模型或全仓验证。
-- 当前session按用户边界完成S0交接，不启动训练；GPU此前已证实空闲、可关卡，不自动操作。新session第一步读正式s0-complete交接。
+## 当前下一步（S2入口）
+- 用户指示：S1有戏就继续推进。S1结论"有戏"：文本Choice达99.6%并明确超两基线；S2按原门推进（图像/截图≥OneJev4−3pp、文本回归≤1pp、反事实翻转≥.80）。
+- S2闭环入口：图像cohort dev500（AOK，SHA38efa78e…）+截图dev500（GUIv2，SHA19c9d2c3…）已在configs/s0-development-cohorts-h20.json；复用s1:01全部训练/评测机制，媒体路径与多模态输入为新增工程量；基线image 83.6%/screenshot 66.2%（OneJev4），E4B 74.4%/51.4%。
+- s0:05（S4现成gold封存+自动gate）保持needs-triage/open，FINAL依赖它；文本holdout-reserve 1000已预留未训练。
+- 待用户决策：无需阻塞项；若需省费用可关卡（S2排卡时再开）。SwanLab凭据如轮换需更新远端env文件。
 
 ## 执行约束
-- 整个方案预估性能/资源按用户授权ADR0010实测自主校准，记录依据，限额优化后推进；质量/概率/许可/隔离保留；新增真人要求按用户批准ADR0012明确删除。
-- 规划保持业务闭环，不细拆；有效证据按hash复用，相关测试/批次静态及里程碑集中review，不重复全检。
-- 5b/探索关闭，不换基座/引擎、不push/付费/自动开关卡/生产部署。S1–6粗路线plan/DELIVERY-PLAN.md；只有解除当前阶段门后才展开下一闭环。
+- 用户2026-10-15授权：负责人全权处理、非实测指标按ADR0010式实测校准（记录原值/证据/新标准，参照ADR0013格式）、GPU不空转省卡时、成块代码可派fable写；质量结论不暗降。
+- 5b/探索关闭，不换基座/引擎、不push/付费/自动开关卡/生产部署；只有解除当前阶段门后才展开下一闭环。
+- 数据/质量/许可/隔离保留：任何新训练入口必须核allocation ledger并拒绝dev/calibration/holdout family。
