@@ -41,7 +41,12 @@ from train.checkpoint import (
     verify_resume_request,
 )
 from train.monitoring import SwanLabConfig, Telemetry, start_swanlab
-from train.multimodal import load_media, resolve_media
+from train.multimodal import (
+    ImageMaxSoftTokens,
+    configure_image_processor,
+    load_media,
+    resolve_media,
+)
 from train.template import check_answer_tokens, render_payload, render_prompt
 
 
@@ -78,6 +83,9 @@ class LoopConfig(Contract):
     dtype: Literal["bfloat16"] = "bfloat16"
     modality: Literal["text", "image", "screenshot", "audio", "video", "mixed"] = "text"
     video_num_frames: Literal[8, 16] = 16
+    image_max_soft_tokens: ImageMaxSoftTokens | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     media_root: str | None = None
     media_roots: list[str] | None = None
     midway_step: int | None = Field(default=None, ge=1)
@@ -384,6 +392,7 @@ def prepare_multimodal_examples(
     max_length: int,
     extra_roots: list[Path] | None = None,
     video_num_frames: int = 16,
+    image_max_soft_tokens: int | None = None,
 ) -> list[dict[str, Any]]:
     """Cohort wrapper: load the official processor once, render every sample."""
     transformers = importlib.import_module("transformers")
@@ -392,6 +401,7 @@ def prepare_multimodal_examples(
         local_files_only=True,
         trust_remote_code=False,
     )
+    configure_image_processor(processor, image_max_soft_tokens)
     return [
         prepare_media_example(
             sample,
@@ -435,6 +445,7 @@ def prepare_mixed_examples(
     max_length: int,
     extra_roots: list[Path] | None = None,
     video_num_frames: int = 16,
+    image_max_soft_tokens: int | None = None,
 ) -> list[dict[str, Any]]:
     """Mixed-cohort wrapper: one tokenizer plus one processor, per-sample routing."""
     transformers = importlib.import_module("transformers")
@@ -444,6 +455,7 @@ def prepare_mixed_examples(
         trust_remote_code=False,
     )
     tokenizer = OfficialTokenizerAdapter(model_dir)
+    configure_image_processor(processor, image_max_soft_tokens)
     return [
         prepare_mixed_example(
             sample,
@@ -992,6 +1004,7 @@ def run(
                     ).AutoProcessor.from_pretrained(
                         str(model_dir), local_files_only=True, trust_remote_code=False
                     )
+                    configure_image_processor(processor, config.image_max_soft_tokens)
                     adapter = OfficialTokenizerAdapter(model_dir)
                     examples = BoundedPreparedExamples(
                         samples,
@@ -1016,6 +1029,7 @@ def run(
                         config.max_length,
                         extra_roots=extra_roots,
                         video_num_frames=video_num_frames,
+                        image_max_soft_tokens=config.image_max_soft_tokens,
                     )
                 else:
                     examples = prepare_multimodal_examples(
@@ -1025,6 +1039,7 @@ def run(
                         config.max_length,
                         extra_roots,
                         video_num_frames=video_num_frames,
+                        image_max_soft_tokens=config.image_max_soft_tokens,
                     )
             report["examples"] = len(examples)
             if not isinstance(examples, BoundedPreparedExamples):

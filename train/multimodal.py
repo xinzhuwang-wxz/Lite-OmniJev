@@ -20,6 +20,25 @@ from pydantic import Field, model_validator
 from data.schema import Contract, Metadata, Prefix, Question
 from train.template import check_answer_tokens, render_payload
 
+IMAGE_MAX_SOFT_TOKENS = (70, 140, 280, 560, 1120)
+ImageMaxSoftTokens = Literal[70, 140, 280, 560, 1120]
+
+
+def validate_image_max_soft_tokens(value: int | None) -> None:
+    if value is not None and (type(value) is not int or value not in IMAGE_MAX_SOFT_TOKENS):
+        raise ValueError(f"image_max_soft_tokens must be one of {IMAGE_MAX_SOFT_TOKENS}")
+
+
+def configure_image_processor(processor: Any, value: int | None) -> int | None:
+    """Set the official image-only budget; leave video/audio and default assets untouched."""
+    validate_image_max_soft_tokens(value)
+    image_processor = getattr(processor, "image_processor", None)
+    if value is not None:
+        if image_processor is None or not hasattr(image_processor, "max_soft_tokens"):
+            raise ValueError("official image processor with max_soft_tokens is required")
+        image_processor.max_soft_tokens = value
+    return getattr(image_processor, "max_soft_tokens", None)
+
 
 class PreparationCase(Contract):
     id: str = Field(min_length=1)
@@ -313,15 +332,27 @@ class PreparedDecision:
     summary: dict[str, Any]
     http_messages: list[dict[str, Any]] | None = None
     http_media_io_kwargs: dict[str, Any] | None = None
+    http_image_max_soft_tokens: int | None = None
 
 
-def native_processor_kwargs(media_io_kwargs: dict[str, Any] | None) -> dict[str, Any]:
+def native_processor_kwargs(
+    media_io_kwargs: dict[str, Any] | None, image_max_soft_tokens: int | None = None
+) -> dict[str, Any]:
     """Keep native video frames on the pinned checkpoint's official video normalization.
 
     vLLM 0.26 processes frames through its image processor, whose default is False;
     the frozen Gemma4 video processor uses True with identity mean/std.
     """
-    return {"images_kwargs": {"do_normalize": True}} if (media_io_kwargs or {}).get("video") else {}
+    validate_image_max_soft_tokens(image_max_soft_tokens)
+    if (media_io_kwargs or {}).get("video"):
+        if image_max_soft_tokens is not None:
+            raise ValueError("image token budget cannot be applied to video")
+        return {"images_kwargs": {"do_normalize": True}}
+    return (
+        {"images_kwargs": {"max_soft_tokens": image_max_soft_tokens}}
+        if image_max_soft_tokens is not None
+        else {}
+    )
 
 
 def prepare_decision(
@@ -332,12 +363,17 @@ def prepare_decision(
     *,
     profile: Literal["hf_only", "canonical_http"] = "hf_only",
     video_frames: Literal[8, 16] = 16,
+    image_max_soft_tokens: int | None = None,
     max_bytes: int = 64 * 1024 * 1024,
     max_total_image_pixels: int = 40_000_000,
     max_audio_seconds: float = 30,
     max_video_seconds: float = 60,
 ) -> PreparedDecision:
     """Prepare inference inputs without inventing any dataset provenance metadata."""
+    validate_image_max_soft_tokens(image_max_soft_tokens)
+    image_budget = image_max_soft_tokens if any(m.type == "image" for m in prefix.media) else None
+    if image_budget is not None:
+        configure_image_processor(processor, image_budget)
     num_frames = video_frames
     if profile not in {"hf_only", "canonical_http"} or num_frames not in {8, 16}:
         raise ValueError("invalid preparation profile or video frame count")
@@ -489,6 +525,8 @@ def prepare_decision(
         "generation_boundary": "passed",
         "tensors": summaries,
     }
+    if image_budget is not None:
+        summary["configuration"]["image_max_soft_tokens"] = image_budget
     if http_messages is not None:
         summary["configuration"]["add_special_tokens"] = False
         summary.update(
@@ -500,7 +538,9 @@ def prepare_decision(
                 json.dumps(http_media_io_kwargs, sort_keys=True).encode()
             ).hexdigest(),
             http_mm_processor_kwargs_sha256=hashlib.sha256(
-                json.dumps(native_processor_kwargs(http_media_io_kwargs), sort_keys=True).encode()
+                json.dumps(
+                    native_processor_kwargs(http_media_io_kwargs, image_budget), sort_keys=True
+                ).encode()
             ).hexdigest(),
         )
     return PreparedDecision(
@@ -511,6 +551,7 @@ def prepare_decision(
         summary,
         http_messages,
         http_media_io_kwargs if http_messages is not None else None,
+        image_budget if http_messages is not None else None,
     )
 
 

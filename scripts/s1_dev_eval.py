@@ -19,6 +19,11 @@ from typing import Any
 from data.schema import HardTarget, Sample, answer_tokens
 from eval.metrics import evaluate
 from scripts.check_tokens import OfficialTokenizerAdapter
+from train.multimodal import (
+    IMAGE_MAX_SOFT_TOKENS,
+    configure_image_processor,
+    validate_image_max_soft_tokens,
+)
 from train.readout import read_probabilities
 from train.template import check_answer_tokens, render_prompt
 from train.trainer import MEDIA_FORWARD_KEYS, MEDIA_TYPES, prepare_media_example
@@ -274,10 +279,13 @@ def run(
     media_root: Path | None = None,
     counterfactual: bool = False,
     video_frames: int = 16,
+    image_max_soft_tokens: int | None = None,
 ) -> int:
     started_at = time.time()
     output_dir.mkdir(parents=True, exist_ok=False)
+    image_profile = {"requested": image_max_soft_tokens, "effective": None}
     try:
+        validate_image_max_soft_tokens(image_max_soft_tokens)
         torch = importlib.import_module("torch")
         transformers = importlib.import_module("transformers")
         os.environ["HF_HUB_OFFLINE"] = "1"
@@ -292,6 +300,9 @@ def run(
                 local_files_only=True,
                 trust_remote_code=False,
             )
+            image_profile["effective"] = configure_image_processor(processor, image_max_soft_tokens)
+        elif image_max_soft_tokens is not None:
+            raise DevEvalError("image_max_soft_tokens requires media evaluation")
         variants = [counterfactual_variant(sample) for sample in samples] if counterfactual else []
         base = transformers.Gemma4ForConditionalGeneration.from_pretrained(
             str(model_dir),
@@ -411,6 +422,7 @@ def run(
             "timing": {"started_at": started_at, "finished_at": time.time()},
         }
         code = 1
+    report["image_max_soft_tokens"] = image_profile
     report_out.parent.mkdir(parents=True, exist_ok=True)
     report_out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return code
@@ -425,6 +437,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--max-length", type=int, default=2048)
     parser.add_argument("--passes", type=int, default=2)
+    parser.add_argument("--image-max-soft-tokens", type=int, choices=IMAGE_MAX_SOFT_TOKENS)
     parser.add_argument(
         "--media-root",
         type=Path,
@@ -460,6 +473,7 @@ def main(argv: list[str] | None = None) -> int:
         media_root=args.media_root.resolve() if args.media_root else None,
         counterfactual=args.counterfactual,
         video_frames=args.video_frames,
+        image_max_soft_tokens=args.image_max_soft_tokens,
     )
 
 

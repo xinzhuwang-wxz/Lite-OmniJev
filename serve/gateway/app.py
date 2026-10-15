@@ -24,7 +24,11 @@ from starlette.responses import Response
 from data.schema import Media, Prefix, Question, answer_tokens
 from scripts.check_tokens import OfficialTokenizerAdapter
 from serve.vllm_chat import VllmChatClient, VllmChatProtocolError
-from train.multimodal import prepare_decision
+from train.multimodal import (
+    configure_image_processor,
+    prepare_decision,
+    validate_image_max_soft_tokens,
+)
 from train.readout import read_probabilities
 from train.template import ChatTokenizer, check_answer_tokens, render_prompt
 
@@ -89,8 +93,10 @@ class Settings:
     media_root: Path | None = None
     question_concurrency: int = 1
     request_image_reuse: bool = False
+    image_max_soft_tokens: int | None = None
 
     def __post_init__(self) -> None:
+        validate_image_max_soft_tokens(self.image_max_soft_tokens)
         if type(self.question_concurrency) is not int or not 1 <= self.question_concurrency <= 10:
             raise ValueError("question_concurrency must be an integer from 1 to 10")
 
@@ -98,6 +104,7 @@ class Settings:
     def from_env(cls) -> Settings:
         directory = os.getenv("LITE_MODEL_DIR")
         media_root = os.getenv("LITE_MEDIA_ROOT")
+        image_budget = os.getenv("LITE_IMAGE_MAX_SOFT_TOKENS")
         return cls(
             upstream_url=os.getenv("LITE_UPSTREAM_URL"),
             upstream_model=os.getenv("LITE_UPSTREAM_MODEL", "google/gemma-4-E4B-it"),
@@ -107,6 +114,7 @@ class Settings:
             media_root=Path(media_root) if media_root else None,
             question_concurrency=int(os.getenv("LITE_QUESTION_CONCURRENCY", "1")),
             request_image_reuse=os.getenv("LITE_REQUEST_IMAGE_REUSE") == "1",
+            image_max_soft_tokens=int(image_budget) if image_budget is not None else None,
         )
 
 
@@ -183,6 +191,10 @@ def create_app(
                 )
             except Exception:
                 runtime_processor = None
+        if settings.image_max_soft_tokens is not None:
+            if not canonical_mode or runtime_processor is None:
+                raise ValueError("image token budget requires the canonical media processor")
+            configure_image_processor(runtime_processor, settings.image_max_soft_tokens)
         async with httpx.AsyncClient(timeout=30, transport=transport) as client:
             application.state.client = client
             chat_client = (
@@ -335,6 +347,7 @@ def create_app(
                         media_root,
                         profile="canonical_http",
                         video_frames=video_frames,
+                        image_max_soft_tokens=settings.image_max_soft_tokens,
                     )
                     # HTTP needs canonical bytes and exact IDs, not duplicate HF media tensors.
                     return replace(prepared, inputs={"input_ids": prepared.inputs["input_ids"]})

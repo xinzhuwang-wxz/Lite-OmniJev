@@ -10,6 +10,7 @@ import io
 import json
 import os
 import wave
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -509,3 +510,31 @@ async def test_rejects_sampled_probability_inconsistent_with_unique_raw_mass(
     ) as client:
         with pytest.raises(VllmChatProtocolError):
             await client.read_logprobs(prepared_fixture())
+
+
+@pytest.mark.parametrize("mutated", [False, True])
+async def test_image_budget_is_transported_and_removal_is_rejected(mutated):
+    prepared = replace(prepared_fixture(), http_image_max_soft_tokens=1120)
+    kwargs = {"images_kwargs": {"max_soft_tokens": 1120}}
+    prepared.summary["http_mm_processor_kwargs_sha256"] = hashlib.sha256(
+        json.dumps(kwargs, sort_keys=True).encode()
+    ).hexdigest()
+    if mutated:
+        prepared = replace(prepared, http_image_max_soft_tokens=None)
+
+    def handler(request):
+        assert not mutated
+        assert json.loads(request.content)["mm_processor_kwargs"] == kwargs
+        return httpx.Response(200, json=response_body())
+
+    async with VllmChatClient(
+        "http://fixture",
+        "pinned-alias",
+        raw_logprobs_confirmed=True,
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        if mutated:
+            with pytest.raises(VllmChatProtocolError, match="canonical_processor_binding_mismatch"):
+                await client.read_logprobs(prepared)
+        else:
+            await client.read_logprobs(prepared)
