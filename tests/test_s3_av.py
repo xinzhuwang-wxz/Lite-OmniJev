@@ -809,12 +809,14 @@ def test_crossmodal_prepare_forwards_both_modalities_and_checks_second_hash(monk
                 "image_position_ids": "positions",
                 "input_features": "audio",
                 "input_features_mask": "mask",
+                "mm_token_type_ids": "modality-ids",
             }
 
     processor = Processor()
     sample = Sample.model_validate(row)
     result = prepare_media_example(sample, processor, tmp_path, max_length=1000)
     assert result["pixel_values"] == "pixels" and result["input_features"] == "audio"
+    assert result["mm_token_type_ids"] == "modality-ids"
     assert result["target"] == [1.0, 0.0, 0.0]
     sample.prefix.media[1].sha256 = "0" * 64
     with pytest.raises(ValueError):
