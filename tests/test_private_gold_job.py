@@ -156,3 +156,97 @@ def test_public_contract_has_no_private_receipt_fields() -> None:
     assert "verified_artifact_sha256" not in payload
     with pytest.raises(ValueError):
         PublicReceipt.model_validate({**payload, "stdout": "private label"})
+
+
+@pytest.mark.parametrize("field", ["Uid", "Gid", "Groups"])
+def test_live_credentials_include_all_ids(field: str) -> None:
+    from scripts.private_gold_job import process_credentials
+
+    rows = {"Uid": "1 2 3 4", "Gid": "5 6 7 8", "Groups": "9 10"}
+    rows[field] += " 62041" if field == "Groups" else ""
+    if field != "Groups":
+        rows[field] = "1 2 62041 4"
+    status = "\n".join(f"{key}: {value}" for key, value in rows.items())
+    assert 62041 in process_credentials(status)
+    with pytest.raises(JobRejected):
+        process_credentials("Uid: 0 0 0 0\nGid: 0 0 0 0")
+
+
+def test_proc_collision_and_unexpected_missing_fail_closed(tmp_path: Path) -> None:
+    from scripts.private_gold_job import check_process_ids
+
+    process = tmp_path / "1234"
+    process.mkdir()
+    status = process / "status"
+    status.write_text("Uid: 1 2 3 4\nGid: 5 6 7 8\nGroups: 62041")
+    with pytest.raises(JobRejected):
+        check_process_ids({62041}, tmp_path)
+    check_process_ids({62042}, tmp_path)
+    status.unlink()
+    with pytest.raises(JobRejected):
+        check_process_ids({62042}, tmp_path)
+
+
+def test_prior_unleased_run_ownership_rejected(tmp_path: Path) -> None:
+    from scripts.private_gold_job import check_prior_ownership
+
+    (tmp_path / "old-run").mkdir()
+    with pytest.raises(JobRejected):
+        check_prior_ownership(tmp_path, {os.getuid()})
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_private_run_revoked_on_success_and_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fail: bool
+) -> None:
+    from scripts.private_gold_job import private_run
+
+    changes = []
+    monkeypatch.setattr(os, "chown", lambda path, uid, gid: changes.append((uid, gid)))
+    run = tmp_path / "run"
+    try:
+        with private_run(run, 62041):
+            run.chmod(0o750)
+            (run / "private").write_text("retained")
+            if fail:
+                raise RuntimeError("synthetic")
+    except RuntimeError:
+        assert fail
+    assert run.stat().st_mode & 0o777 == 0o700
+    assert changes[-1] == (0, 0)
+    assert (run / "private").read_text() == "retained"
+
+
+@pytest.mark.skipif(not hasattr(os, "fork"), reason="fork required")
+def test_concurrent_identity_leases_are_exclusive(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import scripts.private_gold_job as job
+
+    monkeypatch.setattr(job, "check_process_ids", lambda ids: None)
+    monkeypatch.setattr(job, "check_prior_ownership", lambda root, ids: None)
+    original_stat = Path.stat
+
+    def root_stat(path: Path, *, follow_symlinks: bool = True) -> os.stat_result:
+        info = original_stat(path, follow_symlinks=follow_symlinks)
+        if path.name == ".identity-leases":
+            values = list(info)
+            values[4] = 0
+            return os.stat_result(values)
+        return info
+
+    monkeypatch.setattr(Path, "stat", root_stat)
+    children = []
+    for _ in range(2):
+        pid = os.fork()
+        if pid == 0:
+            try:
+                job.reserve_ids(tmp_path, 62041, 62042)
+            except JobRejected:
+                os._exit(1)
+            os._exit(0)
+        children.append(pid)
+    codes = sorted(os.waitstatus_to_exitcode(os.waitpid(pid, 0)[1]) for pid in children)
+    assert codes == [0, 1]
+    with pytest.raises(JobRejected):
+        job.reserve_ids(tmp_path, 62041, 62042)

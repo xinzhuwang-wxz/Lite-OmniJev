@@ -2,6 +2,8 @@
 
 No namespace, network, host-visibility or root-security isolation is claimed.
 Run trees and logs remain private; stdout contains only fixed failure categories.
+UID/GID leases are permanent under the work root: choose fresh IDs for every attempt.
+The timeout bounds only the audit child, not snapshotting or permission probes.
 """
 
 from __future__ import annotations
@@ -18,6 +20,8 @@ import stat
 import sys
 import time
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Literal
 
@@ -31,6 +35,8 @@ MAX_INPUT = 256 * 1024 * 1024
 MAX_MANIFEST = 1024 * 1024
 MAX_RECEIPT = 1024 * 1024
 Category = Literal[
+    "identity_unavailable",
+    "code_changed",
     "invalid_arguments",
     "boundary_unavailable",
     "input_rejected",
@@ -76,6 +82,8 @@ class PublicReceipt(Contract):
     duration_seconds: float = Field(ge=0)
     exit_code: int
     ordinary_identity_boundary: bool
+    timeout_scope: Literal["audit_child"] = "audit_child"
+    identity_lease: Literal["permanent_fresh_ids_required"] = "permanent_fresh_ids_required"
     namespace_enforced: Literal[False] = False
     network_isolation: Literal["not_enforced"] = "not_enforced"
     root_visible_workflow_boundary: Literal[True] = True
@@ -185,14 +193,7 @@ def denied_probe(uid: int, gid: int, reads: list[Path], writes: list[Path]) -> b
     return code == 0
 
 
-def wait_child(pid: int, timeout: float) -> tuple[int, bool]:
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        result, status = os.waitpid(pid, os.WNOHANG)
-        if result:
-            return os.waitstatus_to_exitcode(status), False
-        time.sleep(0.02)
-    # setsid occurs before private reads. Kill the process as well if setsid failed.
+def terminate_child(pid: int) -> int:
     for sig in (signal.SIGTERM, signal.SIGKILL):
         try:
             os.killpg(pid, sig)
@@ -203,7 +204,21 @@ def wait_child(pid: int, timeout: float) -> tuple[int, bool]:
         except ProcessLookupError:
             pass
     _, status = os.waitpid(pid, 0)
-    return os.waitstatus_to_exitcode(status), True
+    return os.waitstatus_to_exitcode(status)
+
+
+def wait_child(pid: int, timeout: float) -> tuple[int, bool]:
+    deadline = time.monotonic() + timeout
+    try:
+        while time.monotonic() < deadline:
+            result, status = os.waitpid(pid, os.WNOHANG)
+            if result:
+                return os.waitstatus_to_exitcode(status), False
+            time.sleep(0.02)
+    except BaseException:
+        terminate_child(pid)
+        raise
+    return terminate_child(pid), True
 
 
 def run_child(manifest: Path, output: Path, uid: int, timeout: int) -> tuple[int, bool]:
@@ -264,6 +279,111 @@ def unused_uid(uid: int) -> bool:
     return False
 
 
+def process_credentials(status: str) -> set[int]:
+    """All real/effective/saved/fs IDs and supplementary groups count as occupied."""
+    fields: dict[str, list[int]] = {}
+    try:
+        for line in status.splitlines():
+            key, _, value = line.partition(":")
+            if key in {"Uid", "Gid", "Groups"}:
+                if key in fields:
+                    raise ValueError
+                fields[key] = [int(part) for part in value.split()]
+        if set(fields) != {"Uid", "Gid", "Groups"} or any(
+            len(fields[key]) != 4 for key in ("Uid", "Gid")
+        ):
+            raise ValueError
+        return {value for values in fields.values() for value in values}
+    except ValueError:
+        raise JobRejected("identity_unavailable") from None
+
+
+def check_process_ids(ids: set[int], proc: Path = Path("/proc")) -> None:
+    try:
+        for process in proc.iterdir():
+            if not process.name.isdecimal():
+                continue
+            try:
+                status = (process / "status").read_text()
+            except FileNotFoundError:
+                # A vanished process is the only permitted inspection gap.
+                if not process.exists():
+                    continue
+                raise JobRejected("identity_unavailable") from None
+            if ids & process_credentials(status):
+                raise JobRejected("identity_unavailable")
+    except OSError:
+        raise JobRejected("identity_unavailable") from None
+
+
+def check_prior_ownership(work_root: Path, ids: set[int]) -> None:
+    def fail(error: OSError) -> None:
+        raise JobRejected("identity_unavailable") from error
+
+    try:
+        for directory, names, files in os.walk(work_root, followlinks=False, onerror=fail):
+            for name in names + files:
+                info = (Path(directory) / name).lstat()
+                if info.st_uid in ids or info.st_gid in ids or stat.S_ISLNK(info.st_mode):
+                    raise JobRejected("identity_unavailable")
+    except OSError:
+        raise JobRejected("identity_unavailable") from None
+
+
+def reserve_ids(work_root: Path, worker_uid: int, probe_uid: int) -> None:
+    """Permanent exclusive leases: every attempt requires fresh IDs, even on failure.
+
+    The root supervisor is trusted. Leases coordinate invocations under this work root;
+    live /proc credentials and retained trees are checked independently of passwd.
+    """
+    ids = {worker_uid, probe_uid}
+    check_process_ids(ids)
+    check_prior_ownership(work_root, ids)
+    leases = work_root / ".identity-leases"
+    try:
+        leases.mkdir(mode=0o700)
+    except FileExistsError:
+        pass
+    safe_path(leases)
+    info = leases.stat()
+    if not stat.S_ISDIR(info.st_mode) or info.st_uid != 0 or stat.S_IMODE(info.st_mode) != 0o700:
+        raise JobRejected("identity_unavailable")
+    for uid in sorted(ids):
+        try:
+            fd = os.open(leases / str(uid), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
+            raise JobRejected("identity_unavailable") from None
+        try:
+            os.write(fd, b"permanent; caller must choose fresh IDs\n")
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    check_process_ids(ids)
+
+
+@contextmanager
+def private_run(run: Path, worker_uid: int) -> Iterator[None]:
+    run.mkdir(mode=0o700)
+    try:
+        os.chown(run, 0, worker_uid)
+        yield
+    finally:
+        # Revoke traversal before changing group. Contents are retained, root-only.
+        run.chmod(0o700)
+        os.chown(run, 0, 0)
+
+
+def code_bytes() -> bytes:
+    return b"".join(
+        Path(str(p)).read_bytes()
+        for p in (
+            __file__,
+            __import__("scripts.gold_inventory", fromlist=["__file__"]).__file__,
+            __import__("eval.gold_gate", fromlist=["__file__"]).__file__,
+        )
+    )
+
+
 def execute(
     source: Path,
     expected: str,
@@ -290,45 +410,40 @@ def execute(
             raise JobRejected("boundary_unavailable")
     if not work_root.is_relative_to(Path("/var/tmp")) or work_root == Path("/var/tmp"):
         raise JobRejected("invalid_arguments")
+    reserve_ids(work_root, worker_uid, probe_uid)
+    code = code_bytes()
     nonce = uuid.uuid4().hex
     run = work_root / nonce
-    run.mkdir(mode=0o700)
-    os.chown(run, 0, worker_uid)
-    inputs = run / "inputs"
-    inputs.mkdir(mode=0o700)
-    os.chown(inputs, 0, worker_uid)
-    manifest, originals = snapshot(source, expected, inputs, worker_uid)
-    translated = digest(manifest.read_bytes())
-    inputs.chmod(0o550)
-    output = run / "output"
-    output.mkdir(mode=0o700)
-    os.chown(output, worker_uid, worker_uid)
-    export = run / "export-probe"
-    export.write_bytes(b"")
-    export.chmod(0o440)
-    run.chmod(0o750)
-    # Explicit source scope: every original manifest and JSONL path must deny reads.
-    boundary = denied_probe(probe_uid, probe_uid, [manifest, output], []) and denied_probe(
-        worker_uid, worker_uid, originals, [*inputs.iterdir(), export, report.parent / nonce]
-    )
-    if not boundary:
-        raise JobRejected("probe_failed")
-    exit_code, timed_out = run_child(manifest, output, worker_uid, timeout)
-    category: Category | None = "timeout" if timed_out else None
-    receipt = None
-    if category is None:
-        try:
-            receipt = validate_receipt(output / "receipt.json", translated, exit_code)
-        except JobRejected as error:
-            category = error.category
-    code = b"".join(
-        Path(p).read_bytes()
-        for p in (
-            __file__,
-            __import__("scripts.gold_inventory", fromlist=["__file__"]).__file__,
-            __import__("eval.gold_gate", fromlist=["__file__"]).__file__,
+    with private_run(run, worker_uid):
+        inputs = run / "inputs"
+        inputs.mkdir(mode=0o700)
+        os.chown(inputs, 0, worker_uid)
+        manifest, originals = snapshot(source, expected, inputs, worker_uid)
+        translated = digest(manifest.read_bytes())
+        inputs.chmod(0o550)
+        output = run / "output"
+        output.mkdir(mode=0o700)
+        os.chown(output, worker_uid, worker_uid)
+        export = run / "export-probe"
+        export.write_bytes(b"")
+        export.chmod(0o440)
+        run.chmod(0o750)
+        # Explicit source scope: every original manifest and JSONL path must deny reads.
+        boundary = denied_probe(probe_uid, probe_uid, [manifest, output], []) and denied_probe(
+            worker_uid, worker_uid, originals, [*inputs.iterdir(), export, report.parent / nonce]
         )
-    )
+        if not boundary:
+            raise JobRejected("probe_failed")
+        exit_code, timed_out = run_child(manifest, output, worker_uid, timeout)
+        category: Category | None = "timeout" if timed_out else None
+        receipt = None
+        if category is None:
+            try:
+                receipt = validate_receipt(output / "receipt.json", translated, exit_code)
+            except JobRejected as error:
+                category = error.category
+    if code_bytes() != code:
+        raise JobRejected("code_changed")
     result = PublicReceipt(
         outcome=receipt.outcome if receipt else "rejected",
         categories=[category] if category else list(receipt.categories if receipt else []),
@@ -369,7 +484,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--report", type=Path, required=True)
         parser.add_argument("--worker-uid", type=int, required=True)
         parser.add_argument("--probe-uid", type=int, required=True)
-        parser.add_argument("--timeout", type=int, default=300)
+        parser.add_argument("--timeout", type=int, default=300, help="audit child seconds only")
         args = parser.parse_args(argv)
         result = execute(
             args.inventory,
