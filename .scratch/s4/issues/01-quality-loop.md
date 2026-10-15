@@ -21,7 +21,7 @@ Blocked by: s3:01, s0:05
 - [ ] configs/gates.json S4全部门通过，资源/成本/创新结果有实证并独立集成复核；不以CPU/小样本工程报告代替阶段验收。
 
 ## Evidence
-200对TRAIN-only图像+音频AND组合已真实构建并通过完整库存隔离，报告reports/s4-crossmodal-train-build-001.json（train SHA d3b0be2a…，inventory SHA244a5c4f…）；构建器87c766c，主树22针对测试通过。首个30步候选已完成（wall319.167秒、peak36.94GB、300曝光、真实逐步指标/online），adapter6bb86b09…；原crossmodal固定50从33→35、补充保持40，触发五旧cohort保留评测，正在执行。报告reports/s4-joint-pilot-train-001.json及s4-pilot-crossmodal-{original,supplemental}-001.json。未通过S4质量门。已有S3及S4公开诊断只用于形成实验假设；见plan/STATUS.md。新实验在本票内记录，质量门保持。
+200对TRAIN-only图像+音频AND组合已真实构建并通过完整库存隔离，报告reports/s4-crossmodal-train-build-001.json（train SHA d3b0be2a…，inventory SHA244a5c4f…）；构建器87c766c，主树22针对测试通过。首个30步候选已完成（wall319.167秒、peak36.94GB、300曝光、真实逐步指标/online），adapter6bb86b09…；原crossmodal固定50从33→35、补充保持40，五旧cohort保留筛选亦通过（40/50、50/50、49/50、37/50、99/150；audio较S3少1题，其他持平），仅获得进一步验证资格；reports/s4-pilot-screening-001.json。报告reports/s4-joint-pilot-train-001.json及s4-pilot-crossmodal-{original,supplemental}-001.json。未通过S4质量门。已有S3及S4公开诊断只用于形成实验假设；见plan/STATUS.md。新实验在本票内记录，质量门保持。
 
 ## Out of scope
 S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部署及大预算自动扩量。
