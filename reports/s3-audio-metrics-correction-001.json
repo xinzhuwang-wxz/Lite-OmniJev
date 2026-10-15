@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "scope": "CPU correction of complete dev sidecar metrics; no model run or quality gate",
+  "reason": "Noul ties use canonical yes/no order, independent of serialized JSON key order",
+  "original_report_sha256": "d1d7a95082c6b929bd978b5d07cf7df99c035a7b33e42b916f94f22d7dfb4731",
+  "sidecar_sha256": "e2c107abec908dbb8d16b167f4a66264d3c73c61d757b184e7a6deefff97a463",
+  "metric_code_sha256": "70b4a25152095b662ad590913489adf36266eaabf3ac746099812fa9ce78649c",
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+  "data_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+  "samples": 500,
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.8,
+    "ece15": 0.0741610212243841,
+    "brier": 0.3114553463685248,
+    "coverage_at_error": 0.13,
+    "max_error": 0.05,
+    "product_accuracy": 0.8,
+    "mean_p_insufficient": 3.229997928568289e-05,
+    "max_p_insufficient": 0.00041566126421516754,
+    "predicted_insufficient": 0
+  },
+  "changed_metrics": {},
+  "tied_top_rows": 6,
+  "product_predictions_changed": false
+}

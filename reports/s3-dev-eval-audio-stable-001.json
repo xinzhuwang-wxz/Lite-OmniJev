@@ -1,0 +1,69 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter",
+    "--data",
+    "/root/autodl-tmp/s0-audio-dev-001/artifacts/audio-dev-001-a/dev.jsonl",
+    "--passes",
+    "2",
+    "--output-dir",
+    "artifacts/s3-dev-eval-audio-stable-001",
+    "--report",
+    "reports/s3-dev-eval-audio-stable-001.json",
+    "--media-root",
+    "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002"
+  ],
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter",
+  "data_sha256": "79c09b0a208afce5dedc5bb3f348953853cef09c5384e21621fd384d5fc0ffbc",
+  "samples": 500,
+  "passes": 2,
+  "video_num_frames": 16,
+  "repeat_identical": true,
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.8,
+    "ece15": 0.0741610212243841,
+    "brier": 0.3114553463685248,
+    "coverage_at_error": 0.13,
+    "max_error": 0.05,
+    "product_accuracy": 0.8,
+    "mean_p_insufficient": 3.229997928568289e-05,
+    "max_p_insufficient": 0.00041566126421516754,
+    "predicted_insufficient": 0
+  },
+  "counterfactual": false,
+  "code_revision": "b6b827b10ac0a1dd12306d3b93907973edfa38e4",
+  "script_sha256": "cda2b7bf06ea2516d1bc6ed0732f57f741059d6c7a29effeaaf188b490b44be8",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "e2c107abec908dbb8d16b167f4a66264d3c73c61d757b184e7a6deefff97a463",
+  "timing": {
+    "started_at": 1792065930.109717,
+    "finished_at": 1792066344.2128477,
+    "duration_seconds": 414.1031310558319
+  },
+  "image_max_soft_tokens": {
+    "requested": null,
+    "effective": 280
+  }
+}

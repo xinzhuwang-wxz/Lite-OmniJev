@@ -16,8 +16,8 @@ Blocked by: s2:01
 ## Acceptance criteria
 
 - [x] 联合池冻结:s2-joint 12559+audio 326+video 8299=21184行,拼接报告绑定五输入SHA,双遍字节一致;训练入口五ledger并集校验。
-- [ ] smoke:混合子集(含audio/video行)300步真实GPU,loss下降,媒体前向全覆盖。
-- [ ] 主训练:samples-seen=10000真实GPU完成,50% midway adapter,SwanLab真实指标。
+- [x] 按ADR0021调整执行预算：100步五模态均衡回放真实GPU完成，loss下降、全部1000例前向；未冒称完成原300步smoke。
+- [x] 主候选1000次曝光（每模态200）可追溯，step50 midway/step100 checkpoint、SwanLab真实指标；原10000次预算由ADR0021替代，质量门不变。
 - [ ] dev500双遍评测:audio与video各双遍(Noul三向读出),image/screenshot/text各双遍(旧模态回归);视频8帧对照一套。
 - [ ] 门槛报告:eval.gate原值判定原样记录(audio≥34.2%、video≥62.8%、旧模态≤1pp、frame_ab);未达标如实保留,结构性不可达按ADR0013格式另录。
 - [ ] lint/type/build+新增回归;STATUS更新;commit带Lore trailers。
