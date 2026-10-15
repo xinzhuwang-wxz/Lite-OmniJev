@@ -28,6 +28,7 @@ from scripts import s0_development_baselines as baseline
 from scripts.s0_public_baselines import configure_torch_runtime, sha256_file, sha256_json
 from train.multimodal import configure_image_processor
 
+FROZEN_REVISION = "ee0ef6023621cff504d758262d4e04895a5af4a2"
 MAX_RECEIPT = 65536
 CODE_FILES = (
     *baseline.REQUIRED_CODE_FILES,
@@ -39,6 +40,10 @@ CODE_FILES = (
 
 class Rejected(ValueError):
     """Only static categories may cross the supervisor boundary."""
+
+    def __init__(self, category: str, exit_code: int | None = None) -> None:
+        super().__init__(category)
+        self.exit_code = exit_code
 
 
 class Artifact(Contract):
@@ -65,7 +70,7 @@ class Spec(Contract):
     media_root: str
     model_dir: str
     model_id: Literal["gemma4-e4b-it"] = "gemma4-e4b-it"
-    base_revision: str = Field(pattern=r"^[0-9a-f]{40}$")
+    base_revision: Literal["ee0ef6023621cff504d758262d4e04895a5af4a2"]
     model_files: dict[str, Sha256] = Field(min_length=1)
     adapter_dir: str | None = None
     adapter_files: dict[str, Sha256] | None = None
@@ -99,6 +104,42 @@ class Metrics(Contract):
     max_error: float = Field(ge=0, le=1)
 
 
+class Runtime(Contract):
+    python: str = Field(min_length=1)
+    torch: str = Field(min_length=1)
+    transformers: str = Field(min_length=1)
+    device: str = Field(min_length=1)
+
+
+class FailureReceipt(Contract):
+    schema_version: Literal["private-stage-eval-failure-v1"] = "private-stage-eval-failure-v1"
+    execution_status: Literal["rejected"] = "rejected"
+    quality_status: Literal["not_evaluated"] = "not_evaluated"
+    category: Literal[
+        "input_rejected",
+        "binding_mismatch",
+        "model_binding_incomplete",
+        "model_rejected",
+        "admission_mismatch",
+        "row_count_mismatch",
+        "cohort_mismatch",
+        "sample_rejected",
+        "engineering_limit_required",
+        "private_root_required",
+        "timeout",
+        "interrupted",
+        "backend_failed",
+        "invalid_receipt",
+        "job_rejected",
+    ]
+    spec_sha256: Sha256 | None
+    mode: Literal["engineering", "S4", "S5", "S6"] | None
+    wall_seconds: float = Field(ge=0)
+    exit_code: int | None
+    cost_usd: None = None
+    cost_boundary: Literal["not_measured_no_price_assumption"] = "not_measured_no_price_assumption"
+
+
 class Receipt(Contract):
     schema_version: Literal["private-stage-eval-v1"] = "private-stage-eval-v1"
     mode: Literal["engineering", "S4", "S5", "S6"]
@@ -125,7 +166,11 @@ class Receipt(Contract):
     metrics: Metrics
     wall_seconds: float = Field(ge=0)
     peak_memory_bytes: int = Field(ge=0)
-    runtime: dict[Literal["python", "torch", "transformers", "device"], str]
+    runtime: Runtime
+    unique_families: int = Field(gt=0)
+    dependency_claim: Literal["no_iid_claim"] = "no_iid_claim"
+    cost_usd: None = None
+    cost_boundary: Literal["not_measured_no_price_assumption"] = "not_measured_no_price_assumption"
     exit_code: Literal[0] = 0
 
 
@@ -252,9 +297,13 @@ def validate(spec: Spec) -> tuple[list[Any], dict[str, Any]]:
             if spec.cohort == "text"
             else ["image" if spec.cohort == "screenshot" else spec.cohort]
         )
-        if (spec.cohort == "crossmodal" and len(media) < 2) or (
-            spec.cohort != "crossmodal" and media != expected
-        ):
+        if (
+            spec.cohort == "crossmodal"
+            and (
+                sorted(media) != ["audio", "image"]
+                or sorted(sample.meta.modality) != ["audio", "image"]
+            )
+        ) or (spec.cohort != "crossmodal" and media != expected):
             raise Rejected("cohort_mismatch")
         if (
             sample.meta.pool != spec.pool
@@ -267,7 +316,7 @@ def validate(spec: Spec) -> tuple[list[Any], dict[str, Any]]:
         ):
             raise Rejected("cohort_mismatch")
         baseline.target_index(sample.questions[0])
-        if sample.id in ids or sample.meta.family_id in families:
+        if sample.id in ids:
             raise Rejected("sample_rejected")
         ids.add(sample.id)
         families.add(sample.meta.family_id)
@@ -279,7 +328,48 @@ def validate(spec: Spec) -> tuple[list[Any], dict[str, Any]]:
         "model_manifest_sha256": model_hash,
         "adapter_manifest_sha256": adapter_hash,
         "admission_sha256": admission_hash,
+        "unique_families": len(families),
     }
+
+
+class BudgetProcessor:
+    """Pass the budget per image call; processor merge defaults can override attributes."""
+
+    def __init__(self, processor: Any) -> None:
+        self.processor = processor
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.processor, name)
+
+    def __call__(self, **kwargs: Any) -> Any:
+        if "images" in kwargs:
+            kwargs["images_kwargs"] = {"max_soft_tokens": 1120}
+        return self.processor(**kwargs)
+
+
+def safe_environment() -> dict[str, str]:
+    allowed = (
+        "PATH",
+        "LD_LIBRARY_PATH",
+        "LIBRARY_PATH",
+        "CUDA_HOME",
+        "CUDA_PATH",
+        "CUDA_VISIBLE_DEVICES",
+        "NVIDIA_VISIBLE_DEVICES",
+        "NVIDIA_DRIVER_CAPABILITIES",
+        "TMPDIR",
+        "LANG",
+        "LC_ALL",
+    )
+    environment = {key: os.environ[key] for key in allowed if key in os.environ}
+    environment.update(
+        HF_HUB_OFFLINE="1",
+        TRANSFORMERS_OFFLINE="1",
+        HF_DATASETS_OFFLINE="1",
+        CUBLAS_WORKSPACE_CONFIG=":4096:8",
+        PYTHONNOUSERSITE="1",
+    )
+    return environment
 
 
 def real_backend(
@@ -293,6 +383,7 @@ def real_backend(
     transformers = importlib.import_module("transformers")
     processor = baseline.default_processor_factory(Path(spec.model_dir))
     configure_image_processor(processor, 1120)
+    processor = BudgetProcessor(processor)
     model = transformers.AutoModelForImageTextToText.from_pretrained(
         spec.model_dir,
         local_files_only=True,
@@ -405,7 +496,7 @@ def worker(spec_path: Path, backend: Callable[..., Any] = real_backend) -> Recei
             metrics=Metrics.model_validate(baseline.score_records(records)),
             wall_seconds=time.monotonic() - started,
             peak_memory_bytes=peak(),
-            runtime=runtime,
+            runtime=Runtime.model_validate(runtime),
         )
         publish(spec_path.parent / "receipt.json", receipt)
         return receipt
@@ -413,15 +504,15 @@ def worker(spec_path: Path, backend: Callable[..., Any] = real_backend) -> Recei
         cleanup()
 
 
-def terminate(process: subprocess.Popen[bytes]) -> None:
+def terminate(process: subprocess.Popen[bytes]) -> int:
     try:
         os.killpg(process.pid, signal.SIGKILL)
     except ProcessLookupError:
         pass
-    process.wait()
+    return process.wait()
 
 
-def execute(spec_path: Path, report: Path) -> Receipt:
+def _execute(spec_path: Path, report: Path) -> Receipt:
     raw = read_json(spec_path)
     spec = Spec.model_validate_json(raw)
     root = absolute(spec.output_root)
@@ -452,18 +543,19 @@ def execute(spec_path: Path, report: Path) -> Receipt:
             stdout=log,
             stderr=log,
             start_new_session=True,
+            env=safe_environment(),
             cwd=Path(__file__).resolve().parents[1],
         )
         try:
             exit_code = process.wait(timeout=spec.timeout_seconds)
         except subprocess.TimeoutExpired:
-            terminate(process)
-            raise Rejected("timeout") from None
+            code = terminate(process)
+            raise Rejected("timeout", code) from None
         except BaseException:
-            terminate(process)
-            raise Rejected("interrupted") from None
+            code = terminate(process)
+            raise Rejected("interrupted", code) from None
     if exit_code != 0:
-        raise Rejected("backend_failed")
+        raise Rejected("backend_failed", exit_code)
     try:
         receipt = Receipt.model_validate_json(read_json(run / "receipt.json"))
         expected_records = min(spec.expected_rows, spec.subset_limit or spec.expected_rows)
@@ -505,9 +597,47 @@ def execute(spec_path: Path, report: Path) -> Receipt:
         if receipt.records_sha256 != sha256_file(run / "records.jsonl"):
             raise ValueError
     except Exception:
-        raise Rejected("invalid_receipt") from None
+        raise Rejected("invalid_receipt", exit_code) from None
     publish(report, receipt)
     return receipt
+
+
+def execute(spec_path: Path, report: Path) -> Receipt:
+    started = time.monotonic()
+    absolute(str(report))
+    if report.exists():
+        raise Rejected("report_exists")
+    spec_hash = None
+    mode = None
+    try:
+        raw = read_json(spec_path)
+        spec_hash = sha256_file(spec_path)
+        mode = Spec.model_validate_json(raw).mode
+        return _execute(spec_path, report)
+    except BaseException as error:
+        category = str(error) if isinstance(error, Rejected) else "job_rejected"
+        try:
+            failure = FailureReceipt.model_validate(
+                {
+                    "category": category,
+                    "spec_sha256": spec_hash,
+                    "mode": mode,
+                    "wall_seconds": time.monotonic() - started,
+                    "exit_code": error.exit_code if isinstance(error, Rejected) else None,
+                }
+            )
+        except ValueError:
+            failure = FailureReceipt(
+                category="job_rejected",
+                spec_sha256=spec_hash,
+                mode=mode,
+                wall_seconds=time.monotonic() - started,
+                exit_code=None,
+            )
+        publish(report, failure)
+        if isinstance(error, Rejected):
+            raise
+        raise Rejected("job_rejected") from None
 
 
 class PrivateParser(argparse.ArgumentParser):

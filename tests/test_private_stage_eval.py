@@ -36,7 +36,7 @@ def fixture(tmp_path: Path, **updates: Any) -> tuple[Path, job.Spec]:
         pool="dev",
         media_root=str(tmp_path),
         model_dir=str(model),
-        base_revision="f" * 40,
+        base_revision=job.FROZEN_REVISION,
         model_files={name: job.sha256_file(model / name) for name in contents},
         expected_rows=3,
         subset_limit=2,
@@ -57,7 +57,18 @@ def backend(spec: job.Spec) -> tuple[Any, ...]:
             for token, index in prepared.answer_token_ids.items()
         }
 
-    return FakeProcessor(), forward, lambda: None, {"python": "synthetic"}, lambda: 0
+    return (
+        FakeProcessor(),
+        forward,
+        lambda: None,
+        {
+            "python": "synthetic",
+            "torch": "synthetic",
+            "transformers": "synthetic",
+            "device": "cpu fixture",
+        },
+        lambda: 0,
+    )
 
 
 def test_worker_reuses_official_nonthinking_raw_readout_and_preserves_inputs(
@@ -154,7 +165,9 @@ def test_real_subprocess_failure_is_redacted(tmp_path: Path, capsys: Any) -> Non
     captured = capsys.readouterr()
     assert "data.jsonl" not in captured.out and "Traceback" not in captured.out
     assert "backend_failed" in captured.out or "timeout" in captured.out
-    assert not report.exists()
+    assert (
+        job.FailureReceipt.model_validate_json(report.read_text()).quality_status == "not_evaluated"
+    )
     runs = list((tmp_path / "private").iterdir())
     assert len(runs) == 1 and runs[0].stat().st_mode & 0o077 == 0
 
@@ -257,4 +270,102 @@ def test_supervisor_rejects_malformed_or_mismatched_receipt(
     monkeypatch.setattr(job.subprocess, "Popen", Process)
     with pytest.raises(job.Rejected, match="invalid_receipt"):
         job.execute(path, tmp_path / "public.json")
-    assert not (tmp_path / "public.json").exists()
+    assert (
+        job.FailureReceipt.model_validate_json((tmp_path / "public.json").read_text()).category
+        == "invalid_receipt"
+    )
+
+
+def test_distinct_original_questions_can_share_family(tmp_path: Path) -> None:
+    path, spec = fixture(tmp_path)
+    rows = [_sample(i) for i in range(3)]
+    for row in rows:
+        row["meta"]["family_id"] = "shared-media-family"
+    Path(spec.data.path).write_text("".join(json.dumps(row) + "\n" for row in rows))
+    spec.data.sha256 = job.sha256_file(Path(spec.data.path))
+    path.write_text(spec.model_dump_json())
+    result = job.worker(path, backend)
+    assert result.records == 2 and result.unique_families == 1
+    assert result.dependency_claim == "no_iid_claim"
+
+
+@pytest.mark.parametrize(
+    "media_types", [["image", "image"], ["video", "audio"], ["image", "audio", "video"]]
+)
+def test_crossmodal_requires_one_image_one_audio(tmp_path: Path, media_types: list[str]) -> None:
+    _, spec = fixture(tmp_path, cohort="crossmodal")
+    rows = [_sample(i) for i in range(3)]
+    for row in rows:
+        row["prefix"]["media"] = [
+            {"type": kind, "uri": f"{j}.bin", "sha256": "a" * 64}
+            for j, kind in enumerate(media_types)
+        ]
+        row["meta"]["modality"] = sorted(set(media_types))
+    Path(spec.data.path).write_text("".join(json.dumps(row) + "\n" for row in rows))
+    spec.data.sha256 = job.sha256_file(Path(spec.data.path))
+    with pytest.raises(job.Rejected, match="cohort_mismatch"):
+        job.validate(spec)
+
+
+def test_runtime_requires_all_fields_and_frozen_revision(tmp_path: Path) -> None:
+    path, spec = fixture(tmp_path)
+    values = spec.model_dump()
+    values["base_revision"] = "e" * 40
+    with pytest.raises(ValidationError):
+        job.Spec.model_validate(values)
+    result = job.worker(path, backend).model_dump()
+    result["runtime"].pop("device")
+    with pytest.raises(ValidationError):
+        job.Receipt.model_validate(result)
+
+
+def test_image_budget_is_passed_per_call() -> None:
+    calls = []
+
+    class Processor:
+        def __call__(self, **kwargs: Any) -> dict[str, Any]:
+            calls.append(kwargs)
+            return kwargs
+
+    processor = job.BudgetProcessor(Processor())
+    processor(images=[object()], text="prompt")
+    processor(audio=[object()], text="prompt")
+    assert calls[0]["images_kwargs"] == {"max_soft_tokens": 1120}
+    assert "images_kwargs" not in calls[1]
+
+
+def test_environment_drops_tokens_tracking_and_python_injection(monkeypatch: Any) -> None:
+    for key in (
+        "HF_TOKEN",
+        "SWANLAB_API_KEY",
+        "AWS_SECRET_ACCESS_KEY",
+        "PYTHONPATH",
+        "PYTHONSTARTUP",
+    ):
+        monkeypatch.setenv(key, "SECRET")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+    monkeypatch.setenv("LD_LIBRARY_PATH", "/cuda/lib")
+    values = job.safe_environment()
+    assert "SECRET" not in values.values()
+    assert values["CUDA_VISIBLE_DEVICES"] == "0"
+    assert values["LD_LIBRARY_PATH"] == "/cuda/lib"
+    assert values["HF_HUB_OFFLINE"] == "1"
+
+
+def test_failure_receipt_is_durable_and_never_overwrites(tmp_path: Path, monkeypatch: Any) -> None:
+    path, _ = fixture(tmp_path)
+
+    def fail(*args: Any) -> Any:
+        raise job.Rejected("backend_failed", 7)
+
+    monkeypatch.setattr(job, "_execute", fail)
+    report = tmp_path / "failure.json"
+    with pytest.raises(job.Rejected):
+        job.execute(path, report)
+    receipt = job.FailureReceipt.model_validate_json(report.read_text())
+    assert receipt.exit_code == 7 and receipt.spec_sha256 == job.sha256_file(path)
+    assert receipt.mode == "engineering" and receipt.cost_usd is None
+    original = report.read_bytes()
+    with pytest.raises(job.Rejected, match="report_exists"):
+        job.execute(path, report)
+    assert report.read_bytes() == original
