@@ -7,7 +7,7 @@
 - 文本复用原同权重/数据/前向/运行库双遍报告；本次总链1800秒在重复文本时中断，不记通过。reports/s2-text-evidence-reuse-001.json。图像与截图的新报告完整。
 - 高预算HF/native CPU100例精确一致；实际HTTP LoRA概率和API时延/吞吐/显存仍pending，未将1120定为最终低成本默认。
 - 独立review两P2已处理，ADR0020记录joint执行调整；全仓lint/410文件format/104源文件mypy/build通过。新S3 gate严格绑定五cohort冻结数据和模型身份。
-- 里程碑交接入口：plan/handoff-2026-10-15-s2-complete.md。子代理gold_pool_isolation已完成并整合，工作树归档，无活跃子代理；不读封存、不改GPU运行代码。
+- 里程碑交接入口：plan/handoff-2026-10-15-s2-complete.md。gold_pool_isolation已整合/归档；子代理parity_image_budget在独立工作树补GPU HF/native对照入口显式图像预算，未整合、不启动GPU。
 
 ## 当前唯一GPU链
 - 远端/root/autodl-tmp/s1-text-lora-001已在上一链结束后同步至b6b827b；SSH mux /tmp/omnijev-ssh-root-final，端口48926。运行中不切代码。
@@ -26,6 +26,7 @@
 - 凭据仅项目外。暂无需用户操作的阻塞，GPU链运行，未请求关卡。独立CPU检查工作树/root/autodl-tmp/image-budget-cpu-check-001保留原始证据，未影响GPU checkout。
 
 ## 本轮新增证据
+- reports/s3-video-reserve-capacity-001.json：私有CPU只回汇总，原train预留calibration900family/1800道原始exist QA、holdout300family/600题；已下载validation有5000未分配family/10000题候选。可先复用已有素材补储备，仍须全历史/媒体别名准入，不把容量当已封存、不读取预留payload。
 - 3ad2055引入eval/gold_gate.py元数据四池隔离审计：跨family/media/component及历史曝光传递连通，输出固定类别/计数、不含题目ID；79项合成/旧canary兼容测试、ruff/mypy通过。仅supplied_metadata_isolation_only，不证明来源gold、清单完整性、实际权限或阶段通过；s0:05仍待完整数据/独立作业实现。
 - reports/s3-teacher-metric-order-audit-001.json核验S0教师实际历史runner字节SHA与报告一致，audio/video均按规范答案顺序组装概率与真值；基线.38/.698不受当前Noul统计修复影响，2项相关测试通过。
 - 发现并修复Noul统计tie顺序：JSON按字母排序导致metrics使用no/yes，与产品规范yes/no不同；不改变前向、产品预测或S3门。2条回归先失败、修复后41项通过，ruff/format/mypy通过。运行中远端仍b6b827b不切代码。
