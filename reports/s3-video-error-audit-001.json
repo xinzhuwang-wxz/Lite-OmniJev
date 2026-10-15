@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "scope": "CPU aggregate development-error and training-label audit; no heldout access",
+  "dev_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+  "sidecar_sha256": "a9fdee5bf5a8b0f36d564011513583cb745eb5ecf79104f02e9536a6bab8ff51",
+  "train_sha256": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948",
+  "confusion": {
+    "yes->no": 145,
+    "no->yes": 88,
+    "yes->yes": 120,
+    "no->no": 147
+  },
+  "question_prefix_groups": {
+    "are there": {
+      "count": 500,
+      "correct": 267
+    }
+  },
+  "train_labels": {
+    "yes": 4146,
+    "no": 4153
+  }
+}
