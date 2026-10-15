@@ -1,0 +1,85 @@
+{
+  "status": "inventory-only",
+  "payloads_read": false,
+  "scope": "Existing reserved metadata only, not admission or release readiness; no new source selected",
+  "cohorts": {
+    "text": {
+      "ledger_sha256": "ce49ae4bbb3e6885d401c89c0b98a4bd3e4df313ec338a17acc28af87bd929e4",
+      "items_by_pool": {
+        "calibration": 3000,
+        "holdout": 1000,
+        "train": 10750
+      },
+      "families_by_pool": {
+        "calibration": 3000,
+        "holdout": 1000,
+        "train": 10750
+      },
+      "holdout_target": 1000,
+      "calibration_minimum_target": 3000
+    },
+    "image": {
+      "ledger_sha256": "8b3a53b6d0264dc0f48800649756447ba7563d48943551a98de20bc1e785d821",
+      "items_by_pool": {
+        "calibration": 623,
+        "holdout": 211,
+        "train": 1389
+      },
+      "families_by_pool": {
+        "calibration": 600,
+        "holdout": 200,
+        "train": 1341
+      },
+      "holdout_target": 1000,
+      "calibration_minimum_target": 3000
+    },
+    "screenshot": {
+      "ledger_sha256": "85bd0fedb8ff1175d617662c6d4802b487bf8adc6f7afa14b05a8197116aa9a5",
+      "items_by_pool": {
+        "calibration": 120,
+        "holdout": 60,
+        "train": 420
+      },
+      "families_by_pool": {
+        "calibration": 120,
+        "holdout": 60,
+        "train": 420
+      },
+      "holdout_target": 1000,
+      "calibration_minimum_target": 3000
+    },
+    "audio": {
+      "ledger_sha256": "23889f3c2da24917124a8fb8fa312c765603c80ad2352aeec3eb0c80cfc8c1e1",
+      "items_by_pool": {
+        "calibration": 80,
+        "holdout": 40,
+        "train": 326
+      },
+      "families_by_pool": {
+        "calibration": 80,
+        "holdout": 40,
+        "train": 326
+      },
+      "holdout_target": 1000,
+      "calibration_minimum_target": 3000
+    },
+    "video": {
+      "ledger_sha256": "3049be487ca4884273397c5f6c9e17e934887d9a96ad3997d5a4561afe159e92",
+      "items_by_pool": {
+        "calibration": 900,
+        "holdout": 300,
+        "train": 8299
+      },
+      "families_by_pool": {
+        "calibration": 900,
+        "holdout": 300,
+        "train": 8299
+      },
+      "holdout_target": 1000,
+      "calibration_minimum_target": 3000
+    }
+  },
+  "crossmodal": {
+    "status": "no_frozen_reserve_ledger_identified"
+  }
+}

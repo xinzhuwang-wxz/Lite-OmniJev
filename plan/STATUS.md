@@ -1,6 +1,6 @@
 # STATUS
 
-更新：2026-10-15T19:17:09.310866+08:00。**S2已通过原四质量门；S3小规模训练链已启动。原生goal仍active，产品尚未交付。**
+更新：2026-10-15，S3正式评测图像已完成。**S2已通过原四质量门；S3正式评测链运行中。原生goal仍active，产品尚未交付。**
 
 ## 当前阶段与证据
 - s2:01 done；reports/s2-stage-acceptance-budget1120-001.json：image82.0%、screenshot96.4%、text99.4%，cf93.8%/98.6%，全部500题双遍一致。5000条原始记录复核；冻结E4B ee0ef602…、v2 adapter db45fb13…、图像预算1120。
@@ -25,6 +25,9 @@
 - 凭据仅项目外。暂无需用户操作的阻塞，GPU链运行，未请求关卡。独立CPU检查工作树/root/autodl-tmp/image-budget-cpu-check-001保留原始证据，未影响GPU checkout。
 
 ## 本轮新增证据
+- S3 image dev500双遍完成：82.0%、两遍一致，与S2持平，reports/s3-dev-eval-image-stable-001.json；其余cohort和总门仍待完成。396.30秒是离线双遍耗时，不是API延迟。
+- 用户再次强调快/低成本：发布配置按质量达标前提下的真实API延迟、吞吐、显存和单位请求成本选择，1120仍非最终低成本默认。
+- CPU仅统计分池ledger，未读calibration/holdout载荷：reports/s3-reserve-inventory-001.json。text储备3000/1000；image623/211、screenshot120/60、audio80/40、video900/300（校准/封存题数），crossmodal未识别冻结ledger。S4/S5须补齐许可清晰且family隔离的可靠gold，不把现有储备称为就绪、不降数量门槛。
 - S3原高学习率失败候选已停止；当前小更新候选有真实video收益且小样本未明显遗忘，扩大正式验证。
 - b6b827b修复百分点边界：按十进制准确率相减，避免0.01被表示成0.010000000000000009误判；没有给比较器加宽容差，74项门测试确认刚好1pp通过/1.2pp拒绝，原阈值不改。
 - 评测分段日志c243ed3已随同步进入当前GPU作业；源输入/前向顺序未变，主树60项回归通过，真实开销待本轮观测。
