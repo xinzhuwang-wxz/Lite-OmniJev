@@ -439,6 +439,8 @@ def prepare(manifest_path: Path, output: Path) -> dict[str, Any]:
             },
         }
         (stage / "preparation.json").write_text(json.dumps(report, indent=2) + "\n")
+        for path in (stage, *stage.rglob("*")):
+            path.chmod(0o700 if path.is_dir() else 0o600)
         stage.rename(output)
     return report
 

@@ -66,6 +66,8 @@ def test_preparation_maps_copies_binds_sources_and_never_claims_ready(preparatio
     report = offline.prepare(manifest, output)
     target = output / "work" / config["files"][0]["destination"]
     assert target.read_bytes() == Path(config["files"][0]["path"]).read_bytes()
+    for path in (output, *output.rglob("*")):
+        assert path.stat().st_mode & 0o777 == (0o700 if path.is_dir() else 0o600)
     assert report["status"] == "prepared_not_rebuilt"
     assert report["ready"] is False
     assert report["pending"]["recipe_file_closure_verified"] is False
