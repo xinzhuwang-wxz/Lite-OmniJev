@@ -26,5 +26,7 @@ Blocked by: p0:04
 
 2026-10-15：新增官方CLEVRER validation真实gold储备3000 calibration/1000 holdout，一视频一原始题、固定seed42，所有输入SHA绑定。与40文件历史清单合并后113938观测、零跨池连通组。证据reports/s4-clevrer-gold-build-001.json、s4-clevrer-gold-isolation-001.json、s4-clevrer-gold-provenance-001.json。接续私有with-clevrer-gold-manifest-001.json；其余cohort与权限/完整准入未完成，整体验收不勾选。
 
+2026-10-15：音频真实构建3000cal/1000hold（Clotho1400/500+speech1600/500），原120Clotho预留题完全保留，旧文件作为历史曝光保留。83项构建回归通过；reports/s4-audio-gold-isolation-002.json合并历史零跨池冲突，provenance001绑定1f02a8a代码包。最新私有总清单with-audio-gold-manifest-001.json SHA0d583307…；speech原始别名在allocation.jsonl。截图仅补179标注文件后测得4395新原题，容量足够，构建/完整权限及其余cohort仍未通过。
+
 ## Out of scope
 新增真人标注/招聘/付费外包、要求用户提供真人或外部gate账号、模型标签冒充gold、开发agent读取封存载荷、提前S4模型评测。

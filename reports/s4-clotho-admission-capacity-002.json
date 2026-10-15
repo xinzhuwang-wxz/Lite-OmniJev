@@ -1,0 +1,41 @@
+{
+  "scope": "Clotho original-question admission capacity, no pool changes or final gold claim",
+  "inventory_sha256": "3bff87d13b41244636dacccf61114db363f26544bc759f9884c920c632482ea7",
+  "source_metadata_sha256": "7505ba93c291d344b31e5c33e872b95d84255852cff93278bbdf549402acc1f5",
+  "source_question_sha256": {
+    "train": "237c692e21e015a3e9b4391edd716b1387d7eb2d068d7ecdb5a6d6ead7e7a992",
+    "val": "c69b32095d70740cee49d66dc33690d0267cf7bc821d71d834725f9d24c0a491",
+    "test": "6b72ea4722e2a4dde53465f9a0c165c901b16a2fb4ef16356d37891f71496737"
+  },
+  "license_plan_sha256": "e5821f612665a846309c884784007adf19c48fc56cfa7b87a15fcfa72e28e1f1",
+  "distinct_original_questions_by_pool": {
+    "dev": 1187,
+    "train": 775,
+    "calibration": 196,
+    "holdout": 107,
+    "unallocated": 1613
+  },
+  "families_by_pool": {
+    "calibration": 80,
+    "holdout": 40,
+    "unallocated": 670
+  },
+  "rejected": {
+    "non_unanimous_answer": 2752,
+    "non_yes_no_answer": 3316,
+    "six_row_group_excluded": 1,
+    "unapproved_media_license": 1998
+  },
+  "fully_decoded_available_media": 790,
+  "unallocated_family_size_histogram": {
+    "2": 265,
+    "3": 219,
+    "1": 106,
+    "4": 80
+  },
+  "can_extend_original_holdout_to_500_without_splitting_family": true,
+  "elapsed_seconds": 6.778,
+  "cost_usd": null,
+  "exit_code": 0,
+  "script_sha256": "c0b9ab7f4ddc73c324d79807216ab98f2d7f67783e804c841c5ecc6bbd5fd699"
+}

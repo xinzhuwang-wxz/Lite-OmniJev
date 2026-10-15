@@ -1,0 +1,50 @@
+{
+  "status": "completed_records_recovered",
+  "scope": "single-pass fixed50 publicdevelopment diagnostic only; not stage/quality acceptance",
+  "samples": 50,
+  "passes": 1,
+  "seed": 42,
+  "dtype": "bfloat16",
+  "image_max_soft_tokens": 1120,
+  "metrics": {
+    "count": 50,
+    "accuracy": 0.34,
+    "ece15": 0.48836470500228163,
+    "brier": 0.9962319786798176,
+    "coverage_at_error": 0.0,
+    "max_error": 0.05
+  },
+  "data_sha256": "8099d5c78af26fd0848dd36d06a52b68906e6789cb2c55f7c62d8773485298af",
+  "selected_ids_sha256": "1af868df1d442def73765d5cfda0532a8b86884f441d28f844a5f6ee9e3ad972",
+  "records_sha256": "d6d9b5f4c37084c40d2b41a99befa2b614b94ea2fd487936485dcfc8a8f5c94b",
+  "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+  "adapter_config_sha256": "b4374cff844b2ff0975fee8df3f05854845503834f646ef50f48ca17d865523e",
+  "base_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "source_code_commit": "f1ad912c1ea64267258c55fa6d4a234a677e5635",
+  "code_sha256": {
+    "scripts/s0_development_baselines.py": "5958de8822629a5675ab6bec00bd735fdaa53d9bb8175749571c023f86091939",
+    "scripts/s0_public_baselines.py": "deaa36b5a311b8a14294081f0de942ca1abc439207181dc73969b81d3f6a1679",
+    "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+    "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+    "train/multimodal.py": "09c5df0cb4ea5917910282b0fd2ae3ba55778049dc8e33b36f9b1d3ee469f265",
+    "eval/metrics.py": "a7e4f0412add2106094e50c2cf9e78ff4d4d9732085ff23b7186d881151ecda8",
+    "data/schema.py": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6"
+  },
+  "original_runner_sha256": "d30cd0ddff7a482747e7aa565c927984f66c44412fdcf7d3717225509d527a0a",
+  "recovery_runner_sha256": "371d1b641fd8d5b49b79f9a24f212ae4263f7b08abd88c7fb9c3a9b3730a0b3c",
+  "failure_log_sha256": "956de4ee10184c3c93aeed30e36a1b91cf0d0e7fcc454601ee9f9f2cc1dbded1",
+  "original_process_exit_code": 1,
+  "failure": "receipt_finalizer_called_code_hashes_with_argument",
+  "recovery_exit_code": 0,
+  "stage_gate_pass": false,
+  "prepare_seconds_sum": 8.769806,
+  "forward_seconds_sum": 26.13678,
+  "elapsed_seconds": null,
+  "peak_cuda_allocated_bytes": null,
+  "cost_usd": null,
+  "limitations": [
+    "Original receipt finalizer failed after all50records; no inference rerun.",
+    "Total wall time and peak CUDA memory were lost with process and are not reconstructed.",
+    "Source model files previously verified; this diagnostic did not independently rehash every base shard."
+  ]
+}
