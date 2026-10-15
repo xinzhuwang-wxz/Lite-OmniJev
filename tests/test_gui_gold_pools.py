@@ -310,3 +310,72 @@ def test_source_index_pin_cannot_be_rebound_in_real_mode(tmp_path):
     path.write_bytes(gold.encode(manifest))
     code, receipt = run(tmp_path, path, canary=False, cal=3000, hold=1000)
     assert code == 1 and receipt["category"] == "source_not_pinned"
+
+
+def test_collect_worker_counts_preserve_candidates_graph_and_selection(tmp_path):
+    _, manifest = fixture(tmp_path)
+    m = gold.BuildManifest.model_validate(manifest)
+    outcomes = []
+    for workers in (1, 8):
+        graph = gold.Components()
+        receipt = gold.Receipt()
+        _, assignments, existing = gold.inventory_state(m, receipt, graph)
+        rows = gold.collect(m, graph, receipt, workers=workers)
+        selected = gold.allocate(
+            rows, existing, graph, assignments, gold.Quarantine(families=[], media=[]), 6, 3
+        )
+        outcomes.append((rows, graph.parents, selected, receipt.counts))
+    assert outcomes[0] == outcomes[1]
+
+
+@pytest.mark.parametrize("workers", [1, 8])
+def test_collect_worker_exception_preserves_category(tmp_path, workers):
+    _, manifest = fixture(tmp_path)
+    m = gold.BuildManifest.model_validate(manifest)
+    path = Path(m.media_root) / "screenshots" / "0000000000000000_0.png"
+    path.write_bytes(b"changed source")
+    with pytest.raises(gold.BuildError, match="^media_source_mismatch$"):
+        gold.collect(m, gold.Components(), workers=workers)
+
+
+@pytest.mark.parametrize("workers", [1, 8])
+def test_collect_decode_worker_exception_is_not_silently_dropped(tmp_path, workers):
+    _, manifest = fixture(tmp_path)
+    path = Path(manifest["media_root"]) / "screenshots" / "0000000000000000_0.png"
+    path.write_bytes(b"not a PNG")
+    index_path = Path(manifest["source_index"]["path"])
+    index = json.loads(index_path.read_text())
+    index["media"][path.name] = gold.file_digest(path)
+    index_path.write_bytes(gold.encode(index))
+    manifest["source_index"]["sha256"] = gold.file_digest(index_path)
+    from PIL import UnidentifiedImageError
+
+    with pytest.raises(UnidentifiedImageError):
+        gold.collect(
+            gold.BuildManifest.model_validate(manifest), gold.Components(), workers=workers
+        )
+
+
+def test_collect_deduplicates_raw_media_without_losing_aliases(tmp_path):
+    _, manifest = fixture(tmp_path)
+    root = Path(manifest["media_root"]) / "screenshots"
+    original = root / "0000000000000000_0.png"
+    alias = root / "0000000000000001_0.png"
+    alias.write_bytes(original.read_bytes())
+    index_path = Path(manifest["source_index"]["path"])
+    index = json.loads(index_path.read_text())
+    index["media"][alias.name] = gold.file_digest(alias)
+    index_path.write_bytes(gold.encode(index))
+    manifest["source_index"]["sha256"] = gold.file_digest(index_path)
+    results = []
+    for workers in (1, 8):
+        graph, receipt = gold.Components(), gold.Receipt()
+        rows = gold.collect(
+            gold.BuildManifest.model_validate(manifest), graph, receipt, workers=workers
+        )
+        assert receipt.counts["source_unique_media_decoded"] == 15
+        assert receipt.counts["source_steps_aliased"] == 16
+        nodes = ["f:" + gold.canonical_family_hash(f"gui:{i:016d}") for i in (0, 1)]
+        assert graph.find(nodes[0]) == graph.find(nodes[1])
+        results.append((rows, graph.parents, receipt.counts))
+    assert results[0] == results[1]

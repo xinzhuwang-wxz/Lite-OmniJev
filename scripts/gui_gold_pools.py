@@ -13,6 +13,7 @@ import platform
 import subprocess
 import time
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import unquote, urlparse
@@ -114,14 +115,37 @@ def safe_path(path: Path) -> Path:
     return path
 
 
+def verified_media(item: tuple[Path, str | None]) -> tuple[Path, str]:
+    path, expected = item
+    actual = file_digest(safe_path(path))
+    if actual != expected:
+        raise BuildError("media_source_mismatch")
+    return path, actual
+
+
+def decoded_media(item: tuple[Path, str]) -> tuple[str, dict[str, Any]]:
+    path, expected = item
+    verified_media((path, expected))
+    info = gui.image_info(path)
+    if info["sha256"] != expected:
+        raise BuildError("media_changed")
+    return expected, info
+
+
 def collect(
-    manifest: BuildManifest, graph: Components, receipt: Receipt | None = None
+    manifest: BuildManifest,
+    graph: Components,
+    receipt: Receipt | None = None,
+    *,
+    workers: int = 8,
 ) -> dict[str, dict[str, Any]]:
     index = SourceIndex.model_validate(bound_json(manifest.source_index))
     annotation_root = safe_path(Path(manifest.annotation_root))
     media_root = safe_path(Path(manifest.media_root))
     result: dict[str, dict[str, Any]] = {}
-    decoded_cache: dict[str, dict[str, Any]] = {}
+    if not 1 <= workers <= 8:
+        raise ValueError("workers must be between 1 and 8")
+    source_steps: list[tuple[str, dict[str, Any], Path]] = []
     scanned_steps = 0
     scanned_episodes = 0
     for entry in gui.load_plan(Path(manifest.plan.path)):
@@ -132,55 +156,64 @@ def collect(
             raise BuildError("annotation_source_mismatch")
         annotation = gui.load_annotation(annotation_root, episode)
         gui.validate_episode_steps(annotation, episode, media_root)
-        family_node = "f:" + canonical_family_hash(f"gui:{episode}")
         for step in annotation["steps"]:
             path = safe_path(media_root / "screenshots" / step["screenshot"])
+            source_steps.append((episode, step, path))
             scanned_steps += 1
-            media_sha = file_digest(path)
-            if index.media.get(step["screenshot"]) != media_sha:
-                raise BuildError("media_source_mismatch")
-            if media_sha not in decoded_cache:
-                decoded_cache[media_sha] = gui.image_info(path)
-                if decoded_cache[media_sha]["sha256"] != media_sha:
-                    raise BuildError("media_changed")
-            info = decoded_cache[media_sha]
-            # Every original step contributes aliases, even if it cannot be a gold item.
-            graph.union(family_node, "m:" + info["sha256"])
-            graph.union(family_node, "r:" + info["decoded_rgb_sha256"])
-            if step.get("action") != "CLICK":
-                continue
-            instruction = str(step.get("low_level_instruction", "")).strip()
-            if not instruction:
-                continue
-            try:
-                box = gui.parse_box(step.get("sam2_bbox"))
-                point = gui.parse_click_point(step.get("info"))
-            except ValueError:
-                continue
-            if not gui.box_is_legal(
-                box, width=info["width"], height=info["height"]
-            ) or not gui.contains(box, point):
-                continue
-            negatives = gui.candidate_negative_boxes(
-                box, point, width=info["width"], height=info["height"]
-            )
-            if len(negatives) != 3:
-                continue
-            row = dict(
-                episode_id=episode,
-                step=step["step"],
-                instruction=instruction,
-                screenshot=step["screenshot"],
-                media_path=path,
-                image=info,
-                true_box=box,
-                point=point,
-                negative_boxes=negatives,
-                raw_step_sha256=digest(gui.canonical_json(step).encode()),
-                annotation_sha256=index.annotations[episode],
-            )
-            sample, _, _ = gui.sample_for(row)
-            result[sample.id] = row
+    # Only paths, step records and decoded metadata cross the process boundary.
+    # Verify every alias before deduplicating by its pinned raw content hash.
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        verified = pool.map(
+            verified_media,
+            ((path, index.media.get(step["screenshot"])) for _, step, path in source_steps),
+            chunksize=16,
+        )
+        unique: dict[str, Path] = {}
+        for path, media_sha in verified:
+            unique.setdefault(media_sha, path)
+        decoded_cache = dict(
+            pool.map(decoded_media, ((path, sha) for sha, path in unique.items()), chunksize=1)
+        )
+    for episode, step, path in source_steps:
+        family_node = "f:" + canonical_family_hash(f"gui:{episode}")
+        info = decoded_cache[index.media[step["screenshot"]]]
+        # Every original step contributes aliases, even if it cannot be a gold item.
+        graph.union(family_node, "m:" + info["sha256"])
+        graph.union(family_node, "r:" + info["decoded_rgb_sha256"])
+        if step.get("action") != "CLICK":
+            continue
+        instruction = str(step.get("low_level_instruction", "")).strip()
+        if not instruction:
+            continue
+        try:
+            box = gui.parse_box(step.get("sam2_bbox"))
+            point = gui.parse_click_point(step.get("info"))
+        except ValueError:
+            continue
+        if not gui.box_is_legal(
+            box, width=info["width"], height=info["height"]
+        ) or not gui.contains(box, point):
+            continue
+        negatives = gui.candidate_negative_boxes(
+            box, point, width=info["width"], height=info["height"]
+        )
+        if len(negatives) != 3:
+            continue
+        row = dict(
+            episode_id=episode,
+            step=step["step"],
+            instruction=instruction,
+            screenshot=step["screenshot"],
+            media_path=path,
+            image=info,
+            true_box=box,
+            point=point,
+            negative_boxes=negatives,
+            raw_step_sha256=digest(gui.canonical_json(step).encode()),
+            annotation_sha256=index.annotations[episode],
+        )
+        sample, _, _ = gui.sample_for(row)
+        result[sample.id] = row
     if receipt is not None:
         receipt.counts.update(
             source_episodes_scanned=scanned_episodes,
