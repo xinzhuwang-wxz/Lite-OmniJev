@@ -41,9 +41,20 @@ def verify_data_is_train_pool(data_path: Path, ledger_paths: list[Path]) -> dict
     ]
     if len(set(data_ids)) != len(data_ids):
         raise ValueError("training data contains duplicate ids")
-    reserved = [item_id for item_id in data_ids if pools.get(item_id) in {"holdout", "calibration"}]
-    unlisted = [item_id for item_id in data_ids if item_id not in pools]
-    dev_pooled = [item_id for item_id in data_ids if pools.get(item_id) == "dev"]
+
+    def ledger_pool(item_id: str) -> str | None:
+        """Deterministic variant ids resolve to their parent's frozen pool."""
+        if item_id in pools:
+            return pools[item_id]
+        if item_id.endswith("-cf1") and item_id[:-4] in pools:
+            return pools[item_id[:-4]]
+        return None
+
+    reserved = [
+        item_id for item_id in data_ids if ledger_pool(item_id) in {"holdout", "calibration"}
+    ]
+    unlisted = [item_id for item_id in data_ids if ledger_pool(item_id) is None]
+    dev_pooled = [item_id for item_id in data_ids if ledger_pool(item_id) == "dev"]
     if reserved or unlisted or dev_pooled:
         raise ValueError(
             f"ledger violations: {len(reserved)} reserved, {len(dev_pooled)} dev, "

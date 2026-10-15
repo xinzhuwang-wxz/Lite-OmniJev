@@ -153,3 +153,21 @@ def test_repeat_identical_handles_single_pass() -> None:
     assert repeat_identical_over(two_same) is True
     two_diff: list[list[dict]] = [[{"id": "a", "p": 0.5}], [{"id": "a", "p": 0.4}]]
     assert repeat_identical_over(two_diff) is False
+
+
+def test_variant_ids_resolve_to_parent_pool(tmp_path: Path) -> None:
+    ledger = write_jsonl(
+        tmp_path / "l.jsonl",
+        [{"item_id": "img-1", "pool": "train"}, {"item_id": "img-2", "pool": "holdout"}],
+    )
+    a = sample_row(0)
+    a["id"] = "img-1-cf1"
+    b = sample_row(1)
+    b["id"] = "img-2-cf1"
+    data = write_jsonl(tmp_path / "d.jsonl", [a, b])
+    with pytest.raises(ValueError, match="reserved"):
+        verify_data_is_train_pool(data, [ledger])
+    c = sample_row(2)
+    c["id"] = "img-1-cf1"
+    data2 = write_jsonl(tmp_path / "d2.jsonl", [c])
+    assert verify_data_is_train_pool(data2, [ledger])["verified_train"] == 1
