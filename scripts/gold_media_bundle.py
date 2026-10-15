@@ -1,6 +1,7 @@
 """Private media relocation only; not gold, provenance, or permission admission.
 
-Input gold-media-bundle-manifest-v1 lists SampleArtifacts with one media_root each.
+Input gold-media-bundle-manifest-v1 lists SampleArtifacts with media_roots
+(or one legacy media_root) each.
 Output inventory-manifest.json uses output-dir as the sole trusted media root;
 private mapping.json records original/new artifact paths and SHA256 values.
 """
@@ -23,13 +24,19 @@ from scripts.gold_inventory import SampleArtifact, digest
 
 
 class InputArtifact(SampleArtifact):
-    media_root: str = Field(min_length=1)
+    media_root: str | None = Field(default=None, min_length=1)
+    media_roots: list[str] | None = Field(default=None, min_length=1)
 
     @model_validator(mode="after")
     def root_absolute(self) -> Self:
-        if not Path(self.media_root).is_absolute():
-            raise ValueError("absolute root required")
+        if (self.media_root is None) == (self.media_roots is None):
+            raise ValueError("exactly one root declaration required")
+        if any(not Path(root).is_absolute() for root in self.roots()):
+            raise ValueError("absolute roots required")
         return self
+
+    def roots(self) -> list[str]:
+        return self.media_roots if self.media_roots is not None else [self.media_root or ""]
 
 
 class Manifest(Contract):
@@ -52,6 +59,9 @@ class Receipt(Contract):
     unique_media: int = 0
     copied_bytes: int = 0
     output_artifact_sha256: list[str] = Field(default_factory=list)
+    mapping_sha256: str | None = None
+    inventory_manifest_sha256: str | None = None
+    media_root_sha256: str | None = None
     gold_provenance: Literal["not_validated"] = "not_validated"
     private_job_permissions: Literal["not_validated"] = "not_validated"
 
@@ -72,10 +82,11 @@ def private_write(path: Path, content: str) -> None:
         handle.write(content)
 
 
-def media_path(root: Path, uri: str) -> Path:
-    real_path(root)
-    if not root.is_dir():
-        raise Rejected("unsafe_path")
+def media_path(roots: list[Path], uri: str) -> Path:
+    for root in roots:
+        real_path(root)
+        if not root.is_dir():
+            raise Rejected("unsafe_path")
     parsed = urlsplit(uri)
     if parsed.netloc or parsed.query or parsed.fragment or parsed.scheme not in {"", "file"}:
         raise Rejected("unsafe_path")
@@ -84,17 +95,23 @@ def media_path(root: Path, uri: str) -> Path:
     if ".." in value.parts or "\\" in decoded or "\x00" in decoded:
         raise Rejected("unsafe_path")
     if parsed.scheme == "file":
-        if not value.is_absolute():
+        if not value.is_absolute() or not any(value.is_relative_to(root) for root in roots):
             raise Rejected("unsafe_path")
-        path = value
+        candidates = [value]
     else:
         if value.is_absolute() or ":" in uri:
             raise Rejected("unsafe_path")
-        path = root / value
-    if not path.is_relative_to(root):
-        raise Rejected("unsafe_path")
-    real_path(path)
-    return path
+        candidates = [root / value for root in roots]
+    matches: set[Path] = set()
+    for path in candidates:
+        real_path(path)
+        if path.exists():
+            matches.add(path.resolve())
+    if not matches:
+        raise Rejected("missing_media")
+    if len(matches) != 1:
+        raise Rejected("ambiguous_media")
+    return next(iter(matches))
 
 
 def copy_media(source: Path, target: Path, expected: str) -> int:
@@ -162,7 +179,7 @@ def bundle(manifest_path: Path, output: Path) -> Receipt:
                     except ValueError:
                         raise Rejected("invalid_sample") from None
                     for media in row["prefix"].get("media", []):
-                        path = media_path(Path(artifact.media_root), media["uri"])
+                        path = media_path([Path(root) for root in artifact.roots()], media["uri"])
                         sha, kind = media["sha256"], media["type"]
                         if sha in seen and seen[sha][0] != kind:
                             raise Rejected("type_conflict")
@@ -205,7 +222,7 @@ def bundle(manifest_path: Path, output: Path) -> Receipt:
             new_hash = generated_hash.hexdigest()
             rewritten.append(
                 {
-                    **artifact.model_dump(exclude={"media_root"}),
+                    **artifact.model_dump(exclude={"media_root", "media_roots"}),
                     "path": str(target),
                     "sha256": new_hash,
                 }
@@ -231,6 +248,11 @@ def bundle(manifest_path: Path, output: Path) -> Receipt:
             + "\n",
         )
         private_write(output / "media-root.json", json.dumps({"media_root": str(output)}) + "\n")
+        receipt.mapping_sha256 = digest((output / "mapping.json").read_bytes())
+        receipt.inventory_manifest_sha256 = digest(
+            (output / "inventory-manifest.json").read_bytes()
+        )
+        receipt.media_root_sha256 = digest((output / "media-root.json").read_bytes())
         receipt.unique_media = len(seen)
         receipt.outcome = "bundled"
     except Rejected as error:

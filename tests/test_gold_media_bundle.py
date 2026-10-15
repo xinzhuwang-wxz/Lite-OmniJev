@@ -207,3 +207,77 @@ def test_cli_success(tmp_path: Path, capsys: Any) -> None:
         == 0
     )
     assert capsys.readouterr().out == report.read_text()
+
+
+def roots_manifest(manifest: Path, roots: list[Path]) -> None:
+    value = json.loads(manifest.read_text())
+    value["samples"][0].pop("media_root")
+    value["samples"][0]["media_roots"] = [str(root) for root in roots]
+    manifest.write_text(json.dumps(value))
+
+
+def test_mixed_explicit_roots_and_metadata_hashes(tmp_path: Path) -> None:
+    manifest, source, _ = setup(tmp_path)
+    root = tmp_path / "trusted"
+    newer = tmp_path / "new"
+    newer.mkdir()
+    (newer / "fresh.wav").write_bytes(b"public synthetic bytes")
+    rows = [json.loads(line) for line in source.read_text().splitlines()]
+    rows[1]["prefix"]["media"][0]["uri"] = (newer / "fresh.wav").as_uri()
+    source.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    value = json.loads(manifest.read_text())
+    value["samples"][0]["sha256"] = digest(source.read_bytes())
+    manifest.write_text(json.dumps(value))
+    roots_manifest(manifest, [root, newer])
+    original_source, original_manifest = source.read_bytes(), manifest.read_bytes()
+    output = tmp_path / "output"
+    result = bundle(manifest, output)
+    assert result.outcome == "bundled"
+    assert result.unique_media == 1
+    assert source.read_bytes() == original_source and manifest.read_bytes() == original_manifest
+    assert result.mapping_sha256 == digest((output / "mapping.json").read_bytes())
+    assert result.inventory_manifest_sha256 == digest(
+        (output / "inventory-manifest.json").read_bytes()
+    )
+    assert result.media_root_sha256 == digest((output / "media-root.json").read_bytes())
+    rewritten = json.loads((output / "inventory-manifest.json").read_text())["samples"][0]
+    assert "media_roots" not in rewritten and "media_root" not in rewritten
+
+
+def test_relative_ambiguity_rejected_even_for_identical_bytes(tmp_path: Path) -> None:
+    manifest, _, _ = setup(tmp_path, ["asset.wav"])
+    other = tmp_path / "other"
+    other.mkdir()
+    (other / "asset.wav").write_bytes(b"public synthetic bytes")
+    roots_manifest(manifest, [tmp_path / "trusted", other])
+    assert bundle(manifest, tmp_path / "output").categories == ["ambiguous_media"]
+
+
+def test_file_uri_outside_root_union_rejected(tmp_path: Path) -> None:
+    manifest, _, _ = setup(tmp_path, [(tmp_path / "outside.wav").as_uri()])
+    (tmp_path / "outside.wav").write_bytes(b"public synthetic bytes")
+    other = tmp_path / "other"
+    other.mkdir()
+    roots_manifest(manifest, [tmp_path / "trusted", other])
+    assert bundle(manifest, tmp_path / "output").categories == ["unsafe_path"]
+
+
+def test_overlapping_roots_allow_one_absolute_canonical_path(tmp_path: Path) -> None:
+    manifest, _, _ = setup(tmp_path, [(tmp_path / "trusted" / "asset.wav").as_uri()])
+    roots_manifest(manifest, [tmp_path, tmp_path / "trusted"])
+    assert bundle(manifest, tmp_path / "output").outcome == "bundled"
+
+
+@pytest.mark.parametrize("roots", [[], ["relative"]])
+def test_invalid_root_list_rejected(tmp_path: Path, roots: list[str]) -> None:
+    manifest, _, _ = setup(tmp_path)
+    roots_manifest(manifest, [Path(root) for root in roots])
+    assert bundle(manifest, tmp_path / "output").categories == ["invalid_manifest"]
+
+
+def test_both_root_declarations_rejected(tmp_path: Path) -> None:
+    manifest, _, _ = setup(tmp_path)
+    value = json.loads(manifest.read_text())
+    value["samples"][0]["media_roots"] = [str(tmp_path / "trusted")]
+    manifest.write_text(json.dumps(value))
+    assert bundle(manifest, tmp_path / "output").categories == ["invalid_manifest"]
