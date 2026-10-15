@@ -33,6 +33,8 @@ MAX_PACKING_NODES = 10000
 SEED = 42
 DEV_COUNT = 500
 MAX_ANNOTATION_DOWNLOADS = 630
+# S2候选扫描可显式扩到媒体计划全集(1679);默认630保持S0 dev构建契约不变(s2:01记录)。
+EXTENDED_SCAN_LIMIT = 1679
 MAX_DOWNLOAD_WORKERS = 8
 DOWNLOAD_TIMEOUT_SECONDS = 20
 ALLOCATION_PREFIX = f"s0-gui-dev-v1:{SEED}:"
@@ -749,7 +751,7 @@ def run(
     if report_out.resolve(strict=False) in {path.resolve(strict=False) for path in output_paths}:
         return 1
     try:
-        if not 1 <= dev_count < max_annotation_downloads <= MAX_ANNOTATION_DOWNLOADS:
+        if not 1 <= dev_count < max_annotation_downloads <= EXTENDED_SCAN_LIMIT:
             raise GuiDevError("dev_count/max_annotation_downloads outside bounded contract")
         validate_output_paths([*output_paths, report_out])
         plan_rows = load_plan(plan_path)
