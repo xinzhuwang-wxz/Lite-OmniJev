@@ -8,7 +8,8 @@
 - Sol6.1构建器已合入87c766c，真实200对TRAIN组合构建通过：reports/s4-crossmodal-train-build-001.json；train SHA d3b0be2a…，新完整inventory SHA244a5c4f…，100/50/50 AND规则，原始train图像/音频各200唯一组件。源与媒体SHA及全库存隔离均通过；主树22针对测试通过。
 - 首个S4候选30步完成：300曝光，六cohort各50；训练wall319.167秒，CUDA peak36.94GB，online SwanLab无错误。adapter SHA6bb86b09…，reports/s4-joint-pilot-train-001.json。首轮原crossmodal固定50从33→35，补充固定50保持40；两个selected ID SHA与旧基线一致，已通过预设跨模态筛选触发条件；不是S4门通过。
 - 五旧cohort筛选已完成并通过预设警戒：image40→40/50、screenshot50→50/50、text49→49/50、audio38→37/50、video99→99/150。reports/s4-pilot-screening-001.json qualified_for_expansion=true仅筛选资格，不是正式质量通过；音频小切片少1题需继续关注。
-- 训练及所有小筛选进程均结束，当前无GPU作业。候选保留，下一轮优先诊断/改善视频（仍未比S3提升），并检查音频保留；不盲目追加同一混合步数，不把小切片结果当完整dev。若进入完整dev，仍保持原/补充来源分开与S4原门槛。
+- 首轮训练/筛选已结束，当前无GPU作业。真实CPU视频诊断reports/s4-video-pilot-diagnostic-001.json：首轮50视频全部重复S3 stable200已见；temporal60/97不变，motion10→7/14，existence29→32/39，逐题8修正/8退步，总分持平。TRAIN8299，除当前S3 stable200余8099（不声称全历史未见）。
+- 下一轮规则冻结.scratch/s4/pilot-002.md：30步、video150新族/媒体且时序90/运动30/存在30、其它5cohort各30回放；初始首轮adapter6bb86b09…，新optimizer，余训练/推理参数不变。Sol6.1 s4_crossmodal_train正在独立worktree实现CPU准备.scratch/s4/prepare-video-pilot.py，先通过全库存审计再上卡。
 - 两个crossmodal报告reports/s4-pilot-crossmodal-{original,supplemental}-001.json已拉回。跨模态Brier/ECE/coverage只是小样本未校准诊断，不能替代S5。五cohort报告/manifest/sidecar在远端artifacts/s4-pilot-five-screen-001，代码/root/autodl-tmp/s4-pilot-code-f592776；当前脚本源已入Git，不需重新跑。
 - 准备/预检/启动见reports/s4-joint-pilot-{preparation,preflight,launch}-001.json；源码f592776 archive双端SHA一致。Sol6.1实现与测试、Luna监控切片已结束；主要代码67相关CPU tests及主树24针对tests通过，集成ruff/mypy通过。子代理不再运行。
 - 即时接续以本STATUS/当前票为准；最近完整里程碑handoff仍plan/handoff-2026-10-15-s3-complete.md。不为每个小切片另写handoff。
@@ -36,7 +37,7 @@
 - 原crossmodal固定50：候选66%/基座48%；初版34%是JSON yes/no排序恢复错误，权威recovered002/paired002与correction001，旧失败不覆盖。
 - 补充来源固定50配对GPU：候选80%/ECE.1673、基座66%/ECE.2546；逐题prepared输入相同，candidate-only14/base-only7，合计86.6秒。s4-crossmodal-matched-paired-001。工程入口另一个随机seed42切片82%/ECE.0854仅工程证据，不与前切片直接比较。
 - S4仍需最强允许教师同来源/同输入比率≥.97、封存/开发差≤.03、Decision Index/JevBench不低于同尺寸基线。小切片与数据gate不替代完整门槛。
-- train.trainer/s1_dev_eval已支持image+audio并传官方mm_token_type_ids；63回归与真实CPU processor10例逐张量一致。尚未执行联合模态训练更新。
+- train.trainer/s1_dev_eval已支持image+audio并传官方mm_token_type_ids；63回归与真实CPU processor10例逐张量一致。已执行首轮联合模态训练，见本STATUS首段。
 - S3 HF/vLLM FP32合并副本数值对照已通过，不是低成本服务/校准/最终浏览器验收；原模型/adapter保持，派生缓存不擅删。
 
 ## 环境与授权

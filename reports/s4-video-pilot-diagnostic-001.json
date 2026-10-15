@@ -1,0 +1,75 @@
+{
+  "scope": "public dev150 and known TRAIN-only exposure diagnostic; no holdout",
+  "before": {
+    "data_sha256": "e9b91fedecf2ccf7dc30e837ac11bcc4b233624d1f6c16812a40b1319c15b080",
+    "sidecar_sha256": "7eb378cc3aba4486f590c5a420edfaa31bb953a61d77b2210374030c0104c93a",
+    "groups": {
+      "existence": {
+        "count": 39,
+        "correct": 29
+      },
+      "motion": {
+        "count": 14,
+        "correct": 10
+      },
+      "temporal": {
+        "count": 97,
+        "correct": 60
+      }
+    },
+    "confusion": {
+      "no->no": 62,
+      "yes->no": 45,
+      "yes->yes": 37,
+      "no->yes": 6
+    }
+  },
+  "after": {
+    "data_sha256": "e9b91fedecf2ccf7dc30e837ac11bcc4b233624d1f6c16812a40b1319c15b080",
+    "sidecar_sha256": "9735a02088611aecbeba928a29655d6d7f9134371cd6c919feca74d3dfcc12c5",
+    "groups": {
+      "existence": {
+        "count": 39,
+        "correct": 32
+      },
+      "motion": {
+        "count": 14,
+        "correct": 7
+      },
+      "temporal": {
+        "count": 97,
+        "correct": 60
+      }
+    },
+    "confusion": {
+      "no->no": 60,
+      "yes->no": 43,
+      "yes->yes": 39,
+      "no->yes": 8
+    }
+  },
+  "paired": {
+    "1->1": 91,
+    "0->0": 43,
+    "1->0": 8,
+    "0->1": 8
+  },
+  "training": {
+    "sha256": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948",
+    "available": 8299,
+    "s3_stable_video_seen": 200,
+    "pilot_video_draws": 50,
+    "pilot_video_new_beyond_s3": 0,
+    "unseen_capacity": 8099,
+    "unseen_groups": {
+      "temporal": 5262,
+      "motion": 685,
+      "existence": 2152
+    },
+    "unseen_targets": {
+      "yes": 4054,
+      "no": 4045
+    }
+  },
+  "exit_code": 0
+}
