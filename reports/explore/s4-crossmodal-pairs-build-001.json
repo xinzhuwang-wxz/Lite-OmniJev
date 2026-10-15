@@ -1,0 +1,63 @@
+{
+  "code_sha256": "984033bedd1faccea795641ca5e91e3c05089802e84809a5dee9096b613076e8",
+  "count": 600,
+  "full_inventory_isolation": "pending_root_exposure_003",
+  "group_count": 200,
+  "input_root": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-train-001",
+  "input_sha256": {
+    "allocation": "2fc9d8aa3de539502b9a138fb03eedbc39af70423b970d2ebad53ff3ed76be4c",
+    "components": "e87043f345ae2dd515d04d92af6444a0d470384309a45a3bbf8a410e4fdaab46",
+    "inventory": "244a5c4f8e7dc0ae769d0b3c73b781f86c0c30aaa3f283f256d440d6c26b95ae",
+    "train": "d3b0be2adeadbd12cbfc01daa5fa6ef74fb687b8fab6148bc750d695bbab6977"
+  },
+  "output_sha256": {
+    "allocation": "53d2da1ece10ae3fee8ce32823c03ea7ad380e2bc49dc633bae9ce6dd95fc8ea",
+    "components": "c1404f8b1b1c1dc8af05f7d6c70a113ec52c4b6682262ed11715ee79f3078ed3",
+    "groups": "c334c42a1fc1dc7e687cbb5cafc3276d57a89b20bd76907881ad9c6b80647de5",
+    "train": "933db6913d4c6b73684850a0e4c4f0e0995d9d4e22470e4fa095f180bf9cc10d"
+  },
+  "provenance_sha256": "01ee26024fa365a51ad23b95a11d0349b5f906bfd30042509367cc3bfaac68c4",
+  "rules": {
+    "both_true": 200,
+    "image_false_audio_true": 200,
+    "image_true_audio_false": 200
+  },
+  "schema_version": "crossmodal-controlled-train-pairs-v1",
+  "semantic_boundary": "Full instruction changes; component gold does not. Three correlated variants per TRAIN family.",
+  "source_bindings": {
+    "inventory": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001/crossmodal-dev-002/inventory-manifest.json",
+      "sha256": "6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769"
+    },
+    "sources": [
+      {
+        "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources/aokvqa/coco-ccby-publicdomain-images",
+        "modality": "image",
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-media-pools-image-001/run-a/train.jsonl",
+        "sha256": "96ed2bef6e4824cd6fb6b44e469007f9c180df789541caa95c8fd11d73f5ef8e"
+      },
+      {
+        "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+        "modality": "audio",
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-audio-001/run-a/train.jsonl",
+        "sha256": "7fd14f3aad81ac096b2285b010e429ae883059c0966dc885d0244c90f7636b0c"
+      }
+    ]
+  },
+  "status": "new_prepared_not_admitted",
+  "training": "not_run",
+  "aggregate_audit": {
+    "unique_families": 200,
+    "unique_components": {
+      "image": 200,
+      "audio": 200
+    },
+    "max_component_reuse": {
+      "image": 3,
+      "audio": 3
+    },
+    "all_train": true,
+    "private_permissions": true
+  },
+  "remote_report_sha256": "8eb7ce290ab05f98332df601fa83151f822432eab24f7f7e5b7504dda57391be"
+}
