@@ -1,0 +1,16 @@
+{
+  "seed": 42,
+  "sample_count": 1389,
+  "steps": 695,
+  "accumulation": 10,
+  "max_length": 2048,
+  "learning_rate": 0.0001,
+  "rank": 16,
+  "alpha": 32,
+  "dtype": "bfloat16",
+  "modality": "image",
+  "midway_step": 348,
+  "expected_data_version": "aokvqa-train-image-choice-s2-pools-v1",
+  "checkpoint_every": 100,
+  "media_root": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources/aokvqa/coco-ccby-publicdomain-images"
+}

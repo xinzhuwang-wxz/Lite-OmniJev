@@ -21,7 +21,9 @@ from scripts.s1_dev_eval import (
     prediction_content,
     record_for,
 )
-from train.trainer import LoopConfig, smoke_samples, verified_media_file
+from train.trainer import LoopConfig, prepare_mixed_example, smoke_samples, verified_media_file
+
+MIXED_VERSIONS = ["s2-image-train-v1-pools-v1", "s2-mixed-text-v1"]
 
 
 def image_row(index: int, *, media_count: int = 1, modality: list[str] | None = None) -> dict:
@@ -53,6 +55,14 @@ def image_row(index: int, *, media_count: int = 1, modality: list[str] | None = 
             "data_version": "s2-image-train-v1-pools-v1",
         },
     }
+
+
+def text_row(index: int) -> dict:
+    row = image_row(index, media_count=0, modality=["text"])
+    row["id"] = f"clinc-mixed-{index:05d}"
+    row["meta"]["source_dataset"] = "clinc/clinc_oos"
+    row["meta"]["data_version"] = "s2-mixed-text-v1"
+    return row
 
 
 def write_jsonl(path: Path, rows: list[dict]) -> Path:
@@ -188,3 +198,144 @@ def test_record_assembly_needs_no_torch() -> None:
     assert record["prediction"] == "B"
     assert record["n_options"] == 3
     assert "torch" not in record
+
+
+def mixed_loop_config(tmp_path: Path, **overrides: object) -> LoopConfig:
+    values: dict[str, object] = {
+        "sample_count": 2,
+        "steps": 1,
+        "accumulation": 1,
+        "modality": "mixed",
+        "media_root": str(tmp_path),
+        "expected_data_versions": MIXED_VERSIONS,
+    }
+    values.update(overrides)
+    return LoopConfig.model_validate(values)
+
+
+def test_loop_config_mixed_requires_media_root_and_versions(tmp_path: Path) -> None:
+    with pytest.raises(ValidationError, match="media_root"):
+        mixed_loop_config(tmp_path, media_root=None)
+    with pytest.raises(ValidationError, match="expected_data_versions"):
+        mixed_loop_config(tmp_path, expected_data_versions=None)
+    with pytest.raises(ValidationError, match="List should have at least 1"):
+        mixed_loop_config(tmp_path, expected_data_versions=[])
+    scalar = mixed_loop_config(tmp_path, expected_data_versions=None, expected_data_version="v1")
+    assert scalar.expected_data_version == "v1"
+    with pytest.raises(ValidationError, match="mixed"):
+        LoopConfig(sample_count=2, steps=1, accumulation=1, expected_data_versions=["v1"])
+
+
+def test_mixed_smoke_samples_accept_text_and_image_rows(tmp_path: Path) -> None:
+    config = mixed_loop_config(tmp_path)
+    data = write_jsonl(tmp_path / "mixed.jsonl", [text_row(0), image_row(1)])
+    samples = smoke_samples(config, data, expected_data_versions=MIXED_VERSIONS)
+    assert sorted(len(s.prefix.media) for s in samples) == [0, 1]
+
+
+def test_mixed_smoke_samples_rejects_inconsistent_rows(tmp_path: Path) -> None:
+    config = mixed_loop_config(tmp_path)
+    # A text-declared row carrying media is refused by the schema itself.
+    bad_text = image_row(0)
+    bad_text["meta"]["modality"] = ["text"]
+    with pytest.raises(ValueError, match="declared in metadata"):
+        smoke_samples(
+            config,
+            write_jsonl(tmp_path / "text-media.jsonl", [bad_text, image_row(1)]),
+            expected_data_versions=MIXED_VERSIONS,
+        )
+    with pytest.raises(ValueError, match="exactly one image"):
+        smoke_samples(
+            config,
+            write_jsonl(tmp_path / "two.jsonl", [image_row(0, media_count=2), text_row(1)]),
+            expected_data_versions=MIXED_VERSIONS,
+        )
+    # An image-declared row without media is not a legal text row either.
+    bare = image_row(2, media_count=0)
+    with pytest.raises(ValueError, match="text-only"):
+        smoke_samples(
+            config,
+            write_jsonl(tmp_path / "bare.jsonl", [bare, text_row(1)]),
+            expected_data_versions=MIXED_VERSIONS,
+        )
+
+
+def test_mixed_smoke_samples_check_frozen_versions(tmp_path: Path) -> None:
+    config = mixed_loop_config(
+        tmp_path, expected_data_versions=None, expected_data_version="s2-mixed-text-v1"
+    )
+    text = write_jsonl(tmp_path / "text.jsonl", [text_row(0), text_row(1)])
+    assert len(smoke_samples(config, text, expected_data_version="s2-mixed-text-v1")) == 2
+    mixed = write_jsonl(tmp_path / "mixed.jsonl", [text_row(0), image_row(1)])
+    with pytest.raises(ValueError, match="frozen allocation"):
+        smoke_samples(config, mixed, expected_data_version="s2-mixed-text-v1")
+    with pytest.raises(ValueError, match="expected_data_versions"):
+        smoke_samples(config, text)
+
+
+def test_mixed_prepare_routes_each_sample_by_its_own_media(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    routed: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "train.trainer.prepare_examples",
+        lambda samples, tokenizer, max_length: (
+            routed.append(("text", samples[0].id))
+            or [{"id": samples[0].id, "input_ids": [1], "token_ids": [2], "target": [1.0]}]
+        ),
+    )
+    monkeypatch.setattr(
+        "train.trainer.prepare_media_example",
+        lambda sample, processor, media_root, *, max_length: (
+            routed.append(("media", sample.id))
+            or {
+                "id": sample.id,
+                "input_ids": [2],
+                "pixel_values": object(),
+                "token_ids": [3],
+                "answer_token_ids": {},
+                "target": [1.0],
+            }
+        ),
+    )
+    text = Sample.model_validate(text_row(0))
+    image = Sample.model_validate(image_row(1))
+    examples = [
+        prepare_mixed_example(
+            sample, tokenizer=None, processor=None, media_root=tmp_path, max_length=100
+        )
+        for sample in (text, image)
+    ]
+    assert routed == [("text", text.id), ("media", image.id)]
+    assert "pixel_values" not in examples[0]
+    assert "pixel_values" in examples[1]
+
+
+def test_verified_media_file_multi_root_selects_by_sha(tmp_path: Path) -> None:
+    import hashlib
+
+    from train.trainer import verified_media_file
+
+    tree_a = tmp_path / "a"
+    tree_b = tmp_path / "b"
+    tree_a.mkdir()
+    tree_b.mkdir()
+    payload_a = b"image-bytes-a"
+    payload_b = b"image-bytes-b"
+    (tree_a / "train").mkdir()
+    (tree_b / "train").mkdir()
+    (tree_a / "train" / "x.jpg").write_bytes(payload_a)
+    (tree_b / "train" / "x.jpg").write_bytes(payload_b)
+    sha_a = hashlib.sha256(payload_a).hexdigest()
+    sha_b = hashlib.sha256(payload_b).hexdigest()
+    hit = verified_media_file(tree_a, "train/x.jpg", sha_b, extra_roots=[tree_b])
+    assert hit == tree_b / "train" / "x.jpg"
+    hit_a = verified_media_file(tree_a, "train/x.jpg", sha_a)
+    assert hit_a == tree_a / "train" / "x.jpg"
+    try:
+        verified_media_file(tree_a, "train/x.jpg", "f" * 64, extra_roots=[tree_b])
+    except ValueError as exc:
+        assert "media resolution failed" in str(exc)
+        assert "train/x.jpg" in str(exc)
+    else:
+        raise AssertionError("expected multi-root failure")

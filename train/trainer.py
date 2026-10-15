@@ -74,10 +74,12 @@ class LoopConfig(Contract):
     rank: Literal[16] = 16
     alpha: Literal[32] = 32
     dtype: Literal["bfloat16"] = "bfloat16"
-    modality: Literal["text", "image", "screenshot"] = "text"
+    modality: Literal["text", "image", "screenshot", "mixed"] = "text"
     media_root: str | None = None
+    media_roots: list[str] | None = None
     midway_step: int | None = Field(default=None, ge=1)
     expected_data_version: str | None = None
+    expected_data_versions: list[str] | None = Field(default=None, min_length=1)
     checkpoint_every: int | None = Field(default=None, ge=1)
 
     @model_validator(mode="after")
@@ -86,8 +88,21 @@ class LoopConfig(Contract):
             raise ValueError("learning_rate must be finite")
         if self.midway_step is not None and self.midway_step > self.steps:
             raise ValueError("midway_step must not exceed steps")
-        if self.modality in {"image", "screenshot"} and not (self.media_root or "").strip():
+        if self.modality == "text":
+            if self.media_roots is not None:
+                raise ValueError("media_roots is reserved for media training")
+        elif self.media_roots is not None:
+            if self.media_root:
+                raise ValueError("media_root and media_roots are mutually exclusive")
+            if not self.media_roots or any(not root.strip() for root in self.media_roots):
+                raise ValueError("media_roots must be nonempty strings when provided")
+        elif not (self.media_root or "").strip():
             raise ValueError(f"{self.modality} training requires a nonempty media_root")
+        if self.modality == "mixed":
+            if self.expected_data_version is None and self.expected_data_versions is None:
+                raise ValueError("mixed training requires expected_data_versions")
+        elif self.expected_data_versions is not None:
+            raise ValueError("expected_data_versions is reserved for mixed training")
         return self
 
 
@@ -99,9 +114,10 @@ def smoke_samples(
     data_path: Path | None = None,
     *,
     expected_data_version: str | None = None,
+    expected_data_versions: list[str] | None = None,
 ) -> list[Sample]:
     if data_path is None and config.modality != "text":
-        raise ValueError("image/screenshot cohorts require a frozen data file")
+        raise ValueError("non-text cohorts require a frozen data file")
     if data_path is None:
         samples = generate_samples(config.sample_count, config.seed)
         # Keep exactly one question per source sample, balanced across four target tasks.
@@ -118,8 +134,29 @@ def smoke_samples(
             f"training requires exactly {config.sample_count} samples, one question each"
         )
     validate_pool_isolation(samples)
+    mixed_versions: frozenset[str] | None = None
+    if config.modality == "mixed":
+        versions = list(expected_data_versions or [])
+        if expected_data_version is not None:
+            versions.append(expected_data_version)
+        if not versions:
+            raise ValueError("mixed training requires expected_data_versions")
+        mixed_versions = frozenset(versions)
     for sample in samples:
-        if config.modality != "text":
+        if config.modality == "mixed":
+            if sample.meta.pool != "train":
+                raise ValueError("smoke accepts training-pool samples")
+            media = sample.prefix.media
+            if media:
+                if (
+                    len(media) != 1
+                    or media[0].type != "image"
+                    or "image" not in sample.meta.modality
+                ):
+                    raise ValueError("mixed media samples require exactly one image")
+            elif sample.meta.modality != ["text"]:
+                raise ValueError("mixed text samples must be text-only")
+        elif config.modality != "text":
             if sample.meta.pool != "train":
                 raise ValueError("smoke accepts training-pool samples")
             if (
@@ -132,7 +169,12 @@ def smoke_samples(
                 )
         elif sample.meta.pool != "train" or sample.meta.modality != ["text"] or sample.prefix.media:
             raise ValueError("smoke accepts text-only training-pool samples")
-        if expected_data_version is not None and sample.meta.data_version != expected_data_version:
+        if mixed_versions is not None:
+            if sample.meta.data_version not in mixed_versions:
+                raise ValueError("mixed training data_version is not in the frozen allocation")
+        elif (
+            expected_data_version is not None and sample.meta.data_version != expected_data_version
+        ):
             raise ValueError("training data_version does not match the frozen allocation")
     return samples
 
@@ -178,16 +220,32 @@ def prepare_examples(
     return examples
 
 
-def verified_media_file(media_root: Path, uri: str, sha256: str) -> Path:
-    """Streaming-sha-verified local media path under media_root, per the S0 asset rules."""
-    return resolve_media(media_root, uri, sha256, max_bytes=64 * 1024 * 1024)
+def verified_media_file(
+    media_root: Path, uri: str, sha256: str, *, extra_roots: list[Path] | None = None
+) -> Path:
+    """Streaming-sha-verified local media path; multi-root tries sha matches in order."""
+    roots = [media_root, *(extra_roots or [])]
+    failures: list[str] = []
+    for index, root in enumerate(roots):
+        try:
+            return resolve_media(root, uri, sha256, max_bytes=64 * 1024 * 1024)
+        except (ValueError, OSError) as exc:
+            failures.append(f"root[{index}]={root}: {type(exc).__name__}: {exc}")
+    raise ValueError(
+        "media resolution failed for "
+        + uri
+        + " across "
+        + str(len(roots))
+        + " roots: "
+        + "; ".join(failures)
+    )
 
 
 def prepare_media_example(
     sample: Sample,
     processor: Any,
     media_root: Path,
-    *,
+    *extra_roots: Path,
     max_length: int,
 ) -> dict[str, Any]:
     """Official-processor rendering for one image sample, isomorphic to s0_baseline_cpu."""
@@ -196,7 +254,7 @@ def prepare_media_example(
         raise ValueError(f"sample {sample.id} must carry exactly one image")
     item = sample.prefix.media[0]
     image = load_media(
-        verified_media_file(media_root, item.uri, item.sha256),
+        verified_media_file(media_root, item.uri, item.sha256, extra_roots=list(extra_roots)),
         "image",
         num_frames=16,
         max_seconds=60,
@@ -264,6 +322,46 @@ def prepare_multimodal_examples(
     )
     return [
         prepare_media_example(sample, processor, media_root, max_length=max_length)
+        for sample in samples
+    ]
+
+
+def prepare_mixed_example(
+    sample: Sample,
+    tokenizer: Any,
+    processor: Any,
+    media_root: Path,
+    *,
+    max_length: int,
+    extra_roots: list[Path] | None = None,
+) -> dict[str, Any]:
+    """Route one sample by its own media; mixed text rows stay tokenizer-only."""
+    if sample.prefix.media:
+        return prepare_media_example(
+            sample, processor, media_root, *(extra_roots or []), max_length=max_length
+        )
+    return prepare_examples([sample], tokenizer, max_length)[0]
+
+
+def prepare_mixed_examples(
+    samples: list[Sample],
+    model_dir: Path,
+    media_root: Path,
+    max_length: int,
+    extra_roots: list[Path] | None = None,
+) -> list[dict[str, Any]]:
+    """Mixed-cohort wrapper: one tokenizer plus one processor, per-sample routing."""
+    transformers = importlib.import_module("transformers")
+    processor = transformers.AutoProcessor.from_pretrained(
+        str(model_dir),
+        local_files_only=True,
+        trust_remote_code=False,
+    )
+    tokenizer = OfficialTokenizerAdapter(model_dir)
+    return [
+        prepare_mixed_example(
+            sample, tokenizer, processor, media_root, max_length=max_length, extra_roots=extra_roots
+        )
         for sample in samples
     ]
 
@@ -589,6 +687,7 @@ def run(
             config,
             data_path,
             expected_data_version=getattr(config, "expected_data_version", None),
+            expected_data_versions=getattr(config, "expected_data_versions", None),
         )
         report["data_sha256"] = hashlib.sha256(data_bytes(samples)).hexdigest()
         blockers = []
@@ -607,11 +706,18 @@ def run(
                 adapter = OfficialTokenizerAdapter(model_dir)
                 examples = prepare_examples(samples, adapter, config.max_length)
             else:
-                if not config.media_root:
-                    raise ValueError("image/screenshot training requires media_root")
-                examples = prepare_multimodal_examples(
-                    samples, model_dir, Path(config.media_root), config.max_length
-                )
+                if not config.media_root and not config.media_roots:
+                    raise ValueError("non-text training requires media_root or media_roots")
+                extra_roots = [Path(root) for root in (config.media_roots or [])]
+                primary_root = Path(config.media_root or (config.media_roots or [""])[0])
+                if config.modality == "mixed":
+                    examples = prepare_mixed_examples(
+                        samples, model_dir, primary_root, config.max_length, extra_roots=extra_roots
+                    )
+                else:
+                    examples = prepare_multimodal_examples(
+                        samples, model_dir, primary_root, config.max_length
+                    )
             report["examples"] = len(examples)
             report["max_prompt_tokens"] = max(len(e["input_ids"]) for e in examples)
         except Exception as exc:
