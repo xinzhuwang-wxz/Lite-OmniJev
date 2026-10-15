@@ -78,7 +78,8 @@ class Receipt(Contract):
     code_commit: str = "unavailable"
     runtime: str = ""
     elapsed_seconds: float = 0.0
-    cost_usd: Literal[0] = 0
+    cost_usd: None = None
+    cost_status: Literal["rental_rate_unavailable"] = "rental_rate_unavailable"
     exit_code: int = 1
 
 
