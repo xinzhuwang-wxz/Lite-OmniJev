@@ -34,18 +34,28 @@
   "gpu_jobs": [
     {
       "name": "i5-teacher-cache-150",
-      "entrypoint": "scripts/s0_development_baselines.py",
+      "entrypoint": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-ensemble-oracle-001/run_teacher_cache.py",
+      "entrypoint_sha256": "a13842178f4fd2f377608ed960221a92de057d8367155a27cc5da8bf46b0ca1f",
+      "note": "reuses the proven s0 baseline readout path (official template, thinking off, single-token readout) but binds the pinned TRAIN slice sha instead of the dev build report",
       "model_id": "onejev-27b",
-      "estimated_seconds": 660,
+      "slice_sha256": "6b224886ac62a36d8b67d53158dd896b9f3c4b39bdd74c4551a0cba8d571c94a",
+      "estimated_seconds": 900,
       "records_fields": ["conditional_without_u", "joint_k_plus_u", "p_U", "raw_head_probabilities"]
     },
     {
+      "name": "d3p-student-conversion",
+      "entrypoint": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-ensemble-oracle-001/build_d3p_student_rows.py",
+      "entrypoint_sha256": "d866970c90391fc5463a12c62c289ce95e767231832741607530b927b5023d52",
+      "cpu_only": true,
+      "note": "teacher conditional legal distribution -> SoftTarget rows; teacher p_U folded out by the readout's own normalization; no fabricated targets"
+    },
+    {
       "name": "i2-base-cache-150",
-      "entrypoint": "scripts/s0_development_baselines.py",
-      "model_id": "gemma4-e4b-it",
-      "estimated_seconds": 240
+      "entrypoint": "cancelled_by_ADR0024_priority (base U-oracle line closed on video by negative signal; keep only if ambiguous/text direction reopens)",
+      "model_id": "gemma4-e4b-it"
     }
   ],
+  "adr0024_alignment": "U-as-product and U-centric innovation lines closed; D3P retains only the existing legal(+U) readout protocol as the teacher/student distribution shape, with SoftTarget rows over legal answers",
   "acceptance": [
     "records == 150, finite normalized distributions, p_U recorded",
     "report and records sha256 pinned; exit 0",
