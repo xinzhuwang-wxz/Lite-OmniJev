@@ -1,0 +1,15 @@
+# 独立rank64候选的曝光身份契约
+
+CPU helper rank64_derivative_bindings(root, policy_path)仅准备派生初始化的证据绑定；没有运行训练、GPU或inventory，也没有声明rank64 profile已真实验证。
+
+绑定新root独立实验policy SHA0cc0d96a2f77edc857dc2904cff78af95d3c1fd5daa56110637bb0d695292ff1、rank-expansion.json SHA05e97013…、实际derived weights62920299…/config8d79bb86…、原f2db source权重/config、failed GPU parity receipt及同进程control receipt、b97edc0 archive636aca42…。
+
+GPU parity仍failed/exit1，最大joint概率差0.0309671344701955大于1e-3；同进程control completed只说明fresh/repeat16相同，fresh64仍不等，不把control完成改称parity通过。
+
+helper返回candidate_role=independent_capacity_candidate、numerical_parity_validated=false、parent_quality_inheritance=false、own_baseline_required=true、training_authorized=false。数学初始化来源与数值/质量表现分开。仅当root审完其独立DEV50 baseline、冻结实际rank64训练config/pilot/launcher后，才能把该identity helper接进现有曝光profile；当前没有新增可执行CLI profile或修改原rank16身份。
+
+真实源receipt文件名为artifacts/s4-rank64-initializer-001/rank-expansion.json，不是report.json。
+默认execution archive路径/root/autodl-tmp/omnijev-rank64-code-b97edc0.tar已核存在；policy_path由调用者显式提供并精确SHA核对。
+未来训练数据继续固定matched1200 SHA17cb9a0066639dafd1feb21e3819cc38a367c86e78ce2a2907a5047d6cb437aa；020旧bindings及两profile历史必须完整继承。
+
+验证：4个新identity CPU行为测试和3个continuous matched profile回归，共7 passed；覆盖policy/权重变更、把failed parity重标为pass的拒绝，以及独立quality/authorization边界。helper/new tests lint与format通过。没有用合成测试替代实际rank64 baseline、GPU或训练验收。

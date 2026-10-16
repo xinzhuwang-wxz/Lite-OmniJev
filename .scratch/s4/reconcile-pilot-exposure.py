@@ -2718,6 +2718,107 @@ def continuous_profile(matched=False):
     }
 
 
+RANK64_POLICY_SHA = "0cc0d96a2f77edc857dc2904cff78af95d3c1fd5daa56110637bb0d695292ff1"
+RANK64_WEIGHTS_SHA = "62920299c7a1ac33b2a874b586a9d7f3ea3eaa4e38198bc20388642482318fc6"
+RANK64_CONFIG_SHA = "8d79bb86dc522bc6da2b3de170dc704e51b60e2d2518582b07e8ffbfcdd6bc0a"
+RANK64_EVIDENCE_SHA = {
+    "artifacts/s4-rank64-initializer-001/rank-expansion.json": (
+        "05e97013ac5d474866fdf208611bfef618bdfb65f5770c18f2924d21d37b2be7"
+    ),
+    "artifacts/s4-rank64-initializer-gpu-parity-001/receipt.json": (
+        "e248d3a907ff62cad6e2c23ead90ed78d741a55aaa5205c5443279928bda3011"
+    ),
+    "artifacts/s4-rank-runtime-control-001/receipt.json": (
+        "5c7aecf6541122d240668a8bc4ebc0160fe4ceee50e61d66bbd59d4f24a18683"
+    ),
+}
+RANK64_SOURCE_ARCHIVE_SHA = "636aca42044ab7d3e87b4928a99a3deb0fe10abd9a8fa60ac91d8061f9e64427"
+
+
+def rank64_derivative_bindings(root: Path, policy_path: Path) -> tuple[dict, dict]:
+    """Identity evidence only: failed parity remains failed; baseline/launch is a later gate."""
+    require(root.is_absolute() and policy_path.is_absolute(), "rank64_absolute_paths")
+    bindings = {}
+    receipts = []
+    for relative, expected in RANK64_EVIDENCE_SHA.items():
+        path = root / relative
+        payload, binding = read_json(path)
+        require(binding["sha256"] == expected, "rank64_evidence_sha")
+        bindings[str(path)] = expected
+        receipts.append(payload)
+    expansion, parity, control = receipts
+    require(sha(policy_path) == RANK64_POLICY_SHA, "rank64_independent_policy_sha")
+    bindings[str(policy_path)] = RANK64_POLICY_SHA
+    require(
+        expansion["status"] == "converted_research_initializer"
+        and expansion["exit_code"] == 0
+        and expansion["new_rank"] == 64
+        and expansion["new_alpha"] == 128
+        and expansion["old_rank"] == 16
+        and expansion["old_alpha"] == 32
+        and expansion["source_weights_sha256"] == CONTINUOUS_PARENT_SHA
+        and expansion["training_authorized"] is False
+        and expansion["production_replacement"] is False,
+        "rank64_derivative_lineage",
+    )
+    require(
+        parity["status"] == "failed"
+        and parity["exit_code"] == 1
+        and parity["parity_validated"] is False
+        and parity["max_joint_probability_difference"] > parity["parity_tolerance"]
+        and control["status"] == "completed"
+        and control["exit_code"] == 0
+        and control["parity_validated"] is False
+        and control["same_process"] is True
+        and control["source_repeat_bit_identical_logits"] is True,
+        "rank64_failed_parity_preserved",
+    )
+    for receipt in (parity, control):
+        require(
+            receipt["expanded_weights_sha256"] == RANK64_WEIGHTS_SHA
+            and receipt["expanded_config_sha256"] == RANK64_CONFIG_SHA
+            and receipt["source_weights_sha256"] == CONTINUOUS_PARENT_SHA,
+            "rank64_probe_derivative_identity",
+        )
+    adapter = root / "artifacts/s4-rank64-initializer-001"
+    for name, expected in (
+        ("adapter_model.safetensors", RANK64_WEIGHTS_SHA),
+        ("adapter_config.json", RANK64_CONFIG_SHA),
+    ):
+        require(
+            expansion["output_sha256"][name] == expected and sha(adapter / name) == expected,
+            "rank64_actual_initializer_sha",
+        )
+        bindings[str(adapter / name)] = expected
+    config = json.loads((adapter / "adapter_config.json").read_bytes())
+    require(config["r"] == 64 and config["lora_alpha"] == 128, "rank64_actual_capacity_pair")
+    source = Path(expansion["source_path"])
+    require(source.is_absolute(), "rank64_source_absolute")
+    for name, expected in (
+        ("adapter_model.safetensors", CONTINUOUS_PARENT_SHA),
+        ("adapter_config.json", expansion["source_config_sha256"]),
+    ):
+        require(sha(source / name) == expected, "rank64_original_source_sha")
+        bindings[str(source / name)] = expected
+    archive = root.parent / "omnijev-rank64-code-b97edc0.tar"
+    require(sha(archive) == RANK64_SOURCE_ARCHIVE_SHA, "rank64_execution_source_archive")
+    bindings[str(archive)] = RANK64_SOURCE_ARCHIVE_SHA
+    return bindings, {
+        "path": str(adapter),
+        "weights_sha256": RANK64_WEIGHTS_SHA,
+        "config_sha256": RANK64_CONFIG_SHA,
+        "rank": 64,
+        "alpha": 128,
+        "mathematical_source_weights_sha256": CONTINUOUS_PARENT_SHA,
+        "numerical_parity_validated": False,
+        "parent_quality_inheritance": False,
+        "candidate_role": "independent_capacity_candidate",
+        "training_authorized": False,
+        "own_baseline_required": True,
+        "same_train_data_sha256": MATCHED_CONTINUOUS_DATA_SHA,
+    }
+
+
 def continuous_interval(final: dict, start: int, end: int) -> dict:
     """Cumulative optimizer steps define one non-overlapping exposure interval."""
     terminal_report(final, allow_paused=True)
