@@ -39,6 +39,10 @@ def main() -> int:
     parser.add_argument("--producer-revision", default="daeaa7f5a5fccaeb055fc54ea5c163025b3690ac")
     parser.add_argument("--timeout", type=int, default=14400)
     parser.add_argument("--model-view", type=Path)
+    parser.add_argument("--adapter", type=Path, help="candidate adapter dir overriding the e465 default")
+    parser.add_argument("--adapter-sha256", help="candidate adapter weights sha overriding EXPECTED")
+    parser.add_argument("--training-report", type=Path, help="candidate training anchor report")
+    parser.add_argument("--expected-steps", type=int, default=100)
     parser.add_argument("--worker-uid", type=int, default=64801)
     parser.add_argument("--probe-uid", type=int, default=64802)
     parser.add_argument("--inventory", type=Path)
@@ -51,6 +55,8 @@ def main() -> int:
         cal.require((path is None) == (digest is None), "inventory_path_and_hash_required")
         if digest is not None:
             EXPECTED[name] = digest
+    if args.adapter_sha256 is not None:
+        EXPECTED["adapter"] = args.adapter_sha256
     start = time.monotonic()
     selected_path = PRIVATE / "selected-gold-manifest-001.json"
     admission_path = ROOT / "reports/s4-gold-data-admission-001.json"
@@ -60,7 +66,11 @@ def main() -> int:
         inventory_path = args.inventory
     if args.inventory_receipt is not None:
         inventory_receipt_path = args.inventory_receipt
-    training_path = ROOT / "reports/s4-program-stratified-training-step0100.json"
+    training_path = (
+        args.training_report
+        if args.training_report is not None
+        else ROOT / "reports/s4-program-stratified-training-step0100.json"
+    )
     bindings = {
         key: bind(path, EXPECTED[key])
         for key, path in [
@@ -84,7 +94,7 @@ def main() -> int:
     )
     cal.require(
         training["exit_code"] == 0
-        and training["steps_completed"] == 100
+        and training["steps_completed"] == args.expected_steps
         and training["adapter_sha256"] == EXPECTED["adapter"],
         "candidate_not_frozen",
     )
@@ -94,7 +104,10 @@ def main() -> int:
     )
     if args.model_view is not None:
         model = args.model_view
-    adapter = ROOT / "artifacts/s4-program-stratified-pool-train-001/adapter-invocation-step-0100"
+    adapter = (
+        Path(args.adapter) if args.adapter is not None
+        else ROOT / "artifacts/s4-program-stratified-pool-train-001/adapter-invocation-step-0100"
+    )
     model_files = {
         name: digest
         for name, digest in training["asset_hashes"].items()
