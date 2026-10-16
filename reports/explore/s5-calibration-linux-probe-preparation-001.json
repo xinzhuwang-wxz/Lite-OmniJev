@@ -1,0 +1,16 @@
+{
+  "status": "prepared_not_executed",
+  "script": ".scratch/s5/probe-calibration-linux-boundary.py",
+  "runtime": "Linux root, existing libacl, existing pinned Python",
+  "hardcap_seconds": 180,
+  "cases": ["normal", "timeout", "term", "kill", "competition", "stale_recovery"],
+  "first_uid": 64001,
+  "uid_policy": "Fresh permanent UID/GID leases; occupied IDs fail closed; reruns need fresh IDs and work root",
+  "inputs": "Synthetic 0600 credential-deny file and 0444 public-model/source files only",
+  "worker_checks": ["fresh uid/gid", "no supplementary groups", "NoNewPrivs=1", "CapEff/CapPrm/CapAmb=0", "root listing denied", "synthetic secret denied", "public synthetic model readable", "model/source writes denied"],
+  "cleanup": "guardian revocation and exact ACL restoration; outer bounded root fallback; before/after ACL SHA and no lingering fresh UID processes",
+  "private_dataset_contents_read": false,
+  "gpu_used": false,
+  "actual_acl_mutation_performed": false,
+  "limitations": "Local CPU checks do not establish actual Linux isolation; root must run and inspect the aggregate result before private calibration activation"
+}
