@@ -171,3 +171,61 @@ def test_program_first10_and_resume20_preserve_four_old_histories(
         )
     ] == [240, 240, 120, 120]
     assert second["unknown_update_bearing_inputs"] == 0
+
+
+def test_twenty_step_interval_needs_explicit_budget_and_matching_invocation():
+    from test_reconcile_continuous_main_pool import final_report
+
+    code = module()
+    raw = final_report(code, 20, 40)
+    raw["invocation"]["steps_requested"] = 20
+    with pytest.raises(ValueError, match="continuous_cumulative_steps"):
+        code.continuous_interval(raw, 20, 40)
+    interval = code.continuous_interval(raw, 20, 40, invocation_steps=20)
+    assert interval["actual_draw_interval"] == [240, 480]
+    assert interval["actual_global_draws_seen"] == 480
+    assert interval["actual_draws_this_invocation"] == 240
+    raw["invocation"]["steps_requested"] = 10
+    with pytest.raises(ValueError, match="continuous_invocation_receipt"):
+        code.continuous_interval(raw, 20, 40, invocation_steps=20)
+
+
+def test_reused_proof_is_bound_and_rejects_changed_manifest(tmp_path):
+    code = module()
+    base_path = tmp_path / "report.json"
+    manifest = tmp_path / "inventory-manifest.json"
+    audit = tmp_path / "inventory-audit.json"
+    inventory = {"samples": [{"sha256": "a" * 64}], "component_ledgers": []}
+    manifest.write_text(json.dumps(inventory))
+    audit.write_text(json.dumps({"outcome": "isolated"}))
+    base = {"output_sha256": {p.name: code.sha(p) for p in (manifest, audit)}}
+    out = tmp_path / "next"
+    out.mkdir()
+    bindings = {}
+    origin = code.reuse_unchanged_inventory(base_path, base, inventory, out, bindings)
+    assert origin["manifest"] == code.bind(manifest)
+    assert (out / manifest.name).read_bytes() == manifest.read_bytes()
+    assert bindings[str(audit)] == code.sha(audit)
+    with pytest.raises(ValueError, match="reused_inventory_changed_manifest"):
+        code.reuse_unchanged_inventory(base_path, base, {**inventory, "new": True}, out, {})
+    audit.write_text(json.dumps({"outcome": "rejected"}))
+    with pytest.raises(ValueError, match="reused_inventory_proof_sha"):
+        code.reuse_unchanged_inventory(base_path, base, inventory, out, {})
+
+
+def test_unfrozen_monitored_policy_cannot_authorize_a_segment(tmp_path, monkeypatch):
+    code, root, legacy, index, base, invoke = integration_fixture(tmp_path, monkeypatch)
+    launch = invoke(0, 10, base)
+    receipt = json.loads(launch.read_bytes())
+    receipt["policy_family"] = "monitored_full_course"
+    launch.write_text(json.dumps(receipt))
+    with pytest.raises(ValueError, match="program_monitored_policy_not_frozen"):
+        code.prepare_continuous(
+            root,
+            legacy,
+            root / "not-authorized",
+            index,
+            launch,
+            program_stratified=True,
+            reuse_unchanged_inventory_proof=True,
+        )

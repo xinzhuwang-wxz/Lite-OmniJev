@@ -2747,6 +2747,11 @@ def continuous_matched_bindings(root, prepared, prep, *, program_stratified=Fals
     return bindings
 
 
+# A forthcoming root policy is not executable until both actual bytes are frozen.
+PROGRAM_MONITORED_POLICY_SHA = None
+PROGRAM_MONITORED_RUNNER_SHA = None
+
+
 PROGRAM_GROUPS = ("before_after", "event_motion", "endpoint_motion", "exist")
 
 
@@ -3376,14 +3381,18 @@ def video_objective_bindings(root, launch, config, prep, runtime_data):
     }
 
 
-def continuous_interval(final: dict, start: int, end: int) -> dict:
+def continuous_interval(final: dict, start: int, end: int, *, invocation_steps=10) -> dict:
     """Cumulative optimizer steps define one non-overlapping exposure interval."""
     terminal_report(final, allow_paused=True)
+    require(invocation_steps in (10, 20), "continuous_invocation_budget")
     require(
         type(start) is int and type(end) is int and 0 <= start <= end <= 100,
         "continuous_step_interval",
     )
-    require(final["steps_completed"] == end and end - start <= 10, "continuous_cumulative_steps")
+    require(
+        final["steps_completed"] == end and end - start <= invocation_steps,
+        "continuous_cumulative_steps",
+    )
     require(final["status"] != "blocked" or end == start, "continuous_blocked_updates")
     if final["status"] in {"paused", "completed"}:
         require(end > start and final["exit_code"] == 0, "continuous_success_interval")
@@ -3394,7 +3403,7 @@ def continuous_interval(final: dict, start: int, end: int) -> dict:
         require(
             invocation.get("start_step") == start
             and invocation.get("steps_completed") == end - start
-            and invocation.get("steps_requested") == 10
+            and invocation.get("steps_requested") == invocation_steps
             and invocation.get("global_steps_target") == 100
             and invocation.get("next_draw") == end * 12,
             "continuous_invocation_receipt",
@@ -3411,7 +3420,9 @@ def continuous_interval(final: dict, start: int, end: int) -> dict:
         "actual_seen_boundary": "completed optimizer blocks",
         "partial_step_draws_unknown": final["status"] == "failed",
         "possible_global_draws_seen_upper_bound": (
-            min(100, start + 10, end + 1) * 12 if final["status"] == "failed" else end * 12
+            min(100, start + invocation_steps, end + 1) * 12
+            if final["status"] == "failed"
+            else end * 12
         ),
     }
 
@@ -3505,6 +3516,36 @@ def continuous_fixed_identity(
     require(actual == expected, "continuous_runtime_config_identity")
 
 
+def reuse_unchanged_inventory(base_path, base, combined, output, bindings):
+    """Reuse an existing full isolation proof only for exactly the same manifest."""
+    manifest_path = base_path.with_name("inventory-manifest.json")
+    audit_path = base_path.with_name("inventory-audit.json")
+    for path in (manifest_path, audit_path):
+        require(sha(path) == base["output_sha256"][path.name], "reused_inventory_proof_sha")
+        bindings[str(path)] = sha(path)
+    require(combined == json.loads(manifest_path.read_bytes()), "reused_inventory_changed_manifest")
+    audit = json.loads(audit_path.read_bytes())
+    require(audit["outcome"] == "isolated", "reused_inventory_not_isolated")
+    origin = base.get(
+        "inventory_full_audit_origin",
+        {
+            "manifest": bind(manifest_path),
+            "audit": bind(audit_path),
+        },
+    )
+    for b in origin.values():
+        require(sha(Path(b["path"])) == b["sha256"], "reused_original_full_audit_sha")
+        bindings[b["path"]] = b["sha256"]
+    require(
+        origin["manifest"]["sha256"] == sha(manifest_path)
+        and origin["audit"]["sha256"] == sha(audit_path),
+        "reused_inventory_original_proof",
+    )
+    (output / manifest_path.name).write_bytes(manifest_path.read_bytes())
+    (output / audit_path.name).write_bytes(audit_path.read_bytes())
+    return origin
+
+
 def prepare_continuous(
     root: Path,
     legacy_root: Path,
@@ -3516,6 +3557,7 @@ def prepare_continuous(
     rank64_candidate: bool = False,
     video_objective: bool = False,
     program_stratified: bool = False,
+    reuse_unchanged_inventory_proof: bool = False,
 ) -> dict:
     """One settled invocation over one immutable pool, based on the preceding inventory."""
     require(
@@ -3541,6 +3583,19 @@ def prepare_continuous(
             "continuous_launch_terminal",
         )
         eb = launch["exposure_binding"]
+        monitored = program_stratified and launch.get("policy_family") == "monitored_full_course"
+        require(
+            not reuse_unchanged_inventory_proof or monitored,
+            "inventory_reuse_requires_monitored_policy",
+        )
+        if monitored:
+            require(
+                all(
+                    isinstance(h, str) and len(h) == 64
+                    for h in (PROGRAM_MONITORED_POLICY_SHA, PROGRAM_MONITORED_RUNNER_SHA)
+                ),
+                "program_monitored_policy_not_frozen",
+            )
         bindings = {launch_binding["path"]: launch_binding["sha256"]}
 
         def bound(key):
@@ -3642,7 +3697,8 @@ def prepare_continuous(
             all(sha(Path(p)) == h for p, h in observed_runtimes.items()),
             "continuous_other_profile_runtime_changed",
         )
-        interval = continuous_interval(final, start, end)
+        invocation_steps = (10 if start == 10 else 20) if monitored else 10
+        interval = continuous_interval(final, start, end, invocation_steps=invocation_steps)
         pool_path = prep_path
         pool_prep = prep
         if video_objective:
@@ -3877,10 +3933,22 @@ def prepare_continuous(
             {"update_reports": updates, "unknown": unknown},
         )
         require(not unknown, "unknown_update_bearing_input")
-        write(output / "inventory-manifest.json", combined)
-        audit = audit_manifest(output / "inventory-manifest.json")
-        write(output / "inventory-audit.json", audit.model_dump(mode="json"))
-        require(audit.outcome == "isolated", "full_inventory_rejected")
+        if reuse_unchanged_inventory_proof:
+            require(
+                start > 0 and end < 100 and not appended, "inventory_reuse_only_intermediate_resume"
+            )
+            audit_origin = reuse_unchanged_inventory(base_path, base, combined, output, bindings)
+            inventory_mode = "reused_unchanged_manifest"
+        else:
+            write(output / "inventory-manifest.json", combined)
+            audit = audit_manifest(output / "inventory-manifest.json")
+            write(output / "inventory-audit.json", audit.model_dump(mode="json"))
+            require(audit.outcome == "isolated", "full_inventory_rejected")
+            audit_origin = {
+                "manifest": bind(output / "inventory-manifest.json"),
+                "audit": bind(output / "inventory-audit.json"),
+            }
+            inventory_mode = "fresh_full_inventory"
         require(
             all(sha(Path(p)) == h for p, h in bindings.items())
             and all(sha(Path(p)) == h for p, h in observed_runtimes.items()),
@@ -3908,6 +3976,8 @@ def prepare_continuous(
             "scope": (
                 "Known saved reports; pool capacity is not actual exposure or quality acceptance"
             ),
+            "inventory_verification_mode": inventory_mode,
+            "inventory_full_audit_origin": audit_origin,
             "continuous_main_pool_included": True,
             "base_exposure_report": base_binding,
             "base_inventory": bind(base_inventory),
@@ -4079,6 +4149,7 @@ def main() -> int:
     parser.add_argument("--video-text-matched", action="store_true")
     parser.add_argument("--video-specialist", action="store_true")
     parser.add_argument("--native-event-condition", action="store_true")
+    parser.add_argument("--reuse-unchanged-inventory", action="store_true")
     parser.add_argument("--program-stratified-pool", action="store_true")
     parser.add_argument("--video-pair-objective", action="store_true")
     parser.add_argument("--rank64-independent-candidate", action="store_true")
@@ -4149,6 +4220,7 @@ def main() -> int:
                 rank64_candidate=args.rank64_independent_candidate,
                 video_objective=args.video_pair_objective,
                 program_stratified=args.program_stratified_pool,
+                reuse_unchanged_inventory_proof=args.reuse_unchanged_inventory,
             )
             if args.continuous_main_pool
             or args.continuous_matched_pool
