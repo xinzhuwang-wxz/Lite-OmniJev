@@ -71,3 +71,5 @@ r64 first10实际188.714秒结束，DEV31/50vsown34、Brier略降/ECE变差，�
 2026-10-16 21:30 创新包整合与GPU窗口排期:执行代理CPU包已合并(5dd2b66):①概率级融合/对比解码全λ全负→两子路线终止(oracle +7.8pp只在输入/目标维可取);②B1+I1 WSFT格clevrer:5218全量校验126题、292行软目标、三臂240s JobSpec就绪,门=video150≥121/150或关系/存在≥+3pp且DEV50不回退;③R1 GRPO经CPU闭式推导α/γ分解回CE→按不假称规则降级为B1耦合辅助损失,不排采样式GRPO;④I2孪生分歧U在video为诚实负结果(基座熵非单调)不排前向;⑤B2 caption/条件化管线就绪(采用需ADR4001+用户批);⑥I5教师缓存150题JobSpec就绪(~15min GPU,熵前置检查过)。GPU窗口排序(B1+WSFT 240s三臂>I5教师15min>B2 caption 20-30min>帧边缘化可砍)于holdout完成后、03:30硬停前执行;全部失败即停留证。调研代理10-idea报告已入主树(eb42cdc)。
 
 2026-10-16 22:40 用户决策(ADR0024):关闭U作为产品输出特性与U中心创新线,接受模式回归Jev式(Choice/Score/yes-no);原方案"p(U)单独返回"降级为内部量,发布说明按ADR0024口径。GPU窗口重排:I5/D3P教师软目标蒸馏(150题~15min+240s学生切片)>B2 caption(需ADR4001+用户批)>R1-B-gold;WSFT/R1-B-wsft/孪生U前向取消,B1格与R1-B CPU证据保留为探索记录。外榜/校准/holdout协议不变。
+
+2026-10-16 23:40 video围剿增量(用户令:全维度打败20pp差距):新增契约内未试输入预算探针——**32帧uniform video150**(8/16帧测过,32帧从未测;--video-frames 32,~6-8min GPU),门=≥121/150(vs 16帧116)即视频输入预算直接增益并触发video500确认;排holdout后第一GPU项(先于D3P,8分钟)。视频版SAS(程序切面辅助监督:count/color/relation/motion/start-end切面,gold=CLEVRER程序真值,非U,ADR0024合规)由执行代理CPU准备中——把CLEVRER当结构化监督源而非QA源,检索零先例。ADR轨道(目标中心token,4002草案)为最高天花板项,待B2/切面证据后提请用户快速决策。
