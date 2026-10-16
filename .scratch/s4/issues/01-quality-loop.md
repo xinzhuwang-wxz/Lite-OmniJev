@@ -63,3 +63,5 @@ r64 first10实际188.714秒结束，DEV31/50vsown34、Brier略降/ECE变差，�
 022实际52.531秒isolated/86known/unknown0闭合，四条链分别240/240/120/120，旧bindings/snapshots保持。下一官方程序四分层课程由gradient仅CPU构建，600视频4组各150且各75yes/no、exact600replay；保留f2db/rank16/LR/CE，20min含评估、10/20条件推进，未启动GPU。原窄in/out/关键词池失败证据不覆盖；容量/排除不足不得私自重复补齐。
 
 2026-10-16用户新决策ADR0023：完整分层课程100step/1200draw已完成（600原TRAIN视频+600回放，非全部8299视频）。候选e465，video500372/500=74.4%vsparent70.8%，image50082.8%vs82.0%，audio50079.8%；原视频/图像质量gate未达，保留真实失败。继续text/screenshot/cross完整保留复核、必要独立汇总，再按实测质量局限决定S4出口并接S5/S6；不假称原门通过。曝光028与fresh UID inventory已真实isolated通过，calibration Linux6项边界实测通过，真实fit尚待。详见STATUS与reports/s4-program-stratified-*。
+
+2026-10-16 19:07外榜收数：候选e465 JevBench231真实GPU两遍exit0/status passed/97.554秒，accuracy76.62%/macro74.93%/Brier.396538/ECE.165738/ordinalMAE.3745/paraphrase一致性94.44%(36对34双对)/invalid0/两遍重复性0差异(records_sidecar SHA750ef69a…)。同尺寸父模型基线同231题/同协议/同BF16运行中（s4-parent-jevbench-001），完成后才能判定“不低于同尺寸基线”门；不与教师195混比。校准fit003：JobSpec已按最新029曝光(c2743076…)+fresh receipt(a4f606c8…)+producer 19bb739c/883a9640重新准备，job SHA6bda6ad6…，UID64801/64802确认unused，待GPU空即启动。
