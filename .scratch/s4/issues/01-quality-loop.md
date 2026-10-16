@@ -57,3 +57,7 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 r64 first10实际188.714秒结束，DEV31/50vsown34、Brier略降/ECE变差，政策shortlistfalse，停止续训/150/500，不采用07c2。下一仅实际exposed6pairs机制诊断和有界条件排序CPU集成；021曝光独立profile准备/实际audit，当前无GPUlive，不宣称质量进展。
 
 实际exposedTRAIN12显示rank64CE可拟合（7→11/12、direction6/6）但DEV退化；批准一次条件排序比较归纳偏置，不诊断成无梯度/缺容量。newcore7b75、实际CPU准备300pairs/1200ledger通过；rootdecision6b7ecc32…限first10/240秒，session94264/PID289855/SwanLab e4jvjvwx，DEV≥36且Brier<.4401167682才宽复核。021完整isolated/unknown0已闭合rank64CE120draw；排序活跃时不跑全inventory，终态接022。131 root回归+24数据契约/准备+9wrapper、mypy/ruff通过，仍无S4质量通过。
+
+条件排序first10实际191.140秒completed/paused，DEV32/50vsCE31/own34，Brier.453986变差，shortlistfalse，停止扩量/采用。此小试未取得可用创新收益。新只读证据确认300对严格in/out，缺motion/startend/collisiontarget，而旧rawcontinuous只是temporal关键词；下一官方程序分层课程先CPU准备/退出条件，不重复失败随机长跑。022完整曝光CPU审计中，当前GPU均terminal。
+
+022实际52.531秒isolated/86known/unknown0闭合，四条链分别240/240/120/120，旧bindings/snapshots保持。下一官方程序四分层课程由gradient仅CPU构建，600视频4组各150且各75yes/no、exact600replay；保留f2db/rank16/LR/CE，20min含评估、10/20条件推进，未启动GPU。原窄in/out/关键词池失败证据不覆盖；容量/排除不足不得私自重复补齐。
