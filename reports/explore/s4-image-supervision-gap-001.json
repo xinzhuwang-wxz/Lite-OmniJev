@@ -1,0 +1,560 @@
+{
+  "status": "read_only_train_lineage_audited",
+  "runs_current_to_oldest": [
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-temporal-coverage-train-001/data.jsonl",
+      "sha256": "276afa595a42379dd01c50353dc8e0ad253d43c70367682b59775d8f9ced730f",
+      "stored_rows": 120,
+      "actual_draws": 120,
+      "storage_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 60,
+          "unique_ids": 60,
+          "unique_families": 60
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "crossmodal-controlled-train-pairs-v1": {
+          "rows_or_draws": 20,
+          "unique_ids": 20,
+          "unique_families": 10
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        }
+      },
+      "exposure_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 60,
+          "unique_ids": 60,
+          "unique_families": 60
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "crossmodal-controlled-train-pairs-v1": {
+          "rows_or_draws": 20,
+          "unique_ids": 20,
+          "unique_families": 10
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        }
+      },
+      "report": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-temporal-coverage-train-001/run.json",
+      "report_sha256": "5403a2cc4de6017dca05127ef8ce7953427669a720ccf32d123cbb8fde6668d4",
+      "steps": 10,
+      "accumulation": 12,
+      "seed": 42,
+      "image_max_soft_tokens": 1120,
+      "adapter_sha256": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+      "init_adapter": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-claim-pair-ce0-train-001/adapter",
+        "weights_sha256": "4b8e422f3ca29e863999d2cd713bb9fd3f0a46e5360faa259a3bb8a4a9814bed",
+        "config_sha256": "c7570d0569abbb333fb7339fe6aa024a19ea81581c440959396d89027b348574"
+      }
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-claim-pair-ce0-train-001/data.jsonl",
+      "sha256": "72c9bbf0b3cd8b931feeb4ce3b63128634d714dc1caadeb2117a27aa583e81fe",
+      "stored_rows": 120,
+      "actual_draws": 120,
+      "storage_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 40,
+          "unique_ids": 40,
+          "unique_families": 40
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "crossmodal-controlled-train-pairs-v1": {
+          "rows_or_draws": 40,
+          "unique_ids": 40,
+          "unique_families": 20
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        }
+      },
+      "exposure_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 40,
+          "unique_ids": 40,
+          "unique_families": 40
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        },
+        "crossmodal-controlled-train-pairs-v1": {
+          "rows_or_draws": 40,
+          "unique_ids": 40,
+          "unique_families": 20
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 10,
+          "unique_ids": 10,
+          "unique_families": 10
+        }
+      },
+      "report": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-claim-pair-ce0-train-001/run.json",
+      "report_sha256": "f2305400f8fce4214987acc2ea5402064a4908a12c23f7404aeba8b91ae7cbca",
+      "steps": 10,
+      "accumulation": 12,
+      "seed": 42,
+      "image_max_soft_tokens": 1120,
+      "adapter_sha256": "4b8e422f3ca29e863999d2cd713bb9fd3f0a46e5360faa259a3bb8a4a9814bed",
+      "init_adapter": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-retention-train-001/adapter",
+        "weights_sha256": "0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818",
+        "config_sha256": "7c1a933ff570ff2c256d4123e7cd8a7cd28f24729562d8a93879f77d99ef4217"
+      }
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-retention-train-001/data.jsonl",
+      "sha256": "9f7bb8b8d0692ab4e663ee2431e699020c8673c9e09bc8652fa03dc2fdb3f14a",
+      "stored_rows": 360,
+      "actual_draws": 360,
+      "storage_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 150,
+          "unique_ids": 150,
+          "unique_families": 150
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        },
+        "crossmodal-train-pilot-v1": {
+          "rows_or_draws": 90,
+          "unique_ids": 90,
+          "unique_families": 90
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        }
+      },
+      "exposure_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 150,
+          "unique_ids": 150,
+          "unique_families": 150
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        },
+        "crossmodal-train-pilot-v1": {
+          "rows_or_draws": 90,
+          "unique_ids": 90,
+          "unique_families": 90
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 30,
+          "unique_ids": 30,
+          "unique_families": 30
+        }
+      },
+      "report": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-retention-train-001/run.json",
+      "report_sha256": "93ceb53086d386f8427709aeb5bacd1308f3554dc75b50d471d611d5e5bcef2e",
+      "steps": 30,
+      "accumulation": 12,
+      "seed": 42,
+      "image_max_soft_tokens": 1120,
+      "adapter_sha256": "0deef8cfd3d94f4dd3b42cfdbe995c825c388230721df7e6716e5963cb9dc818",
+      "init_adapter": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/adapter",
+        "weights_sha256": "6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac",
+        "config_sha256": "6eb4080806ed4e4c7e1cc304268468b08da355437df7b02db3e6a69bae97ff62"
+      }
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/data.jsonl",
+      "sha256": "98803d5ad626a5fd9970aba1a0a4ead89bc64394157a9546113debc7976245a0",
+      "stored_rows": 1200,
+      "actual_draws": 300,
+      "storage_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 199
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "crossmodal-train-pilot-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        }
+      },
+      "exposure_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 50,
+          "unique_ids": 50,
+          "unique_families": 50
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 50,
+          "unique_ids": 50,
+          "unique_families": 50
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 50,
+          "unique_ids": 50,
+          "unique_families": 50
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 50,
+          "unique_ids": 50,
+          "unique_families": 50
+        },
+        "crossmodal-train-pilot-v1": {
+          "rows_or_draws": 50,
+          "unique_ids": 50,
+          "unique_families": 50
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 50,
+          "unique_ids": 50,
+          "unique_families": 50
+        }
+      },
+      "report": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-joint-pilot-train-001/run.json",
+      "report_sha256": "973dac6f50e0a7283575274941ce0ec17a119d46b32769290050fa3ec13d001d",
+      "steps": 30,
+      "accumulation": 10,
+      "seed": 42,
+      "image_max_soft_tokens": 1120,
+      "adapter_sha256": "6bb86b09028aa06f1733f54c7db665a8845126d8ba623be44c8d92bcfd8c96ac",
+      "init_adapter": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/adapter",
+        "weights_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+        "config_sha256": "b4374cff844b2ff0975fee8df3f05854845503834f646ef50f48ca17d865523e"
+      }
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/data.jsonl",
+      "sha256": "e120aca4ecf14019c37131ab0eea63a58b45ffc8e3efaf14473416b9722081ae",
+      "stored_rows": 1000,
+      "actual_draws": 1000,
+      "storage_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 199
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        }
+      },
+      "exposure_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 199
+        },
+        "clevrer-train-video-noul-s3-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "clotho-aqa-s3-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 200,
+          "unique_ids": 200,
+          "unique_families": 200
+        }
+      },
+      "report": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-train-001/run.json",
+      "report_sha256": "8fa4f1b8d37371e7bca6e6e15623cdd216ecf25da1d0cfc75a0d198094d6d9ab",
+      "steps": 100,
+      "accumulation": 10,
+      "seed": 42,
+      "image_max_soft_tokens": 1120,
+      "adapter_sha256": "1bebae31309f799395d01499fb9deec5e44622599d0c082473ea8b5a014e5755",
+      "init_adapter": {
+        "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/adapter",
+        "weights_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+        "config_sha256": "1ef3f40dfb636efdf0f4db2b1736fea52e047a15b065d5ea18f05a4eeb7747bb"
+      }
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/data.jsonl",
+      "sha256": "5bb3090f4850301730960e2fb92e1aa60f10007c7edbbcb4b275e882ac07620b",
+      "stored_rows": 14368,
+      "actual_draws": 16000,
+      "storage_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 2778,
+          "unique_ids": 2778,
+          "unique_families": 1341
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 10750,
+          "unique_ids": 10750,
+          "unique_families": 10750
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 840,
+          "unique_ids": 840,
+          "unique_families": 420
+        }
+      },
+      "exposure_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 3108,
+          "unique_ids": 2778,
+          "unique_families": 1341
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 11962,
+          "unique_ids": 10750,
+          "unique_families": 10750
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 930,
+          "unique_ids": 840,
+          "unique_families": 420
+        }
+      },
+      "report": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-text-lora-001/joint-v2-001/run.json",
+      "report_sha256": "50ee015ee9c1e06c68ddf9647876b6f33421cfa92f3a27c1904f527861ef7c16",
+      "steps": 1600,
+      "accumulation": 10,
+      "seed": 42,
+      "image_max_soft_tokens": "not_explicit",
+      "adapter_sha256": "db45fb13e651acf07ed5901584960f7bfa60abb1f1a26c609a6a89511c35a4ee",
+      "init_adapter": null
+    }
+  ],
+  "lineage_image_draws": 3408,
+  "lineage_unique_image_ids": 2778,
+  "lineage_unique_image_families": 1341,
+  "lineage_image_version_counts": {
+    "aokvqa-train-image-choice-s2-pools-v1": 3408
+  },
+  "s4_image_draws": 100,
+  "s4_unique_image_ids": 72,
+  "s4_unique_image_families": 72,
+  "existing_train_capacities_not_exposures": [
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-vqa2-gold-001/train.jsonl",
+      "sha256": "48d0ef3b447f014e58163bf48cb9a92b0b6952ec8cecd554189951fe4a07b0f8",
+      "stored_rows": 1811,
+      "actual_draws": 0,
+      "storage_by_version": {
+        "vqa2-existing-train-choice-v1": {
+          "rows_or_draws": 1811,
+          "unique_ids": 1811,
+          "unique_families": 970
+        }
+      },
+      "exposure_by_version": {}
+    },
+    {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s2-vqa-probe-001/train.jsonl",
+      "sha256": "c7ec7cbba45dada6cb459575cfa82689f8672c8bcfbb86d2ba7b3cefe077c0a2",
+      "stored_rows": 1000,
+      "actual_draws": 0,
+      "storage_by_version": {
+        "aokvqa-train-image-choice-s2-pools-v1": {
+          "rows_or_draws": 400,
+          "unique_ids": 400,
+          "unique_families": 395
+        },
+        "clinc-oos-plus-train-v1-s1-pools-v1": {
+          "rows_or_draws": 100,
+          "unique_ids": 100,
+          "unique_families": 100
+        },
+        "gui-v2-screenshot-s2-pools-v1": {
+          "rows_or_draws": 100,
+          "unique_ids": 100,
+          "unique_families": 100
+        },
+        "vqa2-existing-train-choice-v1": {
+          "rows_or_draws": 400,
+          "unique_ids": 400,
+          "unique_families": 338
+        }
+      },
+      "exposure_by_version": {}
+    }
+  ],
+  "gpu_used": false,
+  "cost": null,
+  "scope": "Public TRAIN metadata and existing aggregate reports only; no gate payloads; no construction or GPU",
+  "original_dev_protocol": {
+    "source": "A-OKVQA",
+    "data_version": "aokvqa-train-image-choice-dev-v1",
+    "sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+    "native_choices": 4,
+    "gold": "official correct_choice_idx",
+    "current_correct": 410,
+    "required_correct": 424,
+    "gap": 14,
+    "image_max_soft_tokens": 1120
+  },
+  "s2_prior_results": {
+    "E01": "121/150 early checkpoint; stopped",
+    "E02": "124/150 averaged; stopped",
+    "E03": "same-pool focused CE122/150; stopped; train150146/150",
+    "E04": "label smoothing121/150; stopped",
+    "E05": "half delta122/150; stopped",
+    "E06": "gold-first distillation122/150; stopped",
+    "E07": "VQA2 same-family CE123/150, Brier124/150; no expansion",
+    "E08": "400 new VQA2 families125/150 but399/500; stopped",
+    "E09": "official1120 input budget410/500; adopted"
+  },
+  "conclusion": {
+    "supported": "Current kept lineage has same-source A-OKVQA supervision; S4 image component is small replay and contains no VQA2 augmentation. Equal aggregate accuracy is consistent with retention, not proof of unchanged per-example predictions or causal lack of same-source supervision.",
+    "not_supported": "VQA2 absence causes current gap; larger capacity equals training exposure; extra old-pool CE necessarily helps.",
+    "candidate": "At most one conditional low-budget image-focused CE screen from f2db at actual1120: fixed TRAIN A-OKVQA60 unique families + video20/cross10/audio10/screenshot10/text10,10steps120draw/seed42,standard CE,<=240seconds. This tests budget-aligned image emphasis at current parent, not a new source or novel method. No construction/start in this audit. Prior E03 failed at legacy image budget and parent; do not repeat100steps or VQA2 CE/Brier sweep.",
+    "candidate_source": "artifacts/s2-text-lora-001/joint-v2-001/data.jsonl canonical TRAIN includes2778 A-OKVQA unique rows/1341families; latest inventory+source allocation/actual media hashes must be revalidated in any future prep.",
+    "candidate_pending": "Not prepared/admitted as new derived pool; need exact120 selection/inverse-order/ledger/latest inventory isolation and parent sameinput fixed image screen; do not select train examples using dev item failures. Improvement uncertain, low-priority if other CPU evidence offers stronger hypothesis."
+  },
+  "local_evidence_sha256": {
+    "plan/STATUS.md": "8be54df82466188062ea995eeb7c0cfa87cb54ebd4d2f575f79d58ffa1ced657",
+    ".scratch/s4/spec.md": "404cb029b5ea1fb0d8fbd2a22885614f6c210f919e66c299c38bf1f40b766fe6",
+    "scripts/s0_media_dev.py": "6dbd7576fcdee019931dfbcc3b8a7bba0fbd87f7085faf77c461ba557e6c2786",
+    "reports/explore/S2-E06-gold-first-teacher.md": "a0069cfa72b94e521e30e2e73c374cac527396f9f7f4372663f6abf891efd227",
+    "reports/explore/S2-E07-new-gold-supervision.md": "20fc728edd9afa762a8f287f66d274feaa9010025b511b77492ac36bc7c0639c",
+    "reports/explore/S2-E04-gold-label-smoothing.md": "711c833db6c80ef13a8ba4641a4074eab0296a3add4aeb7b71a628dff988f198",
+    "reports/explore/S2-E02-adapter-average.md": "d5587fbfcafe19d43d7b601564cfc0050d5286d2145014b38a12f23372442331",
+    "reports/explore/S2-E08-new-visual-families.md": "b0f8759b3bc79098fef53b6cd6a4b765d412c7de4adb255eac861b7f41d498f5",
+    "reports/explore/S2-E01-checkpoint-selection.md": "99a6e09c47a7a3e2164c4f44b3c226cbe3c923886a85d69a99352c070995286a",
+    "reports/explore/S2-E03-image-focused-warmstart.md": "1c870ab64eb29eabbc7a272d74fd639ac5d9983acc935609cfcb1cbc71842c18",
+    "reports/explore/S2-E05-adapter-strength.md": "3db97d8b6e5479784a44d3cdbaa1f1693b41f7813fc9d13584b450b091657906",
+    "reports/explore/S2-E09-official-image-budget.md": "80a43affe506169826afdaf381dcb573e94aca3b1fed1002b77f71d180b36435",
+    "reports/s2-vqa2-gold-001.json": "c807f3ed0f39c8f6a7635a44ee2160bb4f7e9a72c0fb4121d89613288b511c2b",
+    "reports/s4-working-parent-image500-001.json": "0bc08b828bc79d743f471da35e7017c623166e4a9f6463efbae22d02b5a3073b",
+    "reports/s4-vqa-gold-build-001.json": "eb74e64a94d2affd2ae5c4b64ea4ea0e4b33014d650140883a950537cb36b7a8",
+    "docs/adr/0016-vqa2-train-family-augmentation.md": "984b426f5b7396d4b168b8bb61b4a57a47d5f7082c935d9b9222b6c6966ed1a5"
+  },
+  "vqa2_s4_boundary": "S4 vqa-gold-001 builds onlydev500/calibration3000/holdout1000; not a new TRAIN reservoir. Its rows were not read.",
+  "script_sha256": "0ba8afa64f3384db4cf385f32edfae73bc5b21228bc0f3ab2847af907cc46d0a",
+  "exit_code": 0
+}
