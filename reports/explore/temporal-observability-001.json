@@ -1,0 +1,224 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "cost": null,
+  "gpu_used": false,
+  "groups": {
+    "all": {
+      "count": 50,
+      "baseline_correct": 30,
+      "candidate_correct": 37,
+      "gold_yes": 25,
+      "baseline_yes": 25,
+      "candidate_yes": 30
+    },
+    "event_relation": {
+      "count": 22,
+      "baseline_correct": 12,
+      "candidate_correct": 13,
+      "gold_yes": 11,
+      "baseline_yes": 9,
+      "candidate_yes": 12
+    },
+    "event_conditioned_motion": {
+      "count": 15,
+      "baseline_correct": 8,
+      "candidate_correct": 12,
+      "gold_yes": 7,
+      "baseline_yes": 6,
+      "candidate_yes": 10
+    },
+    "endpoint_motion": {
+      "count": 13,
+      "baseline_correct": 10,
+      "candidate_correct": 12,
+      "gold_yes": 7,
+      "baseline_yes": 10,
+      "candidate_yes": 8
+    },
+    "anchor_exact_sample": {
+      "count": 16,
+      "baseline_correct": 12,
+      "candidate_correct": 14,
+      "gold_yes": 9,
+      "baseline_yes": 11,
+      "candidate_yes": 9
+    },
+    "anchor_between_samples": {
+      "count": 34,
+      "baseline_correct": 18,
+      "candidate_correct": 23,
+      "gold_yes": 16,
+      "baseline_yes": 14,
+      "candidate_yes": 21
+    },
+    "no_target_inside_nearest": {
+      "count": 11,
+      "baseline_correct": 7,
+      "candidate_correct": 8,
+      "gold_yes": 3,
+      "baseline_yes": 3,
+      "candidate_yes": 2
+    },
+    "order_same_sample_proxy": {
+      "count": 0,
+      "baseline_correct": 0,
+      "candidate_correct": 0,
+      "gold_yes": 0,
+      "baseline_yes": 0,
+      "candidate_yes": 0
+    },
+    "event_relation_anchor_exact": {
+      "count": 1,
+      "baseline_correct": 0,
+      "candidate_correct": 0,
+      "gold_yes": 1,
+      "baseline_yes": 0,
+      "candidate_yes": 0
+    },
+    "event_relation_anchor_between": {
+      "count": 21,
+      "baseline_correct": 12,
+      "candidate_correct": 13,
+      "gold_yes": 10,
+      "baseline_yes": 9,
+      "candidate_yes": 12
+    },
+    "event_conditioned_motion_anchor_exact": {
+      "count": 2,
+      "baseline_correct": 2,
+      "candidate_correct": 2,
+      "gold_yes": 1,
+      "baseline_yes": 1,
+      "candidate_yes": 1
+    },
+    "event_conditioned_motion_anchor_between": {
+      "count": 13,
+      "baseline_correct": 6,
+      "candidate_correct": 10,
+      "gold_yes": 6,
+      "baseline_yes": 5,
+      "candidate_yes": 9
+    },
+    "order_no_target_event": {
+      "count": 8,
+      "baseline_correct": 6,
+      "candidate_correct": 4,
+      "gold_yes": 0,
+      "baseline_yes": 2,
+      "candidate_yes": 4
+    },
+    "order_gap_at_least16": {
+      "count": 13,
+      "baseline_correct": 5,
+      "candidate_correct": 8,
+      "gold_yes": 11,
+      "baseline_yes": 7,
+      "candidate_yes": 8
+    },
+    "order_gap_below16": {
+      "count": 1,
+      "baseline_correct": 1,
+      "candidate_correct": 1,
+      "gold_yes": 0,
+      "baseline_yes": 0,
+      "candidate_yes": 0
+    },
+    "targets_absent_by_attributes": {
+      "count": 7,
+      "baseline_correct": 6,
+      "candidate_correct": 7,
+      "gold_yes": 0,
+      "baseline_yes": 1,
+      "candidate_yes": 0
+    },
+    "resolved_targets_all_outside_nearest": {
+      "count": 4,
+      "baseline_correct": 1,
+      "candidate_correct": 1,
+      "gold_yes": 3,
+      "baseline_yes": 2,
+      "candidate_yes": 2
+    }
+  },
+  "program_operator_counts": {
+    "filter_shape": 39,
+    "filter_in": 42,
+    "filter_before": 6,
+    "filter_color": 50,
+    "filter_material": 13,
+    "get_frame": 28,
+    "filter_moving": 16,
+    "filter_stationary": 12,
+    "filter_out": 12,
+    "filter_after": 16,
+    "filter_collision": 5
+  },
+  "video_timing": {
+    "fps_values": [
+      25.0
+    ],
+    "duration_values": [
+      5.12
+    ],
+    "uniform16_indices": [
+      0,
+      8,
+      17,
+      25,
+      34,
+      42,
+      51,
+      59,
+      68,
+      76,
+      85,
+      93,
+      102,
+      110,
+      119,
+      127
+    ],
+    "adjacent_sample_gap_frames": [
+      8,
+      9
+    ],
+    "max_sample_gap_seconds": 0.36
+  },
+  "anchor_resolved": 50,
+  "unresolved": 0,
+  "anchor_distance_frames": {
+    "max": 4,
+    "mean": 1.66
+  },
+  "relation_proxy": {
+    "count": 22,
+    "official_gold_agreement": 22,
+    "without_target_event": 8,
+    "with_same_frame_target": 0,
+    "gap_frames": {
+      "min": 10,
+      "max": 116
+    },
+    "gap_below_uniform_stride9": 0,
+    "gap_below16": 1
+  },
+  "boundaries": {
+    "camera_transition_not_official_executor": true,
+    "actual_occlusion_verified": false,
+    "annotation_inside_not_pixel_visibility": true,
+    "thresholds_fitted": false,
+    "no_new_decoding_or_model_execution": true
+  },
+  "bindings": {
+    "preparation_sha256": "38981eb5da7fdc1ef7658e1c6c37c051e169457859e07a398dfb65df7354f0eb",
+    "baseline_records_sha256": "7e14478e05f62beb85127e40a6e9e13ba38f5b3c1e18ffa3b21c52a8282e0ff3",
+    "candidate_receipt_sha256": "4a21afc14d86c31e49aa1004f51047b00901a6695206a6a5e0c321fb1fbf9df6",
+    "candidate_records_sha256": "05f72033b94064346c2f3f6b5ea4483d2d86fdc9b97034d221235af7bc0d1eab",
+    "public_data_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+    "questions_sha256": "11181da673d223f41fb596aacfbbd3ff83d39af7f09a3210549e98cb283714b4",
+    "annotations_sha256": "e7f9185ad3dde8139b839b00f0f75483374dd0325a3cbec2dac882078497784c",
+    "helper_sha256": "4d3e0e5dfe9a9f48c8f7336724126de8411bc74b80077c63894ddcef3551cdde"
+  },
+  "duration_seconds": 5.360654627904296
+}
