@@ -50,6 +50,7 @@ from train.multimodal import (
 )
 from train.pair_objective import claim_pair_loss
 from train.template import check_answer_tokens, render_payload, render_prompt
+from train.video_pairs import backward_video_pair, load_video_pairs, validate_video_pair_example
 
 
 class SmokeConfig(Contract):
@@ -109,6 +110,13 @@ class LoopConfig(Contract):
     pair_sidecar_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
     pair_ledger: str | None = Field(default=None, exclude_if=lambda v: v is None)
     pair_ledger_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    video_pair_loss_weight: float = Field(
+        default=0.0, allow_inf_nan=False, exclude_if=lambda v: v == 0
+    )
+    video_pair_sidecar: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    video_pair_sidecar_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    video_pair_ledger: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    video_pair_ledger_sha256: str | None = Field(default=None, exclude_if=lambda v: v is None)
     preparation_mode: Literal["eager", "lazy"] = "eager"
     preparation_cache_bytes: int = Field(default=256 * 1024 * 1024, ge=0)
 
@@ -116,6 +124,37 @@ class LoopConfig(Contract):
     def validate_loop(self) -> LoopConfig:
         if (self.rank, self.alpha) not in ((16, 32), (64, 128)):
             raise ValueError("decoder LoRA requires rank/alpha 16/32 or 64/128")
+        video_inputs = (
+            self.video_pair_sidecar,
+            self.video_pair_sidecar_sha256,
+            self.video_pair_ledger,
+            self.video_pair_ledger_sha256,
+        )
+        if self.video_pair_loss_weight not in (0.0, 0.1):
+            raise ValueError("video pair weight must be 0 or 0.1")
+        if self.video_pair_loss_weight:
+            if self.pair_loss_weight or self.reference_kl_weight or self.brier_weight:
+                raise ValueError("video pair requires pure CE without claim-pair/KL/Brier")
+            if (
+                self.seed,
+                self.steps,
+                self.accumulation,
+                self.sample_count,
+                self.modality,
+                self.rank,
+                self.alpha,
+                self.learning_rate,
+                self.video_num_frames,
+                self.image_max_soft_tokens,
+            ) != (42, 100, 12, 1200, "mixed", 64, 128, 2e-5, 16, 1120):
+                raise ValueError("video pair requires fixed rank64 matched1200 course")
+            if not all(video_inputs) or any(
+                re.fullmatch(r"[0-9a-f]{64}", value or "") is None
+                for value in (self.video_pair_sidecar_sha256, self.video_pair_ledger_sha256)
+            ):
+                raise ValueError("video pair requires SHA-bound sidecar and TRAIN ledger")
+        elif any(video_inputs):
+            raise ValueError("video pair inputs require nonzero weight")
         if self.pair_loss_weight not in (0.0, 0.1):
             raise ValueError("claim pair pilot weight must be 0 or 0.1")
         pair_inputs = (
@@ -1182,6 +1221,7 @@ def train_smoke(
     reference_rows: list[dict[str, Any]] | None = None,
     reference_samples: list[Sample] | None = None,
     pair_rows: dict[int, dict[str, Any]] | None = None,
+    video_pair_rows: dict[int, dict[str, Any]] | None = None,
     invocation_steps: int | None = None,
 ) -> None:
     """Train through a global immutable trajectory, optionally stopping at a committed step."""
@@ -1193,6 +1233,13 @@ def train_smoke(
         if invocation_steps is None
         else min(config.steps, resume_step + invocation_steps)
     )
+    video_pair_weight = getattr(config, "video_pair_loss_weight", 0.0)
+    if video_pair_weight and (
+        video_pair_rows is None
+        or sorted(video_pair_rows)
+        != [step * 12 + offset for step in range(config.steps) for offset in (0, 2, 4)]
+    ):
+        raise ValueError("video pair fixed three-pair mask missing")
     pair_weight = getattr(config, "pair_loss_weight", 0.0)
     if pair_weight and (
         pair_rows is None
@@ -1289,6 +1336,8 @@ def train_smoke(
         optimizer.zero_grad(set_to_none=True)
         losses = []
         pair_losses: list[float] = []
+        video_pair_losses: list[float] = []
+        video_pair_margins: list[float] = []
         pending_pair: tuple[Any, Any, dict[str, Any]] | None = None
         reference_ce, reference_kl, reference_enabled_count = [], [], 0
         for offset in range(config.accumulation):
@@ -1310,6 +1359,15 @@ def train_smoke(
                     or reference_prepared_hash(example) != pair_row[role + "_prepared_sha256"]
                 ):
                     raise ValueError("claim pair runtime prepared/draw binding mismatch")
+            video_row = (
+                video_pair_rows.get(draw - offset % 2)
+                if video_pair_weight and offset < 6 and video_pair_rows is not None
+                else None
+            )
+            if video_pair_weight and offset < 6:
+                if video_row is None:
+                    raise ValueError("video pair draw binding missing")
+                validate_video_pair_example(example, video_row, offset % 2)
             ids = torch.tensor([example["input_ids"]], device="cuda", dtype=torch.long)
             # Only whitelisted modality keys the official processor produced get forwarded.
             media_inputs = {
@@ -1352,7 +1410,23 @@ def train_smoke(
                 reference_enabled_count += int(enabled)
             if not bool(torch.isfinite(loss)):
                 raise ValueError("nonfinite training loss")
-            if pair_weight and offset < 4:
+            if video_pair_weight and offset < 6:
+                if offset % 2 == 0:
+                    pending_pair = (output.logits[0, -1], loss, example)
+                else:
+                    if pending_pair is None or video_row is None:
+                        raise ValueError("video pair first graph missing")
+                    observed_pair, observed_margin = backward_video_pair(
+                        pending_pair,
+                        (output.logits[0, -1], loss, example),
+                        video_row,
+                        weight=video_pair_weight,
+                        accumulation=config.accumulation,
+                    )
+                    video_pair_losses.append(observed_pair)
+                    video_pair_margins.append(observed_margin)
+                    pending_pair = None
+            elif pair_weight and offset < 4:
                 if offset % 2 == 0:
                     pending_pair = (output.logits[0, -1], loss, example)
                 else:
@@ -1392,6 +1466,8 @@ def train_smoke(
                 modality_losses.setdefault(modality, []).append(observed_loss)
         if pair_weight and (len(pair_losses) != 2 or pending_pair is not None):
             raise ValueError("claim pair step requires exactly two completed pairs")
+        if video_pair_weight and (len(video_pair_losses) != 3 or pending_pair is not None):
+            raise ValueError("video pair step requires exactly three completed pairs")
         norm = torch.nn.utils.clip_grad_norm_(parameters, 1.0, error_if_nonfinite=True)
         if float(norm) <= 0:
             raise ValueError("no LoRA gradient reached the decision loss")
@@ -1400,6 +1476,8 @@ def train_smoke(
         mean_loss = math.fsum(losses) / len(losses)
         if pair_weight:
             mean_loss += pair_weight * math.fsum(pair_losses) / config.accumulation
+        if video_pair_weight:
+            mean_loss += video_pair_weight * math.fsum(video_pair_losses) / config.accumulation
         report["losses"].append(mean_loss)
         torch.cuda.synchronize()
         step_metrics = {
@@ -1416,6 +1494,15 @@ def train_smoke(
                 pair_loss=math.fsum(pair_losses) / len(pair_losses),
                 pair_count=float(len(pair_losses)),
                 pair_loss_weight=pair_weight,
+            )
+        if video_pair_weight:
+            step_metrics.update(
+                gold_ce=math.fsum(losses) / len(losses),
+                video_pair_loss=math.fsum(video_pair_losses) / 3,
+                video_pair_count=3.0,
+                video_pair_margin=math.fsum(video_pair_margins) / 3,
+                video_pair_loss_weight=video_pair_weight,
+                grad_norm=float(norm),
             )
         if reference_ce:
             step_metrics.update(
@@ -1555,6 +1642,7 @@ def run(
     telemetry: Telemetry | None = None
     reference_rows = None
     pair_rows = None
+    video_pair_rows = None
     try:
         validate_invocation_steps(invocation_steps)
         if (init_adapter is None) != (init_adapter_sha256 is None):
@@ -1671,6 +1759,16 @@ def run(
                 "draws": len(reference_rows),
                 "weight": 0.5,
             }
+        if isinstance(config, LoopConfig) and config.video_pair_loss_weight:
+            video_pair_rows = load_video_pairs(config, samples, data_path)
+            report["video_pairs"] = {
+                "pairs": len(video_pair_rows),
+                "weight": config.video_pair_loss_weight,
+                "sidecar_sha256": config.video_pair_sidecar_sha256,
+                "ledger_sha256": config.video_pair_ledger_sha256,
+                "actual_draw_offsets": [0, 2, 4],
+                "pair_terms_per_step": 3,
+            }
         if isinstance(config, LoopConfig) and config.pair_loss_weight:
             pair_rows = load_claim_pairs(config, samples, examples, data_path)
             report["claim_pairs"] = {
@@ -1726,6 +1824,7 @@ def run(
                     reference_rows=reference_rows,
                     reference_samples=samples if reference_rows is not None else None,
                     pair_rows=pair_rows,
+                    video_pair_rows=video_pair_rows,
                     **invocation_args,
                 )
             finally:
