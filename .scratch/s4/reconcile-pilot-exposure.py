@@ -2392,8 +2392,21 @@ def main() -> int:
     )
     parser.add_argument("--continuous-main-pool", action="store_true")
     parser.add_argument("--continuous-launch-report", type=Path)
+    parser.add_argument("--continuous-base-exposure", type=Path)
     args = parser.parse_args()
     try:
+        if args.continuous_base_exposure is not None:
+            require(args.continuous_main_pool, "continuous_base_requires_branch")
+            launch_path = (
+                args.continuous_launch_report
+                or args.root / "reports/s4-continuous-main-pool-launch-001.json"
+            )
+            launch = json.loads(launch_path.read_bytes())
+            require(
+                launch["exposure_binding"]["base_exposure_report"]["path"]
+                == str(args.continuous_base_exposure),
+                "continuous_cli_base_mismatch",
+            )
         report = (
             prepare_continuous(
                 args.root,
