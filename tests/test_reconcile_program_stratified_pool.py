@@ -72,9 +72,10 @@ def test_program_metadata_uses_official_program_and_unchanged_gold(tmp_path):
         code.program_strata_binding(tmp_path, prep, rows, programs)
 
 
+@pytest.mark.parametrize("monitored", [False, True])
 @pytest.mark.parametrize("bad_prefix", [False, True])
 def test_program_first10_and_resume20_preserve_four_old_histories(
-    tmp_path, monkeypatch, bad_prefix
+    tmp_path, monkeypatch, bad_prefix, monitored
 ):
     code, root, legacy, index, base, invoke = integration_fixture(tmp_path, monkeypatch)
     old_raw = root / "old-runtime.json"
@@ -132,6 +133,9 @@ def test_program_first10_and_resume20_preserve_four_old_histories(
         for key in ("final_report", "runtime_report_snapshot"):
             eb[key] = code.bind(Path(eb[key]["path"]))
         receipt.pop("parent_selection")
+        if start and monitored:
+            receipt["policy_family"] = "monitored_full_course"
+            receipt["exposure_binding"]["base_exposure_report"] = code.bind(base)
         path.write_text(json.dumps(receipt))
         return path
 
@@ -151,10 +155,38 @@ def test_program_first10_and_resume20_preserve_four_old_histories(
                 index,
                 launch(10, 20, out1 / "report.json"),
                 program_stratified=True,
+                continuity_base_path=out1 / "report.json",
+                reuse_unchanged_inventory_proof=monitored,
             )
         return
+    second_launch = launch(10, 20, out1 / "report.json")
+    if monitored:
+        from test_reconcile_continuous_main_pool import checkpoint
+
+        current_path = root / "artifacts/train/run.json"
+        current = json.loads(current_path.read_bytes())
+        current["steps_completed"] = 40
+        current["losses"] = [1.0] * 40
+        current_checkpoint = current_path.parent / "checkpoints/step-0040"
+        current["checkpoint"] = str(current_checkpoint)
+        checkpoint(code, current_checkpoint, current, 40)
+        current_path.write_text(json.dumps(current))
     second = code.prepare_continuous(
-        root, legacy, out2, index, launch(10, 20, out1 / "report.json"), program_stratified=True
+        root,
+        legacy,
+        out2,
+        index,
+        second_launch,
+        program_stratified=True,
+        continuity_base_path=out1 / "report.json",
+        reuse_unchanged_inventory_proof=monitored,
+        saved_invocation=monitored,
+    )
+    assert second["inventory_verification_mode"] == (
+        "reused_unchanged_manifest" if monitored else "fresh_full_inventory"
+    )
+    assert second["program_stratified_invocations"][-1]["current_runtime_steps_observed"] == (
+        40 if monitored else 20
     )
     assert second["program_stratified_actual_global_draws_seen"] == 240
     assert second["appended_artifacts"] == []
@@ -215,6 +247,7 @@ def test_reused_proof_is_bound_and_rejects_changed_manifest(tmp_path):
 
 def test_unfrozen_monitored_policy_cannot_authorize_a_segment(tmp_path, monkeypatch):
     code, root, legacy, index, base, invoke = integration_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(code, "PROGRAM_MONITORED_RUNNER_SHA", None)
     launch = invoke(0, 10, base)
     receipt = json.loads(launch.read_bytes())
     receipt["policy_family"] = "monitored_full_course"
@@ -228,4 +261,17 @@ def test_unfrozen_monitored_policy_cannot_authorize_a_segment(tmp_path, monkeypa
             launch,
             program_stratified=True,
             reuse_unchanged_inventory_proof=True,
+        )
+
+
+def test_saved_invocation_cannot_relax_legacy_runtime_identity(tmp_path, monkeypatch):
+    code, root, legacy, index, base, invoke = integration_fixture(tmp_path, monkeypatch)
+    with pytest.raises(ValueError, match="saved_invocation_requires_monitored_policy"):
+        code.prepare_continuous(
+            root,
+            legacy,
+            root / "legacy-replay-rejected",
+            index,
+            invoke(0, 10, base),
+            saved_invocation=True,
         )

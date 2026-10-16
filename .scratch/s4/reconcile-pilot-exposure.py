@@ -2748,8 +2748,9 @@ def continuous_matched_bindings(root, prepared, prep, *, program_stratified=Fals
 
 
 # A forthcoming root policy is not executable until both actual bytes are frozen.
-PROGRAM_MONITORED_POLICY_SHA = None
-PROGRAM_MONITORED_RUNNER_SHA = None
+PROGRAM_MONITORED_POLICY_SHA = "cd4a140bb45b0acc7dde986648a9f99b12c476bf078a9f8166791ce8e22f6399"
+PROGRAM_MONITORED_RUNNER_SHA = "a80e74f2473edb20f6316721df9c208ce3e8ea89831d775778dfd416738027cf"
+PROGRAM_MONITORED_RUNNER_PATH = "/root/autodl-tmp/run-program-stratified-monitored-full.py"
 
 
 PROGRAM_GROUPS = ("before_after", "event_motion", "endpoint_motion", "exist")
@@ -2886,6 +2887,116 @@ def program_exclusion_bindings(root, prep, video):
     return bindings
 
 
+def program_monitored_bindings(root, launch, base, history, start, end):
+    """The new user policy supersedes the old window without modifying its artifacts."""
+    bindings = {}
+
+    def bound(path, expected):
+        require(
+            isinstance(expected, str) and len(expected) == 64 and sha(path) == expected,
+            "program_monitored_binding_sha",
+        )
+        bindings[str(path)] = expected
+
+    policy_path = root / "reports/s4-program-stratified-full-decision-001.json"
+    bound(policy_path, PROGRAM_MONITORED_POLICY_SHA)
+    policy = json.loads(policy_path.read_bytes())
+    profile = continuous_profile(program_stratified=True)
+    expected = {
+        "policy_family": "monitored_full_course",
+        "decision": "run_monitored_full_course",
+        "user_authorized_supersession": True,
+        "prepared_report_sha256": profile["prep_sha"],
+        "config_sha256": profile["config_sha"],
+        "initializer_sha256": CONTINUOUS_PARENT_SHA,
+        "target_step": 100,
+        "resume_from_step": 10,
+        "segments": [20, 40, 60, 80, 100],
+        "max_segment_seconds": 500,
+        "evaluation_steps": [20, 40, 60, 80, 100],
+        "formal_quality_results_preserved": True,
+    }
+    require(
+        all(policy.get(k) == v for k, v in expected.items())
+        and launch["decision_sha256"] == PROGRAM_MONITORED_POLICY_SHA,
+        "program_monitored_user_policy",
+    )
+    require(PROGRAM_MONITORED_RUNNER_PATH is not None, "program_monitored_runner_path_not_frozen")
+    bound(Path(PROGRAM_MONITORED_RUNNER_PATH), PROGRAM_MONITORED_RUNNER_SHA)
+    require(
+        launch["wrapper_sha256"] == PROGRAM_MONITORED_RUNNER_SHA and launch["stage_gate"] is False,
+        "program_monitored_actual_runner",
+    )
+    adr_path = root / "docs/adr/0023-measured-quality-stage-progression.md"
+    bound(adr_path, "68baf7b31227e0474e22ba2a5869b6a09b0b825965c58ff6d5ad8d8099f5a3ff")
+    require(policy["adr_sha256"] == bindings[str(adr_path)], "program_monitored_actual_adr")
+    policy_base = Path(policy["latest_exposure_report"])
+    bound(policy_base, policy["latest_exposure_report_sha256"])
+    require(
+        policy["latest_exposure_report_sha256"] == profile["base_sha"]
+        and launch["exposure_binding"]["base_exposure_report"] == bind(policy_base)
+        and base["all_bound_input_sha256"].get(str(policy_base)) == profile["base_sha"],
+        "program_monitored_original_policy_base",
+    )
+    require(
+        history and history[0]["start_step"] == 0 and history[0]["end_step"] == 10,
+        "program_monitored_first10_history",
+    )
+    targets = {10: 20, 20: 40, 40: 60, 60: 80, 80: 100}
+    require(
+        start in targets
+        and end <= targets[start]
+        and launch["start_step"] == start
+        and launch["end_step_target"] == targets[start],
+        "program_monitored_segment_boundary",
+    )
+    command = launch["command"]
+    require(
+        command[command.index("--invocation-steps") + 1] == str(targets[start] - start),
+        "program_monitored_requested_interval",
+    )
+    window = {
+        "policy_family": "monitored_full_course",
+        "window_start_utc": policy["window_start_utc"],
+        "window_deadline_utc": policy["window_deadline_utc"],
+        "decision_sha256": PROGRAM_MONITORED_POLICY_SHA,
+        "prepared_report_sha256": profile["prep_sha"],
+        "target_step": 100,
+        "adr_sha256": policy["adr_sha256"],
+    }
+    from datetime import datetime
+
+    times = [
+        datetime.fromisoformat(window[k].replace("Z", "+00:00"))
+        for k in ("window_start_utc", "window_deadline_utc")
+    ]
+    require(
+        all(t.utcoffset() is not None and t.utcoffset().total_seconds() == 0 for t in times)
+        and (times[1] - times[0]).total_seconds() == 5400,
+        "program_monitored_fixed90minutes",
+    )
+    window_path = root / "reports/s4-program-stratified-full-window-001.json"
+    bound(window_path, sha(window_path))
+    require(
+        json.loads(window_path.read_bytes()) == launch["window"] == window,
+        "program_monitored_frozen_window",
+    )
+    screen_path = root / f"reports/s4-program-stratified-dev50-step{start:04d}.json"
+    screen = json.loads(screen_path.read_bytes())
+    previous = json.loads(Path(history[-1]["runtime_report_snapshot"]["path"]).read_bytes())
+    require(
+        screen["status"] == "completed"
+        and screen["exit_code"] == 0
+        and screen["step"] == start
+        and screen["paired_input_hashes_verified"] == 50
+        and screen["adapter_sha256"] == previous["adapter_sha256"]
+        and screen["candidate"]["count"] == 50,
+        "program_monitored_same_step_screen",
+    )
+    bindings[str(screen_path)] = sha(screen_path)
+    return bindings
+
+
 def program_training_bindings(root, launch, config, base, history, start, end):
     """Each invocation needs a fresh root decision inside the same frozen window."""
     profile = continuous_profile(program_stratified=True)
@@ -2912,6 +3023,9 @@ def program_training_bindings(root, launch, config, base, history, start, end):
     bound(launcher, "8ff309225773413e3c2a8b0494c891db77216229b36ee787c125d521bab3a4bc")
     helper = root.parent / "s4-native-event-cpu-001/prepare-program-stratified-pool.py"
     bound(helper, "fcd52c264ccabf0cb2120402836089aa988ff298b485dd272487f46aa92c893a")
+    if launch.get("policy_family") == "monitored_full_course":
+        bindings.update(program_monitored_bindings(root, launch, base, history, start, end))
+        return bindings
     decision_path = root / f"reports/s4-program-stratified-decision-step{start + 10:04d}.json"
     bound(decision_path, launch["decision_sha256"])
     if not start:
@@ -3558,6 +3672,8 @@ def prepare_continuous(
     video_objective: bool = False,
     program_stratified: bool = False,
     reuse_unchanged_inventory_proof: bool = False,
+    continuity_base_path: Path | None = None,
+    saved_invocation: bool = False,
 ) -> dict:
     """One settled invocation over one immutable pool, based on the preceding inventory."""
     require(
@@ -3608,6 +3724,15 @@ def prepare_continuous(
             return path
 
         base_path = bound("base_exposure_report")
+        policy_base_binding = bind(base_path)
+        require(not saved_invocation or monitored, "saved_invocation_requires_monitored_policy")
+        if monitored:
+            require(
+                continuity_base_path is not None and continuity_base_path.is_absolute(),
+                "monitored_continuity_base_required",
+            )
+            base_path = continuity_base_path
+            bindings[str(base_path)] = sha(base_path)
         base, base_binding = read_json(base_path)
         require(
             base.get("status") == "known_pilot_exposures_reconciled"
@@ -3673,12 +3798,30 @@ def prepare_continuous(
             "continuous_launcher_terminal_identity",
         )
         raw_path = Path(eb["runtime_report_path"])
-        require(
-            raw_path.is_absolute()
-            and raw_path.name == "run.json"
-            and sha(raw_path) == sha(snapshot_path),
-            "continuous_current_runtime_snapshot",
-        )
+        require(raw_path.is_absolute() and raw_path.name == "run.json", "continuous_runtime_path")
+        if saved_invocation:
+            current_raw = json.loads(raw_path.read_bytes())
+            terminal_report(current_raw, allow_paused=True)
+            require(
+                current_raw["steps_completed"] >= end
+                and current_raw["config"] == final["config"]
+                and current_raw["data_sha256"] == final["data_sha256"]
+                and current_raw["init_adapter"] == final["init_adapter"]
+                and current_raw["losses"][:end] == final["losses"],
+                "saved_invocation_same_trajectory",
+            )
+            require(
+                Path(current_raw["checkpoint"]).parent == raw_path.parent / "checkpoints",
+                "saved_invocation_current_checkpoint_scope",
+            )
+            continuous_checkpoint(
+                Path(current_raw["checkpoint"]),
+                current_raw,
+                current_raw["steps_completed"],
+                bindings,
+            )
+        else:
+            require(sha(raw_path) == sha(snapshot_path), "continuous_current_runtime_snapshot")
         # run.json is deliberately observed, never persisted as an immutable history binding.
         mutable_observation = bind(raw_path)
         observed_runtimes = {str(raw_path): mutable_observation["sha256"]}
@@ -3957,6 +4100,10 @@ def prepare_continuous(
         invocation = {
             **interval,
             "status": final["status"],
+            "reconciled_saved_invocation": saved_invocation,
+            "current_runtime_steps_observed": current_raw["steps_completed"]
+            if saved_invocation
+            else end,
             "update_bearing": end > start,
             "launch_report": launch_binding,
             "final_report": bind(final_path),
@@ -4074,6 +4221,9 @@ def prepare_continuous(
             report["program_stratified_actual_global_draws_seen"] = end * 12
             report["program_stratified_pool_included"] = True
             report["program_exclusion_scope"] = prep["exclusions"]["scope"]
+            if monitored:
+                report["launch_policy_base_exposure_report"] = policy_base_binding
+                report["program_monitored_policy_family"] = "monitored_full_course"
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -4149,6 +4299,7 @@ def main() -> int:
     parser.add_argument("--video-text-matched", action="store_true")
     parser.add_argument("--video-specialist", action="store_true")
     parser.add_argument("--native-event-condition", action="store_true")
+    parser.add_argument("--reconcile-saved-invocation", action="store_true")
     parser.add_argument("--reuse-unchanged-inventory", action="store_true")
     parser.add_argument("--program-stratified-pool", action="store_true")
     parser.add_argument("--video-pair-objective", action="store_true")
@@ -4183,11 +4334,15 @@ def main() -> int:
                 + ("-launch-step0010.json" if args.program_stratified_pool else "-launch-001.json")
             )
             launch = json.loads(launch_path.read_bytes())
-            require(
-                launch["exposure_binding"]["base_exposure_report"]["path"]
-                == str(args.continuous_base_exposure),
-                "continuous_cli_base_mismatch",
-            )
+            if not (
+                args.program_stratified_pool
+                and launch.get("policy_family") == "monitored_full_course"
+            ):
+                require(
+                    launch["exposure_binding"]["base_exposure_report"]["path"]
+                    == str(args.continuous_base_exposure),
+                    "continuous_cli_base_mismatch",
+                )
         report = (
             prepare_continuous(
                 args.root,
@@ -4221,6 +4376,8 @@ def main() -> int:
                 video_objective=args.video_pair_objective,
                 program_stratified=args.program_stratified_pool,
                 reuse_unchanged_inventory_proof=args.reuse_unchanged_inventory,
+                continuity_base_path=args.continuous_base_exposure,
+                saved_invocation=args.reconcile_saved_invocation,
             )
             if args.continuous_main_pool
             or args.continuous_matched_pool
