@@ -1,9 +1,11 @@
 # STATUS
 
-更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
+更新:2026-10-17 02:20。**S3已通过;S4按ADR0023带实测局限收口;S5进行中:fit007(e465版)完成+holdout完成,候选已换D3P-150,FIT009重校准运行中。原生goal仍active,产品未交付。**
 
 ## 当前票与下一步
-- **23:08实时**：**fit007真实完成**(status=fitted,18000/18000,7203.8秒):七组温度全NLL改善(text 1.433/image 1.740/screenshot 1.848/audio-noul 2.426/video-noul 1.728/crossmodal-noul 3.076/audio-choice 0.05近零NLL),导出+绑定链核验通过。**holdout 003运行中**(UID65501/2,6000行,已过全部probe);001死于gates相对路径、002死于main截断sha(误杀已记录,UID未消耗)。holdout完成→S5原门汇总→网关激活(build-s5-registry-manifest.py已备)。用户决策ADR0024:U不作产品输出,U中心创新线关闭(WSFT/R1-B-wsft/孪生U取消);GPU窗口新序=D3P教师蒸馏(命令链就绪,worktree commit 022a9d6已合并)>B2 caption>R1-B-gold。新墙钟:模型10-17 06:00前就绪,04:30冻结,创新~03:30硬停。第二轮调研002已入主树(7维度8ideas;II-2合成记ADR轨道,II-3路由被零GPU分析证伪,II-5 SAS与II-4 PKI准备中)。
+## 当前票与下一步
+- **02:20实时**:候选已换**D3P-150**(D3P教师蒸馏150题软目标40步,adapter 82525f394618fbc1…):video150 **122/150(+6题,81.3%,两遍一致)**,留任text 0/screenshot −1/image −1/audio −2全部≤1pp;证据reports/s6-d3p-video150-report.json+四份留任报告。FIT009(D3P-150重校准,job SHA eee1c52d…,UID65701/2)02:10开跑预计04:12;FIT008死于/var/tmp磁盘预算(30GB overlay,已清可再建媒体快照,17G空闲)。e465版S5证据已齐:fit007七温度+holdout6000封存汇总(reports/s5-sealed-aggregate-summary-001.json,零掉分,ECE 3/6)。D3P-150的温度出来后同法出封存汇总→registry→网关→导出。04:30冻结,06:00模型就绪。teacher-600在81/600让位(证据留档);SAS/R1-B-gold/v32材料完备未跑。ssh mux不稳:用scp脚本+短命令模式。
+
 - **20:12实时**：S5首次真实校准fit007已进入inference（text起，18000题，UID65301/2，job SHA af4b7b48…，producer fa83acc，GPU~49%）。此前fit003–006排障链四根因全修并留证：8个老池sealed行文件0644→0600（真实边界泄漏，probe正确拒绝）、/root/.ssh 0755→0700、沙箱代码补serve（producer修订fa83acce6f4b0345a2694ec883a81647a6279f8d，已部署/root/autodl-tmp/s5-calibration-code-fa83acc）、gui-gold-002 119张缺失校准媒体从quarantine源sha256验证恢复（reports/s5-gui-media-restore-001.json，119/119零失败）。UID 648xx/649xx/650xx/651xx(诊断)/652xx/653xx已消耗不复用。
 - 外榜收口：候选e465 JevBench231 76.62%/macro74.93%（两遍exit0）；父模型同协议基线76.19%/macro77.39%（reports/s4-parent-jevbench-001.json）。"不低于同尺寸基线"headline门通过（+0.43pp），macro−2.46pp如实记录（≈97%来自ambiguous家族n=7）；候选Brier/ECE/paraphrase全优，父ordinalMAE更优。S4原教师比率门未达，按ADR0023保留。
 - 当前票s4:01 claimed/main-session。用户2026-10-16明确接受实测质量局限下推进，ADR0023已记录：保留原gate失败，不假称原目标通过；完整实测、有界优化后可closed_with_measured_quality_limitations。正确性、数值、来源、隔离不放宽。S5/S6/FINAL尚未完成。
