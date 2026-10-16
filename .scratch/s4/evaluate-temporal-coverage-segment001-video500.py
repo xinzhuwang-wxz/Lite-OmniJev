@@ -1,4 +1,4 @@
-"""One monitored complete original video cohort to select between first and second coverage parents."""
+"""Measure the working coverage parent on the complete original public video cohort."""
 
 import hashlib
 import json
