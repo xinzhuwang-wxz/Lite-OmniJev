@@ -1,0 +1,64 @@
+{
+  "checked_family_count": 31,
+  "cost": null,
+  "draw_order_canonical_sha256": "afc086b6cad393bf76af0fe8d9059fcbd77aa9d174754a8123d67f94903ec91e",
+  "duration_seconds": 28.26163282431662,
+  "exit_code": 0,
+  "exposure_base": {
+    "manifest_sha256": "039de536c088249f1bf7abc5b811d46c7adc95b0fe7844ce37cea14c53113a24",
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-exposure-012",
+    "report_sha256": "db21553a169282aa4eb440e8fe79b5021e9ac6d37357e90bb27dc8be53f85fdf"
+  },
+  "first_position_no": 10,
+  "first_position_yes": 20,
+  "gap_frames": {
+    "max": 104,
+    "min": 16
+  },
+  "gpu_used": false,
+  "helper_sha256": "b306fabcf12a94063ba670da41507e068b68059f5369cfc3e7046165a523f58e",
+  "independently_evaluated_programs": 60,
+  "inventory_isolation": "isolated",
+  "max_checked": 64,
+  "media_verified_unique": 30,
+  "observability": "event visibility at annotated frame and gap>=16 verified; actual uniform16 event capture/occlusion not verified; no guarantee invented",
+  "original_postfix": "source binding only; not re-executed",
+  "output_sha256": {
+    "allocation-ledger.jsonl": "f8c8245bfee85b81c8658b54d57cd63008f99e3428f7c5dd5f47b4e2e5d314dd",
+    "config-ce.json": "abfab49cecf920db76e60d6b0314ddb3d721ddcd6e79183cebac33e0baf9beda",
+    "draw-recipe.json": "e8a42a4116512899a5de9de93a88aa706939f8b86359abc9235fe8cc79cfe908",
+    "inventory-audit.json": "d8d317971f53bae42f639e49ff2e5d474bffb0f88693ece7080b33bdddeda2db",
+    "inventory-manifest.json": "9c29c15c9f6ec78a198747dfe3f782d5c147f438d6cdb3f7ea45fa7afa05fbe3",
+    "train.jsonl": "f16fbf93029461cf520522f4037ff829284a7a4a7c531d1ecd4b9e0b7bbe8ef1"
+  },
+  "parent_model": null,
+  "pending_parent_selection": true,
+  "per_step": {
+    "audio": 1,
+    "crossmodal": 2,
+    "image": 1,
+    "screenshot": 1,
+    "text": 1,
+    "video": 6
+  },
+  "rejected": {
+    "unsafe_or_no_eligible_event_pair": 1
+  },
+  "replay_report_sha256": "e3b48c872e2a0d38675dd60d9e3bf073f73a85ad1a1f28d4825fa5c28a4b848b",
+  "reused_helper_sha256": {
+    "inspect-temporal-order-contrast": "c4346e8d61613c710e9dbca78d6796776984402bfc85f30add342d857ddfa5c8",
+    "prepare-claim-pair-pilot": "d22464f4dd7ea151b755b34cf66c5966addc6d3a8c640941f820e264d552be4d"
+  },
+  "safe_family_count": 30,
+  "source_admission": "existing ADR0005 CC0 full8299 TRAIN scope",
+  "source_sha256": {
+    "annotations": "e7f9185ad3dde8139b839b00f0f75483374dd0325a3cbec2dac882078497784c",
+    "questions": "11181da673d223f41fb596aacfbbd3ff83d39af7f09a3210549e98cb283714b4",
+    "readme": "a4838cc68b79ba049b54f95def1714cdbbd1380193d7d2a5d1a85440ac862e7b",
+    "train": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948"
+  },
+  "status": "data_ready_only",
+  "training_authorized": false,
+  "video_families": 30,
+  "video_rows": 60
+}
