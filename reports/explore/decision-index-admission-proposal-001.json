@@ -1,0 +1,1376 @@
+{
+  "status": "proposal_pending_root_review_not_applied",
+  "evaluation_only": true,
+  "training_admitted": false,
+  "redistribution_admitted": false,
+  "ready": false,
+  "source_revision": "f8552a13b643d39f61185f5951bb5fed16bedf51",
+  "source_archive_sha256": "12719836807976e25e9ff5b5dee742679577b48508cbd601f7c57be9672f4082",
+  "original_manifest_sha256": "44e6782bae205b655ddbe8f8d4ca3afb5095932e78b59f4af3e189a2993ed77b",
+  "original_report_sha256": "47fa59533daa18bb0d1c3a2b38df74030bb431fc0dd23a5087d12b1266216c2c",
+  "prior_evidence_file": {
+    "path": "/Users/bamboo/Githubs/Lite-OmniJev/reports/explore/decision-index-evaluation-license-evidence-001.json",
+    "sha256": "384966c8aaa2271c29a9a6222684c92b41c158e9d7801972242509e3919af206"
+  },
+  "observed_metadata_sha256": "67b2499e75c8d8a69ddc99dd6f9ee0d40311647eb1b3914da722aec6cda2a0be",
+  "candidate_scope": [
+    10,
+    11,
+    12,
+    24,
+    26,
+    27,
+    29,
+    30,
+    31,
+    36,
+    43,
+    48,
+    50,
+    57,
+    62,
+    64
+  ],
+  "evidence_closed_proposed_count": 13,
+  "evidence_closed_proposed_ids": [
+    10,
+    24,
+    26,
+    27,
+    29,
+    30,
+    31,
+    36,
+    43,
+    48,
+    50,
+    57,
+    62
+  ],
+  "pending_within16": {
+    "11": "Pinned data ZIP contains independent TERMS stating access/use agreement; no new acceptance made. Root must review existing terms authority.",
+    "12": "CC-BY-NC-4.0; current project purpose is not explicitly established as non-commercial. No inference from evaluation-only.",
+    "64": "Publisher explicitly licenses contributed annotations; underlying New Yorker caption text rights remain unclosed."
+  },
+  "pending_evidence": {
+    "11": {
+      "source_archive": {
+        "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/contractnli/resources/contract-nli.zip",
+        "sha256": "e03fc77bbf8b53e2976a250e81d8a294bc3d5e5fb014521e477dee9340d6287b",
+        "destination": "artifacts/benchmark-suite/raw/repos/contractnli/resources/contract-nli.zip"
+      },
+      "member": "contract-nli/TERMS",
+      "sha256": "b86e5b9bd7d2c49fd0d60e1d0842b7f64746abc8b206451acbe9080027cc49c8",
+      "fact": "TERMS says accessing/downloading/using is agreement; root authority not inferred."
+    },
+    "12": {
+      "url": "https://huggingface.co/datasets/facebook/anli/raw/8e4813d81f46d313dac7892e1c28076917cfcdf9/README.md",
+      "license": "CC-BY-NC-4.0",
+      "fact": "Non-commercial purpose not established by evaluation-only."
+    },
+    "64": {
+      "url": "https://huggingface.co/datasets/jmhessel/newyorker_caption_contest/raw/d81cbab7d0392708d5371d3a4960e69261824db4/README.md",
+      "fact": "License explicitly covers contributed annotations; underlying captions remain pending."
+    }
+  },
+  "remaining_if_root_accepts_proposal": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    9,
+    11,
+    12,
+    20,
+    21,
+    22,
+    23,
+    25,
+    28,
+    32,
+    33,
+    34,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    44,
+    45,
+    56,
+    58,
+    59,
+    61,
+    64
+  ],
+  "current_applied_admission_count": 0,
+  "full44_condition_unchanged": true,
+  "details": [
+    {
+      "catalog_id": 10,
+      "name": "SGD/SGD-X",
+      "license": "CC-BY-SA-4.0",
+      "acquisition": [
+        {
+          "kind": "git",
+          "key": "sgd",
+          "url_or_repo": "https://github.com/google-research-datasets/dstc8-schema-guided-dialogue.git",
+          "revision_or_content_sha256": "e852981ae34990f4358979625854259302feaa78"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/README.md",
+          "sha256": "e16545f163578037e6b7315b8da243f9f9871f4f071a812ab86b73702f124168",
+          "url": "https://github.com/google-research-datasets/dstc8-schema-guided-dialogue/blob/e852981ae34990f4358979625854259302feaa78/README.md",
+          "revision": "e852981ae34990f4358979625854259302feaa78",
+          "line_range": [
+            242,
+            247
+          ]
+        },
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/LICENSE.txt",
+          "sha256": "71a43a169b52bb1b39510b65ec5b43b4bbb59196d449a835fe58b50af6a72742",
+          "url": "https://github.com/google-research-datasets/dstc8-schema-guided-dialogue/blob/e852981ae34990f4358979625854259302feaa78/LICENSE.txt",
+          "revision": "e852981ae34990f4358979625854259302feaa78"
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_001.json",
+          "sha256": "1fa13b0fe607100bc66ed15e0490df9c52a2cec087ca9733e0f506755eef0ada",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_001.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_002.json",
+          "sha256": "b3b2a2596fad9146e96e4e1aa288f975332e2c7a3153bb2379d75e8d71c35a20",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_002.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_003.json",
+          "sha256": "b595a04f7848aed76d11e82250089023e42a6e5ce047c78b8ddd0f4856dcbecb",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_003.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_004.json",
+          "sha256": "5468f85dd867c7cc825aa6918980dd3142c95c926d685a56803b91cd2d3eb379",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_004.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_005.json",
+          "sha256": "9f344d5660b5d8bf6935f72cf4dc11149caaf9febf688fd748eacbe262c67c2b",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_005.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_006.json",
+          "sha256": "249d591df0c32b5518560c37a02cdc09b147ea4f95d1373ac22d42c656788ab7",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_006.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_007.json",
+          "sha256": "24c5c86501aa50d045f4ba8822bf06606967261365fc5ca6ffa8f7375bd54935",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_007.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_008.json",
+          "sha256": "e4ecce8acdd5b3657de7a7660b9bcd339d88a629147711ad2545b695666279c5",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_008.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_009.json",
+          "sha256": "5d30edca006e4b4159a8027d68c3bcd241447d2257deb51b467b9aeefa7b1158",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_009.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_010.json",
+          "sha256": "b4fc2c16d0cb46e14d0def357f4a941ee61fad3c6c8dd430ac8bae6145f1e4d0",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_010.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_011.json",
+          "sha256": "1c2e312ce653bdd4ba1fe74b44ef20b36bab74b8ccf7bc2e591c632d5492a21b",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_011.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_012.json",
+          "sha256": "30ccd033dfeb5032cb74ca237ee4679fb00abf9b2e21b0c686da543ec3ac8ca6",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_012.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_013.json",
+          "sha256": "b31c288da94b084e4963e7eda27e11922c7c230e9de0bb159856facb442684bc",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_013.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_014.json",
+          "sha256": "52c79021d28c2bb2bb69210f360c61c49250696eaf1b04fdfa89e1fd9a7be2c7",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_014.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_015.json",
+          "sha256": "4e14295fac05ce179d72ec30b67f6b01e24e2d4c4836b95cc842d8ae4a93131f",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_015.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_016.json",
+          "sha256": "b0515e87357d8537df046a38d2418257b38e16e9df1a960c9de2bd3d21e19c8b",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_016.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_017.json",
+          "sha256": "ec669b6b24667e01033069827200312b9af4a182789a15784c43b4be5cf0668e",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_017.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_018.json",
+          "sha256": "51e761019af71be0558667b69d917b120def65b6434f019e7e0c95584ad7fdbc",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_018.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_019.json",
+          "sha256": "2bf4a842c133c427beb7162408488f39ab04cc8e7178ff51c489b41678652834",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_019.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_020.json",
+          "sha256": "9619574d5043827ea2e397702b88033dc013e4ac870f410a8016c8b223f55ec4",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_020.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_021.json",
+          "sha256": "7259172a6ba19f5d065fe95b4ae41755c6ac32cf2fec80fae6d52d94b8a10a1d",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_021.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_022.json",
+          "sha256": "ffed1c89eb5c589c159b70062433e0655c5955ef9f1dd0b3c0e4ddb1db9ac74b",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_022.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_023.json",
+          "sha256": "c3466bc38d356b2abb6a71e61f502e0b5c82cf35584b3c655d01a89165e8fe80",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_023.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_024.json",
+          "sha256": "728b605675f7d4da54dfe8c3746eabfdec884f75c9306f5cdb3d8eb3ab315e5c",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_024.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_025.json",
+          "sha256": "50e8aa3052aa720279068de31d7c7225d08b035ac62e488aadca0e1edd39145d",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_025.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_026.json",
+          "sha256": "981946b39930b73c78b63af1ec220c71b15e24529f24b48d435f917a1375ff7d",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_026.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_027.json",
+          "sha256": "d05108c80386d35891f511a425e4a194a22a74c22a14d3f12e3b7a54252c4f96",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_027.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_028.json",
+          "sha256": "8548c8881eb5445ec8f9d8877ada1371c4698890ec76c96408929957d36b4d79",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_028.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_029.json",
+          "sha256": "97fd99e95c0d5169f57e85a7799214de7bf7495d3613652a6ac8a494f10021fb",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_029.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_030.json",
+          "sha256": "dabf6b8051f03ad1049a4c6b89f48986a5d597d0e637ccf555faa0241ecdbe87",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_030.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_031.json",
+          "sha256": "c78c04a16cde6eccbd4092d70d7e6053651e4bdab89a993a4dafa78eedf47c0f",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_031.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_032.json",
+          "sha256": "b7b739ccdd51ce4cd60d0b4d4ccaa751831bf448965e9bacfe5b7a123bc0f806",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_032.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_033.json",
+          "sha256": "a9f5b0c275a55ba40374ea10c723e88c37b8f0dabd55c2a9d3679de2495e224d",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_033.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/dialogues_034.json",
+          "sha256": "d412ac423182dfe367d1549be9580bd7a964b695f5fd1a4d9d77c849763294a9",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/dialogues_034.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/sgd/test/schema.json",
+          "sha256": "0b4af32e01695aec4788681fe6b22fb7ee908907269f5ac7167d01f4c4132bcb",
+          "destination": "artifacts/benchmark-suite/raw/repos/sgd/test/schema.json"
+        }
+      ],
+      "input_catalog_binding_sha256": "1ceaecead034fd81b40555ec4c4a46b65b54e5da8696629c059e6c96055a159f",
+      "applicable_files_sha256": "1ceaecead034fd81b40555ec4c4a46b65b54e5da8696629c059e6c96055a159f",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 24,
+      "name": "MMLU",
+      "license": "MIT",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "key": "data/sources/mmlu",
+          "url_or_repo": "cais/mmlu",
+          "revision_or_content_sha256": "c30699e8356da336a370243923dbaf21066bb9fe"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/cais/mmlu/raw/c30699e8356da336a370243923dbaf21066bb9fe/README.md",
+          "sha256": "665eef35ecd8a89037c1e4f1e1a0d7fd4c154edc04c81cea5634ace2d3e96953",
+          "license_lines": [
+            {
+              "line": 8,
+              "text": "license: - mit multilinguality:"
+            },
+            {
+              "line": 2166,
+              "text": "  - [Licensing Information](#licensing-information)   - [Citation Information](#citation-information)   - [Contributions](#contributions)"
+            },
+            {
+              "line": 2275,
+              "text": "### Licensing Information  [MIT License](https://github.com/hendrycks/test/blob/master/LICENSE)"
+            },
+            {
+              "line": 2277,
+              "text": "[MIT License](https://github.com/hendrycks/test/blob/master/LICENSE)  ### Citation Information"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/data/sources/mmlu/all/test-00000-of-00001.parquet",
+          "sha256": "74a41822ce7d3def56e1682f958469c04642a5336a5ce912fa375fdb90fb25d7",
+          "destination": "data/sources/mmlu/all/test-00000-of-00001.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "f8c73bd3d2b5f9cf3a19e8ce445d0eef99d2e8c7ed043f5e40b3149bb06fe6fc",
+      "applicable_files_sha256": "f8c73bd3d2b5f9cf3a19e8ce445d0eef99d2e8c7ed043f5e40b3149bb06fe6fc",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 26,
+      "name": "ARC-Easy",
+      "license": "CC-BY-SA-4.0",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "key": "data/sources/arc",
+          "url_or_repo": "allenai/ai2_arc",
+          "revision_or_content_sha256": null,
+          "recipe_revision": null,
+          "resolved_acquisition_revision": "210d026faf9955653af8916fad021475a3f00453"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/allenai/ai2_arc/raw/210d026faf9955653af8916fad021475a3f00453/README.md",
+          "sha256": "4a293e352253d771604725c978adcea71ee6504e89ed40e1cb0024ecafa9b37e",
+          "license_lines": [
+            {
+              "line": 8,
+              "text": "license: - cc-by-sa-4.0 multilinguality:"
+            },
+            {
+              "line": 118,
+              "text": "  - [Licensing Information](#licensing-information)   - [Citation Information](#citation-information)   - [Contributions](#contributions)"
+            },
+            {
+              "line": 266,
+              "text": "### Licensing Information  [More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/data/sources/arc/ARC-Easy/test-00000-of-00001.parquet",
+          "sha256": "4160597d618ae851c7eb04e281574f3f654776216ac6b6641588d64527b47177",
+          "destination": "data/sources/arc/ARC-Easy/test-00000-of-00001.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "a8517407838fe83aad082b401e6963836757f5a50b35ad4b0603867044bc8b8d",
+      "applicable_files_sha256": "2b4761f4cffde4d7fea75ec79f441705af770ccbf622fa286d1bd59c433603a0",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 27,
+      "name": "ARC-Challenge",
+      "license": "CC-BY-SA-4.0",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "key": "data/sources/arc",
+          "url_or_repo": "allenai/ai2_arc",
+          "revision_or_content_sha256": null,
+          "recipe_revision": null,
+          "resolved_acquisition_revision": "210d026faf9955653af8916fad021475a3f00453"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/allenai/ai2_arc/raw/210d026faf9955653af8916fad021475a3f00453/README.md",
+          "sha256": "4a293e352253d771604725c978adcea71ee6504e89ed40e1cb0024ecafa9b37e",
+          "license_lines": [
+            {
+              "line": 8,
+              "text": "license: - cc-by-sa-4.0 multilinguality:"
+            },
+            {
+              "line": 118,
+              "text": "  - [Licensing Information](#licensing-information)   - [Citation Information](#citation-information)   - [Contributions](#contributions)"
+            },
+            {
+              "line": 266,
+              "text": "### Licensing Information  [More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/data/sources/arc/ARC-Challenge/test-00000-of-00001.parquet",
+          "sha256": "62f03257e737aed263f55c6abf87c7bb0028a44a6bdd2a26eb1279eb42c1d1e9",
+          "destination": "data/sources/arc/ARC-Challenge/test-00000-of-00001.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "a8517407838fe83aad082b401e6963836757f5a50b35ad4b0603867044bc8b8d",
+      "applicable_files_sha256": "ace332f63bc894d7fa7d074e73fc00cf25c3e1d2073b633927bb62496722170a",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 29,
+      "name": "HellaSwag",
+      "license": "MIT",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "key": "data/sources/hellaswag",
+          "url_or_repo": "Rowan/hellaswag",
+          "revision_or_content_sha256": "218ec52e09a7e7462a5400043bb9a69a41d06b76"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/Rowan/hellaswag/raw/218ec52e09a7e7462a5400043bb9a69a41d06b76/README.md",
+          "sha256": "cfe6e26e7e936a447a12f7eee50f2bffb0355c3b97459496d8c7296f65c5b353",
+          "license_lines": [
+            {
+              "line": 73,
+              "text": "  - [Licensing Information](#licensing-information)   - [Citation Information](#citation-information)   - [Contributions](#contributions)"
+            },
+            {
+              "line": 199,
+              "text": "### Licensing Information  MIT https://github.com/rowanz/hellaswag/blob/master/LICENSE"
+            },
+            {
+              "line": 201,
+              "text": "MIT https://github.com/rowanz/hellaswag/blob/master/LICENSE  ### Citation Information"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/data/sources/hellaswag/data/validation-00000-of-00001.parquet",
+          "sha256": "899813071e1e95efafec90f856e1987d2150fa4d020fc005df6962c259f660cd",
+          "destination": "data/sources/hellaswag/data/validation-00000-of-00001.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "5945e640fd45d6c1a2dbcd4fa33e052f9fa6d1d5de9704ea3dde04bfd7483174",
+      "applicable_files_sha256": "5945e640fd45d6c1a2dbcd4fa33e052f9fa6d1d5de9704ea3dde04bfd7483174",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 30,
+      "name": "GSM8K",
+      "license": "MIT",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "key": "data/sources/gsm8k",
+          "url_or_repo": "openai/gsm8k",
+          "revision_or_content_sha256": "740312add88f781978c0658806c59bc2815b9866"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/openai/gsm8k/raw/740312add88f781978c0658806c59bc2815b9866/README.md",
+          "sha256": "a17e882503578c9e324560630e31017617714ee025c87cf4fea6fd916895f3c1",
+          "license_lines": [
+            {
+              "line": 8,
+              "text": "license: - mit multilinguality:"
+            },
+            {
+              "line": 91,
+              "text": "  - [Licensing Information](#licensing-information)   - [Citation Information](#citation-information) "
+            },
+            {
+              "line": 209,
+              "text": "### Licensing Information  The GSM8K dataset is licensed under the [MIT License](https://opensource.org/licenses/MIT)."
+            },
+            {
+              "line": 211,
+              "text": "The GSM8K dataset is licensed under the [MIT License](https://opensource.org/licenses/MIT).  ### Citation Information"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/data/sources/gsm8k/main/test-00000-of-00001.parquet",
+          "sha256": "ee7b8da9e381df27b9e3f7758a159ab2bdaa4dbaa910546cbbc47e0cb44e4f59",
+          "destination": "data/sources/gsm8k/main/test-00000-of-00001.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "52699fa7c401efd7cef860ccb907100b316e69f7396725c4a7ee7c36429a7de5",
+      "applicable_files_sha256": "52699fa7c401efd7cef860ccb907100b316e69f7396725c4a7ee7c36429a7de5",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 31,
+      "name": "ChessBench",
+      "license": "CC0-1.0 and CC-BY-4.0 (dataset portions)",
+      "acquisition": [
+        {
+          "kind": "git",
+          "key": "searchless_chess",
+          "url_or_repo": "https://github.com/google-deepmind/searchless_chess.git",
+          "revision_or_content_sha256": "90ae0e6b121673fc3079aaeffa047580bb600c0a"
+        },
+        {
+          "kind": "http",
+          "key": "raw/downloads/chessbench-test-action-value.bag",
+          "url_or_repo": "https://storage.googleapis.com/searchless_chess/data/test/action_value_data.bag",
+          "revision_or_content_sha256": "5f73aac8f60e31734cdbf276ba3fca8d5ba5cb6171ba600e31af4f36327986b0"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/searchless_chess/README.md",
+          "sha256": "df0800f57ee673873ddc7a3f6681a4e583c4d42fdc68b33b6666eccbcfed1e37",
+          "url": "https://github.com/google-deepmind/searchless_chess/blob/90ae0e6b121673fc3079aaeffa047580bb600c0a/README.md",
+          "revision": "90ae0e6b121673fc3079aaeffa047580bb600c0a",
+          "line_range": [
+            286,
+            291
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/downloads/chessbench-test-action-value.bag",
+          "sha256": "5f73aac8f60e31734cdbf276ba3fca8d5ba5cb6171ba600e31af4f36327986b0",
+          "destination": "artifacts/benchmark-suite/raw/downloads/chessbench-test-action-value.bag"
+        }
+      ],
+      "input_catalog_binding_sha256": "25f49f534e20fc0b5f9c5b9b635e796e5018e8bb71ec66a33553b0ca3fbacfeb",
+      "applicable_files_sha256": "25f49f534e20fc0b5f9c5b9b635e796e5018e8bb71ec66a33553b0ca3fbacfeb",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset CC0/CC-BY split is retained; Apache code license is not used for data."
+    },
+    {
+      "catalog_id": 36,
+      "name": "BRIGHT",
+      "license": "CC-BY-4.0",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "key": "raw/bright",
+          "url_or_repo": "xlangai/BRIGHT",
+          "revision_or_content_sha256": "3066d29c9651a576c8aba4832d249807b181ecae"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/xlangai/BRIGHT/raw/3066d29c9651a576c8aba4832d249807b181ecae/README.md",
+          "sha256": "e5fc567b168b0072f2813d5441e44dd8f2fff642f3a2dd2d9c3dd31ae203d062",
+          "license_lines": [
+            {
+              "line": 4,
+              "text": "license: cc-by-4.0"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/aops-00000-of-00001.parquet",
+          "sha256": "751ece1ee01b37adb6016aeba0ac0fb40a1697145e58c640eafa178306ff84ee",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/aops-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/biology-00000-of-00001.parquet",
+          "sha256": "8516d0c233f9c34e9eb6922b56e8a1698e5a6f6e504a9499fcd511cdd5741670",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/biology-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/earth_science-00000-of-00001.parquet",
+          "sha256": "abcb2cd130d7d333b364bf5c89b7ff3829e0f88eb6a2de8232c3df1173eeb8a2",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/earth_science-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/economics-00000-of-00001.parquet",
+          "sha256": "f3ba8a0fbc9a9aed07b4970cc686e32cfefcd06d6922402587adf871f006394c",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/economics-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/leetcode-00000-of-00001.parquet",
+          "sha256": "a31aa55116b5ea9e31cd5ca6117a5822a9ba64d1e63dda463b0908859cbba240",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/leetcode-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/pony-00000-of-00001.parquet",
+          "sha256": "afc23dc0a1db170b2e86364b85cbc0bc17a713b583d360668cdce0135a173fc3",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/pony-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/psychology-00000-of-00001.parquet",
+          "sha256": "085d381739cb24b4227dfaf577f39d0adcad8b7b1ae74be028ac239d37be3c1d",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/psychology-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/robotics-00000-of-00001.parquet",
+          "sha256": "2c83f286006a3b2e11a677abe88f382009c5ee79f97c1f43f6a571f3f94e6d15",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/robotics-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/stackoverflow-00000-of-00001.parquet",
+          "sha256": "d54559692f925666c3c6b1d33a696a64ef324cf5aaeff9d6f4d11fba5cd5ac8b",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/stackoverflow-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/sustainable_living-00000-of-00001.parquet",
+          "sha256": "474628623cf9de252bd80a7d1b667aa5070e21b87e1dd33f6723db4d24121fdf",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/sustainable_living-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/theoremqa_questions-00000-of-00001.parquet",
+          "sha256": "751ece1ee01b37adb6016aeba0ac0fb40a1697145e58c640eafa178306ff84ee",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/theoremqa_questions-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/documents/theoremqa_theorems-00000-of-00001.parquet",
+          "sha256": "450dc6c107f42c4e4fc4c12cae3ffc29ba1d5ff62c34f0040bb84f37c35f2033",
+          "destination": "artifacts/benchmark-suite/raw/bright/documents/theoremqa_theorems-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/aops-00000-of-00001.parquet",
+          "sha256": "e079c1dcc39e4ed54486d4ab8a9166427a9149cbdc4a27a52893c0b252038557",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/aops-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/biology-00000-of-00001.parquet",
+          "sha256": "6e105c4f09d9a70b8a20ed6a4d0e386823a5545151df41b3f0e64eb5c5987829",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/biology-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/earth_science-00000-of-00001.parquet",
+          "sha256": "5d29f108701111984eb91c93d3e340a784a99df47dc11f43783d1b994010a91d",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/earth_science-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/economics-00000-of-00001.parquet",
+          "sha256": "2a79f0f3a881c7c03a258cf8ef8ac2db1ca9080963252d9a020bb45a264aa037",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/economics-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/leetcode-00000-of-00001.parquet",
+          "sha256": "3c4aa60809c396ae806252f3713f636ebf808a235a27b382cdaf5978894f7fd0",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/leetcode-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/pony-00000-of-00001.parquet",
+          "sha256": "0c0718d3e0ef05da42f75b7c03e755d3e03d9fcdbd32b67dddd221768a8377d7",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/pony-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/psychology-00000-of-00001.parquet",
+          "sha256": "404e7dff2a4528419df0bdc162541e92138e35b78918d82d3a04ade5b8f7876b",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/psychology-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/robotics-00000-of-00001.parquet",
+          "sha256": "621484c87c9ebae12f81e32a0a8c5d085af4b95cbe1b575ab40ae4b659adb53a",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/robotics-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/stackoverflow-00000-of-00001.parquet",
+          "sha256": "97d417ba449ef70c9c9ae2937e9df106654a2554ce1533b090cb64b998a077e1",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/stackoverflow-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/sustainable_living-00000-of-00001.parquet",
+          "sha256": "61f97837a16b47a0d9953039cf0b6a53d0fc5deae96a34f839b7cb5e798eb117",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/sustainable_living-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/theoremqa_questions-00000-of-00001.parquet",
+          "sha256": "cc31b6e1fea17624a9a0fbe6e5e4e7a98b8f338c0034ecca966166adfb51fbb0",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/theoremqa_questions-00000-of-00001.parquet"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/bright/examples/theoremqa_theorems-00000-of-00001.parquet",
+          "sha256": "d11177052447457c45b73a9270ac4003d479d5264343d494f045af14325b88a3",
+          "destination": "artifacts/benchmark-suite/raw/bright/examples/theoremqa_theorems-00000-of-00001.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "f170f2c6ba0cc02ad2de58bcccaf1ef95e766561cf90e5163e4c0c45d1f65ec5",
+      "applicable_files_sha256": "f170f2c6ba0cc02ad2de58bcccaf1ef95e766561cf90e5163e4c0c45d1f65ec5",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 43,
+      "name": "CRUXEval",
+      "license": "MIT",
+      "acquisition": [
+        {
+          "kind": "git",
+          "key": "cruxeval",
+          "url_or_repo": "https://github.com/facebookresearch/cruxeval.git",
+          "revision_or_content_sha256": "190faf16d175b5847b0af05d937872b1fb395942"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/cruxeval/README.md",
+          "sha256": "b3873525279b57c5351b4350f4406ce4ad9196dbab6d1ca22a1700a2e96dadf6",
+          "url": "https://github.com/facebookresearch/cruxeval/blob/190faf16d175b5847b0af05d937872b1fb395942/README.md",
+          "revision": "190faf16d175b5847b0af05d937872b1fb395942",
+          "line_range": [
+            89,
+            90
+          ]
+        },
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/cruxeval/LICENSE",
+          "sha256": "055ca9e3fa33562173156e02e2350ceff4089deab480b368a849b6bc04f09719",
+          "url": "https://github.com/facebookresearch/cruxeval/blob/190faf16d175b5847b0af05d937872b1fb395942/LICENSE",
+          "revision": "190faf16d175b5847b0af05d937872b1fb395942"
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/cruxeval/data/cruxeval.jsonl",
+          "sha256": "8368b81047dc5014e4caf5a2f97604eff7644e0ecd7415e3ceeb184bbc2e0c96",
+          "destination": "artifacts/benchmark-suite/raw/repos/cruxeval/data/cruxeval.jsonl"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/cruxeval/samples/evaluation_results.zip",
+          "sha256": "30438f932e952c66df6f6e2407239ad6b782647114f1434ead18e2448363bfa5",
+          "destination": "artifacts/benchmark-suite/raw/repos/cruxeval/samples/evaluation_results.zip"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/cruxeval/samples/model_generations.zip",
+          "sha256": "a77275a6938c83cd3e2521e4ad13e4722ec8aac3b582e6d2209ebab2f4644a15",
+          "destination": "artifacts/benchmark-suite/raw/repos/cruxeval/samples/model_generations.zip"
+        }
+      ],
+      "input_catalog_binding_sha256": "eb4551381db204676f7a93e4da2d469eebaa6670d78b2cb23a3b7ad3a476cf64",
+      "applicable_files_sha256": "eb4551381db204676f7a93e4da2d469eebaa6670d78b2cb23a3b7ad3a476cf64",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Publisher names CRUXEval MIT; includes frozen released model-generated distractors in the pinned repository. No CodeLlama model is downloaded or executed."
+    },
+    {
+      "catalog_id": 48,
+      "name": "ForecastBench",
+      "license": "CC-BY-SA-4.0",
+      "acquisition": [
+        {
+          "kind": "git",
+          "key": "forecastbench-datasets",
+          "url_or_repo": "https://github.com/forecastingresearch/forecastbench-datasets.git",
+          "revision_or_content_sha256": "da48cfb37db3e674fd57030266c92009873be4b6"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/README.md",
+          "sha256": "4912be03d7485ab3f547ce19e57f739c2484fedb186800a29f7b7db5bcd0fa51",
+          "url": "https://github.com/forecastingresearch/forecastbench-datasets/blob/da48cfb37db3e674fd57030266c92009873be4b6/README.md",
+          "revision": "da48cfb37db3e674fd57030266c92009873be4b6",
+          "line_range": [
+            18,
+            20
+          ]
+        },
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/LICENSE",
+          "sha256": "7e144fefee688a9c67f7764629391127fe5955aee969135ef811df7cd9fd18ba",
+          "url": "https://github.com/forecastingresearch/forecastbench-datasets/blob/da48cfb37db3e674fd57030266c92009873be4b6/LICENSE",
+          "revision": "da48cfb37db3e674fd57030266c92009873be4b6"
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2024-07-21-human.json",
+          "sha256": "ceff6de2cea2782926f115cb82270aafd7508640f27de0b5d79945943282731e",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2024-07-21-human.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2024-07-21-llm.json",
+          "sha256": "c90a2ccc13343f2717b50959d20b5171131ef048261289ec131684e42fb12381",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2024-07-21-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-03-02-llm.json",
+          "sha256": "0ff5ecc9a77890c6b2499ba3a9914d30fad2e30306d2e61d703ad9182d924eab",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-03-02-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-03-16-llm.json",
+          "sha256": "b1a2fbe4ececac72e0046eb18dd70e7ef86ebaffd486ae90714f3dd2ffe03f50",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-03-16-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-03-30-llm.json",
+          "sha256": "2103604992c237c847d74fa9dad026442b9b5c6376717eec2275cd10e98c2656",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-03-30-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-04-13-llm.json",
+          "sha256": "2dbc74bb2298016703dcb4a679c06910f317a8a599eda80eb63c6f37021886b7",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-04-13-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-04-27-llm.json",
+          "sha256": "4880c2fa2e28358c70520c2444e65d19570403d52a7c113fcab98201b18a8497",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-04-27-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-05-11-llm.json",
+          "sha256": "872c9c2bb7ca1fb6bb729809985e2d79699a75689a776900515d5c07a1164612",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-05-11-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-05-25-llm.json",
+          "sha256": "a49b9e96034b8d796053b24923a2e327bec04c2c0ef29b2696aeb25d557072ee",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-05-25-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-06-08-llm.json",
+          "sha256": "4685a17fe07ca02f2ebcdae5c39d96fe2a95f19e06d25fba1edeefd926135d61",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-06-08-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-06-22-llm.json",
+          "sha256": "7cad45d2eaaf3fcbd3072f543a80edd4999288267b63f678dd0abf8c8811628e",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-06-22-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-08-03-llm.json",
+          "sha256": "2d9e16c3dd5b8d4f9051108a915bc10b94d855d685ef4545eed94068939824e2",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-08-03-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-08-17-llm.json",
+          "sha256": "ebb88fcc17e5c6c1fc260c7b12bc4ee5066af9d23a5d2df87f7f2c328fadb32c",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-08-17-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-08-31-llm.json",
+          "sha256": "335d2eedea79039f86fb2073cae9b7669a41dc71820411d5dbed5f0687bed397",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-08-31-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-10-26-llm.json",
+          "sha256": "5095f9d7fdd714b2321b38e13e74de67d43aa1f3ab5d3034d0f629da28892242",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-10-26-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-11-09-llm.json",
+          "sha256": "078bae3ff4beef5e73e6c96ef642d19ede730d3d31e213c128bbf0bb79f63e6e",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-11-09-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-11-23-llm.json",
+          "sha256": "784ac0f8c7b0a87270f0302b8bee5680a0bce9b1cc041c3d6f5d7ab58cc84960",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-11-23-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-12-07-llm.json",
+          "sha256": "4c84055929a8f162aa5188626b7508dee86e3d16d9e1925be5c8eff67549ad58",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-12-07-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2025-12-21-llm.json",
+          "sha256": "554f84f0cc326949edfca94028f70a5e18a8b19fb9f437b0ebf19cf32745ca91",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2025-12-21-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-01-04-llm.json",
+          "sha256": "6e2a23bdb27d3449e80752e82db4d37ae74680145c188033ff5ae9b1a02de5e1",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-01-04-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-01-18-llm.json",
+          "sha256": "5b6b3108134e02b823f9a6486bb5b1753d4f2e5eb2332e5dedf4768279d6285f",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-01-18-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-02-01-llm.json",
+          "sha256": "92d3c6fe92cdacdbbc3856b4b76d72ec1bff1608826af286df6307a027bc0dd7",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-02-01-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-02-15-llm.json",
+          "sha256": "080fbfdcc3862fe6805dbd746bfb24e180f69a47a2ce359f78c918ff5ed3affb",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-02-15-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-03-01-llm.json",
+          "sha256": "fa12fb34a0e76c5912fd7d25e534a7147e8cb87284ea0a3fb309a78d4d62e405",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-03-01-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-03-15-llm.json",
+          "sha256": "4de06c2ef88a64ba3cd205b9ddbbbd123d482ab770e0535adf8c8fb097d15078",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-03-15-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-03-29-llm.json",
+          "sha256": "e43601443384d86d2d7cee455e2d987bc9c8056b3c94f0d50ca1ee4c4d0f42f2",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-03-29-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-04-12-llm.json",
+          "sha256": "792208b93fc3aaf7e5d9cf9c013ee28517f130a4077dccbcf6a50b7f3695985a",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-04-12-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-04-26-llm.json",
+          "sha256": "ce1b582bd5b1bdb3c7b8a65e775c4f335b28b52e756963ccbe88a949b4081750",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-04-26-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-05-10-llm.json",
+          "sha256": "892c7637abb8a32996f9b90446af5b0bb486a7f7af9a2b94beda87a9508f444a",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-05-10-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-05-24-llm.json",
+          "sha256": "eaf464d95e0c6ee935521d96ca149cf07d9c2fc81d573902a4b2f0a322800e80",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-05-24-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-06-07-llm.json",
+          "sha256": "281800b9820217dd2ace94f876f9f7752aff6d4c1b1bafeffd8b217c722a7846",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-06-07-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-06-21-llm.json",
+          "sha256": "90294f0009c5dc7cc523791f3714ea6ca2386f6df182e81e76571c7a0f564555",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-06-21-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-07-05-llm.json",
+          "sha256": "d7b3652ab8b49f81eb85cc96406209ff67da38c0bcdda322216d612e89a2946b",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-07-05-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-07-19-llm.json",
+          "sha256": "60f738996a6fe7fe01d34f34ecf7cf66708658d0189b1eae149b09e29f3be05b",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-07-19-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-08-02-llm.json",
+          "sha256": "3b29862d7aa16776969a9ade960908cc9b02c8efc69e207a4437e4b1859df017",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-08-02-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-08-16-llm.json",
+          "sha256": "3df98bb497ebe893d9248a34d170ca980b00026f6657fa4fba303836317f372e",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-08-16-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-08-30-llm.json",
+          "sha256": "aab6999d96c984b690f2376612b1ce990d0f6592aadb8a5f81707ec2e5d45bb7",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-08-30-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/question_sets/2026-09-13-llm.json",
+          "sha256": "6bc6c460960077c944dfbcfedb9d103d4d5db13bc33270727aa77becbff5eb22",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/question_sets/2026-09-13-llm.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2024-07-21_resolution_set.json",
+          "sha256": "0c024ec0c1757b27078f79646d834c9bdec783a721717ebba382d38b54e0787d",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2024-07-21_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-03-02_resolution_set.json",
+          "sha256": "f7f0f69c246730ae2938c4e5ada913c3a587d3783ff56b568fb46b14331d6ea3",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-03-02_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-03-16_resolution_set.json",
+          "sha256": "927766e0b9751dbbe5ee57911ab0b1bc1b6170f215586e34e2464cecdb552d6f",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-03-16_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-03-30_resolution_set.json",
+          "sha256": "06c88d9adeab9cee2768fd06a812b0ae60d4a8a6ddae8d448c4b686179880649",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-03-30_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-04-13_resolution_set.json",
+          "sha256": "069a9da5c215452cfd0ab09f74b9693d99478b345a5a2ef2d03c59577a056fb8",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-04-13_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-04-27_resolution_set.json",
+          "sha256": "38cbc013bb194d63482c552237d873c11dd24ae91e959cdf4e56495b340e6ba0",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-04-27_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-05-11_resolution_set.json",
+          "sha256": "7fdfb4a4c58be8fe3179a446b560710373ec789f89cbfe74c2621d3fb202bdad",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-05-11_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-05-25_resolution_set.json",
+          "sha256": "a5e3c5202f651152a4e775f1dbde2db9a4610e922399ec337929c9001f01a89c",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-05-25_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-06-08_resolution_set.json",
+          "sha256": "18d7f0ccb3293bb5fc982027dd9823b4f0e17253d0f5d2322881d563edf6df95",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-06-08_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-06-22_resolution_set.json",
+          "sha256": "17185b39fdbeb40df29f0894cc976ff11f7f785bdb42dede160de8212a312134",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-06-22_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-08-03_resolution_set.json",
+          "sha256": "af7c3dcb3195cf10621f2d4d1a07bdbdd25672583a19656c4125934c9dcee381",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-08-03_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-08-17_resolution_set.json",
+          "sha256": "dfef21fb26e53685df7b7516e747145008a8ff2060b6a8802ab084fd4e1d1292",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-08-17_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-08-31_resolution_set.json",
+          "sha256": "300157805ae0860e771400114ac4367b0aef53bc177017999f6b468ceddffa4e",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-08-31_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-10-26_resolution_set.json",
+          "sha256": "e0183c0d51037705cdb8fcfd8ae2fa248b0ca420017fd79fe41cc5c2737070f8",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-10-26_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-11-09_resolution_set.json",
+          "sha256": "a8e0957ff9b02f8df99fbb64f82e6c634cfec14a5a0837efc10528b6d89c8496",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-11-09_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-11-23_resolution_set.json",
+          "sha256": "721bc05fd5e1cfd28351403e55b5a2a1886f5446ce006fb0c47922ec2c6268a1",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-11-23_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-12-07_resolution_set.json",
+          "sha256": "7917699a8a033571b5df57013ecdd0e85363eae7f6be830f0cb6e0da7b85d423",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-12-07_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2025-12-21_resolution_set.json",
+          "sha256": "69d36fadd14cdb6c288f82a70aab0cffea377f85cb7e09cec4146966a7c46baf",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2025-12-21_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-01-04_resolution_set.json",
+          "sha256": "ee584a55974d51c8c8dcaf705c6ba8f59d31e19965d322365844de4a47b7c3cb",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-01-04_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-01-18_resolution_set.json",
+          "sha256": "62b199b64c3b7ba007c3d0600b3d02217c9dd1a150b68b68c4086d2caf41e190",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-01-18_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-02-01_resolution_set.json",
+          "sha256": "95d539b057a4ceb36e9fa5fec05aa3cfe0bfa72b50f68c9b3070ab11e25fd7f2",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-02-01_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-02-15_resolution_set.json",
+          "sha256": "ca6648bfcff3070d358a97739e303cfc998701130760f06a7941410cd98b0fd5",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-02-15_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-03-01_resolution_set.json",
+          "sha256": "536e3e529d177fbd45e75898e34dacda7083e1caac355192c056055e2f8154c4",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-03-01_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-03-15_resolution_set.json",
+          "sha256": "66a4fc96bf4e3458b82dc30b9cef9fca4e00114765f3df4475ccb111793e1ba5",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-03-15_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-03-29_resolution_set.json",
+          "sha256": "e92c1adbffbdf3df5fcaad147994cf13d13a3e8742700f1b8efdf87d97e72387",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-03-29_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-04-12_resolution_set.json",
+          "sha256": "2c85a2591ff79653f5fed72d5a2a99d919fe4645f7be80372e77ed9a80e401af",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-04-12_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-04-26_resolution_set.json",
+          "sha256": "f2fd46568b8fcb3ab26e09a49ae141cd4f08cc7491ed697c4e811e5f7b467c07",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-04-26_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-05-10_resolution_set.json",
+          "sha256": "565768c9e63026dec09e165bc6c0431292ce8622d457cd94177745d20d3b4aad",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-05-10_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-05-24_resolution_set.json",
+          "sha256": "3e7d675e53c6423f13b15e856bfef4c6dd197689736080df932d7fe8c6bed9d1",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-05-24_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-06-07_resolution_set.json",
+          "sha256": "5bc6cd178866680032cfd3a15a9d353a9fd08f9ec4bb5e7650c7fe3083ddbe49",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-06-07_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-06-21_resolution_set.json",
+          "sha256": "4db4417c79b44e8b821286ed6f5b4ac5dc6d499ac1fda9aaadc241ab5cae8b5f",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-06-21_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-07-05_resolution_set.json",
+          "sha256": "6c114c0b7c999474b1f1da2d2a19135bec66e272197149cf8983549c8cd1b644",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-07-05_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-07-19_resolution_set.json",
+          "sha256": "c2dfe419277b2813ab2201e633132bd8df50d432f5c4eb6b23b887e757b71e51",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-07-19_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-08-02_resolution_set.json",
+          "sha256": "43875ce3baf75a06f1c0144199f0f8ff5d0461b415068cfedc2a494abdd32ea2",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-08-02_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-08-16_resolution_set.json",
+          "sha256": "2765906d286c085e55ea99ffcc13695f4a985fc58a177686e105574f172086d8",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-08-16_resolution_set.json"
+        },
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/forecastbench-datasets/datasets/resolution_sets/2026-08-30_resolution_set.json",
+          "sha256": "71be13cb8482352ee4ceb325a8120cc334a6978476f8d588ac0e80981eddfe3c",
+          "destination": "artifacts/benchmark-suite/raw/repos/forecastbench-datasets/datasets/resolution_sets/2026-08-30_resolution_set.json"
+        }
+      ],
+      "input_catalog_binding_sha256": "d737818e65f9bb70a4e3cec67ef4f3041d63654285992edf870d88c91ed2bb0e",
+      "applicable_files_sha256": "d737818e65f9bb70a4e3cec67ef4f3041d63654285992edf870d88c91ed2bb0e",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Retired from edition0.3 scoring; admission draft still covers fixed rebuild input closure."
+    },
+    {
+      "catalog_id": 50,
+      "name": "Habermas Machine",
+      "license": "CC-BY-4.0",
+      "acquisition": [
+        {
+          "kind": "git",
+          "key": "habermas_machine",
+          "url_or_repo": "https://github.com/google-deepmind/habermas_machine.git",
+          "revision_or_content_sha256": "7923b71966c14136077c78d7841bc9e1a182dfe0"
+        },
+        {
+          "kind": "http",
+          "key": "raw/repos/habermas_machine/hm_all_candidate_comparisons.parquet",
+          "url_or_repo": "https://storage.googleapis.com/habermas_machine/datasets/hm_all_candidate_comparisons.parquet",
+          "revision_or_content_sha256": "7cf8d5ce3fce8853b36f0ffe1158424f7813867e422e313db4df0a5f9e03e4a4"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "path": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/repos/habermas_machine/README.md",
+          "sha256": "b967e89dc753aec404e80bc9291dfd37ed391f0b5361ec50b47aa5df4a80d4c2",
+          "url": "https://github.com/google-deepmind/habermas_machine/blob/7923b71966c14136077c78d7841bc9e1a182dfe0/README.md",
+          "revision": "7923b71966c14136077c78d7841bc9e1a182dfe0",
+          "line_range": [
+            76,
+            78
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/repos/habermas_machine/hm_all_candidate_comparisons.parquet",
+          "sha256": "7cf8d5ce3fce8853b36f0ffe1158424f7813867e422e313db4df0a5f9e03e4a4",
+          "destination": "artifacts/benchmark-suite/raw/repos/habermas_machine/hm_all_candidate_comparisons.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "be7f3749e160a7e0fe861602daad5f47f5dcfedce7bb71c1ebd2e06d52cb5a42",
+      "applicable_files_sha256": "be7f3749e160a7e0fe861602daad5f47f5dcfedce7bb71c1ebd2e06d52cb5a42",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "All other materials CC-BY; Apache applies only to software."
+    },
+    {
+      "catalog_id": 57,
+      "name": "MMLU-Pro",
+      "license": "MIT",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "url_or_repo": "TIGER-Lab/MMLU-Pro",
+          "revision_or_content_sha256": "b189ec765aa7ed75c8acfea42df31fdae71f97be"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro/raw/b189ec765aa7ed75c8acfea42df31fdae71f97be/README.md",
+          "sha256": "4bd710f67da3fa359a33edce1b4b5816b3de416c823c2624ba5e89c2557d2a47",
+          "license_lines": [
+            {
+              "line": 4,
+              "text": "license: mit"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/mmlu_pro/data/test-00000-of-00001.parquet",
+          "sha256": "0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8",
+          "destination": "artifacts/benchmark-suite/raw/mmlu_pro/data/test-00000-of-00001.parquet"
+        }
+      ],
+      "input_catalog_binding_sha256": "acd6bc38e0bf1b40bdce733e17cac00f7f74f5ba141d7ab630b63fc999b35fd9",
+      "applicable_files_sha256": "acd6bc38e0bf1b40bdce733e17cac00f7f74f5ba141d7ab630b63fc999b35fd9",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    },
+    {
+      "catalog_id": 62,
+      "name": "When2Call",
+      "license": "CC-BY-4.0",
+      "acquisition": [
+        {
+          "kind": "hf",
+          "url_or_repo": "nvidia/When2Call",
+          "revision_or_content_sha256": "0582f7749df63a96fdc3070932e83e72396ace53"
+        }
+      ],
+      "publisher_evidence": [
+        {
+          "url": "https://huggingface.co/datasets/nvidia/When2Call/raw/0582f7749df63a96fdc3070932e83e72396ace53/README.md",
+          "sha256": "14217217ba73b9421b5c8ac9b35b0c210836212ea007b65ec866513fdb67aa75",
+          "license_lines": [
+            {
+              "line": 2,
+              "text": "license: cc-by-4.0"
+            }
+          ]
+        }
+      ],
+      "applicable_files": [
+        {
+          "source": "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/decision-index-public0.3/raw/when2call/test/when2call_test_mcq.jsonl",
+          "sha256": "8c3694e583eeeb8dbc297e6cd90da70efc68efa4b6adb7227523e828c6b7b14c",
+          "destination": "artifacts/benchmark-suite/raw/when2call/test/when2call_test_mcq.jsonl"
+        }
+      ],
+      "input_catalog_binding_sha256": "fc24c0be99d1e6cabcf95edb7691237c5add619db89d29f1c5f1c19892feadb1",
+      "applicable_files_sha256": "fc24c0be99d1e6cabcf95edb7691237c5add619db89d29f1c5f1c19892feadb1",
+      "scope": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+      "obligations": [
+        "retain attribution/source/license and identify mechanical adaptation",
+        "no training or dataset/row redistribution authorized by this proposal"
+      ],
+      "note": "Dataset card or explicit dataset README statement, not inferred from code license."
+    }
+  ],
+  "policy_boundary": "offline local evaluation/rebuild only; no training, commercial release or dataset redistribution; preserve source attribution/license/changes notices; proposal pending root review",
+  "script_sha256": "085d5992cc58165fb480673dbef7c4c4b8ba3a9d998218756df17f211dcc0c2e",
+  "proposal_sha256": "11e9bc766804206a8d9d5ed2310e14adffd9da5082f181db99b86a5f0efadded"
+}
