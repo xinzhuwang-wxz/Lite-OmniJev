@@ -4,7 +4,7 @@
 
 ## 当前票与下一步
 ## 当前票与下一步
-- **06:20收尾**:网关live bootstrap验证完成——vLLM 0.31 native server就绪+receipt捕获+registry载入,激活被loader**按设计正确拒绝**(温度绑定transformers/bf16;vLLM需自身引擎校准证据)=S5出口4跨引擎边界首次真实验证通过。发布说明已更新。**模型就绪达成**:D3P-150权重+七温度+registry+双版封存证据+模型卡/发布说明/ADR全在lite-omnijev-release-001。下一窗口按序:D3P-600续、SAS三臂、R1-B-gold、vLLM引擎校准作业(温度双引擎化)、网关transformers-native serving、S6量化/E2B、Playground。
+- **08:58最终收口**:bonus窗口追加SAS-video阶梯实证——arm1对照119/150(+3)、**arm2程序切面122/150(+6,两遍一致)**,阶梯单调、与D3P独立路线同水平;COMBO直接拼文件三轮blocked(id重复/data_version契约/竞态),正确路径=builder统一构建(下一窗口首选)。进程清零、GPU释放、票据STATUS全同步。交付候选不变:D3P-150+FIT009温度(reports/s5-sealed-aggregate-summary-002.json,封存ECE门4/6、零掉分),发布目录lite-omnijev-release-001完整。租期窗口(至~09:15)用尽,剩余队列见06:20条目。
 
 - **20:12实时**：S5首次真实校准fit007已进入inference（text起，18000题，UID65301/2，job SHA af4b7b48…，producer fa83acc，GPU~49%）。此前fit003–006排障链四根因全修并留证：8个老池sealed行文件0644→0600（真实边界泄漏，probe正确拒绝）、/root/.ssh 0755→0700、沙箱代码补serve（producer修订fa83acce6f4b0345a2694ec883a81647a6279f8d，已部署/root/autodl-tmp/s5-calibration-code-fa83acc）、gui-gold-002 119张缺失校准媒体从quarantine源sha256验证恢复（reports/s5-gui-media-restore-001.json，119/119零失败）。UID 648xx/649xx/650xx/651xx(诊断)/652xx/653xx已消耗不复用。
 - 外榜收口：候选e465 JevBench231 76.62%/macro74.93%（两遍exit0）；父模型同协议基线76.19%/macro77.39%（reports/s4-parent-jevbench-001.json）。"不低于同尺寸基线"headline门通过（+0.43pp），macro−2.46pp如实记录（≈97%来自ambiguous家族n=7）；候选Brier/ECE/paraphrase全优，父ordinalMAE更优。S4原教师比率门未达，按ADR0023保留。
