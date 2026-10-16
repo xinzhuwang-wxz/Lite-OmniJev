@@ -1,0 +1,45 @@
+{
+  "status": "delta_source_review_no_identified_activation_blockers",
+  "commit": "fe58854dd1a5dcab627748f4a63681f12ea1339a",
+  "diff_base": "daeaa7f",
+  "exact_committed_working_files_verified": true,
+  "source_sha256": {
+    "scripts/private_calibration.py": "5efe5213203c05c266bdaf3dcdac58d0227f7b7dd80b4f6ecb93d1517aeaf64a",
+    "tests/test_private_calibration.py": "fd7f078305242b89b129785793c005a7ed1d7fd420492da0495b89d6cae2986d",
+    "scripts/private_gold_job.py": "762189c3a5374994faae7104f530e81b9f4c37377e760be8aa1792f4c7e8983f",
+    "serve/gateway/calibration.py": "150730e4729882914611b8bee3fa8ed2f1a5d68e474a0e5676c1ec563be64f66",
+    "tests/test_gateway_calibration.py": "7edbf30ea5e02dc8a0ca257e36403a8ffe986fe27631293fb1d745c153278c3d"
+  },
+  "blocking_findings": [],
+  "review_scope": [
+    "private-media snapshot",
+    "sanitized aggregate progress",
+    "runtime recipe and gateway provenance refusal"
+  ],
+  "positive_checks": [
+    "Progress extra=forbid/strict, finite counters and literal phase/cohort; only sanitized model_dump published",
+    "Worker progress bounded_read4096 and source spec/code/total verified before publication; no raw rows/logits/path/error fields",
+    "Exclusive0600 UUID temp then atomic replace; private output cannot replace root export directory; no symlink target following",
+    "Media each source path safe/declared-root/regular/hash verified; dedup target identity size checked; unique planned byte quota and disk+256MiB margin enforced before copy",
+    "Existing copy_bound rehashes source+target, preserves original mode/owner; resulting private map is readonly and worker-only, root snapshot probe passed per leader evidence",
+    "Original code/model/adapter/spec/tokenmap hashes still rechecked before export; raw receipt runtime recipe explicitly transformers/bfloat16/native_lora",
+    "Registry requires hashbound raw-receipt recipe match observed vLLM dtype/nativeLoRA and every fitted group; no HF->vLLM silent transfer"
+  ],
+  "tests": {
+    "producer_delta": "10passed14deselected, exit0; synthetic temp fixtures only",
+    "registry_delta": "3passed33deselected, exit0; HF-to-vLLM and observed precision rejection; synthetic fixtures only",
+    "linux_snapshot": "64401/2 passed ACL restored per leader; not rerun",
+    "lifecycle": "six previous Linux tests reused, unchanged guardian paths; not rerun"
+  },
+  "operational_boundaries": [
+    "Disk capacity is precheck, not exclusive reservation; concurrent disk use can cause safe job failure, never permission widening",
+    "Progress is operational aggregate, not fitted/export/quality acceptance; final receipt/process exit still required",
+    "HF fit artifacts can be produced but current native-vLLM registry activation must reject their recipe; gateway production hookup remains separate",
+    "Unchanged trusted-root/freshUID/guardian assumptions and non-network-namespace scope remain"
+  ],
+  "private_data_read": false,
+  "ACL_UID_mutated": false,
+  "gpu_used": false,
+  "cost": null,
+  "exit_code": 0
+}
