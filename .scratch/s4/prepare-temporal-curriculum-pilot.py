@@ -35,7 +35,12 @@ def kind(sample: Sample) -> str:
     )
 
 
-def select_video(samples: list[Sample]) -> dict[tuple[str, str], list[Sample]]:
+def select_video(
+    samples: list[Sample],
+    *,
+    hash_namespace: str = "s4-temporal-curriculum:42:",
+    excluded_families: frozenset[str] = frozenset(),
+) -> dict[tuple[str, str], list[Sample]]:
     require(
         all(
             s.meta.pool == "train"
@@ -56,11 +61,11 @@ def select_video(samples: list[Sample]) -> dict[tuple[str, str], list[Sample]]:
         for target, count in quotas.items():
             candidates = sorted(
                 [s for s in samples if kind(s) == task and s.questions[0].target.value == target],
-                key=lambda s: digest(("s4-temporal-curriculum:42:" + s.id).encode()),
+                key=lambda s: digest((hash_namespace + s.id).encode()),
             )
             bucket = []
             for s in candidates:
-                if s.meta.family_id in families:
+                if s.meta.family_id in families or s.meta.family_id in excluded_families:
                     continue
                 families.add(s.meta.family_id)
                 bucket.append(s)
@@ -117,7 +122,15 @@ def helper_module():
 
 
 def prepare(
-    root: Path, out: Path, exposure_sha: str, claim_sha: str, video_report_sha: str
+    root: Path,
+    out: Path,
+    exposure_sha: str,
+    claim_sha: str,
+    video_report_sha: str,
+    *,
+    video_hash_namespace: str = "s4-temporal-curriculum:42:",
+    excluded_video_families: frozenset[str] = frozenset(),
+    selection_provenance: dict | None = None,
 ) -> dict:
     started = time.monotonic()
     h = helper_module()
@@ -205,7 +218,9 @@ def prepare(
     }
     video_source = [Sample.model_validate(r) for r in h.rows(source / "train.jsonl")]
     require(len(video_source) == 8299, "video_source_count")
-    video = select_video(video_source)
+    video = select_video(
+        video_source, hash_namespace=video_hash_namespace, excluded_families=excluded_video_families
+    )
     from scripts.gold_media_bundle import media_path
 
     for bucket in video.values():
@@ -430,6 +445,19 @@ def prepare(
         "helper_sha256": globals().get("HELPER_SHA")
         or h.sha(Path(__file__).with_name("prepare-claim-pair-pilot.py")),
     }
+    if video_hash_namespace != "s4-temporal-curriculum:42:" or excluded_video_families:
+        result["video_selection"] = {
+            "hash_namespace": video_hash_namespace,
+            "excluded_prior_family_count": len(excluded_video_families),
+            "excluded_prior_families": sorted(excluded_video_families),
+            "selected_families": sorted(
+                s.meta.family_id for bucket in video.values() for s in bucket
+            ),
+            "historical_exclusion_scope": (
+                "prior temporal curriculum60families only; not all historical exposures"
+            ),
+            "provenance": selection_provenance,
+        }
     h.write(out / "provenance.json", result)
     h.write(out / "report.json", result)
     return result

@@ -90,3 +90,31 @@ def test_source_pool_and_family_reuse_fail_closed():
     ]
     with pytest.raises(ValueError, match="video_bucket_capacity"):
         module.select_video(same_family)
+
+
+def test_explicit_new_namespace_excludes_prior_sixty_but_preserves_quotas():
+    larger = [
+        row(f"{task}-{target}-{n}", task, target)
+        for task in ["temporal", "motion", "existence"]
+        for target in ["yes", "no"]
+        for n in range(80)
+    ]
+    prior = module.select_video(larger)
+    excluded = frozenset(s.meta.family_id for bucket in prior.values() for s in bucket)
+    namespace = "s4-temporal-coverage-segment001:42:"
+    new = module.select_video(larger, hash_namespace=namespace, excluded_families=excluded)
+    assert {key: len(bucket) for key, bucket in new.items()} == {
+        key: len(bucket) for key, bucket in prior.items()
+    }
+    families = {s.meta.family_id for bucket in new.values() for s in bucket}
+    assert len(families) == 60 and not families & excluded
+    assert (
+        module.select_video(
+            list(reversed(larger)), hash_namespace=namespace, excluded_families=excluded
+        )
+        == new
+    )
+    # Defaults retain their original namespace and exact old selected source rows.
+    assert module.select_video(larger) == prior
+    with pytest.raises(ValueError, match="video_bucket_capacity"):
+        module.select_video(larger, excluded_families=frozenset(s.meta.family_id for s in larger))
