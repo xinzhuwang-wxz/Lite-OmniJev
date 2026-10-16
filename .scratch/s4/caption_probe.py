@@ -121,6 +121,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if not (args.model_dir and args.data and args.media_root and args.output):
         parser.error("generation requires --model-dir --data --media-root --output")
+    import os
+    import sys
+
+    sys.path.insert(0, os.getcwd())
+
     import torch
     from transformers import AutoModelForImageTextToText
 
