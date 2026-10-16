@@ -332,8 +332,8 @@ def learnability_subset(prepared: Path, source: Path) -> dict[str, int]:
 
 
 POLARITY_DATA = {
-    "control": "f7cbd1a5ee86c92cb13fc9377d9942b4e6907e0182d685431103b4d20ddc85bc",
-    "polarity": "0235ff3f039c28229c897bf79a5f353958d34d4bda486035cc72a21df691cb84",
+    "control": ("f7cbd1a5ee86c92cb13fc9377d9942b4e6907e0182d685431103b4d20ddc85bc"),
+    "polarity": ("0235ff3f039c28229c897bf79a5f353958d34d4bda486035cc72a21df691cb84"),
 }
 
 
@@ -2687,14 +2687,23 @@ def continuous_matched_bindings(root, prepared, prep):
     return bindings
 
 
-def continuous_profile(matched=False, rank64=False):
-    """Exactly two frozen recipes; an unfrozen matched receipt is never executable."""
+def continuous_profile(matched=False, rank64=False, video_objective=False):
+    """Frozen, independent recipes; objective changes cannot enter the CE profiles."""
+    if video_objective:
+        return {
+            "prep_sha": ("371bb26d6d2dce38784c889cb58b2aa5cecc654233c859557959ae79442bd70e"),
+            "data_sha": MATCHED_CONTINUOUS_DATA_SHA,
+            "config_sha": ("f38c6672de3cd1b4d9e0dfff72a98c93c9c20ed94c0a17cd772bfe6b0310e621"),
+            "base_sha": ("24b2bcb85e7067c3759cba3f007782c46b174695fd77399da15bc468cfb3a35e"),
+            "history_key": "video_pair_objective_invocations",
+            "name": "s4-video-pair-objective",
+        }
     if rank64:
         return {
             "prep_sha": MATCHED_CONTINUOUS_PREP_SHA,
             "data_sha": MATCHED_CONTINUOUS_DATA_SHA,
-            "config_sha": "e01916029545aea72be7e03dc2cbb9a5b35530c26c4a71711ec1bd4518c6f871",
-            "base_sha": "eb7502b939da6339d4944421cfafae297e2251101f88c9327a4466f9226cc81f",
+            "config_sha": ("e01916029545aea72be7e03dc2cbb9a5b35530c26c4a71711ec1bd4518c6f871"),
+            "base_sha": ("eb7502b939da6339d4944421cfafae297e2251101f88c9327a4466f9226cc81f"),
             "history_key": "rank64_invocations",
             "name": "s4-rank64-matched-pilot",
         }
@@ -2919,6 +2928,145 @@ def rank64_training_bindings(root, launch, config):
     }
 
 
+def video_objective_bindings(root, launch, config, prep, runtime_data):
+    """Separately authorized ranking first10; the failed CE control remains immutable."""
+    bindings, identity = rank64_derivative_bindings(
+        root, root / "reports/explore/rank64-independent-candidate-policy-001.md"
+    )
+    pins = {
+        "reports/s4-video-pair-objective-decision-001.json": (
+            "6b7ecc322ccc001db63490811f04beea6d2b1bed81b96100a5215b1b34b8e51f"
+        ),
+        "reports/s4-rank64-initializer-dev50-001.json": (
+            "f05ae672360c869998120ac1452bff8ad1096e39e98d7a1acf7f533590f8aa51"
+        ),
+        "reports/s4-rank64-matched-pilot-training-001.json": (
+            "11e14016bfe5e546fe67bb0b7b1a21dbc5b89a082253ffbb743ee3bbd4e90a05"
+        ),
+        "reports/s4-rank64-matched-pilot-dev50-001.json": (
+            "5a43069e962446387a5e7d171c3f17197b727b111644eaa482ec8ea968bc22df"
+        ),
+    }
+    for relative, expected in pins.items():
+        path = root / relative
+        require(sha(path) == expected, "video_objective_root_evidence_sha")
+        bindings[str(path)] = expected
+    decision_path = root / "reports/s4-video-pair-objective-decision-001.json"
+    decision = json.loads(decision_path.read_bytes())
+    profile = continuous_profile(video_objective=True)
+    expected = {
+        "decision": "approve_first10",
+        "max_steps": 10,
+        "max_seconds": 240,
+        "initializer_sha256": RANK64_WEIGHTS_SHA,
+        "prepared_report_sha256": profile["prep_sha"],
+        "config_sha256": profile["config_sha"],
+        "baseline_report_sha256": pins["reports/s4-rank64-initializer-dev50-001.json"],
+        "control_training_report_sha256": pins["reports/s4-rank64-matched-pilot-training-001.json"],
+    }
+    require(
+        all(decision.get(k) == v for k, v in expected.items()), "video_objective_first10_decision"
+    )
+    require(
+        launch.get("no_resume") is True
+        and launch.get("invocation_steps") == 10
+        and launch.get("training_hard_cap_seconds") == 240
+        and launch.get("policy_sha256") == sha(decision_path),
+        "video_objective_launch_authority",
+    )
+    for receipt in (decision, launch):
+        require(
+            receipt.get("parity_validated") is False
+            and receipt.get("parent_quality_inherited") is False,
+            "video_objective_independent_quality",
+        )
+    require(
+        prep.get("status") == "cpu_prepared_only"
+        and prep.get("exit_code") == 0
+        and prep.get("training_authorized") is False
+        and prep.get("audited_pairs") == 300,
+        "video_objective_actual_preparation",
+    )
+    for b in prep["bindings"].values():
+        path = Path(b["path"])
+        require(path.is_absolute() and sha(path) == b["sha256"], "video_objective_prepared_binding")
+        bindings[str(path)] = b["sha256"]
+    require(
+        launch.get("source_commit") == prep.get("source_commit") == "7b75f9f"
+        and launch.get("source_archive_sha256")
+        == "49b11d244dc483a59895695468697e05ee4d45ff8b491cad377724137b15d32d",
+        "video_objective_runtime_source",
+    )
+    archive = root.parent / "omnijev-video-pair-code-7b75f9f.tar"
+    require(sha(archive) == launch["source_archive_sha256"], "video_objective_archive_sha")
+    bindings[str(archive)] = sha(archive)
+    launcher = root.parent / "launch-video-pair-objective-pilot-001.py"
+    require(
+        sha(launcher) == "0ab1a071ed3e84e4347bf178212d7bcf1171b184249e98cf1f43c17dc9a7fa0d",
+        "video_objective_launcher_sha",
+    )
+    bindings[str(launcher)] = sha(launcher)
+    source = root.parent / "s4-video-pair-code-7b75f9f"
+    for name, expected_sha in prep["source_sha256"].items():
+        require(sha(source / name) == expected_sha, "video_objective_preparation_source_sha")
+        bindings[str(source / name)] = expected_sha
+    control_path = root / "artifacts/s4-rank64-matched-pilot-001/config-ce.json"
+    require(
+        sha(control_path) == continuous_profile(rank64=True)["config_sha"],
+        "video_objective_control_config",
+    )
+    control = json.loads(control_path.read_bytes())
+    sidecar = root / "artifacts/s4-video-pair-objective-pilot-001/video-pairs.json"
+    ledger = root / "artifacts/s4-continuous-matched-pool-001/allocation-ledger.jsonl"
+    delta = {
+        "video_pair_loss_weight": 0.1,
+        "video_pair_sidecar": str(sidecar),
+        "video_pair_sidecar_sha256": (
+            "c1ba3471df27ce6b7df7df954f7b3b5377727cf9e1902f1f811386453d18f3c8"
+        ),
+        "video_pair_ledger": str(ledger),
+        "video_pair_ledger_sha256": (
+            "1d18f75d395a6935b1fdececd7530d543144b4fa0e2a0974c31541b3d9c5fbb3"
+        ),
+    }
+    require(config == {**control, **delta}, "video_objective_only_config_delta")
+    for path, expected_sha in (
+        (sidecar, delta["video_pair_sidecar_sha256"]),
+        (ledger, delta["video_pair_ledger_sha256"]),
+        (control_path, continuous_profile(rank64=True)["config_sha"]),
+    ):
+        require(sha(path) == expected_sha, "video_objective_sidecar_ledger_sha")
+        bindings[str(path)] = expected_sha
+    from train import video_pairs
+
+    require(
+        Path(video_pairs.__file__).resolve() == (source / "train/video_pairs.py").resolve(),
+        "video_objective_imported_source_identity",
+    )
+    samples = [
+        Sample.model_validate_json(line)
+        for line in runtime_data.read_bytes().splitlines()
+        if line.strip()
+    ]
+    pairs = video_pairs.load_video_pairs(LoopConfig.model_validate(config), samples, runtime_data)
+    require(
+        len(pairs) == 300
+        and set(pairs) == {step * 12 + offset for step in range(100) for offset in (0, 2, 4)},
+        "video_objective_actual_pair_offsets",
+    )
+    return bindings, {
+        **identity,
+        "candidate_role": "independent_conditional_ranking_candidate",
+        "root_first10_decision": bind(decision_path),
+        "sidecar": bind(sidecar),
+        "own_baseline": bind(root / "reports/s4-rank64-initializer-dev50-001.json"),
+        "ce_control": bind(root / "reports/s4-rank64-matched-pilot-training-001.json"),
+        "audited_pairs": len(pairs),
+        "loss_weight": 0.1,
+        "actual_authorization_scope": "root reviewed first10 only; no resume",
+    }
+
+
 def continuous_interval(final: dict, start: int, end: int) -> dict:
     """Cumulative optimizer steps define one non-overlapping exposure interval."""
     terminal_report(final, allow_paused=True)
@@ -2992,7 +3140,9 @@ def continuous_checkpoint(
     }
 
 
-def continuous_fixed_identity(prep: dict, config: dict, final: dict, *, rank64=False) -> None:
+def continuous_fixed_identity(
+    prep: dict, config: dict, final: dict, *, rank64=False, video_objective=False
+) -> None:
     require(
         prep.get("status") == "data_ready_only"
         and prep.get("parent") is None
@@ -3019,6 +3169,10 @@ def continuous_fixed_identity(prep: dict, config: dict, final: dict, *, rank64=F
             config.get(k, 0) for k in ("pair_loss_weight", "reference_kl_weight", "brier_weight")
         ),
         "continuous_ce_only",
+    )
+    require(
+        config.get("video_pair_loss_weight", 0) == (0.1 if video_objective else 0),
+        "continuous_video_objective_scope",
     )
     parent = final.get("init_adapter", {})
     require(
@@ -3051,10 +3205,15 @@ def prepare_continuous(
     *,
     matched_pool: bool = False,
     rank64_candidate: bool = False,
+    video_objective: bool = False,
 ) -> dict:
     """One settled invocation over one immutable pool, based on the preceding inventory."""
-    profile = continuous_profile(matched_pool, rank64_candidate)
-    matched_pool = matched_pool or rank64_candidate
+    require(
+        sum((matched_pool, rank64_candidate, video_objective)) <= 1, "continuous_profile_exclusive"
+    )
+    profile = continuous_profile(matched_pool, rank64_candidate, video_objective)
+    derived_candidate = rank64_candidate or video_objective
+    matched_pool = matched_pool or derived_candidate
     started = time.monotonic()
     require(
         all(p.is_absolute() for p in (root, legacy_root, output, historical_index, launch_path)),
@@ -3159,6 +3318,7 @@ def prepare_continuous(
             "continuous_invocations",
             "continuous_matched_invocations",
             "rank64_invocations",
+            "video_pair_objective_invocations",
         ):
             for old_invocation in base.get(key, []):
                 old = old_invocation["runtime_report_observation"]
@@ -3169,25 +3329,44 @@ def prepare_continuous(
             "continuous_other_profile_runtime_changed",
         )
         interval = continuous_interval(final, start, end)
-        continuous_fixed_identity(prep, config, final, rank64=rank64_candidate)
+        pool_path = prep_path
+        pool_prep = prep
+        if video_objective:
+            pool_path = root / "artifacts/s4-continuous-matched-pool-001/report.json"
+            require(
+                sha(pool_path) == MATCHED_CONTINUOUS_PREP_SHA, "objective_original_pool_preparation"
+            )
+            bindings[str(pool_path)] = MATCHED_CONTINUOUS_PREP_SHA
+            pool_prep = json.loads(pool_path.read_bytes())
+        continuous_fixed_identity(
+            pool_prep, config, final, rank64=derived_candidate, video_objective=video_objective
+        )
         runtime_data = bound("runtime_data")
         require(
             sha(runtime_data) == final["data_sha256"] == profile["data_sha"],
             "continuous_runtime_data_sha",
         )
-        comparison = equivalent(runtime_data, prep_path.with_name("train.jsonl"))
+        comparison = equivalent(runtime_data, pool_path.with_name("train.jsonl"))
         require(
             comparison["rows"] == 1200 and all(v in mappings for v in comparison["data_versions"]),
             "continuous_pool_mapping",
         )
         if matched_pool:
-            bindings.update(continuous_matched_bindings(root, prep_path.parent, prep))
+            bindings.update(continuous_matched_bindings(root, pool_path.parent, pool_prep))
         if rank64_candidate:
             require(start == 0 and end <= 10 and not history, "rank64_first_invocation_only")
             derivative_bindings, derivative_identity = rank64_training_bindings(
                 root, launch, config
             )
             bindings.update(derivative_bindings)
+        if video_objective:
+            require(
+                start == 0 and end <= 10 and not history, "video_objective_first_invocation_only"
+            )
+            objective_bindings, objective_identity = video_objective_bindings(
+                root, launch, config, prep, runtime_data
+            )
+            bindings.update(objective_bindings)
         sources = eb["source_files"]
         if history:
             require(sources == history[-1]["source_files"], "continuous_source_identity_changed")
@@ -3203,8 +3382,11 @@ def prepare_continuous(
         parent = final["init_adapter"]
         require(
             launch.get("selected_init_adapter") == parent
-            and launch.get("parent_selection")
-            == "root_selected_f2db_balanced_retention_and_full_video_evidence",
+            and (
+                video_objective
+                or launch.get("parent_selection")
+                == "root_selected_f2db_balanced_retention_and_full_video_evidence"
+            ),
             "continuous_root_selected_parent",
         )
         require(
@@ -3214,11 +3396,11 @@ def prepare_continuous(
         require(
             parent_dir.is_absolute()
             and sha(parent_dir / "adapter_model.safetensors")
-            == (RANK64_WEIGHTS_SHA if rank64_candidate else CONTINUOUS_PARENT_SHA),
+            == (RANK64_WEIGHTS_SHA if derived_candidate else CONTINUOUS_PARENT_SHA),
             "continuous_parent_weights_sha",
         )
         bindings[str(parent_dir / "adapter_model.safetensors")] = (
-            RANK64_WEIGHTS_SHA if rank64_candidate else CONTINUOUS_PARENT_SHA
+            RANK64_WEIGHTS_SHA if derived_candidate else CONTINUOUS_PARENT_SHA
         )
         require(
             sha(parent_dir / "adapter_config.json") == parent["config_sha256"],
@@ -3276,7 +3458,7 @@ def prepare_continuous(
                     and existing[0]["exposure"] == "current",
                     "continuous_single_current_pool",
                 )
-                if rank64_candidate:
+                if derived_candidate:
                     existing[0]["path"] = str(runtime_data)
             else:
                 artifact = {
@@ -3289,7 +3471,7 @@ def prepare_continuous(
                 }
                 arm_current_inventory(combined, artifact)
                 appended.append(artifact)
-                component_path = prep_path.with_name("components.jsonl")
+                component_path = pool_path.with_name("components.jsonl")
                 combined["component_ledgers"].append(bind(component_path))
         hashes = {a["sha256"] for a in combined["samples"] if a["expected_pool"] == "train"}
         index, index_binding = read_json(historical_index)
@@ -3446,6 +3628,21 @@ def prepare_continuous(
             report["rank64_independent_candidate_included"] = True
             report["parity_validated"] = False
             report["parent_quality_inherited"] = False
+        if video_objective:
+            for key in (
+                "continuous_matched_invocations",
+                "continuous_matched_actual_global_draws_seen",
+                "rank64_invocations",
+                "rank64_actual_global_draws_seen",
+                "rank64_derivative_identity",
+                "rank64_independent_candidate_included",
+            ):
+                report[key] = base[key]
+            report["video_pair_objective_actual_global_draws_seen"] = end * 12
+            report["video_pair_objective_identity"] = objective_identity
+            report["video_pair_objective_included"] = True
+            report["parity_validated"] = False
+            report["parent_quality_inherited"] = False
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -3521,6 +3718,7 @@ def main() -> int:
     parser.add_argument("--video-text-matched", action="store_true")
     parser.add_argument("--video-specialist", action="store_true")
     parser.add_argument("--native-event-condition", action="store_true")
+    parser.add_argument("--video-pair-objective", action="store_true")
     parser.add_argument("--rank64-independent-candidate", action="store_true")
     parser.add_argument("--continuous-matched-pool", action="store_true")
     parser.add_argument("--continuous-main-pool", action="store_true")
@@ -3532,12 +3730,15 @@ def main() -> int:
             require(
                 args.continuous_main_pool
                 or args.continuous_matched_pool
-                or args.rank64_independent_candidate,
+                or args.rank64_independent_candidate
+                or args.video_pair_objective,
                 "continuous_base_requires_branch",
             )
             launch_path = args.continuous_launch_report or args.root / "reports" / (
                 (
-                    "s4-rank64-matched-pilot"
+                    "s4-video-pair-objective"
+                    if args.video_pair_objective
+                    else "s4-rank64-matched-pilot"
                     if args.rank64_independent_candidate
                     else "s4-continuous-matched-pool"
                     if args.continuous_matched_pool
@@ -3563,7 +3764,9 @@ def main() -> int:
                 / "reports"
                 / (
                     (
-                        "s4-rank64-matched-pilot"
+                        "s4-video-pair-objective"
+                        if args.video_pair_objective
+                        else "s4-rank64-matched-pilot"
                         if args.rank64_independent_candidate
                         else "s4-continuous-matched-pool"
                         if args.continuous_matched_pool
@@ -3573,10 +3776,12 @@ def main() -> int:
                 ),
                 matched_pool=args.continuous_matched_pool,
                 rank64_candidate=args.rank64_independent_candidate,
+                video_objective=args.video_pair_objective,
             )
             if args.continuous_main_pool
             or args.continuous_matched_pool
             or args.rank64_independent_candidate
+            or args.video_pair_objective
             else prepare(
                 args.root,
                 args.legacy_root,
