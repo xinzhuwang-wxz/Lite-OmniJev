@@ -1,0 +1,221 @@
+{
+  "actual_prefix_strata": {
+    "10": {
+      "before_after": {
+        "no": 7,
+        "yes": 8
+      },
+      "endpoint_motion": {
+        "no": 7,
+        "yes": 8
+      },
+      "event_motion": {
+        "no": 8,
+        "yes": 7
+      },
+      "exist": {
+        "no": 8,
+        "yes": 7
+      }
+    },
+    "100": {
+      "before_after": {
+        "no": 75,
+        "yes": 75
+      },
+      "endpoint_motion": {
+        "no": 75,
+        "yes": 75
+      },
+      "event_motion": {
+        "no": 75,
+        "yes": 75
+      },
+      "exist": {
+        "no": 75,
+        "yes": 75
+      }
+    },
+    "20": {
+      "before_after": {
+        "no": 15,
+        "yes": 15
+      },
+      "endpoint_motion": {
+        "no": 15,
+        "yes": 15
+      },
+      "event_motion": {
+        "no": 15,
+        "yes": 15
+      },
+      "exist": {
+        "no": 15,
+        "yes": 15
+      }
+    }
+  },
+  "automatic_full_run_authorized": false,
+  "capacity_after_exclusions": {
+    "before_after": {
+      "no": 781,
+      "yes": 781
+    },
+    "endpoint_motion": {
+      "no": 651,
+      "yes": 671
+    },
+    "event_motion": {
+      "no": 655,
+      "yes": 612
+    },
+    "exist": {
+      "no": 1344,
+      "yes": 1374
+    }
+  },
+  "checkpoint_io_boundary": "checkpoint_every5 versus matched control10; objective unchanged",
+  "cost": null,
+  "draw_order_canonical_sha256": "65e04dbda8d24e3ac31aeadaa88eca6c1d83e2c2499b77c96c4abf33f7565386",
+  "duration_seconds": 32.01014971546829,
+  "exclusions": {
+    "continuous_actual_draws": 240,
+    "continuous_data_sha256": "aeee70458ca202e68f80f9d9b7dc617929a4bc1d4c2eb1e81113a25a207441a0",
+    "continuous_runtime_sha256": "0f752026918cbdfa1bdd66c3bb82520f41d0c77288b505cce460ec745143bb9d",
+    "continuous_video_families": 120,
+    "final_union": 1430,
+    "learnability_families": 12,
+    "learnability_report_sha256": "74dcab30629ffe733864e79eea5f8275ca58b849d6749f6613de529996200c03",
+    "lineage408": 408,
+    "native_course_families": 60,
+    "scope": "explicit source-bound pilot-family exclusions; not globally unseen",
+    "specified_prior_pilots": [
+      {
+        "artifact": "s4-continuous-matched-pool-001",
+        "families": 600,
+        "new_exclusions": 600,
+        "report_sha256": "2c51e16cb88ab91dfb45dca84a2325b371ad259dce522a01fa50e042090cfa87",
+        "scope": "prepared source families; not claiming all were optimizer-exposed"
+      },
+      {
+        "artifact": "s4-temporal-curriculum-pilot-001",
+        "families": 60,
+        "new_exclusions": 39,
+        "report_sha256": "e3b48c872e2a0d38675dd60d9e3bf073f73a85ad1a1f28d4825fa5c28a4b848b",
+        "scope": "prepared source families; not claiming all were optimizer-exposed"
+      },
+      {
+        "artifact": "s4-temporal-coverage-pilot-002",
+        "families": 60,
+        "new_exclusions": 54,
+        "report_sha256": "44b947dc30fcd7b9df4159354b2d054fbfa17dd8b783b0b841a70309df6bd400",
+        "scope": "prepared source families; not claiming all were optimizer-exposed"
+      },
+      {
+        "artifact": "s4-temporal-coverage-pilot-003",
+        "families": 60,
+        "new_exclusions": 50,
+        "report_sha256": "66d2fc6a2f4440fe8fcc11ea9b5f981cc6ab5605f79d4638b9011df175b6da32",
+        "scope": "prepared source families; not claiming all were optimizer-exposed"
+      },
+      {
+        "artifact": "s4-temporal-order-contrast-pilot-001",
+        "families": 30,
+        "new_exclusions": 27,
+        "report_sha256": "7870a39aec8f64939dabd4035f2416b4a1c454f8dd9ec7e88f9891ffbffc28ab",
+        "scope": "prepared source families; not claiming all were optimizer-exposed"
+      }
+    ],
+    "union": 540,
+    "union_with_matched": 660,
+    "union_with_native": 600
+  },
+  "exit_code": 0,
+  "exposure_base": {
+    "manifest_sha256": "57d47a0ab33dfb7d6d76b069ef4288d8d333d976a86afe0bec15d3ed1c1bbd2e",
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-exposure-022",
+    "report_sha256": "960a6b661f6414a514fa3274979b3a979669544979632251f52838f1f882edcb"
+  },
+  "global_steps": 100,
+  "gold_counts": {
+    "no": 300,
+    "yes": 300
+  },
+  "gpu_used": false,
+  "helper_sha256": "fcd52c264ccabf0cb2120402836089aa988ff298b485dd272487f46aa92c893a",
+  "inventory_isolation": "isolated",
+  "invocation_steps_initial": 10,
+  "media_verified_unique": 600,
+  "objective": "original CE only; no pairs/variants/new labels",
+  "output_sha256": {
+    "allocation-ledger.jsonl": "b5172781520546ef974a57825fa8ce98033b20e6d8a66daf8c1f550efc186322",
+    "components.jsonl": "09f5afde85066da920ab1b521c73cddfa2742d6b5a7eeec2a76c716e7fd825f0",
+    "config-ce.json": "326b406eb23ce47c4854afe64d535a95ad91be94a68844109329e43872c6aaea",
+    "draw-recipe.json": "4f1567eb05c9ce43779bba29e4229fb8f37e80f5da4adc2770440788dd53696d",
+    "inventory-audit.json": "1b7624f040504c80ad3ade495ed3fb9bcd1a55267860fb1a4f2e8fbf7594907b",
+    "inventory-manifest.json": "35e79d357625ac00e6e7bd071f87f082dd81f815e0532a7205fad5aa1884df48",
+    "program-strata-metadata.json": "14181301d49c2d3a4195b382b48ef52e6dafcad3e9499f0aadbe6b715b46aaff",
+    "train.jsonl": "795f69fe9474523009bd953a0436bc505e85efdd4fb0f5e7c41e4d86c3bb028f"
+  },
+  "parent_model": null,
+  "pending_parent_selection": true,
+  "per_step": {
+    "audio": 1,
+    "crossmodal": 2,
+    "image": 1,
+    "screenshot": 1,
+    "text": 1,
+    "video": 6
+  },
+  "program_group_priority": [
+    "before_after",
+    "event_motion",
+    "endpoint_motion",
+    "exist"
+  ],
+  "proposed_init_adapter": {
+    "alpha": 32,
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-temporal-coverage-train-001/adapter",
+    "rank": 16,
+    "weights_sha256": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3"
+  },
+  "replay_draws": 600,
+  "replay_report_sha256": "2c51e16cb88ab91dfb45dca84a2325b371ad259dce522a01fa50e042090cfa87",
+  "replay_unique_samples": 420,
+  "reused_helper_sha256": {
+    "inspect-temporal-order-contrast": "c4346e8d61613c710e9dbca78d6796776984402bfc85f30add342d857ddfa5c8",
+    "prepare-claim-pair-pilot": "d22464f4dd7ea151b755b34cf66c5966addc6d3a8c640941f820e264d552be4d"
+  },
+  "root_observation_window_seconds": 1200,
+  "root_usual_max_steps_before_reconsideration": 40,
+  "selected_before_after_collision_count": 26,
+  "source_admission": "existing ADR0005 CC0 full8299 TRAIN scope",
+  "source_sha256": {
+    "annotations": "e7f9185ad3dde8139b839b00f0f75483374dd0325a3cbec2dac882078497784c",
+    "questions": "11181da673d223f41fb596aacfbbd3ff83d39af7f09a3210549e98cb283714b4",
+    "readme": "a4838cc68b79ba049b54f95def1714cdbbd1380193d7d2a5d1a85440ac862e7b",
+    "train": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948"
+  },
+  "status": "data_ready_only",
+  "stratum_counts": {
+    "before_after": {
+      "no": 75,
+      "yes": 75
+    },
+    "endpoint_motion": {
+      "no": 75,
+      "yes": 75
+    },
+    "event_motion": {
+      "no": 75,
+      "yes": 75
+    },
+    "exist": {
+      "no": 75,
+      "yes": 75
+    }
+  },
+  "training_authorized": false,
+  "video_families": 600,
+  "video_rows": 600
+}
