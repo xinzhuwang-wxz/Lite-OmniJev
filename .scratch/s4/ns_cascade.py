@@ -23,12 +23,13 @@ ATTR = r"(?:yellow|red|blue|green|gray|purple|brown|cyan|metal|rubber|sphere|sph
 
 RE_ENTER_ANY = re.compile(rf"^Are there any ((?:{ATTR} ?)+)that enter the scene\?$")
 RE_ENTER_REL = re.compile(
-    rf"^Are there any ((?:{ATTR} ?)+)that enter the scene (before|after) the ((?:{ATTR} ?)+?)enters the scene\?$"
+    rf"^Are there any ((?:{ATTR} ?)+)that enter the scene (before|after) the ((?:{ATTR} ?)+?)(enters|exits) the scene\?$"
 )
 RE_EXIT_ANY = re.compile(rf"^Are there any ((?:{ATTR} ?)+)that exit the scene\?$")
 RE_EXIT_REL = re.compile(
-    rf"^Are there any ((?:{ATTR} ?)+)that exit the scene (before|after) the ((?:{ATTR} ?)+?)enters the scene\?$"
+    rf"^Are there any ((?:{ATTR} ?)+)that exit the scene (before|after) the ((?:{ATTR} ?)+?)(enters|exits) the scene\?$"
 )
+RE_COLLISIONS_ANY = re.compile(r"^Are there collisions\?$")
 RE_MOVING = re.compile(rf"^Are there any (moving|stationary) ((?:{ATTR} ?)*?)when the video (begins|ends)\?$")
 RE_MOVING_EVENT = re.compile(
     rf"^Are there any (moving|stationary) ((?:{ATTR} ?)*?)when the ((?:{ATTR} ?)+?)enters the scene\?$"
@@ -62,6 +63,7 @@ class Scene:
         self.tokens = [{w for w in o["name"].split()} for o in self.objects]
         self.first = [PHASES.get(o.get("first_seen"), -1) for o in self.objects]
         self.last = [PHASES.get(o.get("last_seen"), -1) for o in self.objects]
+        self.moving = [bool(o.get("moving")) for o in self.objects]
         self.edges = []
         for edge in summary.get("entry_order") or []:
             if " before " in edge:
@@ -85,25 +87,45 @@ class Scene:
         found = self.members(tokens)
         return found[0] if len(found) == 1 else None
 
+    def anchor_phase(self, index: int, verb: str) -> int | None:
+        if verb == "enters":
+            return self.first[index] if self.first[index] >= 0 else None
+        return self.last[index] if 0 <= self.last[index] < 4 else None
+
 
 def execute(instruction: str, scene: Scene) -> str | None:
     text = " ".join(instruction.split())
+    if RE_COLLISIONS_ANY.match(text):
+        return "yes" if scene.collisions else "no"
     match = RE_ENTER_REL.match(text)
     if match:
         members = scene.members(class_tokens(match.group(1)))
         anchor = scene.anchor_index(class_tokens(match.group(3)))
         if anchor is None:
             return None
-        anchor_rank = scene.entry_rank(anchor)
-        if anchor_rank is None:
+        if match.group(4) == "enters":
+            anchor_rank = scene.entry_rank(anchor)
+            if anchor_rank is None:
+                return None
+            direction = match.group(2)
+            for m in members:
+                rank = scene.entry_rank(m)
+                if rank is None or scene.first[m] == 0:
+                    continue
+                if (direction == "after" and rank > anchor_rank) or (
+                    direction == "before" and rank < anchor_rank
+                ):
+                    return "yes"
+            return "no"
+        anchor_phase = scene.anchor_phase(anchor, "exits")
+        if anchor_phase is None:
             return None
         direction = match.group(2)
         for m in members:
-            rank = scene.entry_rank(m)
-            if rank is None or scene.first[m] == 0:
+            if scene.first[m] <= 0:
                 continue
-            if (direction == "after" and rank > anchor_rank) or (
-                direction == "before" and rank < anchor_rank
+            if (direction == "before" and scene.first[m] <= anchor_phase) or (
+                direction == "after" and scene.first[m] >= anchor_phase
             ):
                 return "yes"
         return "no"
@@ -115,14 +137,17 @@ def execute(instruction: str, scene: Scene) -> str | None:
     if match:
         members = scene.members(class_tokens(match.group(1)))
         anchor = scene.anchor_index(class_tokens(match.group(3)))
-        if anchor is None or scene.first[anchor] < 0:
+        if anchor is None:
+            return None
+        anchor_phase = scene.anchor_phase(anchor, match.group(4))
+        if anchor_phase is None:
             return None
         direction = match.group(2)
         for m in members:
             if scene.last[m] < 0 or scene.last[m] == 4:
                 continue
-            if (direction == "after" and scene.last[m] >= scene.first[anchor]) or (
-                direction == "before" and scene.last[m] <= scene.first[anchor]
+            if (direction == "after" and scene.last[m] >= anchor_phase) or (
+                direction == "before" and scene.last[m] <= anchor_phase
             ):
                 return "yes"
         return "no"
@@ -130,8 +155,38 @@ def execute(instruction: str, scene: Scene) -> str | None:
     if match:
         members = scene.members(class_tokens(match.group(1)))
         return "yes" if any(scene.last[m] < 4 for m in members) else "no"
-    if RE_MOVING_PLAIN.match(text) or RE_MOVING.match(text) or RE_MOVING_EVENT.match(text):
-        return None  # motion outside scene schema -> fallback
+    match = RE_MOVING_EVENT.match(text)
+    if match:
+        want_moving = match.group(1) == "moving"
+        members = scene.members(class_tokens(match.group(2)) - {"moving", "stationary"})
+        anchor = scene.anchor_index(class_tokens(match.group(3)) - {"moving", "stationary"})
+        if anchor is None or scene.first[anchor] < 0:
+            return None
+        phase = scene.first[anchor]
+        for m in members:
+            if scene.moving[m] != want_moving:
+                continue
+            if scene.first[m] <= phase <= scene.last[m]:
+                return "yes"
+        return "no"
+    match = RE_MOVING.match(text)
+    if match:
+        want_moving = match.group(1) == "moving"
+        members = scene.members(class_tokens(match.group(2)) - {"moving", "stationary"})
+        boundary = match.group(3)
+        for m in members:
+            if scene.moving[m] != want_moving:
+                continue
+            if boundary == "begins" and scene.first[m] == 0:
+                return "yes"
+            if boundary == "ends" and scene.last[m] == 4:
+                return "yes"
+        return "no"
+    match = RE_MOVING_PLAIN.match(text)
+    if match:
+        want_moving = match.group(1) == "moving"
+        members = scene.members(class_tokens(match.group(2)) - {"moving", "stationary"})
+        return "yes" if any(scene.moving[m] == want_moving for m in members) else "no"
     match = RE_PRESENT_EVENT.match(text)
     if match:
         members = scene.members(class_tokens(match.group(1)))
@@ -153,7 +208,7 @@ def execute(instruction: str, scene: Scene) -> str | None:
     match = RE_COLLISIONS_REL.match(text)
     if match:
         anchor = scene.anchor_index(class_tokens(match.group(2)))
-        if anchor is None or scene.first[anchor] < 0 or not scene.collisions:
+        if anchor is None or scene.first[anchor] < 0:
             return None
         phase = scene.first[anchor]
         direction = match.group(1)

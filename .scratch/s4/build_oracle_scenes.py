@@ -62,6 +62,13 @@ def scene_from_truth(raw: dict) -> dict:
             continue
         name = f"{spec_['color']} {spec_['material']} {spec_['shape']}"
         names[oid] = name
+        speeds = []
+        for frame in raw["motion_trajectory"]:
+            for item in frame["objects"]:
+                if item["object_id"] == oid:
+                    vx, vz = item["velocity"][0], item["velocity"][2]
+                    speeds.append((vx * vx + vz * vz) ** 0.5)
+        moving = bool(speeds and (max(speeds) > 0.1 or sum(speeds) / len(speeds) > 0.05))
         entries.append(
             {
                 "name": name,
@@ -70,7 +77,12 @@ def scene_from_truth(raw: dict) -> dict:
                     if t["entry_frame"] is None
                     else phase_of(t["entry_frame"], final + 1)
                 ),
-                "last_seen": "end" if t["present_at_end"] else phase_of(exits[oid] or t["last_inside"], final + 1),
+                "last_seen": (
+                    phase_of(exits[oid], final + 1)
+                    if exits.get(oid) is not None
+                    else "end"
+                ),
+                "moving": moving,
             }
         )
     order = sorted(
