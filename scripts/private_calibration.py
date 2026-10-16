@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import unquote, urlsplit
 
-from pydantic import Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, model_validator
 
 from data.schema import Contract, HardTarget, Sample, answer_tokens
 from scripts import private_stage_eval as stage
@@ -53,6 +53,78 @@ ALL_GROUPS = {
     for c in ("text", "image", "screenshot", "audio", "video", "crossmodal")
     for p in ("choice", "score", "noul")
 }
+
+
+class Progress(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    phase: Literal[
+        "snapshot",
+        "runtime",
+        "plan",
+        "media_snapshot",
+        "inference",
+        "fitting",
+        "completed",
+        "failed",
+    ]
+    cohort: Literal["text", "image", "screenshot", "audio", "video", "crossmodal"] | None = None
+    processed: int = Field(ge=0)
+    total: int = Field(gt=0)
+    elapsed_seconds: FiniteFloat = Field(ge=0)
+    nonfinite_count: int = Field(ge=0)
+    spec_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    code_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def bounded_count(self) -> Progress:
+        if self.processed > self.total:
+            raise ValueError("progress_count_exceeds_total")
+        return self
+
+
+def publish_progress(path: Path, progress: Progress) -> None:
+    """Exclusive temporary file plus atomic replace; no private payload fields."""
+    require(not path.is_symlink(), "unsafe_progress_path")
+    temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
+    try:
+        write_private(temporary, progress.model_dump())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def worker_progress(
+    state: dict[str, Any],
+    phase: str,
+    processed: int,
+    started: float,
+    cohort: str | None = None,
+    nonfinite_count: int = 0,
+) -> None:
+    progress = Progress.model_validate(
+        {
+            "phase": phase,
+            "cohort": cohort,
+            "processed": processed,
+            "total": sum(s["expected_rows"] for s in state["spec"]["datasets"]),
+            "elapsed_seconds": time.monotonic() - state.get("job_started_monotonic", started),
+            "nonfinite_count": nonfinite_count,
+            "spec_sha256": state["source_spec_sha256"],
+            "code_sha256": state["code_sha256"],
+        }
+    )
+    publish_progress(Path(state["output"]) / "progress.json", progress)
+
+
+def forward_private(
+    forward: Any, prepared: Any, state: dict[str, Any], processed: int, started: float, cohort: str
+) -> dict[str, float]:
+    try:
+        return forward(prepared)  # type: ignore[no-any-return]
+    except ValueError as error:
+        if str(error) == "nonfinite_logits":
+            worker_progress(state, "failed", processed, started, cohort, nonfinite_count=1)
+        raise
 
 
 class JobSpec(Contract):
@@ -278,7 +350,8 @@ def fit_worker(state_path: Path) -> None:
     media_map = json.loads(Path(state["media_map"]).read_text())
     groups: dict[str, list[LogitRow]] = {key: [] for key in GROUP_COUNTS}
     try:
-        for cohort, original, media_root in samples:
+        worker_progress(state, "inference", 0, begun)
+        for index, (cohort, original, media_root) in enumerate(samples):
             items = []
             for item in original.prefix.media:
                 original_path = lexical_media(media_root, item.uri)
@@ -302,10 +375,17 @@ def fit_worker(state_path: Path) -> None:
                     logits_kind="raw_logits",
                     complete_legal_logits=True,
                     options=options,
-                    logits=forward(prepared),
+                    logits=forward_private(forward, prepared, state, index, begun, cohort),
                     target=str(target.value),
                 )
             )
+            if (
+                (index + 1) % 100 == 0
+                or index + 1 == len(samples)
+                or samples[index + 1][0] != cohort
+            ):
+                worker_progress(state, "inference", index + 1, begun, cohort)
+        worker_progress(state, "fitting", len(samples), begun)
         output = Path(state["output"])
         raw_receipt = {
             "schema_version": "calibration-raw-logits-receipt-v1",
@@ -329,6 +409,11 @@ def fit_worker(state_path: Path) -> None:
                 for key, rows in groups.items()
             },
             "logits_kind": "raw_logits",
+            "runtime_recipe": {
+                "engine": "transformers",
+                "dtype": "bfloat16",
+                "adapter_mode": "native_lora",
+            },
             "complete_legal_logits": True,
         }
         raw_receipt_path = output / "raw-receipt.json"
@@ -659,7 +744,7 @@ def snapshot_media(
     }
 
 
-def execute(
+def _execute(
     source: Path,
     expected: str,
     work_root: Path,
@@ -742,6 +827,28 @@ def execute(
     stage.bind_files(first.adapter_dir, first.adapter_files, adapter=True)
     broker.reserve_ids(work_root, worker_uid, probe_uid)
     code_sha = stage.code_hash()
+    progress_path = report.with_suffix(".public-progress.json")
+    require(not progress_path.exists() and not progress_path.is_symlink(), "progress_exists")
+    total = sum(item.expected_rows for item in spec.datasets)
+
+    def phase_progress(phase: str, processed: int = 0) -> None:
+        publish_progress(
+            progress_path,
+            Progress.model_validate(
+                {
+                    "phase": phase,
+                    "cohort": None,
+                    "processed": processed,
+                    "total": total,
+                    "elapsed_seconds": time.monotonic() - begun,
+                    "nonfinite_count": 0,
+                    "spec_sha256": expected,
+                    "code_sha256": code_sha,
+                }
+            ),
+        )
+
+    phase_progress("snapshot")
     run = work_root / uuid.uuid4().hex
     exported = report.with_suffix(".artifacts")
     require(not exported.exists(), "artifact_export_exists")
@@ -803,6 +910,7 @@ def execute(
                 else:
                     copy_bound(Path(directory) / name, digest, inputs / kind / name)
         state = {
+            "job_started_monotonic": begun,
             "spec": spec.model_dump(),
             "source_spec_sha256": expected,
             "code_sha256": code_sha,
@@ -843,6 +951,9 @@ def execute(
         )
 
         def child(phase: str, seconds: int) -> None:
+            phase_progress(
+                {"_runtime_probe": "runtime", "_plan": "plan", "_fit": "inference"}[phase]
+            )
             with (output / (phase + ".log")).open("xb") as log:
                 os.chmod(log.name, 0o600)
                 os.chown(log.name, worker_uid, worker_uid)
@@ -867,7 +978,29 @@ def execute(
                     start_new_session=True,
                 )
                 try:
-                    code = process.wait(timeout=seconds)
+                    deadline = time.monotonic() + seconds
+                    while True:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise TimeoutError("private_worker_timeout")
+                        try:
+                            code = process.wait(timeout=min(5, remaining))
+                        except subprocess.TimeoutExpired:
+                            code = None
+                        private_progress = output / "progress.json"
+                        if private_progress.exists():
+                            progress = Progress.model_validate_json(
+                                broker.bounded_read(private_progress, 4096)
+                            )
+                            require(
+                                progress.spec_sha256 == expected
+                                and progress.code_sha256 == code_sha
+                                and progress.total == total,
+                                "private_progress_binding_mismatch",
+                            )
+                            publish_progress(progress_path, progress)
+                        if code is not None:
+                            break
                 except BaseException:
                     stage.terminate(process)
                     raise
@@ -895,6 +1028,7 @@ def execute(
             plan["groups"] == GROUP_COUNTS and isinstance(plan["media"], dict),
             "invalid_private_media_plan",
         )
+        phase_progress("media_snapshot")
         media_map, media_snapshot = snapshot_media(
             plan["media"],
             [Path(item.media_root) for item in spec.datasets],
@@ -939,6 +1073,8 @@ def execute(
             and raw_meta["model_files"] == first.model_files
             and raw_meta["adapter_files"] == first.adapter_files
             and raw_meta["logits_kind"] == "raw_logits"
+            and raw_meta["runtime_recipe"]
+            == {"engine": "transformers", "dtype": "bfloat16", "adapter_mode": "native_lora"}
             and raw_meta["complete_legal_logits"] is True
             and raw_meta["official_template_sha256"] == official["template_sha256"]
             and raw_meta["answer_token_map_sha256"]
@@ -993,7 +1129,31 @@ def execute(
         "cost_usd": None,
     }
     write_private(report, result)
+    phase_progress("completed", total)
     return result
+
+
+def execute(
+    source: Path,
+    expected: str,
+    work_root: Path,
+    report: Path,
+    worker_uid: int,
+    probe_uid: int,
+    timeout: int,
+) -> dict[str, Any]:
+    progress_path = report.with_suffix(".public-progress.json")
+    existed = progress_path.exists() or progress_path.is_symlink()
+    try:
+        return _execute(source, expected, work_root, report, worker_uid, probe_uid, timeout)
+    except BaseException:
+        if not existed and progress_path.exists():
+            from scripts.private_gold_job import bounded_read
+
+            progress = Progress.model_validate_json(bounded_read(progress_path, 4096))
+            require(progress.spec_sha256 == expected, "failure_progress_binding_mismatch")
+            publish_progress(progress_path, progress.model_copy(update={"phase": "failed"}))
+        raise
 
 
 def main(argv: list[str] | None = None) -> int:

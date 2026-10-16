@@ -298,3 +298,72 @@ def test_snapshot_rejects_undeclared_or_changed_media_before_copy(tmp_path: Path
             remaining_bytes=100,
             copy_bound=lambda *args: pytest.fail("copied early"),
         )
+
+
+def progress_values() -> dict[str, Any]:
+    return dict(
+        phase="inference",
+        cohort="text",
+        processed=100,
+        total=18000,
+        elapsed_seconds=1.0,
+        nonfinite_count=0,
+        spec_sha256="a" * 64,
+        code_sha256="b" * 64,
+    )
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        {"sample_id": "private"},
+        {"processed": 18001},
+        {"processed": True},
+        {"elapsed_seconds": float("nan")},
+        {"phase": "raw_traceback"},
+        {"cohort": "private_path"},
+    ],
+)
+def test_progress_is_strict_aggregate_only(mutation: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError):
+        job.Progress.model_validate({**progress_values(), **mutation})
+
+
+def test_progress_atomic_publication_and_failed_final_state(
+    tmp_path: Path, monkeypatch: Any
+) -> None:
+    report = tmp_path / "result.json"
+    progress = report.with_suffix(".public-progress.json")
+
+    def failed(*args: Any) -> Any:
+        job.publish_progress(progress, job.Progress.model_validate(progress_values()))
+        raise RuntimeError("private raw error must not be exported")
+
+    monkeypatch.setattr(job, "_execute", failed)
+    with pytest.raises(RuntimeError):
+        job.execute(tmp_path / "spec", "a" * 64, tmp_path, report, 64001, 64002, 5)
+    actual = json.loads(progress.read_text())
+    assert actual["phase"] == "failed"
+    assert actual["processed"] == 100
+    assert set(actual) == set(progress_values())
+    assert "private raw error" not in progress.read_text()
+    assert progress.stat().st_mode & 0o777 == 0o600
+    assert not list(tmp_path.glob("*.tmp"))
+
+
+def test_nonfinite_failure_exports_only_count(tmp_path: Path) -> None:
+    state = {
+        "output": str(tmp_path),
+        "spec": {"datasets": [{"expected_rows": 18000}]},
+        "source_spec_sha256": "a" * 64,
+        "code_sha256": "b" * 64,
+    }
+
+    def bad(prepared: Any) -> dict[str, float]:
+        raise ValueError("nonfinite_logits")
+
+    with pytest.raises(ValueError):
+        job.forward_private(bad, None, state, 100, 0.0, "text")
+    actual = json.loads((tmp_path / "progress.json").read_text())
+    assert actual["phase"] == "failed" and actual["nonfinite_count"] == 1
+    assert actual["processed"] == 100
