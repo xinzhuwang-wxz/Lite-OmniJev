@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "same30physical_families": true,
+  "same60replay_full_fields": true,
+  "same_step_pair_offsets": true,
+  "arms": {
+    "control": {
+      "video_labels": {
+        "no": 30,
+        "yes": 30
+      },
+      "video_families": 30,
+      "data_sha256": "f7cbd1a5ee86c92cb13fc9377d9942b4e6907e0182d685431103b4d20ddc85bc"
+    },
+    "polarity": {
+      "video_labels": {
+        "no": 30,
+        "yes": 30
+      },
+      "video_families": 30,
+      "data_sha256": "0235ff3f039c28229c897bf79a5f353958d34d4bda486035cc72a21df691cb84"
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "admission_trace": {
+    "evidence_lines": {
+      ".scratch/s3/spec.md": [
+        9,
+        11
+      ],
+      "docs/adr/0005-permitted-first-release-media.md": [
+        3,
+        7
+      ],
+      "docs/adr/0021-s3-bounded-replay-execution.md": [
+        3,
+        7,
+        15
+      ],
+      "scripts/s0_media_dev.py": [
+        311,
+        331,
+        458,
+        475,
+        490
+      ],
+      "scripts/s2_media_pools.py": [
+        392
+      ]
+    },
+    "facts": [
+      "s2_media_pools.build_report unconditionally emits training_admitted=False for every status; it does not itself grant admission.",
+      "ADR0005 authorizes CC0 CLEVRER official train; S3 frozen scope covers all8299 TRAIN and full21184 union ledger.",
+      "Pool/source/ledger/report and actual joint bytes reverified; official README and train questions SHA reverified; selected60 media SHA verified.",
+      "Gold transformation retains official descriptive/exist yes/no question string and answer.casefold; source_hash binds question/program/media/revision.",
+      "No new admission, no original field changed; no unseen claim."
+    ],
+    "files": [
+      {
+        "repository_path": "docs/adr/0005-permitted-first-release-media.md",
+        "sha256": "6a78721b1592c96305132e501130692f288bc7dbed3e7b37fb776acb61c7eb69"
+      },
+      {
+        "repository_path": ".scratch/s3/spec.md",
+        "sha256": "876d31f4b4030623c230041260dd50b5ccb8e4fb1952d060ef58308123dcc28a"
+      },
+      {
+        "repository_path": "reports/s3-joint-preparation-001.json",
+        "sha256": "ad2ea7b72f307166214e7944dd54d4ea676c38a0248c1e14e14cd94f3402e6da"
+      },
+      {
+        "repository_path": "docs/adr/0021-s3-bounded-replay-execution.md",
+        "sha256": "f8e13e046b340fd75ee804263465ea010f48b2662c7efed2aafd64c747050f2e"
+      },
+      {
+        "repository_path": "reports/s3-stage-acceptance-stable-001.json",
+        "sha256": "5e461ee751c51d4b014d5d5d1cbe93cbc67c41649942d5eb6b7e3f1d63f3154b"
+      },
+      {
+        "repository_path": "reports/clevrer-source-download-snapshot.json",
+        "sha256": "70b7093e51485c005893d8b69522c4e3bd2207abb9ecb0c0cf940a5c3a22b9e4"
+      },
+      {
+        "repository_path": "scripts/s2_media_pools.py",
+        "sha256": "26d1c47ea4cf92c66f0dc7a915f88696b8c9d6be94fa3e10fe2622c70490aeb0"
+      },
+      {
+        "repository_path": "scripts/s0_media_dev.py",
+        "sha256": "6dbd7576fcdee019931dfbcc3b8a7bba0fbd87f7085faf77c461ba557e6c2786"
+      }
+    ],
+    "joint_actual_sha256": "ad2ea7b72f307166214e7944dd54d4ea676c38a0248c1e14e14cd94f3402e6da",
+    "joint_preparation_sha256": "ad2ea7b72f307166214e7944dd54d4ea676c38a0248c1e14e14cd94f3402e6da",
+    "original_training_admitted": false,
+    "selected_video_media_verified": 60,
+    "source_admission": "verified_existing_scope",
+    "source_scope": "full8299 TRAIN, not only previously exposed150"
+  },
+  "arm_wallclock_limit_seconds": 240,
+  "arms": {
+    "control": {
+      "inventory_isolation": "isolated",
+      "ledger_check": {
+        "ledger_rows": 120,
+        "verified_train": 120
+      },
+      "output_sha256": {
+        "allocation-ledger.jsonl": "f6dd93ac610791e4fde8389bd9d04ab35b1aa2a2bc5c85e5abd0cae26217043c",
+        "config-ce.json": "d4542f87ef1249cb44943ebc58e511a4b36b4c798f80acb6d7d0bf1374871f84",
+        "draw-recipe.json": "6d0dba8d58b0d2909fce3524898f1c6886fa89e9d7c51d609ad0281db12a220a",
+        "inventory-audit.json": "cc4518bdd1c10e0b90c1633012ccb081e0d8ea654b4d78b5dc1273762091f17d",
+        "inventory-manifest.json": "d3f68a283107ae3dfb970645882366245978f8b134b39b67976e92508ab8e4e8",
+        "train.jsonl": "f7cbd1a5ee86c92cb13fc9377d9942b4e6907e0182d685431103b4d20ddc85bc"
+      },
+      "status": "cpu_prepared_pending_root_training_decision",
+      "video_original_gold": {
+        "no": 15,
+        "yes": 15
+      }
+    },
+    "polarity": {
+      "inventory_isolation": "isolated",
+      "ledger_check": {
+        "ledger_rows": 120,
+        "verified_train": 120
+      },
+      "output_sha256": {
+        "allocation-ledger.jsonl": "0d4bb5404ff12388acc3003211edd4aaf87017835e13300d862fe201c522a578",
+        "config-ce.json": "23eb7c2bc5ab38a9864ef78ff672b3ecf97b840ed8b2ff37e9e0d22987484819",
+        "draw-recipe.json": "0f612263f78264506de6f270dd43182cd20638a1a689300875a46f5eb9769eb1",
+        "inventory-audit.json": "403773df22c6e728d782fef08b2bc4c9e432402c803c5b40226abbd6db66eb9d",
+        "inventory-manifest.json": "df742150e037d79dab5f2823eadfb8b2e4af14e1c9acd0300e24e6bb049781d3",
+        "train.jsonl": "0235ff3f039c28229c897bf79a5f353958d34d4bda486035cc72a21df691cb84"
+      },
+      "status": "cpu_prepared_pending_root_training_decision",
+      "video_original_gold": {
+        "no": 15,
+        "yes": 15
+      }
+    }
+  },
+  "cost": null,
+  "duration_seconds": 44.06788674928248,
+  "exit_code": 0,
+  "exposure_report_sha256": "659db52b082f93f54a4a311eef4cbf7a5b38182d29816e2be0cefb179e4ad82d",
+  "families": 30,
+  "gpu_used": false,
+  "helper_sha256": "501f22d3e5426c1f68f3216253a59ce98407cd88ea57902a71258e8bff2bd25e",
+  "historical_unseen": "not_claimed",
+  "init_selection": "pending_root_decision; config contains no selected adapter",
+  "python": "3.11.17",
+  "question_transform": "For this video, is the correct yes/no answer to the following question 'no'?\n\n",
+  "replay_report_sha256": "e3b48c872e2a0d38675dd60d9e3bf073f73a85ad1a1f28d4825fa5c28a4b848b",
+  "seed": 42,
+  "shared_helper_sha256": "d22464f4dd7ea151b755b34cf66c5966addc6d3a8c640941f820e264d552be4d",
+  "source_admission": "verified_existing_scope",
+  "source_ledger_sha256": "3049be487ca4884273397c5f6c9e17e934887d9a96ad3997d5a4561afe159e92",
+  "source_report_sha256": "e4f095274fb649f3b8621306695378d18f5d19f2edecd953f1d19b8d22e2b70c",
+  "source_sha256": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948",
+  "status": "cpu_prepared_pending_root_training_decision",
+  "total_draws_per_arm": 120,
+  "training_authorized": false,
+  "video_rows_per_arm": 60
+}
