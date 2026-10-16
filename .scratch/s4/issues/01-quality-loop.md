@@ -45,3 +45,5 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 本轮已收终态：video-specialist DEV50=30/50vs父33，Brier/ECE变差，停止不扩；既有continuous step20宽video150112vs116，确认不续第3段。parent保持f2db。017因turn中断已恢复helper实际核对，无updates才audit。并行只读TRAIN检查精确“同题异视频相反官方gold”对照容量，尚未构建/训练；不重复同video flip路线。
 
 本轮textmatched174.789秒completed10，DEV50 32vs父33且Brier/ECE差，无采用，停止扩大。018实际30.442秒/isolated/75known/unknown0闭合。准备6same-text/oppositegold TRAINpairs的视觉依赖/优化能力before-after诊断，避免把独立问题memorization当视觉可学性，尚未启动新训练。图像来源审计确认同源AOK，VQA增广已试，不重复错误假设。
+
+本轮pairedTRAIN12 before7/12→after9/12、CE降16.78%、输入mapping12一致，仅部分拟合非泛化。固定300pairs课程CPU完整审计通过，global100仅上限，首次10step已DEV34vs33/Brier.424982/ECE.080932；019实际78known/unknown0/isolated/fullcheckpoint闭合。root在固定20min窗口12:20–12:40内续step10→20 session46306、保持完整AdamW/RNG，结束接固定DEV50；不每次重置/换data、不盲全100，所有原质量门保持。
