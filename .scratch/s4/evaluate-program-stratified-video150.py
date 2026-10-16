@@ -128,7 +128,7 @@ def group_scores(records, samples):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--step", type=int, choices=[10, 20, 30, 40], required=True)
+    parser.add_argument("--step", type=int, choices=list(range(10, 101, 10)), required=True)
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--decision", type=Path, required=True)
     parser.add_argument("--decision-sha256", required=True)
@@ -159,7 +159,7 @@ def main(argv=None):
         dev50_path = ROOT / f"reports/s4-program-stratified-dev50-{tag}.json"
         trained, launch, dev50 = read(trained_path), read(launch_path), read(dev50_path)
         require(
-            trained["status"] == launch["status"] == "paused"
+            trained["status"] == launch["status"] == ("completed" if args.step == 100 else "paused")
             and trained["exit_code"] == launch["exit_code"] == 0
             and trained["steps_completed"] == args.step
             and trained["data_sha256"] == TRAIN_DATA_SHA,
@@ -202,7 +202,20 @@ def main(argv=None):
             sha(dev50_path),
             trained["adapter_sha256"],
         )
-        window = read(ROOT / "reports/s4-program-stratified-window-001.json")
+        full_policy = launch.get("policy_family") == "monitored_full_course"
+        window_name = (
+            "s4-program-stratified-full-window-001.json"
+            if full_policy
+            else "s4-program-stratified-window-001.json"
+        )
+        window = read(ROOT / "reports" / window_name)
+        if full_policy:
+            require(
+                window.get("policy_family") == "monitored_full_course"
+                and window.get("target_step") == 100
+                and window.get("decision_sha256") == launch["decision_sha256"],
+                "explicit full-course supersession window required",
+            )
         require(window == launch["window"], "original window changed")
         deadline = datetime.fromisoformat(
             window["window_deadline_utc"].replace("Z", "+00:00")

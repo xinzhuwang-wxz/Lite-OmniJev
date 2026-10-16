@@ -104,7 +104,7 @@ for flags in stages:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--step", type=int, choices=[10, 20, 30, 40], required=True)
+    parser.add_argument("--step", type=int, choices=list(range(10, 101, 10)), required=True)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)
     helper.require(helper.sha(HELPER) == HELPER_SHA, "evaluation helper changed")
@@ -129,7 +129,7 @@ def main(argv=None):
         launch_path = ROOT / f"reports/s4-program-stratified-launch-{tag}.json"
         trained, launch = helper.read(trained_path), helper.read(launch_path)
         helper.require(
-            trained["status"] == launch["status"] == "paused"
+            trained["status"] == launch["status"] == ("completed" if args.step == 100 else "paused")
             and trained["exit_code"] == launch["exit_code"] == 0
             and trained["steps_completed"] == args.step
             and trained["data_sha256"] == DATA_SHA,
@@ -161,7 +161,20 @@ def main(argv=None):
             helper.sha(adapter / "adapter_model.safetensors") == trained["adapter_sha256"],
             "actual candidate changed",
         )
-        frozen = helper.read(ROOT / "reports/s4-program-stratified-window-001.json")
+        full_policy = launch.get("policy_family") == "monitored_full_course"
+        window_name = (
+            "s4-program-stratified-full-window-001.json"
+            if full_policy
+            else "s4-program-stratified-window-001.json"
+        )
+        frozen = helper.read(ROOT / "reports" / window_name)
+        if full_policy:
+            helper.require(
+                frozen.get("policy_family") == "monitored_full_course"
+                and frozen.get("target_step") == 100
+                and frozen.get("decision_sha256") == launch["decision_sha256"],
+                "explicit full-course supersession window required",
+            )
         helper.require(launch["window"] == frozen, "window changed")
         deadline = datetime.fromisoformat(
             frozen["window_deadline_utc"].replace("Z", "+00:00")
@@ -207,7 +220,11 @@ def main(argv=None):
                 paired_input_hashes_verified=50,
                 corrected_vs_parent=corrected,
                 regressed_vs_parent=regressed,
-                disposition=screening_disposition(candidate, args.step),
+                disposition=(
+                    "monitored_full_course_checkpoint_review"
+                    if full_policy
+                    else screening_disposition(candidate, args.step)
+                ),
                 actual_training_loss_first=trained["losses"][0],
                 actual_training_loss_last=trained["losses"][-1],
                 learning_observed="root must review actual loss/gradient/exposure evidence",
