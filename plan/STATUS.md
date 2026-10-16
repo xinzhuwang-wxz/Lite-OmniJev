@@ -3,6 +3,10 @@
 更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
 
 ## 当前票与下一步
+- **最新**：textmatched唯一10step已completed/174.789秒（session42470终态），adapter9dea6c259e8b45df8b9466e87ebeb6e8f0d3a48822c7104640286a75ab5bc6b1；DEV50 session58294已32/50vsf2db33，Brier.457548vs.447486/ECE.155223vs.104194、coverage.12持平，无采用证据，不跑150/500/新段。当前GPU空闲，parent仍f2db。30same-text+exactprogram oppositeofficialgold/differentvideo pairs保持原gold，CPU28.714秒/isolated，训练实际120draw/无pairloss。初次本地wrapper生成失败导致远端缺入口、GPU前exit2，outer log001保留；实际首训练用log002，没有重跑GPU。
+- 018真实完整曝光已通过：artifacts/s4-pilot-exposure-018/report.json SHAb70aa762a2d66492b53d5a44a03c1877d9d3fcd2861e7c5ad43c77b84715e659，30.442秒/isolated/75known/unknown0，matched120draw/current唯一，017retry全部bindings/continuous240与两snapshots/specialist120/native120保留。017首次audit前残留015pin失败保留，成功继承base是017-retry-001（5b3d3a26…），不得用失败017目录。
+- 下一仅CPU准备6精确pairs/12TRAIN的beforef2db/after9dea6c只读GPU诊断入口（gradient所有者），锁前后完整tensor/media/input一致，统计pair-bothcorrect/反事实概率方向/CE；不等同泛化。先检验视觉依赖与优化能力，再定新训练，不继续同类10step数据配方。HF仍暂停到模型完成。
+- 图像监督审计1dd3bfc纠正来源：原image500与当前TRAIN均A-OKVQA Choice，不是VQA2；f2db谱系3408image draw/1341unique family，S4其中100draw/72families。S2已试VQA2旧/新family增广未采用，410来自1120预算；不能以“缺VQA同源监督”重复失败方向。reports/explore/s4-image-supervision-gap-001。
 - **最新接续**：所有GPU作业已终态，当前无GPU/updates进程。video-specialist训练4260 completed10/184.487秒，adapterdfd74a26…；DEV50 session9429已30/50vs父33、Brier.454578vs.447486/ECE.194500vs.104194，停止扩大，不跑其150/500。仅加倍视频曝光/移除replay未支持改进。宽切片复核既有continuous step20（session53069）video150已112vs父116、121.501秒，确认停止第3段rawcoverage；不是新增训练。当前parent仍f2db。GPU新任务须已有可用CPU输入和停止条件。
 - continuous_main_pool在中断后已恢复017 helper/tests与actual核对（真实017尚pending），继承016全部历史与连续两snapshot；specialist60storage/120draw两遍不当新family。gradient仅CPU核既有TRAIN是否存在相同原问题、不同视频且官方yes/no相反的精确匹配pairs；不构建/训练新池，不用改题/翻gold/相似度凑数，容量不足则停止。目的是检验视觉依赖监督是否有可靠gold支持，区别已失败的同video反转问题。
 - 016最新真实完整曝光：37ef4c3，artifacts/s4-pilot-exposure-016/report.json SHA0164a2cdf0db9381cc76ae7411bd99f459789f4ae057c1cdfbf89d9276870aae，29.349秒/isolated/71known/unknown0；native120+continuous240、两immutable snapshots/015allbindings保留，failed001补直接SHA。新specialist更新后需017，禁止拿016当更新后完整库存。

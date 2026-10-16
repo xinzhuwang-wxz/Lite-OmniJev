@@ -43,3 +43,5 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 11:19：016真实isolated/71known/unknown0完成；video-onlyCPU审计20.307秒通过并以f2db parent启动session4260/GPU PID61963。仅10step/120draw/60原题两遍，无新family或新gold；资源估值按实测6→12video/step，唯一hardcap240→360秒、质量门不动。结束先DEV50再决定，不预排新段；训练终态才跑017。
 
 本轮已收终态：video-specialist DEV50=30/50vs父33，Brier/ECE变差，停止不扩；既有continuous step20宽video150112vs116，确认不续第3段。parent保持f2db。017因turn中断已恢复helper实际核对，无updates才audit。并行只读TRAIN检查精确“同题异视频相反官方gold”对照容量，尚未构建/训练；不重复同video flip路线。
+
+本轮textmatched174.789秒completed10，DEV50 32vs父33且Brier/ECE差，无采用，停止扩大。018实际30.442秒/isolated/75known/unknown0闭合。准备6same-text/oppositegold TRAINpairs的视觉依赖/优化能力before-after诊断，避免把独立问题memorization当视觉可学性，尚未启动新训练。图像来源审计确认同源AOK，VQA增广已试，不重复错误假设。
