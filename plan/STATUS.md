@@ -3,6 +3,8 @@
 更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
 
 ## 当前票与下一步
+- **20:12实时**：S5首次真实校准fit007已进入inference（text起，18000题，UID65301/2，job SHA af4b7b48…，producer fa83acc，GPU~49%）。此前fit003–006排障链四根因全修并留证：8个老池sealed行文件0644→0600（真实边界泄漏，probe正确拒绝）、/root/.ssh 0755→0700、沙箱代码补serve（producer修订fa83acce6f4b0345a2694ec883a81647a6279f8d，已部署/root/autodl-tmp/s5-calibration-code-fa83acc）、gui-gold-002 119张缺失校准媒体从quarantine源sha256验证恢复（reports/s5-gui-media-restore-001.json，119/119零失败）。UID 648xx/649xx/650xx/651xx(诊断)/652xx/653xx已消耗不复用。
+- 外榜收口：候选e465 JevBench231 76.62%/macro74.93%（两遍exit0）；父模型同协议基线76.19%/macro77.39%（reports/s4-parent-jevbench-001.json）。"不低于同尺寸基线"headline门通过（+0.43pp），macro−2.46pp如实记录（≈97%来自ambiguous家族n=7）；候选Brier/ECE/paraphrase全优，父ordinalMAE更优。S4原教师比率门未达，按ADR0023保留。
 - 当前票s4:01 claimed/main-session。用户2026-10-16明确接受实测质量局限下推进，ADR0023已记录：保留原gate失败，不假称原目标通过；完整实测、有界优化后可closed_with_measured_quality_limitations。正确性、数值、来源、隔离不放宽。S5/S6/FINAL尚未完成。
 - **完整课程已完成**：官方程序四分层CE，100step/1200实际draw=600原TRAIN视频family+600exact回放；不是全部8299条视频或原方案大规模全量。f2db parent/rank16/LR2e-5/16frames/1120不变，全AdamW/RNG连续恢复，检查点每5步，DEV在10/20/40/60/80/100监控。90min用户新窗口独立保留，旧20min文件不改。controller session78190 exit0/course_completed；reports/s4-program-stratified-full-controller-001.json。
 - **当前最有潜力候选e46550143b28f8798484515f0abe21996fe92ad241625a4cf6da15dc093277fd**：远端artifacts/s4-program-stratified-pool-train-001/adapter-invocation-step-0100；training report421b950611a8e8db3fa1b0ae75c960790ae56c29a80a218976c171fbdf67ae97。待完整旧模态/跨模态复核后正式采用；f2db/CE0/S3仍保留，不继承历史分数。
