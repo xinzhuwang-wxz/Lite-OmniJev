@@ -1,0 +1,563 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "gpu_requested": true,
+  "stage_gate": false,
+  "budget_seconds": 240,
+  "cohort": "video",
+  "cost": null,
+  "script_sha256": "505095b6dac2fdae01707a9dfe4b85c8813755cc9fc302b087f9bf5d316e7b9e",
+  "identity": {
+    "model_revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+    "asset_hashes": {
+      "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+      "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+      "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+      "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+      "model.safetensors": "2db5482b20d746879bb3ef79b5203e9075a2e2b98f54ec7c2f281c1477ddc550",
+      "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+      "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+      "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+    },
+    "adapter": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001/adapter-invocation-step-0010",
+      "weights_sha256": "e49accdf456f3f8599bb02583749b3d8a5d4fd59ade7e35939558c495961e8f2",
+      "config_sha256": "97ed24a9615b39c07b4f4061a1c926472667332f32fa94d38adbf8c3387553a8"
+    },
+    "training_report_sha256": "baaaabcee2eeea9637b519f201694a20b38eef64d97d143177ebaa599e9546d7",
+    "data_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+    "selected_ids_sha256": "b9a246ac0fb5d05f23e95df2833725bf66c13d62d67a7a84d4d141dba46f1448",
+    "template_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+    "code_hashes": {
+      "scripts/s0_development_baselines.py": "68a173f47b5161c49c2fe250eb445506bc8e760a62d19b2577fd3719197298d4",
+      "train/multimodal.py": "327c78103d16b571a7fd81b7d43c0a3f1be42dfef5cb03cede4faa71201e1b10",
+      "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+      "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+      ".scratch/s4/evaluate-video-motion-coverage.py": "e392f10b7738f9cf776087dfb7cd40b35377d974f986fc5cd9ad47bb77b51246"
+    },
+    "script_sha256": "505095b6dac2fdae01707a9dfe4b85c8813755cc9fc302b087f9bf5d316e7b9e"
+  },
+  "bindings": [
+    {
+      "id": "clevrer-train-08576-5",
+      "input_sha256": "31b7ddaf23c8a40f381c8514476246aed080d265fcb625708676f50073bfd34e",
+      "input_summary_sha256": "39153dcd2df405e4d267d78d87197dffa72be9c10336da52a63561c97144d13f",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04868-10",
+      "input_sha256": "98eeabb2c79db1dbfe3ebaf501c88d8c2fa540832399b1db6a577da55b47957e",
+      "input_summary_sha256": "af556607ab77b7264594397c384af1ebf8d192cf919513051299086b62c97003",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-06746-10",
+      "input_sha256": "7db8029eade95849439036340f96b14a64352e5633d2cabd42d859178eee58f2",
+      "input_summary_sha256": "92a5692a43bb0705c922b60511608109bdef2e1507e429b1abda0e94bbbc03ed",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-01956-10",
+      "input_sha256": "3ca92695fcb6a0bb496332d8939a421e9dfde0d8bd26995d78232ab172d8871b",
+      "input_summary_sha256": "1deb07ce0a6722bf8246fb98cc13c5f70e460bc1d0b9e23673b57dd2ad282be5",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-05099-5",
+      "input_sha256": "726ea91d176771f6c55d4a870a9d3fac2ba8b8117624faf5527a66c9c3eb6deb",
+      "input_summary_sha256": "5c4d746cbba696771c2939dbf29254e42794325496105328a953c6c10cd7e212",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00079-10",
+      "input_sha256": "4d638390c5427d3a0f6ef2684a77c09d8abefb75063abe1a447110d8bdc18b44",
+      "input_summary_sha256": "0eec355677635689f136de8f7f404852937705e6b5245eece6bd07cb4846ea3d",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00336-10",
+      "input_sha256": "9f00c6695ba3ca2d1cb9014e7a96c6d7b750fa98897edec5ff2f657873c6915e",
+      "input_summary_sha256": "86eaf9fbf18b6076a0a37fa2f0c96e6cbc15a58e94c6205e94aea0076134d6df",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00886-10",
+      "input_sha256": "c62a0f97920e1f18a74a04641c8518b46b538a957238a7fe7d8858b060522222",
+      "input_summary_sha256": "e954edb054117c34932229ec756db704e9ce1b48632e42d4c55a9388a8d7457c",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00192-5",
+      "input_sha256": "cddb9d98ccac56a501d9446d88de2ce9723dde9cca2629e5526d1ab398b4a4fe",
+      "input_summary_sha256": "8309d4060a22f60d84558dc70e431d4d75c6c5895d758978723251c0c83c2945",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-01015-5",
+      "input_sha256": "e56090c93dd6ca0b9067db197abc4db0321d36d60ca0b635adaa8f728de948ae",
+      "input_summary_sha256": "e597533363a6f9238b4e0b32b27bf094d25ae3f7c7c84836bc2725e75e9ce798",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04672-5",
+      "input_sha256": "e3f7de3fc3784be1a4d186fd34007cd98b802e9284a256e517b6f58142a5ffb2",
+      "input_summary_sha256": "a1efa55e6a296c11e99e02e0146c987ab540c29a811bbf2960cbf59dd4ab3806",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-05504-10",
+      "input_sha256": "ae0acc1eb1c39b357e4121c789344dce92dfb5a584b8448058936c39daccb582",
+      "input_summary_sha256": "274ad79f192008359fb8b62a43dcd9e9947aebbbec47d03ae801cddb1e4a83e3",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-03438-5",
+      "input_sha256": "f58d2ecef01daa98cd07a757d4934e1531d01ef9798798ca58397c65c765b106",
+      "input_summary_sha256": "d2cfa1b4a569eb9fff9968f25c2b8ba61cef9505d5ae2a3cde07333648a3ba78",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-06059-5",
+      "input_sha256": "638fdb5e50f0cd80aca70d0a303f6119b8b311f2348b62515854d5ca74829739",
+      "input_summary_sha256": "62d60d45c0b3e0837c973e50515101058da46e240a373929c83bb462bbb94a79",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-03004-5",
+      "input_sha256": "d6d6f0ee046698e941036a8d02bd643cbfb91cacae9c3e87217b72f715cb0f9c",
+      "input_summary_sha256": "f7338ebce56b749ba3f95b9295a7977216014199db1923c4f4931abbb37dc6f3",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-05198-10",
+      "input_sha256": "d7d9fe16a0dff486c8bf1608dd32f99b81fb03d63fc649d560e93710b8ef20e0",
+      "input_summary_sha256": "72091acbab0c7b3f22fe026ad60c91cd391b555edbefebf56ccb3d023ae26797",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00102-5",
+      "input_sha256": "52db1b0e461bf4f5e7c1c046d7ddd616eac9c1973c0523345795d966a72b014a",
+      "input_summary_sha256": "017b78d1d5daedb0a0ff0515cc83c61f29376bc5a241c962d005b09466f9a4e2",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-02407-10",
+      "input_sha256": "ab2e54d3085ef3a067b359b89c88e592a589e2f7b7523e778257a1b6652890b5",
+      "input_summary_sha256": "21aabbd714a29f9b1fde2c8c380d7ac0c1f0ae34b0433975424aa455f8c1418c",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00140-10",
+      "input_sha256": "123394cf58fdbb70ad36c4225133507dddb500f979be029513eceb9a83c31e1a",
+      "input_summary_sha256": "f0b2fec36dd057f1e0b2848a33ada569582775dd43bdc4071989b8e31f6803e2",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04883-10",
+      "input_sha256": "27412ebe0b5c20441b70f2d9c062fbb7d8c4f16137e60fadce1817000e4fed6f",
+      "input_summary_sha256": "a3413b748a3b58dab77dc79309c1967cca0d20913d390352ee6997ee88a6f066",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-02436-10",
+      "input_sha256": "14ce5e446c4c95144e6270dbc7666f2a00e62c96b86147555e0cfeb8d46b1945",
+      "input_summary_sha256": "e55eb6782611991d8f7fd7d3abc9e8b463a9a6cc8fdaea140323058a466918b0",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-02578-5",
+      "input_sha256": "51869e3ac916daf5cf14f0408a1d6ab99ddc96d919b05e4214f86e2f14a2fe84",
+      "input_summary_sha256": "6196e76123834d2cf4cf8b4cf23e7d85df64895446b0af88d6a87911da84626e",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-01652-5",
+      "input_sha256": "5a7944cf1d05b82197b6289bc5b8bd275b3aa6a6014d0724308a603e64a4ea63",
+      "input_summary_sha256": "afa131b489a022c1a59bae3a1c4f9e8ac31811d6a6664f56948ecb99c691fd31",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-08788-10",
+      "input_sha256": "4d799031c90b71b5d913ecfdfd368d1c615b08466b9f2351c70a1cc29501e65c",
+      "input_summary_sha256": "2ceecbd8343240178ab6bc832efd4bae77db0afcc4892b0cd970cb3945af49b3",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-05354-5",
+      "input_sha256": "22fb7c0f697dcc9fb41928936036bc8c7b3f25c7ced1824cb888db1ef43dcfdf",
+      "input_summary_sha256": "c426e816171d23b13851ff271ceb163f1a45e7d7d355ff61935c53f8bcf1dff9",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-02325-5",
+      "input_sha256": "98088fa241f3c62c6310ad6eace53bc7e65e5ed216cfa55262bca8d93d6b294a",
+      "input_summary_sha256": "c7ee65c24d398d6b6ffdde3f538add5bd8d843a05c9511c491429a06a632465e",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-09580-5",
+      "input_sha256": "afdb84c521b75f6d099f68fbe0c48bc3d40cb73a8ae70c1f85374d97b92c19b1",
+      "input_summary_sha256": "a2cd2a44460e423e12fd39a1d4bda6066262fe7a925c679b6116b920cb7acefb",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-07132-10",
+      "input_sha256": "69b956c85b75e8a0f7909a14924552e39f2f3a70c0e2b43282eadffd42e1a3ae",
+      "input_summary_sha256": "bd3bdf8598743f1a2cfa6ce9aab9b49e19ca5abe23f2767a50c89f5cff9f41be",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04694-10",
+      "input_sha256": "fa44f3f5ae9942d2388e9d1151e7ff9c5ec154560859b0807f9f398374d1871b",
+      "input_summary_sha256": "eac96318d87c0ae720d9d2891d717054589d2db3f6804443d56c233cbe78f562",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04654-10",
+      "input_sha256": "2ee744cf354a969fae8b2c07f785bb347d3a71ddf6d87e3f616de91c6621f258",
+      "input_summary_sha256": "368a1399385ef2b900380372550299f468b35b514352304691c1553754c5ca7a",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-06546-5",
+      "input_sha256": "00d680c88fb04b59973c6883204a735a6b574e734a843aaca78e6c9c89d07418",
+      "input_summary_sha256": "836b0df7a772a1d00e7869b15e03c155cc66bd0ab0b02ebd0dbc6d06ca0c0bf0",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-08088-10",
+      "input_sha256": "758a6f08f5e76732ad963f67adee3aab3a9c8a4d8ff40d2512f5ab4372ccb526",
+      "input_summary_sha256": "3bc4150b5b77eab876dd1c5aeb45eaa483fb9748be0e588b8ad260c49ed63c8e",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-03864-10",
+      "input_sha256": "3e7229e3b0da479b13851185f8d6f279cacd80e127777dffaad5159e3ba7042b",
+      "input_summary_sha256": "b1abba7f4845f3aff84b0f81ed4f96b559ab9730da13a75fad44871a3919c7ce",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04846-5",
+      "input_sha256": "059af726bfd2aab47c7a4c7367f5edb89d37cf7a4f60cc049e879b9b1796c3b0",
+      "input_summary_sha256": "df49fea5fbae1d7197db13a6fb37935445f85ecaf8161bee7e7af8a0db6dc078",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-09045-10",
+      "input_sha256": "35ffbdc396847b576e613febb76dc2fdcb17468ccf5ca110b2c2d27779abb000",
+      "input_summary_sha256": "c016ab58460199454a110ef0a4b125a0da768bb5446146b7517fc9b322674304",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-01191-10",
+      "input_sha256": "39de25c7af4529281692be19dce478d42f2ae54f792ba28b0e749b60274ff68f",
+      "input_summary_sha256": "b4eb86f6ddb1006f793173dbeeabab168364ccdb5b650b2099573edbc37a9c45",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-07592-10",
+      "input_sha256": "bb757e40221dcda897b11b2f9c8b0b52ee09b5761459f4822131a7e457cfbb15",
+      "input_summary_sha256": "97a78f38f11e364e4fc2b6a70e33ad1c4892c5e43d7bbd0b9208735665c2630d",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-06739-10",
+      "input_sha256": "cd55c4dfd0105290fdf89ed91917c9f655faabcc2b36a9629b968a04140154e4",
+      "input_summary_sha256": "666181c9f4cff416c410aa3269184fa07dea45fd96345971d7faf11909c34b8b",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00797-10",
+      "input_sha256": "f8d6933a42a1a54240d9dc583ca9d2163e61b73453822521c902db0343255095",
+      "input_summary_sha256": "450a38fe4ff7e3d0448bf4502b44bf78f7a9c4ad6cc6fceeec5247deeed731ae",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-01454-5",
+      "input_sha256": "f9f24409cadcc31dc72d8929008107e6dec43e2db2216e5e77de184b23387fc6",
+      "input_summary_sha256": "fc959eea233d296f2e50f3221afddf0dd5653fba0c99142b09f187b17607634b",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04711-10",
+      "input_sha256": "bd7c350f5ed6960bb25cdd06798e6b79932d16fe7fbcd406d8d9eaffeab149d7",
+      "input_summary_sha256": "74765b576c0f1e8fa7a008ae5bf0d2f71a4cce2b29d4feeb7343ef4205b81d22",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-08175-10",
+      "input_sha256": "5f87bc7eb2aa41a1d7b6f73423460b79c4411b4674cc0d811757bf3178bd46cc",
+      "input_summary_sha256": "64eee8b0628cab4d39af97e7b46424d2732d6834be183d40be93e4f79996585a",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-06501-10",
+      "input_sha256": "116e2513d5c785540b6e0775220fb06516546a7205944ffc7ffb35b441292a2a",
+      "input_summary_sha256": "9c951548f5c7e35f70f32c1b9ee7d833281c08d2f7b8d3db6ed1fcee6dedb990",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-09574-5",
+      "input_sha256": "5729c817b58e2bd316f2f309fa38db095b3aa45d0467649eb3e0379b46508014",
+      "input_summary_sha256": "899b1c5092fdd4dd1c637a7302a64ee255463ae3c2e63ab438fd7b8d5e011c54",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-06722-10",
+      "input_sha256": "b256df4aed7ffedfb1a3e67862b07ea08c0f6633c5515ac0d68c6d636a17e86e",
+      "input_summary_sha256": "bef9552ee18544b5576c36dc612758c6ecd8c666552ef7cff1ef1cb7c3e34066",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-03691-5",
+      "input_sha256": "9cd4e3ffefe0967744efbfdbb4a7d3e011734c75e7fa6b8fdff977a9c99d4190",
+      "input_summary_sha256": "de4f7396358426bfc98bc642181ea0588c8dbc2976bb751fc3e7c9555adf92ec",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-08185-5",
+      "input_sha256": "7f499a22d1a963a6426625f02496193f11e7e32607723d0671ee44678d626aaa",
+      "input_summary_sha256": "1d92703e2ebd7c5d9303304b6695e850e53492c47b2172f06c0dfc4ce76142a0",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-00679-5",
+      "input_sha256": "28cbffaa748b5e670c362beedca6cdd2885085fe19060b84d0cb2e647dc1fc2f",
+      "input_summary_sha256": "7b6f443a1dd467480b5c526a21bbb0cd254ac3426f70846efa58e0d7f9bfb658",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-08224-5",
+      "input_sha256": "2ddce07ebcd4931aa35085f731c99e91f64e36231c5a386bb98a6d14c61bc3be",
+      "input_summary_sha256": "66310c8833b3eb1ca7cb41f4d6253a2561f6c1d8addd62c6f6ded4887a1229b9",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    },
+    {
+      "id": "clevrer-train-04362-10",
+      "input_sha256": "975825c0d642fa2dffb7886a75a4cd8711e99c161c9e15b3aba1352c827843fb",
+      "input_summary_sha256": "2c402af84096caf228f9217828e1af0fbf697ba9eeb35f73699f5dc25876e717",
+      "answer_token_ids": {
+        "yes": 4443,
+        "no": 1904,
+        "U": 236836
+      }
+    }
+  ],
+  "paired_inputs": 50,
+  "actual_forwards": 100,
+  "base": {
+    "count": 50,
+    "accuracy": 0.5,
+    "ece15": 0.4895966581092426,
+    "brier": 0.9674208625945978,
+    "coverage_at_error": 0.06,
+    "max_error": 0.05
+  },
+  "candidate": {
+    "count": 50,
+    "accuracy": 0.54,
+    "ece15": 0.4599112032169999,
+    "brier": 0.8954064711821491,
+    "coverage_at_error": 0.06,
+    "max_error": 0.05
+  },
+  "records_sha256": "3d2ff816cf6cc0643cf3a7ff1862c64800d006eb25eaf32838b411aca9033146",
+  "baseline_method": "same resident E2B with PEFT disable_adapter; never E4B scores",
+  "duration_seconds": 69.71026251651347
+}

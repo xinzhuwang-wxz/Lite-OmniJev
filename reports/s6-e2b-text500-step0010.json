@@ -1,0 +1,67 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+    "--adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001/adapter-invocation-step-0010",
+    "--data",
+    "/root/autodl-tmp/s0-text-dev-001/artifacts/text-dev-001-a/dev.jsonl",
+    "--passes",
+    "1",
+    "--output-dir",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-text500-step0010",
+    "--report",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s6-e2b-text500-step0010.json"
+  ],
+  "model_revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+  "adapter_sha256": "e49accdf456f3f8599bb02583749b3d8a5d4fd59ade7e35939558c495961e8f2",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001/adapter-invocation-step-0010",
+  "data_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+  "samples": 500,
+  "passes": 1,
+  "video_num_frames": 16,
+  "repeat_identical": null,
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.884,
+    "ece15": 0.09897063334992162,
+    "brier": 0.20939498578069218,
+    "coverage_at_error": 0.888,
+    "max_error": 0.05,
+    "product_accuracy": 0.884,
+    "mean_p_insufficient": 0.008501467840517838,
+    "max_p_insufficient": 0.9999985867425645,
+    "predicted_insufficient": 0
+  },
+  "counterfactual": false,
+  "code_revision": null,
+  "script_sha256": "12d387e778a685a8f49ef223f5fa2d26538e3e6a052c7c8e5013677186ad9c68",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "b867b269bdbfbe7758d7983a9b482283f7844609f91a9b8e975d65a59acbf1c8",
+  "timing": {
+    "started_at": 1792142129.4229577,
+    "finished_at": 1792142196.1341996,
+    "duration_seconds": 66.71124219894409
+  },
+  "image_max_soft_tokens": {
+    "requested": null,
+    "effective": null
+  }
+}
