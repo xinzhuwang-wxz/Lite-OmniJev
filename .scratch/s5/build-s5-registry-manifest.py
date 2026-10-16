@@ -54,6 +54,7 @@ def main() -> int:
         groups.append({"path": str(relative), "sha256": entry["sha256"], "binding": binding})
         fitted.append({"cohort": key[0], "primitive": key[1]})
     require(seen == set(FITTED_GROUPS), "fitted_groups_mismatch")
+    adapter_sha = artifacts[0]["binding"]["adapter_weights_sha256"]
     unfitted = [
         {"cohort": c, "primitive": p}
         for c in ALL_COHORTS
@@ -64,7 +65,7 @@ def main() -> int:
     recipe = report.get("runtime_recipe")
     manifest = {
         "schema_version": 2,
-        "model_version": report["adapter_sha256"][:16],
+        "model_version": adapter_sha[:16],
         "calibration_version": args.calibration_version,
         "groups": groups,
         "fitted": fitted,
