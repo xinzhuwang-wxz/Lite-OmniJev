@@ -119,7 +119,17 @@ def pilot_paths(
     temporal_order_contrast: bool = False,
     native_event_condition: bool = False,
     video_specialist: bool = False,
+    video_text_matched: bool = False,
 ) -> list[tuple[str, Path, Path, Path]]:
+    if video_text_matched:
+        return [
+            (
+                "s4-video-text-matched",
+                root / "reports/s4-video-text-matched-training-001.json",
+                root / "artifacts/s4-video-text-matched-train-001",
+                root / "artifacts/s4-video-text-matched-pilot-001",
+            )
+        ]
     if video_specialist:
         return [
             (
@@ -576,7 +586,11 @@ SPECIALIST_PREP_SHA = "af13cfecc2ca1a27985c5fe25528b0b12578e2c5ddc66d517a86e14f7
 SPECIALIST_DATA_SHA = "11d453d3521646df888c7899b6a0a67ad4a5606d956251c96d69b41e73b0cdbe"
 
 
-def native_parent_binding(prep, launch, final, *, specialist=False):
+MATCHED_BASE_SHA = "5b3d3a26bfad2f35dc85e3f166a5d77f3c0996469fa6cbd0cbe962aa98b7e8b6"
+MATCHED_PREP_SHA = "3e764378147c06816a3f14fe71967f53d83fb50871237e094ceb19587419db93"
+
+
+def native_parent_binding(prep, launch, final, *, specialist=False, text_matched=False):
     claim_terminal(final, "s4-video-specialist" if specialist else "s4-native-event-condition")
     require(
         prep.get("status") == "data_ready_only"
@@ -594,6 +608,15 @@ def native_parent_binding(prep, launch, final, *, specialist=False):
             and prep.get("draws_per_sample") == 2
             and prep.get("new_source_families") == 0,
             "specialist_storage_draw_contract",
+        )
+    elif text_matched:
+        require(
+            prep.get("video_rows") == prep.get("video_families") == 60
+            and prep.get("pair_count") == 30
+            and prep.get("pair_metadata_only") is True
+            and prep.get("nonmedia_prefix_question_equal") is True
+            and prep.get("actual_draw_pair_offsets") == [0, 2, 4],
+            "matched_preparation_contract",
         )
     else:
         require(
@@ -636,7 +659,54 @@ def native_parent_binding(prep, launch, final, *, specialist=False):
         require(config.get("modality") == "video", "specialist_video_only")
 
 
-def native_event_bindings(root, prepared, prep, final, runtime):
+def matched_nonmedia_sha(sample):
+    prefix = sample.prefix.model_dump(mode="json")
+    prefix.pop("media")
+    question = sample.questions[0].model_dump(mode="json")
+    question.pop("target")
+    return hashlib.sha256(
+        json.dumps({"prefix": prefix, "question": question}, sort_keys=True).encode()
+    ).hexdigest()
+
+
+def matched_pair_binding(left, right, left_program, right_program, metadata):
+    from scripts.s1_text_pools import canonical_sample_sha
+
+    require(
+        left.meta.pool == right.meta.pool == "train"
+        and left.meta.family_id != right.meta.family_id
+        and left.prefix.media[0].sha256 != right.prefix.media[0].sha256,
+        "matched_train_different_media_family",
+    )
+    require(
+        {left.questions[0].target.value, right.questions[0].target.value} == {"yes", "no"}
+        and left_program == right_program
+        and matched_nonmedia_sha(left) == matched_nonmedia_sha(right),
+        "matched_exact_nonmedia_program_opposite_gold",
+    )
+    require(
+        metadata["model_nonmedia_question_sha256"] == matched_nonmedia_sha(left)
+        and metadata["official_program_sha256"]
+        == hashlib.sha256(json.dumps(left_program, sort_keys=True).encode()).hexdigest()
+        and metadata["text_sha256"]
+        == hashlib.sha256(left.questions[0].instruction.encode()).hexdigest(),
+        "matched_metadata_identity",
+    )
+    members = {m["item_id"]: m for m in metadata["members"]}
+    require(set(members) == {left.id, right.id}, "matched_pair_member_ids")
+    for sample in (left, right):
+        m = members[sample.id]
+        require(
+            m["family_id"] == sample.meta.family_id
+            and m["sample_sha256"] == canonical_sample_sha(sample)
+            and m["official_source_sha256"] == sample.meta.source_sha256
+            and m["media_sha256"] == sample.prefix.media[0].sha256
+            and m["original_gold"] == sample.questions[0].target.value,
+            "matched_source_member",
+        )
+
+
+def native_event_bindings(root, prepared, prep, final, runtime, *, text_matched=False):
     import random
     import zipfile
     from collections import Counter
@@ -644,16 +714,20 @@ def native_event_bindings(root, prepared, prep, final, runtime):
     from scripts.s0_media_dev import source_hash_for_video
     from scripts.s1_text_pools import canonical_sample_sha
 
-    launch, lb = read_json(root / "reports/s4-native-event-condition-launch-001.json")
-    native_parent_binding(prep, launch, final)
-    native_parent_binding(prep, launch, runtime)
+    prefix = "s4-video-text-matched" if text_matched else "s4-native-event-condition"
+    launch, lb = read_json(root / "reports" / (prefix + "-launch-001.json"))
+    native_parent_binding(prep, launch, final, text_matched=text_matched)
+    native_parent_binding(prep, launch, runtime, text_matched=text_matched)
     require(
         launch["status"] == final["status"] and launch["exit_code"] == final["exit_code"],
         "native_launch_terminal",
     )
     require(
-        sha(prepared / "report.json") == launch["prepared_report_sha256"] == NATIVE_PREP_SHA
-        and final["data_sha256"] == runtime["data_sha256"] == NATIVE_DATA_SHA,
+        sha(prepared / "report.json")
+        == launch["prepared_report_sha256"]
+        == (MATCHED_PREP_SHA if text_matched else NATIVE_PREP_SHA)
+        and final["data_sha256"] == runtime["data_sha256"] == prep["output_sha256"]["train.jsonl"]
+        and (text_matched or final["data_sha256"] == NATIVE_DATA_SHA),
         "native_fixed_preparation_data",
     )
     bindings = {lb["path"]: lb["sha256"]}
@@ -665,14 +739,19 @@ def native_event_bindings(root, prepared, prep, final, runtime):
     for name, expected in prep["output_sha256"].items():
         require(Path(name).name == name, "native_safe_output_name")
         bound(prepared / name, expected)
-    base = root / "artifacts/s4-pilot-exposure-015"
+    base = root / (
+        "artifacts/s4-pilot-exposure-017-retry-001"
+        if text_matched
+        else "artifacts/s4-pilot-exposure-015"
+    )
+    base_sha = MATCHED_BASE_SHA if text_matched else NATIVE_BASE_SHA
     require(
         prep["exposure_base"]["report_sha256"]
         == launch["latest_exposure_report_sha256"]
-        == NATIVE_BASE_SHA,
+        == base_sha,
         "native_base015",
     )
-    bound(base / "report.json", NATIVE_BASE_SHA)
+    bound(base / "report.json", base_sha)
     bound(base / "inventory-manifest.json", prep["exposure_base"]["manifest_sha256"])
     recovered_path = root / "reports/s4-continuous-main-pool-launch-recovered-002.json"
     recovered = json.loads(recovered_path.read_bytes())
@@ -680,7 +759,15 @@ def native_event_bindings(root, prepared, prep, final, runtime):
     bound(Path(original["path"]), original["sha256"])
 
     sources = root.parent / "s4-native-event-cpu-001"
-    bound(sources / "prepare-native-event-condition-pilot.py", prep["helper_sha256"])
+    bound(
+        sources
+        / (
+            "prepare-video-text-matched-pilot.py"
+            if text_matched
+            else "prepare-native-event-condition-pilot.py"
+        ),
+        prep["helper_sha256"],
+    )
     for name, expected in prep["reused_helper_sha256"].items():
         require(
             name in {"inspect-temporal-order-contrast", "prepare-claim-pair-pilot"},
@@ -751,14 +838,37 @@ def native_event_bindings(root, prepared, prep, final, runtime):
         == {k: v for k, v in replay.items() if v["meta"]["modality"] != ["video"]},
         "native_same60_replay",
     )
-    metadata = json.loads((prepared / "native-program-metadata.json").read_bytes())
-    require(
-        metadata["metadata_only"] is True
-        and metadata["target_source"] == "original official gold only",
-        "native_proxy_metadata_only",
-    )
-    byid = {m["item_id"]: m for m in metadata["rows"]}
+    if text_matched:
+        metadata = json.loads((prepared / "matched-pair-metadata.json").read_bytes())
+        require(
+            metadata["metadata_only"] is True
+            and metadata["target_source"]
+            == "original official gold only; pairs are metadata, no pairloss",
+            "matched_metadata_only",
+        )
+        byid = {}
+        for pair in metadata["rows"]:
+            require(
+                pair.get("metadata_only") is True and len(pair["members"]) == 2, "matched_pair_size"
+            )
+            for member in pair["members"]:
+                require(member["item_id"] not in byid, "matched_duplicate_member")
+                byid[member["item_id"]] = {
+                    **member,
+                    "program_sha256": pair["official_program_sha256"],
+                    "pair_metadata": pair,
+                }
+        require(len(metadata["rows"]) == 30, "matched_pair_count")
+    else:
+        metadata = json.loads((prepared / "native-program-metadata.json").read_bytes())
+        require(
+            metadata["metadata_only"] is True
+            and metadata["target_source"] == "original official gold only",
+            "native_proxy_metadata_only",
+        )
+        byid = {m["item_id"]: m for m in metadata["rows"]}
     require(set(byid) == set(video), "native_metadata_members")
+    programs = {}
     scenes = {
         s["scene_index"]: s for s in json.loads((official / "questions/train.json").read_bytes())
     }
@@ -788,13 +898,15 @@ def native_event_bindings(root, prepared, prep, final, runtime):
                 == hashlib.sha256(json.dumps(q["program"], sort_keys=True).encode()).hexdigest(),
                 "native_program_metadata_sha",
             )
-            info = archive.getinfo(m["annotation_member"])
-            require(
-                0 < info.file_size < 5_000_000
-                and not info.flag_bits & 1
-                and hashlib.sha256(archive.read(info)).hexdigest() == m["annotation_sha256"],
-                "native_annotation_binding",
-            )
+            programs[ident] = q["program"]
+            if not text_matched:
+                info = archive.getinfo(m["annotation_member"])
+                require(
+                    0 < info.file_size < 5_000_000
+                    and not info.flag_bits & 1
+                    and hashlib.sha256(archive.read(info)).hexdigest() == m["annotation_sha256"],
+                    "native_annotation_binding",
+                )
     mapping = version_mapping(
         Manifest.model_validate_json((prepared / "inventory-manifest.json").read_bytes())
     )
@@ -822,6 +934,20 @@ def native_event_bindings(root, prepared, prep, final, runtime):
             == {"yes": 3, "no": 3},
             "native_actual_block_gold",
         )
+        if text_matched:
+            for offset in (0, 2, 4):
+                left, right = block[offset : offset + 2]
+                matched_pair_binding(
+                    left,
+                    right,
+                    programs[left.id],
+                    programs[right.id],
+                    byid[left.id]["pair_metadata"],
+                )
+                require(
+                    byid[right.id]["pair_metadata"] == byid[left.id]["pair_metadata"],
+                    "matched_actual_pair_adjacency",
+                )
     for name, expected in [
         ("adapter_model.safetensors", final["init_adapter"]["weights_sha256"]),
         ("adapter_config.json", final["init_adapter"]["config_sha256"]),
@@ -830,8 +956,7 @@ def native_event_bindings(root, prepared, prep, final, runtime):
     if final["status"] == "completed":
         require(final["adapter_sha256"] == runtime["adapter_sha256"], "native_final_adapter")
         bound(
-            root
-            / "artifacts/s4-native-event-condition-train-001/adapter/adapter_model.safetensors",
+            root / "artifacts" / (prefix + "-train-001") / "adapter/adapter_model.safetensors",
             final["adapter_sha256"],
         )
     return bindings, mapping
@@ -1580,16 +1705,26 @@ def base_inventory(
     temporal_order_contrast: bool = False,
     native_event_condition: bool = False,
     video_specialist: bool = False,
+    video_text_matched: bool = False,
 ) -> tuple[Path, dict[str, str] | None]:
-    if native_event_condition or video_specialist:
+    if native_event_condition or video_specialist or video_text_matched:
         exposure = root / (
-            "artifacts/s4-pilot-exposure-016"
+            "artifacts/s4-pilot-exposure-017-retry-001"
+            if video_text_matched
+            else "artifacts/s4-pilot-exposure-016"
             if video_specialist
             else "artifacts/s4-pilot-exposure-015"
         )
         report, binding = read_json(exposure / "report.json")
         require(
-            binding["sha256"] == (SPECIALIST_BASE_SHA if video_specialist else NATIVE_BASE_SHA)
+            binding["sha256"]
+            == (
+                MATCHED_BASE_SHA
+                if video_text_matched
+                else SPECIALIST_BASE_SHA
+                if video_specialist
+                else NATIVE_BASE_SHA
+            )
             and report.get("exit_code") == 0
             and report.get("unknown_update_bearing_inputs") == 0,
             "native_base015_passed",
@@ -1711,6 +1846,7 @@ def prepare(
     temporal_order_contrast: bool = False,
     native_event_condition: bool = False,
     video_specialist: bool = False,
+    video_text_matched: bool = False,
 ) -> dict[str, Any]:
     if polarity_arm is not None:
         require(polarity_arm in {"control", "polarity"}, "polarity_single_arm")
@@ -1742,6 +1878,7 @@ def prepare(
             temporal_order_contrast=temporal_order_contrast,
             native_event_condition=native_event_condition,
             video_specialist=video_specialist,
+            video_text_matched=video_text_matched,
         )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
@@ -1757,12 +1894,13 @@ def prepare(
             or coverage_segment003
             or native_event_condition
             or video_specialist
+            or video_text_matched
         ) and base_preparation_binding is not None:
             prior_base = json.loads(Path(base_preparation_binding["path"]).read_bytes())
             bindings.update(prior_base["all_bound_input_sha256"])
         prior_base = (
             json.loads(Path(base_preparation_binding["path"]).read_bytes())
-            if native_event_condition or video_specialist
+            if native_event_condition or video_specialist or video_text_matched
             else {}
         )
         mutable_continuous = {}
@@ -1788,6 +1926,7 @@ def prepare(
             temporal_order_contrast=temporal_order_contrast,
             native_event_condition=native_event_condition,
             video_specialist=video_specialist,
+            video_text_matched=video_text_matched,
         ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
@@ -1821,9 +1960,12 @@ def prepare(
             is_segment003 = coverage_segment003 and name == "s4-temporal-coverage-segment003"
             is_order = temporal_order_contrast and name == "s4-temporal-order-contrast"
             is_specialist = video_specialist and name == "s4-video-specialist"
+            is_matched = video_text_matched and name == "s4-video-text-matched"
             is_native = (
-                native_event_condition and name == "s4-native-event-condition"
-            ) or is_specialist
+                (native_event_condition and name == "s4-native-event-condition")
+                or is_specialist
+                or is_matched
+            )
             is_polarity = polarity_arm is not None and name == "s4-video-polarity-" + polarity_arm
             if is_polarity:
                 claim_terminal(final, name)
@@ -1871,7 +2013,12 @@ def prepare(
             if is_native:
                 binder = specialist_bindings if is_specialist else native_event_bindings
                 extra_bindings, extra_mapping = binder(
-                    root, preparation_dir, prep_report, final, runtime_report
+                    root,
+                    preparation_dir,
+                    prep_report,
+                    final,
+                    runtime_report,
+                    **({"text_matched": True} if is_matched else {}),
                 )
                 bindings.update(extra_bindings)
                 mappings.update(extra_mapping)
@@ -2309,10 +2456,11 @@ def prepare(
             report["polarity_arm"] = polarity_arm
         if coverage_segment003:
             report["coverage_segment003_included"] = True
-        if native_event_condition or video_specialist:
+        if native_event_condition or video_specialist or video_text_matched:
             report.update(
                 native_event_condition_included=True,
-                video_specialist_included=video_specialist,
+                video_specialist_included=video_specialist
+                or bool(prior_base.get("video_specialist_included")),
                 base_exposure_report=base_preparation_binding,
                 continuous_invocations=prior_base["continuous_invocations"],
                 continuous_actual_global_draws_seen=prior_base["actual_global_draws_seen"],
@@ -2320,10 +2468,20 @@ def prepare(
                 global_pool_draw_capacity=prior_base["global_pool_draw_capacity"],
                 native_actual_draws_seen=(
                     prior_base["native_actual_draws_seen"]
-                    if video_specialist
+                    if video_specialist or video_text_matched
                     else pilots[0]["steps_completed"] * 12
                 ),
                 continuous_pool_capacity_not_exposure=True,
+            )
+        if video_text_matched:
+            report.update(
+                video_text_matched_included=True,
+                text_matched_actual_draws_seen=pilots[0]["steps_completed"] * 12,
+                text_matched_pairs=30,
+                specialist_actual_draws_seen=prior_base["specialist_actual_draws_seen"],
+                specialist_storage_samples=prior_base["specialist_storage_samples"],
+                specialist_unique_families=prior_base["specialist_unique_families"],
+                specialist_new_source_families=0,
             )
         if video_specialist:
             report.update(
@@ -2907,6 +3065,7 @@ def main() -> int:
         action="store_true",
         help="Use012 base; bind30-family independently evaluated order-program gold",
     )
+    parser.add_argument("--video-text-matched", action="store_true")
     parser.add_argument("--video-specialist", action="store_true")
     parser.add_argument("--native-event-condition", action="store_true")
     parser.add_argument("--continuous-main-pool", action="store_true")
@@ -2955,6 +3114,7 @@ def main() -> int:
                 temporal_order_contrast=args.temporal_order_contrast,
                 native_event_condition=args.native_event_condition,
                 video_specialist=args.video_specialist,
+                video_text_matched=args.video_text_matched,
             )
         )
     except Exception:
