@@ -1,3 +1,23 @@
+# Final source refresh — exact3739a6d (2026-10-16)
+
+**No remaining concrete source blocker identified in this exact committed snapshot; Linux boundary probes are still required before activation. This is not runtime approval.** Producer SHAa030f2fa… and broker SHA762189c3… match the requested values exactly. Earlier review below is retained historically; its three findings are addressed in source and must not be presented as unresolved final-code blockers.
+
+- ACL lease now uses global nonblocking flock, root0600 fsynced journal/directory, forked setsid guardian retaining lock, EOF kill of permanently fresh-UID processes plus exact original ACL restoration. Stale journal startup validates current ACL is original or exactly permitted named-entry set before recovery. Guardian covers parent death even in the old-handler restoration window. Recovery after *both* supervisor and guardian death waits for the next coordinator startup; do not claim unconditional immediate recovery after arbitrary multiple failures.
+- Actual worker Popen now uses fixed preexec NoNewPrivs; worker entry verifies nonroot and zero CapEff/CapPrm/CapAmb. The intended actual worker/probe privilege floor is aligned. Root should still observe exact UID/GID/Groups and NoNewPrivs in Linux, rather than treating imports or mocks as proof.
+- Source cal/holdout deny list, root listing, root0600 credential sentinel and existing .ssh, model/source write refusals are now explicit. Named /root--x still allows existing publicly readable descendants; this is documented DAC scope, not exact read whitelist/network sandbox. The trusted root supervisor and immutable source/spec are part of the security boundary.
+
+Minimum activation-side Linux CPU checks (root/owner performs, reviewer did not mutate anything):
+
+1. Fixed actual worker runtime probe under the intended ACL lease: expected UID/GID, no supplementary groups, NoNewPrivs1, CapEff/Prm/Amb0. Confirm public runtime imports and bound model metadata can be read; no model forward/GPU.
+2. Existing negative probes must truly return EACCES/EPERM for original cal/holdout, credential sentinel/.ssh if present, other private tree/root listing, model/source write and output export write. Do not read or print private/credential payload; use open-denial or trusted no-content sentinel results only.
+3. Normal exit, intentional worker failure and timeout: exact ACL text/hash restored, run traversal revoked, no worker survives, global lock released and journal removed.
+4. SIGTERM and SIGKILL supervisor tests on a fixture-only short worker: guardian survives parent process group, receives EOF (no leaked pipe writer), kills fresh-UID descendants, restores exact ACL and releases lock. Competing coordinator must refuse until guardian completes. No original asset mode changes.
+5. Controlled stale-journal startup recovery after simulated dual failure; unexpected current ACL must fail closed without overwriting unrelated ACL. Restore failure/guardian exit2 must retain recovery evidence and suppress success/export activation. These tests involve only root-created metadata sentinels, never private gold or GPU.
+
+Final source still has provenance33-token/rawlogit/7T export checks described below. No final author's test suite was rerun by reviewer; committed source inspection and exact hashes are the evidence. No extra permissions/account requirement is introduced. Guardian/global journal are trusted-root coordination, not protection from a hostile root actor or noncooperating external ACL writer.
+
+---
+
 # Private calibration broker review — in-progress source snapshot
 
 2026-10-16. Read-only review of the separate rank64 worktree files; exact SHA in JSON. No ACL/UID/file-mode/runtime changes, private sample reads, GPU or recursive agents. This is **not final approval**: implementation changed during review and final commit/tests are forthcoming. Parent already has authority for necessary reversible access; no new permission flow is proposed.

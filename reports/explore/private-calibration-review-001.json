@@ -1,5 +1,5 @@
 {
-  "status": "in_progress_snapshot_requires_fixes_not_final_approval",
+  "status": "exact_commit_source_review_no_remaining_identified_blocker_linux_runtime_probes_pending",
   "scope": "read-only source review; no private inputs/ACL/UID/runtime/GPU operations",
   "source_sha256": {
     "/Users/bamboo/.codex/worktrees/s4-rank64-pilot/Lite-OmniJev/scripts/private_calibration.py": "d4e090ad8337a4a798b96db00ef3bfede89585ea8419b39f69d54a26ed668963",
@@ -19,7 +19,8 @@
         438
       ],
       "issue": "finally and backup do not recover SIGKILL/crash; no durable/global ACL lease lock/recovery, old SIGTERM handler restored before ACL restoration",
-      "minimum_fix": "exclusive /root ACL lease; fsync original/granted ACL+inode+UID/run record before mutation; validated exact recovery after crash with old worker cleanup/revocation; keep signal protection through restore; tests for stale lease/race/restore failure"
+      "minimum_fix": "exclusive /root ACL lease; fsync original/granted ACL+inode+UID/run record before mutation; validated exact recovery after crash with old worker cleanup/revocation; keep signal protection through restore; tests for stale lease/race/restore failure",
+      "resolution_at_final_commit": "addressed_in_source_runtime_validation_pending"
     },
     {
       "id": "WORKER-NNP",
@@ -31,7 +32,8 @@
       ],
       "related": "scripts/private_gold_job.py:145-152",
       "issue": "Actual Popen UID/GID drop omits PR_SET_NO_NEW_PRIVS used by denied_probe; probe is more restricted than actual worker",
-      "minimum_fix": "fixed trusted spawn bootstrap sets NoNewPrivs before worker exec; runtime verifies actual UID/GID/groups/NoNewPrivs/CapEff, not just import success"
+      "minimum_fix": "fixed trusted spawn bootstrap sets NoNewPrivs before worker exec; runtime verifies actual UID/GID/groups/NoNewPrivs/CapEff, not just import success",
+      "resolution_at_final_commit": "addressed_in_source_runtime_validation_pending"
     },
     {
       "id": "ACL-SCOPE",
@@ -44,7 +46,8 @@
         686
       ],
       "issue": "cal/holdout denial and model-write probes exist, but credential/read-list boundaries not demonstrated; /root named --x permits traversal to all already public-readable descendants, not exact file whitelist",
-      "minimum_fix": "explicit declared public-asset scope; fixed private credentials/non-allowlisted-private sentinels and parent listing denials under same actual worker boundary; fail if sealed paths readable, do not widen any modes"
+      "minimum_fix": "explicit declared public-asset scope; fixed private credentials/non-allowlisted-private sentinels and parent listing denials under same actual worker boundary; fail if sealed paths readable, do not widen any modes",
+      "resolution_at_final_commit": "addressed_in_source_runtime_validation_pending"
     }
   ],
   "observed_improvements": [
@@ -68,5 +71,40 @@
   ],
   "gpu_used": false,
   "private_data_read": false,
-  "cost": null
+  "cost": null,
+  "earlier_snapshot_status": "in_progress_snapshot_requires_fixes_not_final_approval",
+  "final_review": {
+    "commit": "3739a6d1885ddde41037dbf6b788bf40cf3a4905",
+    "producer_sha256": "a030f2fa3a1051bd0dcd27ad488e21389a4cc89ccac8ca9db3c4c69e309fd228",
+    "broker_sha256": "762189c3a5374994faae7104f530e81b9f4c37377e760be8aa1792f4c7e8983f",
+    "actual_sha_verified": true,
+    "remaining_identified_code_blockers": [],
+    "activation_approved": false,
+    "linux_runtime_probes_pending": true,
+    "resolved": {
+      "ACL-RECOVERY": "Global flock, durable0600 journal, separate setsid guardian EOF child revocation/exact restoration, stale recovery with ACL allow-set validation. Guardian covers supervisor termination during finally restoration.",
+      "WORKER-NNP": "Popen preexec restrict_child sets NoNewPrivs; verify_child_identity requires nonroot and CapEff/CapPrm/CapAmb0.",
+      "ACL-SCOPE": "All current/original calibration+holdout denial; root-list/credential sentinel/optional .ssh read denial; model/source-write denial. Exact read whitelist is not claimed."
+    },
+    "operating_assumptions": [
+      "Root supervisor/journal/code trusted; no external noncooperating root ACL editor",
+      "Fresh UID permanently reserved and not reused",
+      "Guardian retains lock until restoration; if guardian dies too, next coordinator startup performs recovery",
+      "This is DAC ordinary-identity isolation, not filesystem/network namespace confinement"
+    ],
+    "linux_checks": [
+      "Actual worker UID/GID and empty supplementary groups, NoNewPrivs1, CapEff/Prm/Amb0, reachable verified public runtime/model metadata; no model/GPU forward",
+      "Denial to original calibration/holdout paths, credential sentinel/root/.ssh when exists, other private work tree and root listing; readonly model/source paths; no secret contents printed",
+      "Normal exit and intentional worker exception/timeout restore exact /root ACL and private-run revocation; record only ACL hashes/status",
+      "SIGTERM supervisor cleanup and SIGKILL supervisor EOF guardian: old UID processes terminated, exact ACL restored, lock released, journal removed, no original chmod changes",
+      "Competing coordinator rejected while active guardian holds lock; stale durable journal recovery tested under controlled no-private fixture; unexpected ACL state refuses rather than overwrites",
+      "Fail-closed on guardian restore failure/exit2 and never export successful calibration activation on error"
+    ],
+    "scope": "No ACL/UID mutation or runtime tests by reviewer; source review only; final private fit remains pending"
+  },
+  "final_source_sha256": {
+    "/Users/bamboo/.codex/worktrees/s4-rank64-pilot/Lite-OmniJev/scripts/private_calibration.py": "a030f2fa3a1051bd0dcd27ad488e21389a4cc89ccac8ca9db3c4c69e309fd228",
+    "/Users/bamboo/.codex/worktrees/s4-rank64-pilot/Lite-OmniJev/scripts/private_gold_job.py": "762189c3a5374994faae7104f530e81b9f4c37377e760be8aa1792f4c7e8983f",
+    "/Users/bamboo/.codex/worktrees/s4-rank64-pilot/Lite-OmniJev/tests/test_private_calibration.py": "34141f9978e6aa00b3128b795947f8183fb0bfd5e454436812c8d1ca64ccb377"
+  }
 }
