@@ -21,7 +21,13 @@
     "supplementary_ledger": {
       "path": "artifacts/s4-ensemble-oracle-001/b1-grid-ledger.jsonl",
       "rows": 126,
-      "note": "grid ids declared train; original frozen ledgers unchanged"
+      "sha256": "c011e67353ebddd1ac8c4b9b2de5750254628b98eedd5ca48bd568838594307d",
+      "note": "grid ids declared train via {item_id, pool} rows; original frozen ledgers unchanged"
+    },
+    "launcher": {
+      "path": ".scratch/s4/launch-b1-wsft-pilot.py",
+      "self_test": "LoopConfig-valid both arms; ledger reconcile 126/126 and 292/292 all-train; pinned sha verified",
+      "selftest_artifact": ".scratch/s4/launch-b1-wsft-pilot.selftest.json"
     }
   },
   "family": {
@@ -69,7 +75,8 @@
     },
     "ledger_out": {
       "path": "artifacts/s4-ensemble-oracle-001/b1-wsft-ledger.jsonl",
-      "sha256_prefix": "48ccd7a719718169"
+      "sha256": "bb922bd45b9cde91772be47791eb4206cf1419b29a2b63a2648ca10743371006",
+      "note": "rows use scripts.train_s1 load_ledger_pools keys {item_id, pool}; regenerated 2026-10-16 after key fix"
     },
     "epsilon": 0.05,
     "duplication_ratios": {"unresolvable": [7, 3], "bracketed_tight": [17, 3]},
