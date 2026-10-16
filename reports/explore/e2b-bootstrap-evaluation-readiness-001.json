@@ -1,0 +1,98 @@
+{
+  "status": "cpu_prepared",
+  "exit_code": 0,
+  "gpu_executed_by_this_agent": false,
+  "stage_gate": false,
+  "cohorts": {
+    "text": {
+      "status": "cpu_prepared",
+      "exit_code": 0,
+      "duration_seconds": 21.88554666750133,
+      "samples": 50,
+      "identity": {
+        "model_revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "asset_hashes": {
+          "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "model.safetensors": "2db5482b20d746879bb3ef79b5203e9075a2e2b98f54ec7c2f281c1477ddc550",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "adapter": {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001/adapter-invocation-step-0010",
+          "weights_sha256": "e49accdf456f3f8599bb02583749b3d8a5d4fd59ade7e35939558c495961e8f2",
+          "config_sha256": "97ed24a9615b39c07b4f4061a1c926472667332f32fa94d38adbf8c3387553a8"
+        },
+        "training_report_sha256": "baaaabcee2eeea9637b519f201694a20b38eef64d97d143177ebaa599e9546d7",
+        "data_sha256": "8c7809e8b07673904b71bc4676a49a5e31abb22ee7126f2dc09e8fde45b4e070",
+        "selected_ids_sha256": "6e7f757fa1919ccc2df1930b3f1bc89cb3987cfdc5276003e0e08a66d2823375",
+        "template_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+        "code_hashes": {
+          "scripts/s0_development_baselines.py": "68a173f47b5161c49c2fe250eb445506bc8e760a62d19b2577fd3719197298d4",
+          "train/multimodal.py": "327c78103d16b571a7fd81b7d43c0a3f1be42dfef5cb03cede4faa71201e1b10",
+          "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+          "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+          ".scratch/s4/evaluate-video-motion-coverage.py": "e392f10b7738f9cf776087dfb7cd40b35377d974f986fc5cd9ad47bb77b51246"
+        },
+        "script_sha256": "505095b6dac2fdae01707a9dfe4b85c8813755cc9fc302b087f9bf5d316e7b9e"
+      },
+      "preparation_sha256": "d48dbe11435f64681990751580f4206973025867c06743c177bceef560812d99",
+      "input_bindings_sha256": "ed98b286538130088fa4f72884b7a92a8584181efe960ed0ace34351f0a5e71a",
+      "remote_preparation": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-paired-text50-001/preparation.json"
+    },
+    "video": {
+      "status": "cpu_prepared",
+      "exit_code": 0,
+      "duration_seconds": 41.157798102125525,
+      "samples": 50,
+      "identity": {
+        "model_revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+        "asset_hashes": {
+          "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+          "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+          "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+          "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+          "model.safetensors": "2db5482b20d746879bb3ef79b5203e9075a2e2b98f54ec7c2f281c1477ddc550",
+          "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+          "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+          "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+        },
+        "adapter": {
+          "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001/adapter-invocation-step-0010",
+          "weights_sha256": "e49accdf456f3f8599bb02583749b3d8a5d4fd59ade7e35939558c495961e8f2",
+          "config_sha256": "97ed24a9615b39c07b4f4061a1c926472667332f32fa94d38adbf8c3387553a8"
+        },
+        "training_report_sha256": "baaaabcee2eeea9637b519f201694a20b38eef64d97d143177ebaa599e9546d7",
+        "data_sha256": "79ed30be3a687a6c767c4d7c55c24dc7ac08d5a1698a6f49e3bc7d47e74e63d2",
+        "selected_ids_sha256": "b9a246ac0fb5d05f23e95df2833725bf66c13d62d67a7a84d4d141dba46f1448",
+        "template_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+        "code_hashes": {
+          "scripts/s0_development_baselines.py": "68a173f47b5161c49c2fe250eb445506bc8e760a62d19b2577fd3719197298d4",
+          "train/multimodal.py": "327c78103d16b571a7fd81b7d43c0a3f1be42dfef5cb03cede4faa71201e1b10",
+          "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+          "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+          ".scratch/s4/evaluate-video-motion-coverage.py": "e392f10b7738f9cf776087dfb7cd40b35377d974f986fc5cd9ad47bb77b51246"
+        },
+        "script_sha256": "505095b6dac2fdae01707a9dfe4b85c8813755cc9fc302b087f9bf5d316e7b9e"
+      },
+      "preparation_sha256": "15f52387738d2eab6a4b942197d45602ccf0a7b9bf2a2a6e45d6ada46de10a2d",
+      "input_bindings_sha256": "6201dca78133c9655453629645fed0f3c846b96c3dcb3491ce2cf7d8bafbbc9f",
+      "remote_preparation": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-paired-video50-001/preparation.json"
+    }
+  },
+  "source_archive": "/root/autodl-tmp/s6-e2b-eval-code-001.tar",
+  "source_archive_sha256": "46c87396411a069fcec808e63ce5ec984701e9b8d2911ae2dc0be929b09675dd",
+  "runner_sha256": "505095b6dac2fdae01707a9dfe4b85c8813755cc9fc302b087f9bf5d316e7b9e",
+  "tests": "8 passed; ruff passed",
+  "per_cohort_max_total_seconds": 240,
+  "forwards_per_executed_cohort": 100,
+  "priority": "video50 after root existing text500 and calibration scheduling; do not duplicate candidate text50",
+  "limitations": [
+    "GPU forwards not executed in this slice",
+    "score_records metrics condition on non-U; actual prediction and p_U retained in records",
+    "Existing text500 cannot supply paired candidate scores without equal source/actualtensor identity"
+  ]
+}
