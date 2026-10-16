@@ -1,0 +1,57 @@
+{
+  "schema_version": "lite-omnijev.explore.s6-teacher-cache-prep-001.v1",
+  "status": "jobspec_ready_gpu_pending_main",
+  "purpose": "I5-plain D3P step 1: OneJev-27B full legal+U distribution cache on a fixed TRAIN video slice; no counterfactual probes",
+  "teacher": {
+    "id": "onejev-27b",
+    "repo_id": "OmniJev/OneJev-27B",
+    "revision": "aec969d68e7e8e8b0df051e065c04304c0cd7163",
+    "license": "apache-2.0",
+    "total_bytes": 54735927480,
+    "provenance_bindings": [
+      "configs/project-model-assets.json (per-file hashes)",
+      "reports/s0-development-video-onejev-27b-fla-002.json (real run, video dev500 94.2%)"
+    ]
+  },
+  "inputs": {
+    "train_pool": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-pools-video-001/run-a/train.jsonl",
+      "sha256": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948",
+      "rows": 8299,
+      "license": "CC0-1.0"
+    },
+    "reserves_metadata_only": {"calibration_rows": 900, "holdout_rows": 300}
+  },
+  "slice": {
+    "rule": "video rows sorted by sha256('i5:d3p:' + id), take first 150",
+    "count": 150,
+    "media_root": "/root/autodl-tmp/s3-media-candidates-001/video/media"
+  },
+  "free_cpu_check_passed": {
+    "teacher_video_dev500_entropy_bits": {"mean": 0.731, "median": 0.845, "frac_below_0.1": 0.058},
+    "give_up_threshold": "entropy < 0.1 would cap D3P gains; not triggered"
+  },
+  "gpu_jobs": [
+    {
+      "name": "i5-teacher-cache-150",
+      "entrypoint": "scripts/s0_development_baselines.py",
+      "model_id": "onejev-27b",
+      "estimated_seconds": 660,
+      "records_fields": ["conditional_without_u", "joint_k_plus_u", "p_U", "raw_head_probabilities"]
+    },
+    {
+      "name": "i2-base-cache-150",
+      "entrypoint": "scripts/s0_development_baselines.py",
+      "model_id": "gemma4-e4b-it",
+      "estimated_seconds": 240
+    }
+  ],
+  "acceptance": [
+    "records == 150, finite normalized distributions, p_U recorded",
+    "report and records sha256 pinned; exit 0",
+    "no calibration/holdout file opened"
+  ],
+  "scale_up_option": {
+    "full_train_pool": {"rows": 8299, "estimated_hours_single_pass": 4.8, "decision": "main/user"}
+  }
+}

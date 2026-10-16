@@ -1,0 +1,35 @@
+{
+  "schema_version": "lite-omnijev.explore.s5-r1-grpo-lattice-prep-001.v1",
+  "status": "cpu_derivation_complete_downgraded_to_coupled_loss",
+  "module": ".scratch/s4/r1_lattice.py",
+  "self_checks": {
+    "closed_form_vs_montecarlo_abs_gap": 0.00116,
+    "montecarlo_rollouts": 200000,
+    "seed": 11,
+    "alpha_gamma_gradient_twin_invariant": true,
+    "beta_gradient_coupled_to_twin": true,
+    "example_coupled_grad": {"yes": 0.4, "no": -0.4333333334},
+    "example_coupled_grad_alt_twin": {"yes": -0.1, "no": 0.0666666666}
+  },
+  "decomposition_findings": [
+    "alpha term E[correct] and gamma term E[answerability] are linear per-item expectations; REINFORCE/GRPO on them equals advantage-weighted CE (stopped route, not repeated)",
+    "beta twin term E[1[a!=b]] = 1 - <p_left,p_right>; gradient wrt one side depends on the other side's distribution, so it is not per-item CE",
+    "beta transitivity term is an 8-case polynomial over three distributions; closed form",
+    "all terms have exact closed forms on the single-token lattice, so sampled GRPO adds variance without signal; RL-only justification would require non-closed-form grid metrics, which the current 126-item grid does not have"
+  ],
+  "downgrade_decision": "pilot form is the B1 coupled auxiliary loss (alpha*CE incl U + beta*twin inner-product + optional beta3*(1-P_consistent)); no sampled-GRPO GPU run is scheduled from this slice",
+  "lattice_binding": {
+    "grid": "artifacts/s4-ensemble-oracle-001/b1-grid.jsonl sha 41ebacc452cbd90ff4ffb5e2c5c2cc17d4f3b8a0ca950aebbead46b44e745fe9",
+    "items": 126,
+    "twin_groups": 43,
+    "transitivity_triples": 6,
+    "u_gold_items": 24
+  },
+  "pilot": {
+    "defaults": {"alpha": 1.0, "beta": 0.3, "beta3": 0.1},
+    "trainer_change": "two-forward shared-LoRA coupled loss; math unit-tested CPU, wiring pending main review; arm1 CE-only runs without any code change",
+    "comparison_protocol": "same data/seed/steps, only beta differs; adopt beta only if deltas on video150 and DEV50 are both positive; B1 gate applies to either arm",
+    "gate": "video150 >= 121/150 OR relation/existence subgroups >= +3pp AND DEV50 no regression; else stop route and keep evidence"
+  },
+  "user_directive_note": "RL was one user-suggested example, not a preference; per the no-forced-RL rule this slice follows the derivation and downgrades honestly"
+}
