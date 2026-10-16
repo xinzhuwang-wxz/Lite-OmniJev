@@ -1,0 +1,24 @@
+{
+  "status": "cpu_subset_prepared",
+  "exit_code": 0,
+  "gpu_used": false,
+  "gpu_evaluations": "pending_root_dispatch",
+  "samples": 12,
+  "pairs": 6,
+  "training_authorized": false,
+  "cost": null,
+  "input_directory": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-paired-train12-input-001",
+  "input_report_sha256": "0b352bd26481ab94cb8be26c383ff9b12e88862bfef0d48abe75c81f3be7ae8c",
+  "output_sha256": {
+    "train.jsonl": "9a0cccde8104caa683624cfbb389cd8364bcb4396e771269e7dad6951159badd",
+    "allocation-ledger.jsonl": "7b5a6186fa2e08259ba91899e979795e1b8f709d08f596f258e1172ff5f03ba7",
+    "config-ce.json": "a87e1ad6e03b22a8b9a0ed78484926633abff8c61303fabf238c8abea3c5ccda"
+  },
+  "source_preparation_sha256": "3e764378147c06816a3f14fe71967f53d83fb50871237e094ceb19587419db93",
+  "training_report_sha256": "86e4edc8cc38fc3d0b8589a198e9d70383458078b627d331b3ee92f165b9b1b7",
+  "exposure018_sha256": "b70aa762a2d66492b53d5a44a03c1877d9d3fcd2861e7c5ad43c77b84715e659",
+  "helper_sha256": "3ee41d8290165f9485787ec8d019948cac5d72acac36eb1086482087153681d7",
+  "tests_passed": 2,
+  "selection": "fixed pair-member hash, six whole pairs; no DEV or predictions",
+  "tensor_identity_status": "pending runtime preparation; equal nonmedia canonical fields does not imply equal video inputs"
+}
