@@ -1,0 +1,84 @@
+{
+  "status": "partial_evaluation_admission_applied",
+  "exit_code": 0,
+  "ready": false,
+  "base_manifest_sha256": "e5834b0bb49a4ba19c7cfda5573129c710ec8aed131e43cb781aed6f48d8cf5f",
+  "proposal_sha256": "e138f2048fff5815c3585f671da91ff6be0ed0ba7a37afe0c43a57cc0a46dd4a",
+  "output_manifest_sha256": "8ac03215c8497115c73626c3aa202113f472e436f6b50c0b868c3d7fc2292ce3",
+  "admitted_catalog_ids": [
+    1,
+    4,
+    5,
+    9,
+    10,
+    24,
+    26,
+    27,
+    29,
+    30,
+    31,
+    36,
+    43,
+    48,
+    50,
+    57,
+    58,
+    62
+  ],
+  "remaining_catalog_ids": [
+    2,
+    3,
+    6,
+    11,
+    12,
+    20,
+    21,
+    22,
+    23,
+    25,
+    28,
+    32,
+    33,
+    34,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    44,
+    45,
+    56,
+    59,
+    61,
+    64
+  ],
+  "verified_input_files": 68,
+  "publisher_metadata_checks": [
+    {
+      "url": "https://raw.githubusercontent.com/gorilla-llm/gorilla/916260dfc116bf06793a1af79b4ec8195b0453b6/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    {
+      "url": "https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/9ee07bd481feebf959a6b59d61ea57bdcf30964d/LICENSE",
+      "sha256": "4ef2ff4295d26ab6211235039c132697408cec5391d2c091b41e983771978db8",
+      "bytes": 1068
+    },
+    {
+      "url": "https://raw.githubusercontent.com/gorilla-llm/gorilla/916260dfc116bf06793a1af79b4ec8195b0453b6/berkeley-function-call-leaderboard/data/README.md",
+      "sha256": "22234ad32a0bb921809278d01ed65e932b4e611690dfa17d1e0eb6ba74ab4e27",
+      "bytes": 15282
+    },
+    {
+      "url": "https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/9ee07bd481feebf959a6b59d61ea57bdcf30964d/bbh/README.md",
+      "sha256": "2273d9fd5fc2fd175deb939b99ed52e2945b0225dd1f290a836308ca36efec18",
+      "bytes": 4044
+    }
+  ],
+  "training_admitted": false,
+  "redistribution_admitted": false,
+  "original_manifests_unchanged": true,
+  "gpu_used": false,
+  "runner_sha256": "5aec594439869a4135741484079bc84cf18c71b820ced3e08c1a7ef0e5a41fa5"
+}
