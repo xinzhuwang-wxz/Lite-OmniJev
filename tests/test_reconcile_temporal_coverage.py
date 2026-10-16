@@ -54,3 +54,59 @@ def test_selection_and_exact_replay_binding(mutation):
             code.coverage_families(current, prior, selection)
     else:
         code.coverage_families(current, prior, selection)
+
+
+def test_segment002_paths_retain_first_coverage(tmp_path):
+    code = module()
+    paths = code.pilot_paths(tmp_path, coverage_segment002=True)
+    assert paths[:-1] == code.pilot_paths(tmp_path, temporal_coverage=True)
+    assert paths[-1][1] == tmp_path / "reports/s4-temporal-coverage-training-002.json"
+    assert paths[-1][3] == tmp_path / "artifacts/s4-temporal-coverage-pilot-002"
+
+
+@pytest.mark.parametrize("mutation", [None, "placeholder", "running", "prep_ready", "objective"])
+def test_segment002_parent_comes_from_terminal_launcher(mutation):
+    code = module()
+    chosen = {
+        "path": "/adapter/selected",
+        "weights_sha256": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+        "config_sha256": "a" * 64,
+    }
+    prep = {
+        "status": "data_ready_only",
+        "exit_code": 0,
+        "pending_parent_selection": True,
+        "training_authorized": False,
+        "inventory_isolation": "isolated",
+        "source_admission": "verified_existing_scope",
+        "init_adapter": {"path": "/adapter/placeholder"},
+    }
+    launch = {
+        "status": "completed",
+        "exit_code": 0,
+        "parent_selection": "root_selected_after_first_segment_screening",
+        "selected_init_adapter": chosen,
+    }
+    final = {
+        "init_adapter": chosen,
+        "config": {
+            "sample_count": 120,
+            "steps": 10,
+            "accumulation": 12,
+            "seed": 42,
+            "init_adapter": chosen,
+        },
+    }
+    if mutation == "placeholder":
+        final["init_adapter"] = prep["init_adapter"]
+    elif mutation == "running":
+        launch["status"] = "running"
+    elif mutation == "prep_ready":
+        prep["status"] = "ready_for_preflight"
+    elif mutation == "objective":
+        final["config"]["brier_weight"] = 0.5
+    if mutation:
+        with pytest.raises(ValueError):
+            code.segment002_parent(prep, launch, final)
+    else:
+        code.segment002_parent(prep, launch, final)

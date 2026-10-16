@@ -109,6 +109,7 @@ def pilot_paths(
     temporal_brier: bool = False,
     learnability: bool = False,
     temporal_coverage: bool = False,
+    coverage_segment002: bool = False,
 ) -> list[tuple[str, Path, Path, Path]]:
     paths = [
         (
@@ -126,6 +127,7 @@ def pilot_paths(
         or temporal_brier
         or learnability
         or temporal_coverage
+        or coverage_segment002
     ):
         paths.append(
             (
@@ -135,7 +137,14 @@ def pilot_paths(
                 root / "artifacts/s4-crossmodal-retention-pilot-002",
             )
         )
-    if claim_pair or temporal_curriculum or temporal_brier or learnability or temporal_coverage:
+    if (
+        claim_pair
+        or temporal_curriculum
+        or temporal_brier
+        or learnability
+        or temporal_coverage
+        or coverage_segment002
+    ):
         paths.extend(
             (
                 "s4-claim-pair-" + arm,
@@ -145,7 +154,13 @@ def pilot_paths(
             )
             for arm in ("ce0", "pair01")
         )
-    if temporal_curriculum or temporal_brier or learnability or temporal_coverage:
+    if (
+        temporal_curriculum
+        or temporal_brier
+        or learnability
+        or temporal_coverage
+        or coverage_segment002
+    ):
         paths.append(
             (
                 "s4-temporal-curriculum",
@@ -154,7 +169,7 @@ def pilot_paths(
                 root / "artifacts/s4-temporal-curriculum-pilot-001",
             )
         )
-    if temporal_brier or learnability or temporal_coverage:
+    if temporal_brier or learnability or temporal_coverage or coverage_segment002:
         paths.append(
             (
                 "s4-temporal-brier",
@@ -163,7 +178,7 @@ def pilot_paths(
                 root / "artifacts/s4-temporal-curriculum-pilot-001",
             )
         )
-    if learnability or temporal_coverage:
+    if learnability or temporal_coverage or coverage_segment002:
         paths.append(
             (
                 "s4-train-learnability",
@@ -172,13 +187,22 @@ def pilot_paths(
                 root / "artifacts/s4-train-learnability-001",
             )
         )
-    if temporal_coverage:
+    if temporal_coverage or coverage_segment002:
         paths.append(
             (
                 "s4-temporal-coverage",
                 root / "reports/s4-temporal-coverage-training-001.json",
                 root / "artifacts/s4-temporal-coverage-train-001",
                 root / "artifacts/s4-temporal-coverage-pilot-001",
+            )
+        )
+    if coverage_segment002:
+        paths.append(
+            (
+                "s4-temporal-coverage-segment002",
+                root / "reports/s4-temporal-coverage-training-002.json",
+                root / "artifacts/s4-temporal-coverage-train-002",
+                root / "artifacts/s4-temporal-coverage-pilot-002",
             )
         )
     return paths
@@ -233,6 +257,152 @@ def learnability_subset(prepared: Path, source: Path) -> dict[str, int]:
     targets = [r["questions"][0]["target"]["value"] for r in subset.values()]
     require(targets.count("yes") == targets.count("no") == 6, "learnability_gold_balance")
     return {"unique_samples": 12, "unique_families": 12, "yes": 6, "no": 6, "scheduled_draws": 120}
+
+
+def segment002_parent(prep: dict[str, Any], launch: dict[str, Any], final: dict[str, Any]) -> None:
+    require(
+        prep.get("status") == "data_ready_only"
+        and prep.get("exit_code") == 0
+        and prep.get("pending_parent_selection") is True
+        and prep.get("training_authorized") is False
+        and prep.get("inventory_isolation") == "isolated"
+        and prep.get("source_admission") == "verified_existing_scope",
+        "segment002_data_only_preparation",
+    )
+    require(
+        launch.get("status") in {"completed", "failed"}
+        and type(launch.get("exit_code")) is int
+        and launch.get("parent_selection") == "root_selected_after_first_segment_screening",
+        "segment002_parent_selection",
+    )
+    chosen = launch["selected_init_adapter"]
+    require(
+        chosen.get("weights_sha256")
+        == "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3"
+        and final.get("init_adapter") == chosen
+        and chosen != prep["init_adapter"],
+        "segment002_selected_parent",
+    )
+    config = dict(final["config"])
+    if "init_adapter" in config:
+        require(config.pop("init_adapter") == chosen, "segment002_config_parent")
+    c = LoopConfig.model_validate(config)
+    require(
+        c.sample_count == 120
+        and c.steps == 10
+        and c.accumulation == 12
+        and c.seed == 42
+        and c.brier_weight == c.reference_kl_weight == c.pair_loss_weight == 0,
+        "segment002_ce_contract",
+    )
+
+
+def segment002_provenance(
+    root: Path, prepared: Path, prep: dict[str, Any], final: dict[str, Any]
+) -> dict[str, str]:
+    launch_path = root / "reports/s4-temporal-coverage-launch-002.json"
+    launch, lb = read_json(launch_path)
+    segment002_parent(prep, launch, final)
+    require(
+        sha(prepared / "report.json") == launch["prepared_report_sha256"],
+        "segment002_prepared_receipt",
+    )
+    bindings = {lb["path"]: lb["sha256"]}
+    selection = prep["video_selection"]
+    provenance = selection["provenance"]
+    lineage_path = root / "reports/s4-ce0-video-exposure-001.json"
+    first = root / "artifacts/s4-temporal-coverage-pilot-001"
+    prior = root / "artifacts/s4-temporal-curriculum-pilot-001"
+    for path, expected in (
+        (lineage_path, provenance["lineage_report_sha256"]),
+        (first / "report.json", provenance["first_coverage_report_sha256"]),
+        (prior / "report.json", provenance["original_replay_report_sha256"]),
+        (
+            root.parent
+            / "s4-temporal-coverage-prepare-19a778f/prepare-temporal-coverage-segment002.py",
+            provenance["wrapper_sha256"],
+        ),
+        (
+            root.parent
+            / "s4-temporal-coverage-prepare-19a778f/prepare-temporal-curriculum-pilot.py",
+            provenance["shared_recipe_sha256"],
+        ),
+        (
+            prepared / "train.jsonl",
+            "4fe42a806265af995f8f3d6f61ecf0aadfa82c63f86f64db2240ed138ce9aa5b",
+        ),
+        (
+            prepared / "allocation-ledger.jsonl",
+            "7eb9524cb5f77503f13febe4aed3d2b1c2c6bc4436be967a4ddf5c55a8503255",
+        ),
+        (
+            root / "artifacts/s4-temporal-coverage-old-retention-001/receipt.json",
+            launch["retention_report_sha256"],
+        ),
+        (
+            root / "artifacts/s4-temporal-coverage-video150-001/receipt.json",
+            launch["video_screen_sha256"],
+        ),
+        (
+            root / "artifacts/s4-temporal-coverage-original100-001/receipt-recovered-002.json",
+            launch["cross_screen_sha256"],
+        ),
+    ):
+        require(sha(path) == expected, "segment002_provenance_sha")
+        bindings[str(path)] = expected
+    lineage = json.loads(lineage_path.read_bytes())
+    require(
+        lineage.get("status") == "completed"
+        and lineage.get("exit_code") == 0
+        and len(set(lineage["lineage_unique_video_families"])) == 350,
+        "segment002_lineage",
+    )
+    for stage in lineage["stages"]:
+        for field in ("report", "data"):
+            path = Path(stage[field])
+            expected = stage[field + "_sha256"]
+            require(sha(path) == expected, "segment002_lineage_sha")
+            bindings[str(path)] = expected
+    fresh = canonical_rows(prepared / "train.jsonl")
+    replay = canonical_rows(prior / "train.jsonl")
+    old = set(lineage["lineage_unique_video_families"]) | {
+        r["meta"]["family_id"]
+        for r in canonical_rows(first / "train.jsonl").values()
+        if r["meta"]["modality"] == ["video"]
+    }
+    selected = [
+        r["meta"]["family_id"] for r in fresh.values() if r["meta"]["modality"] == ["video"]
+    ]
+    require(
+        len(old) == selection["excluded_prior_family_count"] == 408
+        and sorted(old) == selection["excluded_prior_families"]
+        and len(selected) == len(set(selected)) == 60
+        and sorted(selected) == selection["selected_families"]
+        and not old & set(selected)
+        and selection["hash_namespace"] == "s4-temporal-coverage-segment002:42:",
+        "segment002_family_selection",
+    )
+    require(
+        len(fresh) == 120
+        and {k: v for k, v in fresh.items() if v["meta"]["modality"] != ["video"]}
+        == {k: v for k, v in replay.items() if v["meta"]["modality"] != ["video"]},
+        "segment002_replay_canonical",
+    )
+    config = {k: v for k, v in final["config"].items() if k != "init_adapter"}
+    require(
+        LoopConfig.model_validate(config)
+        == LoopConfig.model_validate(json.loads((prepared / "config-ce.json").read_bytes())),
+        "segment002_config_exact",
+    )
+    chosen = launch["selected_init_adapter"]
+    for name, expected in [
+        ("adapter_model.safetensors", chosen["weights_sha256"]),
+        ("adapter_config.json", chosen["config_sha256"]),
+    ]:
+        path = Path(chosen["path"]) / name
+        require(sha(path) == expected, "segment002_parent_files")
+        bindings[str(path)] = expected
+    return bindings
 
 
 def coverage_provenance(
@@ -420,10 +590,19 @@ def base_inventory(
     temporal_brier: bool = False,
     learnability: bool = False,
     temporal_coverage: bool = False,
+    coverage_segment002: bool = False,
 ) -> tuple[Path, dict[str, str] | None]:
-    if temporal_curriculum or temporal_brier or learnability or temporal_coverage:
+    if (
+        temporal_curriculum
+        or temporal_brier
+        or learnability
+        or temporal_coverage
+        or coverage_segment002
+    ):
         exposure = root / (
-            "artifacts/s4-pilot-exposure-007"
+            "artifacts/s4-pilot-exposure-008"
+            if coverage_segment002
+            else "artifacts/s4-pilot-exposure-007"
             if temporal_coverage
             else "artifacts/s4-pilot-exposure-006-retry-001"
             if learnability
@@ -438,7 +617,7 @@ def base_inventory(
             and report.get("unknown_update_bearing_inputs") == 0,
             "exposure004_not_passed",
         )
-        if temporal_brier or learnability or temporal_coverage:
+        if temporal_brier or learnability or temporal_coverage or coverage_segment002:
             require(bool(report.get("all_bound_input_sha256")), "missing005_input_bindings")
             require(
                 all(
@@ -491,6 +670,7 @@ def prepare(
     temporal_brier: bool = False,
     learnability: bool = False,
     temporal_coverage: bool = False,
+    coverage_segment002: bool = False,
 ) -> dict[str, Any]:
     started = time.monotonic()
     require(
@@ -508,6 +688,7 @@ def prepare(
             temporal_brier=temporal_brier,
             learnability=learnability,
             temporal_coverage=temporal_coverage,
+            coverage_segment002=coverage_segment002,
         )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
@@ -527,6 +708,7 @@ def prepare(
             temporal_brier=temporal_brier,
             learnability=learnability,
             temporal_coverage=temporal_coverage,
+            coverage_segment002=coverage_segment002,
         ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
@@ -538,17 +720,25 @@ def prepare(
                 or temporal_brier
                 or learnability
                 or temporal_coverage
+                or coverage_segment002
             ) and name.startswith("s4-claim-pair-")
             is_temporal = (
-                temporal_curriculum or temporal_brier or learnability or temporal_coverage
+                temporal_curriculum
+                or temporal_brier
+                or learnability
+                or temporal_coverage
+                or coverage_segment002
             ) and name == "s4-temporal-curriculum"
             is_brier = (
-                temporal_brier or learnability or temporal_coverage
+                temporal_brier or learnability or temporal_coverage or coverage_segment002
             ) and name == "s4-temporal-brier"
             is_learnability = (
-                learnability or temporal_coverage
+                learnability or temporal_coverage or coverage_segment002
             ) and name == "s4-train-learnability"
-            is_coverage = temporal_coverage and name == "s4-temporal-coverage"
+            is_coverage = (
+                temporal_coverage or coverage_segment002
+            ) and name == "s4-temporal-coverage"
+            is_segment002 = coverage_segment002 and name == "s4-temporal-coverage-segment002"
             if is_learnability:
                 learnability_terminal(final)
                 learnability_terminal(runtime_report)
@@ -556,7 +746,7 @@ def prepare(
                     final.get("config") == runtime_report.get("config"),
                     "learnability_runtime_config_mismatch",
                 )
-            if is_claim or is_temporal or is_brier or is_coverage:
+            if is_claim or is_temporal or is_brier or is_coverage or is_segment002:
                 claim_terminal(final, name)
                 claim_terminal(runtime_report, name)
                 require(
@@ -627,8 +817,9 @@ def prepare(
                     ),
                     "learnability_config_identity",
                 )
-            elif is_temporal or is_brier or is_coverage:
-                temporal_preparation_passed(prep_report)
+            elif is_temporal or is_brier or is_coverage or is_segment002:
+                if not is_segment002:
+                    temporal_preparation_passed(prep_report)
                 for filename in (
                     "allocation-ledger.jsonl",
                     "config-ce.json",
@@ -649,7 +840,13 @@ def prepare(
                 require(
                     final.get("init_adapter")
                     == runtime_report.get("init_adapter")
-                    == prep_report["init_adapter"],
+                    == (
+                        read_json(root / "reports/s4-temporal-coverage-launch-002.json")[0][
+                            "selected_init_adapter"
+                        ]
+                        if is_segment002
+                        else prep_report["init_adapter"]
+                    ),
                     "temporal_init_binding",
                 )
             else:
@@ -660,6 +857,24 @@ def prepare(
                     "coverage_runtime_adapter",
                 )
                 for bound_path, expected in coverage_provenance(
+                    root, preparation_dir, prep_report, final
+                ).items():
+                    require(
+                        bound_path not in bindings or bindings[bound_path] == expected,
+                        "mutable_report",
+                    )
+                    bindings[bound_path] = expected
+            if is_segment002:
+                require(
+                    final.get("adapter_sha256") == runtime_report.get("adapter_sha256"),
+                    "segment002_runtime_adapter",
+                )
+                weights = bind(run_dir / "adapter/adapter_model.safetensors")
+                require(
+                    weights["sha256"] == final.get("adapter_sha256"), "segment002_output_weights"
+                )
+                bindings[weights["path"]] = weights["sha256"]
+                for bound_path, expected in segment002_provenance(
                     root, preparation_dir, prep_report, final
                 ).items():
                     require(
@@ -705,7 +920,7 @@ def prepare(
                         root / "artifacts/s4-temporal-curriculum-pilot-001/train.jsonl",
                     )
                 )
-            if is_claim or is_temporal or is_brier or is_coverage:
+            if is_claim or is_temporal or is_brier or is_coverage or is_segment002:
                 require(comparison["rows"] == 120, "claim_runtime_count")
             require(
                 all(version in mappings for version in comparison["data_versions"]),
@@ -870,21 +1085,37 @@ def prepare(
             or temporal_brier
             or learnability
             or temporal_coverage
+            or coverage_segment002
         ):
             report.update(
                 base_preparation_report=base_preparation_binding, crossmodal_retention_included=True
             )
-        if claim_pair or temporal_curriculum or temporal_brier or learnability or temporal_coverage:
+        if (
+            claim_pair
+            or temporal_curriculum
+            or temporal_brier
+            or learnability
+            or temporal_coverage
+            or coverage_segment002
+        ):
             report["claim_pair_included"] = True
-        if temporal_curriculum or temporal_brier or learnability or temporal_coverage:
+        if (
+            temporal_curriculum
+            or temporal_brier
+            or learnability
+            or temporal_coverage
+            or coverage_segment002
+        ):
             report["temporal_curriculum_included"] = True
             report["base_exposure_report"] = base_preparation_binding
-        if temporal_brier or learnability or temporal_coverage:
+        if temporal_brier or learnability or temporal_coverage or coverage_segment002:
             report["temporal_brier_included"] = True
-        if learnability or temporal_coverage:
+        if learnability or temporal_coverage or coverage_segment002:
             report["learnability_included"] = True
-        if temporal_coverage:
+        if temporal_coverage or coverage_segment002:
             report["temporal_coverage_included"] = True
+        if coverage_segment002:
+            report["coverage_segment002_included"] = True
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -953,6 +1184,11 @@ def main() -> int:
         action="store_true",
         help="Use007 base and bind new terminal60-family coverage segment",
     )
+    parser.add_argument(
+        "--coverage-segment002",
+        action="store_true",
+        help="Use008 base; bind terminal segment002 to launcher-selected parent",
+    )
     args = parser.parse_args()
     try:
         report = prepare(
@@ -967,6 +1203,7 @@ def main() -> int:
             temporal_brier=args.temporal_brier,
             learnability=args.learnability,
             temporal_coverage=args.temporal_coverage,
+            coverage_segment002=args.coverage_segment002,
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
