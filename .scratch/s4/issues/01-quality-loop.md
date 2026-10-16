@@ -39,3 +39,5 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 本轮用户澄清：主线与自由探索继续并行相互促进，未暂停探索；模型出来前不再做HF。native课程10step完成，DEV50 33持平/Brier改善/ECE变差，fixedvideo150 session9982复核中，另CPU原生关系组和旧题型配对诊断，不预排下一段。发布S5registry仅CPU准备非激活；正式S4仍未过。
 
 11:13：native video150113vs116，原生关系22持平、absence8退化，停止配方，保留f2db不扩500。主线与探索并行授权保持，HF模型前不推进。下一仅CPU准备video-only10step/120draw（60原题两遍）以检验视频监督强度和混合回放稀释；不冒称严格单因子因果、旧模态尚未通过，不替换生产单LoRA。016实际曝光pin是CPU审计前置，拒绝用stale015绕过。
+
+11:19：016真实isolated/71known/unknown0完成；video-onlyCPU审计20.307秒通过并以f2db parent启动session4260/GPU PID61963。仅10step/120draw/60原题两遍，无新family或新gold；资源估值按实测6→12video/step，唯一hardcap240→360秒、质量门不动。结束先DEV50再决定，不预排新段；训练终态才跑017。
