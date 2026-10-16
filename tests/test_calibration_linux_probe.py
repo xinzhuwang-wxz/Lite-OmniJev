@@ -29,7 +29,15 @@ def test_default_is_inert() -> None:
     report = json.loads(result.stdout)
     assert report["status"] == "prepared_not_executed"
     assert report["hardcap_seconds"] == 180
-    assert report["cases"] == ["normal", "timeout", "term", "kill", "competition", "stale_recovery"]
+    assert report["cases"] == [
+        "normal",
+        "timeout",
+        "term",
+        "kill",
+        "competition",
+        "stale_recovery",
+        "private_snapshot",
+    ]
 
 
 def test_polling_has_a_deadline(monkeypatch: Any) -> None:

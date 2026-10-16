@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -19,7 +20,7 @@ from scripts import private_stage_eval as stage
 from scripts.s0_public_baselines import sha256_file
 
 JOURNAL = Path("/var/tmp/omnijev-root-traverse-acl-recovery.json")
-CASES = ("normal", "timeout", "term", "kill", "competition", "stale_recovery")
+CASES = ("normal", "timeout", "term", "kill", "competition", "stale_recovery", "private_snapshot")
 WORKER = r"""
 import json, os, sys, time
 from pathlib import Path
@@ -28,6 +29,15 @@ verify_child_identity()
 root = Path(sys.argv[1])
 assert (root / 'public-model').read_bytes() == b'synthetic public model'
 assert (root / 'private' / 'sample').read_bytes() == b'synthetic calibration'
+if (root / 'snapshot-map.json').exists():
+    mapping = json.loads((root / 'snapshot-map.json').read_text())
+    assert Path('/' + next(iter(mapping.values()))).read_bytes() == b'sealed synthetic media'
+    try:
+        (root / 'sealed-media' / 'asset.wav').read_bytes()
+    except PermissionError:
+        pass
+    else:
+        raise RuntimeError('original_private_media_readable')
 for path, flags in [(Path('/root'), os.O_RDONLY), (root / 'secret', os.O_RDONLY),
                     (root / 'public-model', os.O_WRONLY), (root / 'source', os.O_WRONLY)]:
     try:
@@ -72,6 +82,33 @@ def harness(args: argparse.Namespace) -> int:
     case_root = args.case_root
     ready = case_root / "ready.json"
     with cal.guarded_acl(args.uid, case_root / "acl-backup.json") as evidence:
+        if args.case == "private_snapshot":
+            source = case_root / "sealed-media" / "asset.wav"
+            inputs = case_root / "snapshot"
+            inputs.mkdir(mode=0o750)
+            os.chown(inputs, 0, args.uid)
+
+            def copy_bound(path: Path, digest: str, target: Path) -> None:
+                cal.require(sha256_file(path) == digest, "synthetic_media_changed")
+                target.parent.mkdir(exist_ok=True)
+                shutil.copyfile(path, target)
+                os.chown(target, 0, args.uid)
+                target.chmod(0o440)
+                os.chown(target.parent, 0, args.uid)
+                target.parent.chmod(0o550)
+
+            mapping, summary = cal.snapshot_media(
+                {str(source): {"sha256": sha256_file(source), "type": "audio"}},
+                [source.parent],
+                inputs,
+                public_in_place=True,
+                remaining_bytes=1024,
+                copy_bound=copy_bound,
+            )
+            inputs.chmod(0o550)
+            (case_root / "snapshot-map.json").write_text(json.dumps(mapping))
+            (case_root / "snapshot-map.json").chmod(0o444)
+            evidence["media_snapshot"] = summary
         with (case_root / "worker.jsonl").open("xb") as log:
             child = subprocess.Popen(
                 [
@@ -79,7 +116,7 @@ def harness(args: argparse.Namespace) -> int:
                     "-c",
                     WORKER,
                     str(case_root),
-                    "0" if args.case == "normal" else "60",
+                    "0" if args.case in ("normal", "private_snapshot") else "60",
                 ],
                 env={
                     **stage.safe_environment(),
@@ -106,7 +143,7 @@ def harness(args: argparse.Namespace) -> int:
                     stage.terminate(child)
             else:
                 child.wait(timeout=65)
-                if args.case == "normal":
+                if args.case in ("normal", "private_snapshot"):
                     cal.require(child.returncode == 0, "worker_failed")
     return 0
 
@@ -152,7 +189,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     signal.signal(signal.SIGTERM, expired)
     signal.alarm(170)  # Reserve ten seconds for bounded cleanup and the outer 180s cap.
     try:
-        for index, case in enumerate(CASES):
+        for index, case in enumerate([args.case_filter] if args.case_filter else CASES):
             uid = args.first_uid + index * 2
             cal.require(broker.unused_uid(uid) and broker.unused_uid(uid + 1), "uid_occupied")
             broker.reserve_ids(root, uid, uid + 1)
@@ -167,6 +204,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 target = case_root / name
                 target.write_bytes(content)
                 target.chmod(mode)
+            sealed_media = case_root / "sealed-media"
+            sealed_media.mkdir(mode=0o700)
+            (sealed_media / "asset.wav").write_bytes(b"sealed synthetic media")
+            (sealed_media / "asset.wav").chmod(0o600)
             private = case_root / "private"
             private.mkdir(mode=0o700)
             os.chown(private, uid, uid)
@@ -237,7 +278,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                     and identity["synthetic_denials"] is True,
                     "identity_probe_failed",
                 )
-                if case in ("normal", "timeout", "stale_recovery"):
+                if case in ("normal", "timeout", "stale_recovery", "private_snapshot"):
                     cal.require(parent.returncode == 0, "unexpected_exit")
                 result["cases"].append(
                     {
@@ -246,6 +287,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                         "worker_identity": identity,
                         "parent_exit_code": parent.returncode,
                         "guardian_pid": ready["guardian_pid"],
+                        "media_snapshot": ready.get("media_snapshot"),
                         "before_acl_sha256": digest(before),
                         "after_acl_sha256": digest(api.read(Path("/root"))),
                         "no_lingering_uid_processes": True,
@@ -309,6 +351,7 @@ def main() -> int:
         "--work-root", type=Path, default=Path("/var/tmp/omnijev-calibration-probes-001")
     )
     parser.add_argument("--first-uid", type=int, default=64001)
+    parser.add_argument("--case-filter", choices=CASES)
     parser.add_argument("--report", type=Path)
     parser.add_argument("--harness", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--case", choices=CASES, help=argparse.SUPPRESS)
