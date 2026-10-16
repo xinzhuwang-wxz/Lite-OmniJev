@@ -1,0 +1,123 @@
+{
+  "status": "native_cpu_build_and_raw_readout_fixture_passed_not_E2B_acceptance",
+  "host": {
+    "chip": "AppleM4",
+    "arch": "arm64",
+    "memory_GB": 24,
+    "os": "macOS26.5.1"
+  },
+  "workspace": "/tmp/lite-omnijev-s6-cpu-001",
+  "archive_origin": "existing remote cached llama.cpp-v0.6.0 tar; SCP only, no upstream download",
+  "archive_sha256": "09b36dba235fcac180efff18514da7038e65d8e5b9e4aefa59238468abfdec12",
+  "tool_version": "version: 0.6.0-dev (build 0, commit unknown)\nbuilt with AppleClang 21.0.0.21000101 for Darwin arm64",
+  "configure_exit": 0,
+  "final_build_exit": 0,
+  "initial_failure": {
+    "exit_code": 2,
+    "reason": "llama-cli target absent when LLAMA_BUILD_SERVER=OFF; choose standard llama-mtmd-cli, no server needed",
+    "evidence_logs": [
+      "/tmp/lite-omnijev-s6-cpu-001/build.log",
+      "/tmp/lite-omnijev-s6-cpu-001/build-retry.log"
+    ]
+  },
+  "self_test_exit": 0,
+  "self_test": {
+    "logits_kind": "raw_logits",
+    "vocabulary_size": 4,
+    "sampler_used": false,
+    "calibrated": false,
+    "answers": {
+      "A": {
+        "token_id": 0,
+        "raw_logit": -2.3025851249694824,
+        "full_vocabulary_probability": 0.09999999842027471,
+        "joint_legal_plus_U_probability": 0.1999999996952553,
+        "conditional_probability_without_U": 0.33333333291007683
+      },
+      "B": {
+        "token_id": 1,
+        "raw_logit": -1.6094379425048828,
+        "full_vocabulary_probability": 0.19999999722148026,
+        "joint_legal_plus_U_probability": 0.4000000001523723,
+        "conditional_probability_without_U": 0.6666666670899232
+      },
+      "U": {
+        "token_id": 2,
+        "raw_logit": -1.6094379425048828,
+        "full_vocabulary_probability": 0.19999999722148026,
+        "joint_legal_plus_U_probability": 0.4000000001523723
+      }
+    }
+  },
+  "rejection_tests": "duplicateIDs and omitted-vocab NaN internal cases passed; invalid CLI exit2",
+  "flags_off": [
+    "GGML_METAL",
+    "GGML_CUDA",
+    "GGML_VULKAN",
+    "GGML_ACCELERATE",
+    "GGML_BLAS",
+    "GGML_NATIVE",
+    "LLAMA_OPENSSL",
+    "LLAMA_CURL",
+    "LLAMA_BUILD_SERVER"
+  ],
+  "MTMD_VIDEO": true,
+  "binary_external_dependencies": [
+    "macOS libSystem",
+    "macOS libc++"
+  ],
+  "gpu_used": false,
+  "model_forward_performed": false,
+  "actual_E2B_parity": "pending",
+  "actual_media_forward": "pending",
+  "full_reproduce_script_rerun": false,
+  "manual_equivalent_build_commands_run": true,
+  "cost": null,
+  "elapsed_wall_seconds": 610.9659857749939,
+  "files": {
+    "/private/tmp/lite-omnijev-s6-cpu-001/source.tar.gz": {
+      "sha256": "09b36dba235fcac180efff18514da7038e65d8e5b9e4aefa59238468abfdec12",
+      "bytes": 37874349
+    },
+    "/private/tmp/lite-omnijev-s6-cpu-001/build/raw_logits_probe": {
+      "sha256": "bb168ba59c9debafadf4219ca68f594f791e8e484e8680ea6f5677f8f10ad251",
+      "bytes": 4850368
+    },
+    "/private/tmp/lite-omnijev-s6-cpu-001/build/bin/llama-mtmd-cli": {
+      "sha256": "cb2a0671447b759c08eab10e0a77397ea405e50ca70b15edd96953978e3b9538",
+      "bytes": 10905536
+    },
+    "/private/tmp/lite-omnijev-s6-cpu-001/build/bin/llama-quantize": {
+      "sha256": "48110cd2831aa626e69b7b4cee36ef93fca3b96141b2d6027c56d04c86b87b33",
+      "bytes": 5559248
+    },
+    "/private/tmp/lite-omnijev-s6-cpu-001/build/CMakeCache.txt": {
+      "sha256": "45329dab738ce0350db7c1c6425fe32b2d4597961dc5abb5a850626a2b9b9edb",
+      "bytes": 32269
+    },
+    "/private/tmp/lite-omnijev-s6-cpu-001/configure-final.log": {
+      "sha256": "1c0ce00500c83128c68b56df39ce4bf584858a458b121f8ca3c61ea07c5bc9ee",
+      "bytes": 1271
+    },
+    "/private/tmp/lite-omnijev-s6-cpu-001/build-noopenssl.log": {
+      "sha256": "3799857dc5d089f876e9337667bf48457fa4b6219db29c92a0654e40151e2ae1",
+      "bytes": 5599
+    },
+    "/Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-lora-fusion/.scratch/s6/reproduce_cpu_build.sh": {
+      "sha256": "ee59cc1466c280081f076b9c7cd77385a389aa279f842a35837ff20226f138e9",
+      "bytes": 1301
+    },
+    "/Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-lora-fusion/.scratch/s6/CMakeLists.txt": {
+      "sha256": "e5b7504ca911d13bf0e36959cd8abcd1a8df044cc08727f97d325ba74aa7a88a",
+      "bytes": 1220
+    },
+    "/Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-lora-fusion/.scratch/s6/raw_logits_probe.cpp": {
+      "sha256": "f218a8ea5f5b74af6b33b99a925de0cb10ba72cbb7c163119e74fc4f53b41050",
+      "bytes": 4956
+    },
+    "/Users/bamboo/Githubs/Lite-OmniJev-worktrees/s4-lora-fusion/.scratch/s6/README.md": {
+      "sha256": "3274de5a04c0a610962861e37cb9d0d73e26e45f40ffccc03966606d228bd987",
+      "bytes": 3763
+    }
+  }
+}
