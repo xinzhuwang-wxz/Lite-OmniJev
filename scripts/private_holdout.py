@@ -36,6 +36,7 @@ class TemperatureReference(Contract):
 class DevelopmentReference(Contract):
     cohort: Cohort
     report: stage.Artifact
+    runtime_report: stage.Artifact | None = None
     data_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
@@ -50,6 +51,7 @@ class JobSpec(Contract):
     max_snapshot_bytes: int = Field(default=64 * 1024**3, gt=0, le=128 * 1024**3)
     temperatures: list[TemperatureReference] = Field(default_factory=list, max_length=7)
     calibration_receipt: stage.Artifact | None = None
+    calibration_raw_receipt: stage.Artifact | None = None
     development: list[DevelopmentReference] = Field(default_factory=list, max_length=6)
     gates: stage.Artifact
 
@@ -90,7 +92,11 @@ class JobSpec(Contract):
             not keys or (len(keys) == 7 and set(keys) == set(GROUP_COUNTS)),
             "seven_real_temperatures_only",
         )
-        cal.require(bool(keys) == (self.calibration_receipt is not None), "fit_receipt_required")
+        cal.require(
+            bool(keys) == (self.calibration_receipt is not None)
+            and bool(keys) == (self.calibration_raw_receipt is not None),
+            "fit_receipt_required",
+        )
         cal.require(
             len({d.cohort for d in self.development}) == len(self.development),
             "duplicate_dev_cohort",
@@ -120,8 +126,15 @@ def snapshot_extras(
     refs = [("gates", spec.gates)]
     refs += [(f"temperature-{i}", ref.artifact) for i, ref in enumerate(spec.temperatures)]
     refs += [(f"dev-{i}", ref.report) for i, ref in enumerate(spec.development)]
+    refs += [
+        (f"dev-runtime-{i}", ref.runtime_report)
+        for i, ref in enumerate(spec.development)
+        if ref.runtime_report is not None
+    ]
     if spec.calibration_receipt is not None:
         refs.append(("calibration-receipt", spec.calibration_receipt))
+    if spec.calibration_raw_receipt is not None:
+        refs.append(("calibration-raw-receipt", spec.calibration_raw_receipt))
     for key, artifact_ref in refs:
         path = inputs / "metadata" / (key + ".json")
         copy_bound(Path(artifact_ref.path), artifact_ref.sha256, path)
@@ -205,6 +218,30 @@ def temperatures(
         and receipt["boundary"] == "fresh_ordinary_uid_fixed_calibration_job",
         "untrusted_fit_receipt",
     )
+    assert spec.calibration_raw_receipt is not None
+    raw_path = Path(state["metadata"]["calibration-raw-receipt"])
+    cal.require(
+        sha256_file(raw_path) == spec.calibration_raw_receipt.sha256
+        and spec.calibration_raw_receipt.sha256 == receipt["raw_logits_receipt_sha256"],
+        "calibration_raw_receipt_binding_mismatch",
+    )
+    raw = json.loads(raw_path.read_text())
+    cal.require(
+        raw["runtime_recipe"]
+        == {"engine": "transformers", "dtype": "bfloat16", "adapter_mode": "native_lora"}
+        and raw["model_files"] == first.model_files
+        and raw["adapter_files"] == first.adapter_files
+        and raw["official_template_sha256"] == official["template_sha256"]
+        and raw["answer_token_map_sha256"]
+        == hashlib.sha256(
+            json.dumps(official["answer_token_ids"], sort_keys=True).encode()
+        ).hexdigest()
+        and raw["spec_sha256"] == receipt["spec_sha256"]
+        and raw["code_sha256"] == receipt["code_sha256"]
+        and raw["logits_kind"] == "raw_logits"
+        and raw["complete_legal_logits"] is True,
+        "calibration_runtime_provenance_mismatch",
+    )
     entries = {e["group"]: e for e in receipt["artifacts"]}
     cal.require(
         set(entries) == set(GROUP_COUNTS) and len(receipt["artifacts"]) == 7, "fit_groups_mismatch"
@@ -265,8 +302,33 @@ def append_readout(
     )
 
 
-def development_metrics(spec: JobSpec, state: dict[str, Any]) -> dict[str, dict[str, Any]]:
+def dev_runtime_categories(receipt: dict[str, Any], cohort: str, base_revision: str) -> list[str]:
+    """Recognize actual report layouts; no inferred default budgets or precision."""
+    errors = []
+    if receipt.get("model_revision") != base_revision:
+        errors.append("base_revision_missing_or_mismatched")
+    # This exact checked-in evaluator loads dtype=torch.bfloat16 and has no dtype option.
+    known_bf16_source = "12d387e778a685a8f49ef223f5fa2d26538e3e6a052c7c8e5013677186ad9c68"
+    source = receipt.get("script_sha256") or receipt.get("source_file_sha256", {}).get(
+        "scripts/s1_dev_eval.py"
+    )
+    dtype = receipt.get("dtype")
+    if dtype not in (None, "bfloat16") or (dtype is None and source != known_bf16_source):
+        errors.append("bf16_evidence_missing_or_mismatched")
+    budget = receipt.get("image_max_soft_tokens")
+    effective = budget.get("effective") if isinstance(budget, dict) else budget
+    if cohort != "text" and effective != 1120:
+        errors.append("image_budget_not_proven_1120")
+    if cohort == "video" and receipt.get("video_num_frames") != 16:
+        errors.append("video_frames_not_proven_16")
+    return errors
+
+
+def development_metrics(
+    spec: JobSpec, state: dict[str, Any]
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[str]]]:
     result: dict[str, dict[str, Any]] = {}
+    statuses: dict[str, list[str]] = {}
     first = spec.datasets[0]
     assert first.adapter_files is not None
     for index, ref in enumerate(spec.development):
@@ -281,11 +343,34 @@ def development_metrics(spec: JobSpec, state: dict[str, Any]) -> dict[str, dict[
             and receipt["metrics"]["count"] == 500,
             "unmatched_full_dev_receipt",
         )
+        runtime = receipt
+        if ref.runtime_report is not None:
+            runtime_path = Path(state["metadata"][f"dev-runtime-{index}"])
+            cal.require(
+                sha256_file(runtime_path) == ref.runtime_report.sha256,
+                "dev_runtime_receipt_changed",
+            )
+            if "report_sha256" in receipt:
+                cal.require(
+                    receipt["report_sha256"] == ref.runtime_report.sha256,
+                    "dev_nested_receipt_mismatch",
+                )
+            runtime = json.loads(runtime_path.read_text())
+            cal.require(
+                runtime.get("exit_code") == 0
+                and runtime.get("adapter_sha256") == receipt["adapter_sha256"]
+                and runtime.get("data_sha256") == receipt["data_sha256"]
+                and runtime.get("metrics") == receipt["metrics"],
+                "dev_runtime_identity_mismatch",
+            )
+        statuses[ref.cohort] = dev_runtime_categories(runtime, ref.cohort, first.base_revision)
+        if statuses[ref.cohort]:
+            continue  # Raw holdout remains valid; unmatched DEV recipe cannot justify a gap pass.
         # Explicit typed subset; never propagate public row/record fields to sealed output.
         result[ref.cohort] = stage.Metrics.model_validate(
             {key: receipt["metrics"][key] for key in stage.Metrics.model_fields}
         ).model_dump()
-    return result
+    return result, statuses
 
 
 def metric_deltas(raw: dict[str, Any], scaled: dict[str, Any] | None) -> dict[str, Any]:
@@ -316,6 +401,7 @@ def quality_observations(
     calibrated: dict[str, dict[str, Any]],
     development: dict[str, dict[str, Any]],
     gates: dict[str, Any],
+    development_runtime: dict[str, list[str]] | None = None,
 ) -> dict[str, Any]:
     fixed = {
         "S4": {"max_holdout_dev_gap": {"max": 0.03}},
@@ -355,6 +441,10 @@ def quality_observations(
     )
     return {
         "holdout_dev_absolute_accuracy_gaps": gaps,
+        "development_runtime_checks": development_runtime or {},
+        "development_gap_status": "ready"
+        if len(gaps) == 6
+        else "pending_runtime_or_missing_evidence",
         "s4_gap_observation": s4,
         "s5_probability_observations": s5,
         "stage_acceptance": "not_evaluated",
@@ -390,7 +480,7 @@ def evaluate_worker(state_path: Path) -> None:
         "official_probe_failed",
     )
     fitted = temperatures(spec, state, official)
-    development = development_metrics(spec, state)
+    development, dev_runtime = development_metrics(spec, state)
     gates_path = Path(state["metadata"]["gates"])
     cal.require(sha256_file(gates_path) == spec.gates.sha256, "gates_changed")
     gates = json.loads(gates_path.read_text())
@@ -489,7 +579,9 @@ def evaluate_worker(state_path: Path) -> None:
                 {"cohorts": raw_cohorts, "groups": raw},
                 {"cohorts": scaled_cohorts, "groups": scaled} if fitted else None,
             ),
-            "quality": quality_observations(raw_cohorts, scaled_cohorts, development, gates),
+            "quality": quality_observations(
+                raw_cohorts, scaled_cohorts, development, gates, dev_runtime
+            ),
             "family_isolation_source": {
                 "inventory_sha256": spec.inventory.sha256,
                 "receipt_sha256": spec.inventory_receipt.sha256,
@@ -641,11 +733,18 @@ def export_receipt(
         f"dev-{i}": str(output.parent / "inputs" / "metadata" / f"dev-{i}.json")
         for i in range(len(spec.development))
     }
-    dev = development_metrics(spec, {"metadata": metadata})
+    metadata.update(
+        {
+            f"dev-runtime-{i}": str(output.parent / "inputs" / "metadata" / f"dev-runtime-{i}.json")
+            for i, ref in enumerate(spec.development)
+            if ref.runtime_report is not None
+        }
+    )
+    dev, dev_runtime = development_metrics(spec, {"metadata": metadata})
     gates = json.loads(stage.binding(spec.gates).read_text())
     scaled = receipt["calibrated"]
     expected_quality = quality_observations(
-        receipt["raw"]["cohorts"], scaled["cohorts"] if scaled else {}, dev, gates
+        receipt["raw"]["cohorts"], scaled["cohorts"] if scaled else {}, dev, gates, dev_runtime
     )
     cal.require(receipt["quality"] == expected_quality, "invalid_quality_export")
     cal.require(
@@ -658,6 +757,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("phase", choices=["_runtime_probe", "_plan", "_evaluate"])
     parser.add_argument("--state", type=Path, required=True)
+    args = None
     try:
         args = parser.parse_args()
         cal.verify_child_identity()
@@ -675,7 +775,18 @@ def main() -> int:
         else:
             evaluate_worker(args.state)
         return 0
-    except BaseException:
+    except BaseException as error:
+        if args is not None:
+            try:
+                cal.record_worker_failure(
+                    args.state,
+                    {"_plan": "plan", "_evaluate": "inference", "_runtime_probe": "runtime"}[
+                        args.phase
+                    ],
+                    error,
+                )
+            except BaseException:
+                pass
         return 2
 
 

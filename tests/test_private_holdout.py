@@ -235,7 +235,10 @@ def test_private_worker_rejects_actual_calibration_row_in_holdout_file(tmp_path:
         job.private_samples(state)
 
 
-def test_seven_temperatures_require_actual_file_and_fit_receipt_bindings(tmp_path: Path) -> None:
+@pytest.mark.parametrize("raw_fault", [None, "hash", "recipe"])
+def test_seven_temperatures_require_actual_file_and_fit_receipt_bindings(
+    tmp_path: Path, raw_fault: str | None
+) -> None:
     import hashlib
 
     from scripts.check_tokens import ANSWERS
@@ -250,6 +253,24 @@ def test_seven_temperatures_require_actual_file_and_fit_receipt_bindings(tmp_pat
         json.dumps(official["answer_token_ids"], sort_keys=True).encode()
     ).hexdigest()
     values = spec_values()
+    raw_path = tmp_path / "raw-receipt.json"
+    raw_meta = dict(
+        runtime_recipe={
+            "engine": "transformers",
+            "dtype": "bfloat16",
+            "adapter_mode": "native_lora",
+        },
+        model_files=values["datasets"][0]["model_files"],
+        adapter_files=values["datasets"][0]["adapter_files"],
+        official_template_sha256=official["template_sha256"],
+        answer_token_map_sha256=map_sha,
+        spec_sha256="a" * 64,
+        code_sha256="b" * 64,
+        logits_kind="raw_logits",
+        complete_legal_logits=True,
+    )
+    raw_path.write_text(json.dumps(raw_meta))
+    raw_sha = job.sha256_file(raw_path)
     references = []
     entries = []
     metadata = {}
@@ -261,7 +282,7 @@ def test_seven_temperatures_require_actual_file_and_fit_receipt_bindings(tmp_pat
                 adapter_weights_sha256="c" * 64,
                 official_template_sha256="c" * 64,
                 answer_token_map_sha256=map_sha,
-                raw_logits_receipt_sha256="e" * 64,
+                raw_logits_receipt_sha256=raw_sha,
                 cohort=cohort,
                 primitive=primitive,
                 seed=42,
@@ -299,21 +320,75 @@ def test_seven_temperatures_require_actual_file_and_fit_receipt_bindings(tmp_pat
                 ordinary_identity_boundary=True,
                 boundary="fresh_ordinary_uid_fixed_calibration_job",
                 artifacts=entries,
-                raw_logits_receipt_sha256="e" * 64,
+                spec_sha256="a" * 64,
+                code_sha256="b" * 64,
+                raw_logits_receipt_sha256=raw_sha,
             )
         )
     )
     values.update(
         temperatures=references,
         calibration_receipt={"path": str(receipt), "sha256": job.sha256_file(receipt)},
+        calibration_raw_receipt={"path": str(raw_path), "sha256": raw_sha},
     )
     metadata["calibration-receipt"] = str(receipt)
+    metadata["calibration-raw-receipt"] = str(raw_path)
     spec = job.JobSpec.model_validate(values)
+    if raw_fault == "hash":
+        raw_path.write_text(raw_path.read_text() + " ")
+        with pytest.raises(ValueError, match="calibration_raw_receipt_binding_mismatch"):
+            job.temperatures(spec, {"metadata": metadata}, official)
+        return
+    if raw_fault == "recipe":
+        raw_meta["runtime_recipe"]["engine"] = "vllm"
+        raw_path.write_text(json.dumps(raw_meta))
+        changed_sha = job.sha256_file(raw_path)
+        fit = json.loads(receipt.read_text())
+        fit["raw_logits_receipt_sha256"] = changed_sha
+        receipt.write_text(json.dumps(fit))
+        values["calibration_raw_receipt"]["sha256"] = changed_sha
+        values["calibration_receipt"]["sha256"] = job.sha256_file(receipt)
+        spec = job.JobSpec.model_validate(values)
+        with pytest.raises(ValueError, match="calibration_runtime_provenance_mismatch"):
+            job.temperatures(spec, {"metadata": metadata}, official)
+        return
     loaded = job.temperatures(spec, {"metadata": metadata}, official)
     assert set(loaded) == set(job.GROUP_COUNTS)
     assert all(t.temperature == 2.0 for t in loaded.values())
-    with pytest.raises(ValueError, match="temperature_model_identity_mismatch"):
+    with pytest.raises(ValueError, match="calibration_runtime_provenance_mismatch"):
         job.temperatures(spec, {"metadata": metadata}, {**official, "template_sha256": "0" * 64})
     Path(metadata["temperature-0"]).write_text("{}")
     with pytest.raises(ValueError, match="temperature_changed"):
         job.temperatures(spec, {"metadata": metadata}, official)
+
+
+@pytest.mark.parametrize(
+    "change,category",
+    [
+        ({"model_revision": "WRONG_BASE"}, "base_revision_missing_or_mismatched"),
+        ({"video_num_frames": 8}, "video_frames_not_proven_16"),
+        ({"image_max_soft_tokens": {"effective": 280}}, "image_budget_not_proven_1120"),
+        ({"dtype": "float32"}, "bf16_evidence_missing_or_mismatched"),
+        ({"dtype": None, "script_sha256": "unknown"}, "bf16_evidence_missing_or_mismatched"),
+    ],
+)
+def test_dev_gap_rejects_wrong_runtime_recipe(change: dict[str, Any], category: str) -> None:
+    report = {
+        "model_revision": job.stage.FROZEN_REVISION,
+        "video_num_frames": 16,
+        "image_max_soft_tokens": {"effective": 1120},
+        "dtype": "bfloat16",
+    }
+    assert job.dev_runtime_categories({**report, **change}, "video", job.stage.FROZEN_REVISION) == [
+        category
+    ]
+
+
+def test_known_actual_source_proves_bf16_without_fabricated_dtype_field() -> None:
+    report = {
+        "model_revision": job.stage.FROZEN_REVISION,
+        "video_num_frames": 16,
+        "image_max_soft_tokens": {"requested": 1120, "effective": 1120},
+        "script_sha256": "12d387e778a685a8f49ef223f5fa2d26538e3e6a052c7c8e5013677186ad9c68",
+    }
+    assert job.dev_runtime_categories(report, "video", job.stage.FROZEN_REVISION) == []

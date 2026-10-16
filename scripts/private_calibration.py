@@ -19,10 +19,10 @@ from collections import Counter
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager, nullcontext
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 from urllib.parse import unquote, urlsplit
 
-from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, model_validator
+from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, ValidationError, model_validator
 
 from data.schema import Contract, HardTarget, Sample, answer_tokens
 from scripts import private_stage_eval as stage
@@ -55,6 +55,63 @@ ALL_GROUPS = {
 }
 
 
+FailureCategory = Literal[
+    "public_readonly_asset_required",
+    "unsafe_asset_ancestor",
+    "permission_denied",
+    "missing_file",
+    "import_failed",
+    "input_contract_rejected",
+    "nonfinite_logits",
+    "cuda_oom",
+    "worker_timeout",
+    "snapshot_budget_exceeded",
+    "private_media_disk_budget_exceeded",
+    "ordinary_identity_probe_failed",
+    "runtime_acl_negative_probe_failed",
+    "unsafe_worker_identity",
+    "official_token_probe_failed",
+    "snapshot_data_changed",
+    "real_group_counts_mismatch",
+    "unclassified_failure",
+]
+
+
+def failure_category(error: BaseException) -> FailureCategory:
+    """Only predetermined categories cross the boundary; never stringify an exception."""
+    if isinstance(error, PermissionError):
+        return "permission_denied"
+    if isinstance(error, FileNotFoundError):
+        return "missing_file"
+    if isinstance(error, ImportError):
+        return "import_failed"
+    if isinstance(error, (TimeoutError, subprocess.TimeoutExpired)):
+        return "worker_timeout"
+    if isinstance(error, ValidationError):
+        return "input_contract_rejected"
+    if type(error).__name__ == "OutOfMemoryError" and type(error).__module__.startswith("torch"):
+        return "cuda_oom"
+    codes: dict[str, FailureCategory] = {
+        code: cast(FailureCategory, code)
+        for code in (
+            "public_readonly_asset_required",
+            "unsafe_asset_ancestor",
+            "nonfinite_logits",
+            "snapshot_budget_exceeded",
+            "private_media_disk_budget_exceeded",
+            "ordinary_identity_probe_failed",
+            "runtime_acl_negative_probe_failed",
+            "unsafe_worker_identity",
+            "official_token_probe_failed",
+            "snapshot_data_changed",
+            "real_group_counts_mismatch",
+        )
+    }
+    if isinstance(error, ValueError) and len(error.args) == 1 and isinstance(error.args[0], str):
+        return codes.get(error.args[0], "input_contract_rejected")
+    return "unclassified_failure"
+
+
 class Progress(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
     phase: Literal[
@@ -67,6 +124,10 @@ class Progress(BaseModel):
         "completed",
         "failed",
     ]
+    failure_category: FailureCategory | None = None
+    failed_phase: (
+        Literal["snapshot", "runtime", "plan", "media_snapshot", "inference", "fitting"] | None
+    ) = None
     cohort: Literal["text", "image", "screenshot", "audio", "video", "crossmodal"] | None = None
     processed: int = Field(ge=0)
     total: int = Field(gt=0)
@@ -91,6 +152,46 @@ def publish_progress(path: Path, progress: Progress) -> None:
         os.replace(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
+
+
+def failed_progress(progress: Progress, error: BaseException, phase: str | None = None) -> Progress:
+    values = progress.model_dump()
+    values.update(
+        phase="failed",
+        failure_category=progress.failure_category or failure_category(error),
+        failed_phase=progress.failed_phase
+        or (progress.phase if progress.phase != "failed" else phase),
+    )
+    return Progress.model_validate(values)
+
+
+def record_worker_failure(state_path: Path, phase: str, error: BaseException) -> None:
+    """Called only by the fixed worker; raw diagnostics never leave its private tree."""
+    from scripts.private_gold_job import bounded_read
+
+    state = json.loads(bounded_read(state_path, 4 * 1024**2))
+    output = Path(state["output"]) / "progress.json"
+    if output.exists():
+        progress = Progress.model_validate_json(bounded_read(output, 4096))
+    else:
+        progress = Progress.model_validate(
+            {
+                "phase": phase,
+                "cohort": None,
+                "processed": 0,
+                "total": sum(s["expected_rows"] for s in state["spec"]["datasets"]),
+                "elapsed_seconds": max(0.0, time.monotonic() - state["job_started_monotonic"]),
+                "nonfinite_count": 0,
+                "spec_sha256": state["source_spec_sha256"],
+                "code_sha256": state["code_sha256"],
+            }
+        )
+    require(
+        progress.spec_sha256 == state["source_spec_sha256"]
+        and progress.code_sha256 == state["code_sha256"],
+        "failure_progress_binding_mismatch",
+    )
+    publish_progress(output, failed_progress(progress, error, phase))
 
 
 def worker_progress(
@@ -122,7 +223,7 @@ def forward_private(
     try:
         return forward(prepared)  # type: ignore[no-any-return]
     except ValueError as error:
-        if str(error) == "nonfinite_logits":
+        if error.args == ("nonfinite_logits",):
             worker_progress(state, "failed", processed, started, cohort, nonfinite_count=1)
         raise
 
@@ -744,6 +845,28 @@ def snapshot_media(
     }
 
 
+def snapshot_model_assets(
+    model_dir: str,
+    model_files: dict[str, str],
+    adapter_dir: str,
+    adapter_files: dict[str, str],
+    inputs: Path,
+    public_model_in_place: bool,
+    copy_bound: Callable[[Path, str, Path], None],
+) -> tuple[str, str]:
+    """Only the hardened public base stays in place; adapters always use the private snapshot."""
+    for kind, directory, files in (
+        ("model", model_dir, model_files),
+        ("adapter", adapter_dir, adapter_files),
+    ):
+        for name, digest in files.items():
+            if public_model_in_place and kind == "model":
+                public_readonly(Path(directory) / name)
+            else:
+                copy_bound(Path(directory) / name, digest, inputs / kind / name)
+    return (model_dir if public_model_in_place else str(inputs / "model"), str(inputs / "adapter"))
+
+
 def export_calibration_receipt(
     spec: JobSpec,
     output: Path,
@@ -1003,15 +1126,15 @@ def _execute(
             target = inputs / "data" / f"{index}.jsonl"
             copy_bound(Path(item.data.path), item.data.sha256, target)
             data_paths.append(str(target))
-        for kind, directory, files in [
-            ("model", first.model_dir, first.model_files),
-            ("adapter", first.adapter_dir, first.adapter_files),
-        ]:
-            for name, digest in files.items():
-                if spec.root_traverse_acl:
-                    public_readonly(Path(directory) / name)
-                else:
-                    copy_bound(Path(directory) / name, digest, inputs / kind / name)
+        snapshot_model, snapshot_adapter = snapshot_model_assets(
+            first.model_dir,
+            first.model_files,
+            first.adapter_dir,
+            first.adapter_files,
+            inputs,
+            spec.root_traverse_acl,
+            copy_bound,
+        )
         extras = (
             holdout.snapshot_extras(spec, inputs, copy_bound) if job_kind == "holdout-eval" else {}
         )
@@ -1022,8 +1145,8 @@ def _execute(
             "source_spec_sha256": expected,
             "code_sha256": code_sha,
             "datasets": data_paths,
-            "model": first.model_dir if spec.root_traverse_acl else str(inputs / "model"),
-            "adapter": first.adapter_dir if spec.root_traverse_acl else str(inputs / "adapter"),
+            "model": snapshot_model,
+            "adapter": snapshot_adapter,
             "output": str(output),
             "media_root": "/" if spec.root_traverse_acl else str(inputs),
             "media_map": str(inputs / "media-map.json"),
@@ -1202,13 +1325,13 @@ def execute(
         return _execute(
             source, expected, work_root, report, worker_uid, probe_uid, timeout, job_kind=job_kind
         )
-    except BaseException:
+    except BaseException as error:
         if not existed and progress_path.exists():
             from scripts.private_gold_job import bounded_read
 
             progress = Progress.model_validate_json(bounded_read(progress_path, 4096))
             require(progress.spec_sha256 == expected, "failure_progress_binding_mismatch")
-            publish_progress(progress_path, progress.model_copy(update={"phase": "failed"}))
+            publish_progress(progress_path, failed_progress(progress, error))
         raise
 
 
@@ -1216,6 +1339,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("phase", choices=["_plan", "_fit", "_runtime_probe"])
     parser.add_argument("--state", type=Path)
+    args = None
     try:
         args = parser.parse_args(argv)
         verify_child_identity()
@@ -1232,8 +1356,16 @@ def main(argv: list[str] | None = None) -> int:
             require(args.state is not None, "private_state_required")
             (plan_worker if args.phase == "_plan" else fit_worker)(args.state)
         return 0
-    except BaseException:
-        # All worker details remain inside the private log; never echo validation rows.
+    except BaseException as error:
+        if args is not None and args.state is not None:
+            try:
+                record_worker_failure(
+                    args.state,
+                    {"_plan": "plan", "_fit": "inference", "_runtime_probe": "runtime"}[args.phase],
+                    error,
+                )
+            except BaseException:
+                pass  # Supervisor still records a fixed generic failure on nonzero exit.
         return 2
 
 

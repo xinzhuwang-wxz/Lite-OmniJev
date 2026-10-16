@@ -308,6 +308,8 @@ def progress_values() -> dict[str, Any]:
         total=18000,
         elapsed_seconds=1.0,
         nonfinite_count=0,
+        failure_category=None,
+        failed_phase=None,
         spec_sha256="a" * 64,
         code_sha256="b" * 64,
     )
@@ -367,3 +369,79 @@ def test_nonfinite_failure_exports_only_count(tmp_path: Path) -> None:
     actual = json.loads((tmp_path / "progress.json").read_text())
     assert actual["phase"] == "failed" and actual["nonfinite_count"] == 1
     assert actual["processed"] == 100
+
+
+@pytest.mark.parametrize(
+    "error, expected",
+    [
+        (PermissionError("/private/sample-secret"), "permission_denied"),
+        (ImportError("private arbitrary module contents"), "import_failed"),
+        (ValueError("public_readonly_asset_required"), "public_readonly_asset_required"),
+        (ValueError("raw private target secret"), "input_contract_rejected"),
+        (RuntimeError("private traceback"), "unclassified_failure"),
+    ],
+)
+def test_error_categories_never_echo_private_exception(error: BaseException, expected: str) -> None:
+    assert job.failure_category(error) == expected
+    before = job.Progress.model_validate(progress_values())
+    failed = job.failed_progress(before, error)
+    assert failed.failure_category == expected and failed.failed_phase == "inference"
+    assert "secret" not in failed.model_dump_json()
+
+
+def test_worker_failure_preserves_runtime_phase_without_log_read(tmp_path: Path) -> None:
+    state = {
+        "output": str(tmp_path),
+        "spec": {"datasets": [{"expected_rows": 18000}]},
+        "source_spec_sha256": "a" * 64,
+        "code_sha256": "b" * 64,
+        "job_started_monotonic": 0.0,
+    }
+    path = tmp_path / "state.json"
+    path.write_text(json.dumps(state))
+    job.record_worker_failure(path, "runtime", ImportError("DO NOT EXPORT raw path"))
+    result = job.Progress.model_validate_json((tmp_path / "progress.json").read_bytes())
+    assert result.failed_phase == "runtime" and result.failure_category == "import_failed"
+    assert result.processed == 0
+
+
+def test_private_adapter_is_snapshotted_while_public_base_stays_in_place(
+    tmp_path: Path, monkeypatch: Any
+) -> None:
+    import shutil
+
+    model = tmp_path / "base"
+    model.mkdir()
+    adapter = tmp_path / "adapter"
+    adapter.mkdir()
+    inputs = tmp_path / "inputs"
+    inputs.mkdir()
+    weight = adapter / "adapter_model.safetensors"
+    weight.write_bytes(b"private adapter")
+    weight.chmod(0o600)
+    public = model / "model.safetensors"
+    public.write_bytes(b"public base")
+    seen = []
+    monkeypatch.setattr(job, "public_readonly", lambda path: seen.append(path))
+
+    def copy_bound(source: Path, digest: str, target: Path) -> None:
+        assert job.sha256_file(source) == digest
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+        target.chmod(0o440)
+
+    model_path, adapter_path = job.snapshot_model_assets(
+        str(model),
+        {"model.safetensors": job.sha256_file(public)},
+        str(adapter),
+        {"adapter_model.safetensors": job.sha256_file(weight)},
+        inputs,
+        True,
+        copy_bound,
+    )
+    assert seen == [public]
+    assert model_path == str(model) and adapter_path == str(inputs / "adapter")
+    assert (Path(adapter_path) / weight.name).read_bytes() == b"private adapter"
+    assert (Path(adapter_path) / weight.name).stat().st_mode & 0o777 == 0o440
+    assert weight.stat().st_mode & 0o777 == 0o600
+    assert not (inputs / "model").exists()

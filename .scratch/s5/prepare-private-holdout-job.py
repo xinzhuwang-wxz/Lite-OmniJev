@@ -28,6 +28,7 @@ def main() -> int:
         "--development", action="append", default=[], help="cohort=/absolute/aggregate-report.json"
     )
     parser.add_argument("--calibration-receipt", type=Path)
+    parser.add_argument("--development-runtime", action="append", default=[])
     args = parser.parse_args()
     cal.require(
         sha256_file(args.calibration_job) == args.calibration_job_sha256, "calibration_job_changed"
@@ -81,6 +82,7 @@ def main() -> int:
         source = stage.Spec.model_validate(values)
         stage.verify_catalog(source)
         datasets.append(source)
+    runtime_reports = dict(value.split("=", 1) for value in args.development_runtime)
     development = []
     for value in args.development:
         cohort, raw_path = value.split("=", 1)
@@ -104,16 +106,24 @@ def main() -> int:
                     "cohort": cohort,
                     "report": artifact(report_path).model_dump(),
                     "data_sha256": report["data_sha256"],
+                    "runtime_report": artifact(Path(runtime_reports[cohort])).model_dump()
+                    if cohort in runtime_reports
+                    else None,
                 }
             )
         )
     temperatures = []
     fit_receipt = None
+    raw_receipt = None
     if args.calibration_receipt:
         fit_receipt = artifact(args.calibration_receipt)
         report = json.loads(args.calibration_receipt.read_text())
         cal.require(
             report["status"] == "fitted" and report["exit_code"] == 0, "completed_fit_required"
+        )
+        raw_receipt = artifact(Path(report["export_directory"]) / "raw-receipt.json")
+        cal.require(
+            raw_receipt.sha256 == report["raw_logits_receipt_sha256"], "raw_receipt_changed"
         )
         for row in report["artifacts"]:
             path = Path(report["export_directory"]) / row["path"]
@@ -133,6 +143,7 @@ def main() -> int:
         max_snapshot_bytes=prior.max_snapshot_bytes,
         temperatures=temperatures,
         calibration_receipt=fit_receipt,
+        calibration_raw_receipt=raw_receipt,
         development=development,
         gates=artifact(args.gates),
     )

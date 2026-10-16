@@ -38,6 +38,9 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts/s5-calibration-job-001")
     parser.add_argument("--producer-revision", default="daeaa7f5a5fccaeb055fc54ea5c163025b3690ac")
     parser.add_argument("--timeout", type=int, default=14400)
+    parser.add_argument("--model-view", type=Path)
+    parser.add_argument("--worker-uid", type=int, default=64801)
+    parser.add_argument("--probe-uid", type=int, default=64802)
     args = parser.parse_args()
     start = time.monotonic()
     selected_path = PRIVATE / "selected-gold-manifest-001.json"
@@ -76,6 +79,8 @@ def main() -> int:
         Path("/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it")
         / stage.FROZEN_REVISION
     )
+    if args.model_view is not None:
+        model = args.model_view
     adapter = ROOT / "artifacts/s4-program-stratified-pool-train-001/adapter-invocation-step-0100"
     model_files = {
         name: digest
@@ -157,8 +162,8 @@ def main() -> int:
     job_path = args.output / "job.json"
     cal.write_private(job_path, job.model_dump())
     cal.JobSpec.model_validate_json(job_path.read_bytes())
-    uid_available = all(broker.unused_uid(uid) for uid in (64201, 64202))
-    broker.check_process_ids({64201, 64202})
+    uid_available = all(broker.unused_uid(uid) for uid in (args.worker_uid, args.probe_uid))
+    broker.check_process_ids({args.worker_uid, args.probe_uid})
     media_metadata = []
     for name in ("clevrer-validation-gold-001", "gui-gold-002", "crossmodal-source-bundle-001"):
         directory = PRIVATE / name
@@ -198,7 +203,8 @@ def main() -> int:
         "selected_rows": sum(s.expected_rows for s in datasets),
         "private_contents_opened": False,
         "gpu_started": False,
-        "uid64201_64202_unused": uid_available,
+        "proposed_uids": [args.worker_uid, args.probe_uid],
+        "proposed_uids_unused": uid_available,
         "permission_metadata": media_metadata,
         "blockers": (
             []
