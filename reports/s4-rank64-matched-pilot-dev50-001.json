@@ -1,0 +1,57 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "stage_gate": false,
+  "training_authorized": false,
+  "parity_validated": false,
+  "parent_quality_inherited": false,
+  "budget_seconds": 180,
+  "gpu_requested": true,
+  "cost_usd": null,
+  "adapter_sha256": "07c2d4dc397c75b0d030d3aa2822e1dfeac27f3653b633dc42aa92dcb4803bc4",
+  "training_report_sha256": "11e14016bfe5e546fe67bb0b7b1a21dbc5b89a082253ffbb743ee3bbd4e90a05",
+  "launch_receipt_sha256": "e5a367a62667acc6239f39e012b28a23dfa490b50d72ee60773a67e15edfdc5b",
+  "own_baseline_report_sha256": "f05ae672360c869998120ac1452bff8ad1096e39e98d7a1acf7f533590f8aa51",
+  "wrapper_sha256": "14bd57cf144b9abc5dd6407d1c8992c3209b44089e50ef2822669be28172c9f7",
+  "helper_sha256": "1b944ca8eba834c2c3afa48cc331344751db6245d16b0c244126edae31cdf714",
+  "own_initializer": {
+    "accuracy": 0.68,
+    "brier": 0.44251411362234405,
+    "count": 50,
+    "coverage_at_error": 0.1,
+    "ece15": 0.1090212476990298,
+    "max_error": 0.05
+  },
+  "parent": {
+    "accuracy": 0.66,
+    "brier": 0.44748601999097937,
+    "count": 50,
+    "coverage_at_error": 0.12,
+    "ece15": 0.10419439341273157,
+    "max_error": 0.05
+  },
+  "candidate": {
+    "accuracy": 0.62,
+    "brier": 0.4401167682281881,
+    "count": 50,
+    "coverage_at_error": 0.14,
+    "ece15": 0.14092226620385453,
+    "max_error": 0.05
+  },
+  "paired_input_hashes_verified": 50,
+  "shortlist_passed": false,
+  "candidate_receipt_sha256": "906ff0b90fb4eb06bc0a49cf618143506fb99e49be08dd03f230925d97f64e6a",
+  "candidate_records_sha256": "cac2bce761c9eb0f369fef6347e095df648696307f95cb745dfe010d75ce26d1",
+  "next_step": "Root review; video150 >116 plus cross/old retention before expansion",
+  "rank16_matched_control": {
+    "accuracy": 0.68,
+    "brier": 0.42498171521176703,
+    "count": 50,
+    "coverage_at_error": 0.12,
+    "ece15": 0.08093242615598271,
+    "max_error": 0.05
+  },
+  "rank16_control_adapter_sha256": "f6e9db3ffe88644a932e85eb6832918a42657fdb7c87628bcb7d4e09024e0fe2",
+  "rank16_control_receipt_sha256": "dc04589b71c2eb5470cfa84ade6a81544e60e064527d887485a3dee59ed24779",
+  "wall_seconds": 68.96720540523529
+}

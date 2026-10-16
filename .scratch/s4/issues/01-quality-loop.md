@@ -53,3 +53,5 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 独立r64候选决策：受控GPUfresh16/重复16/历史全一致，r64概率差.030967，不能等价替换。按ADR0015改为新容量候选独立自身DEV50 baseline（session98268/180秒），不继承f2db指标、不将失败parity改pass；固定独立研究政策0cc0d96a…，正式S4/S5/S6及pack .001均保持。root已部署b97edc0配置源/archive636aca42…，仍未训练r64。
 
 独立r64自身DEV50真实34/50/Brier.442514，达到研究筛选；rootreview8468c583…仅准first10/360秒。CPUpreflight29.159秒ready、actualderivedconfige0191602…已固定，训练session81664/PID259607/SwanLab nkksm663，终态须自身+2题（36/50）/Brier改善才宽video150，不自动续训。新跨视频条件排序objective仅CPU数学提案/准备，与旧同family pair contract隔离，尚未训练或声称创新收益。
+
+r64 first10实际188.714秒结束，DEV31/50vsown34、Brier略降/ECE变差，政策shortlistfalse，停止续训/150/500，不采用07c2。下一仅实际exposed6pairs机制诊断和有界条件排序CPU集成；021曝光独立profile准备/实际audit，当前无GPUlive，不宣称质量进展。
