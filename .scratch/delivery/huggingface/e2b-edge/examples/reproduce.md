@@ -1,0 +1,1 @@
+Final source commit, uv.lock SHA, frozen base/adapter/config SHA, admitted TRAIN summary, actual training command/seed/environment, calibration registry and aggregate S4/S5/S6/FINAL receipts: pending. Use project docs/runbooks and exact accepted release configuration. Do not copy private datasets or raw teacher outputs into this repository.

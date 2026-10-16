@@ -1,0 +1,57 @@
+{
+  "status": "cpu_preparation_only",
+  "quality": "S4/S5/S6/FINAL pending",
+  "namespace_verified": false,
+  "repository_created": false,
+  "uploaded": false,
+  "terms_accepted": false,
+  "gpu_used": false,
+  "cost": null,
+  "tests": "4 passed; Ruff check/format pass",
+  "checks": {
+    "e4b": {
+      "status": "inventory_incomplete",
+      "errors": [],
+      "missing": [
+        "LICENSE",
+        "adapter_config.json",
+        "adapter_model.safetensors"
+      ],
+      "files_sha256": {
+        "NOTICE": "a43bf130b77745887882beccaa16a610980e96d33d2d5c9d867cee80d0b6bbd8",
+        "README.md": "13933825fbf486d8f40b68af747c9d3cbb104451735737c8a1e4f1689893e7ed",
+        "examples/infer.py": "83359f52a8d87ee9d1b88e8f8fc75ad1ee4c1fdc5e5f503dbc1a48e5ef5e544f",
+        "examples/reproduce.md": "05e1827897937446fe6a552cc63f944597b3018a15c6b60e1238962ba4c35b70",
+        "release-manifest.json": "c675686d2810fae0ef0a5172222f0ba678439164c13a63bdbda27f4abe77809e"
+      },
+      "release_ready": false,
+      "quality_gates": "pending_external_stage_acceptance",
+      "namespace_verified": false,
+      "uploaded": false,
+      "gpu_used": false,
+      "cost": null
+    },
+    "e2b": {
+      "status": "inventory_incomplete",
+      "errors": [],
+      "missing": [
+        "LICENSE",
+        "adapter_config.json",
+        "adapter_model.safetensors"
+      ],
+      "files_sha256": {
+        "NOTICE": "a43bf130b77745887882beccaa16a610980e96d33d2d5c9d867cee80d0b6bbd8",
+        "README.md": "1961760dce203b38464410431404fcff6b997dea00b4495672745a88cf231591",
+        "examples/infer.py": "83359f52a8d87ee9d1b88e8f8fc75ad1ee4c1fdc5e5f503dbc1a48e5ef5e544f",
+        "examples/reproduce.md": "05e1827897937446fe6a552cc63f944597b3018a15c6b60e1238962ba4c35b70",
+        "release-manifest.json": "8c4e9495e0f8dad41c17be4c70f567b53048f112d7a5d6f2ff779441fceea826"
+      },
+      "release_ready": false,
+      "quality_gates": "pending_external_stage_acceptance",
+      "namespace_verified": false,
+      "uploaded": false,
+      "gpu_used": false,
+      "cost": null
+    }
+  }
+}

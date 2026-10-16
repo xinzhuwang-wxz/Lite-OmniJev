@@ -1,0 +1,19 @@
+{
+  "schema": "lite-omnijev-hf-release-draft-v1",
+  "status": "template_pending_artifacts",
+  "base_model": "google/gemma-4-E4B-it",
+  "base_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "base_readme_sha256": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+  "license": "apache-2.0",
+  "license_basis": "local asset README plus official Google Gemma4 license",
+  "adapter_sha256": null,
+  "source_commit": null,
+  "namespace": null,
+  "s4": "pending",
+  "s5": "pending",
+  "s6": "pending",
+  "final_acceptance": "pending",
+  "publication_authorized_final_intent": true,
+  "upload_performed": false,
+  "release_ready": false
+}
