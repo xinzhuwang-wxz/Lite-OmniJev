@@ -40,7 +40,7 @@ def test_objective_keeps_all_three_old_histories_and_counts_only_new_interval(
 ):
     code, root, legacy, index, base, invoke = integration_fixture(tmp_path, monkeypatch)
     first_dir = root / "artifacts/old-exposure"
-    first = code.prepare_continuous(root, legacy, first_dir, index, invoke(0, 10, base))
+    first = code.prepare_continuous(root, legacy, first_dir, index, invoke(0, 5, base))
     base = first_dir / "report.json"
     payload = json.loads(base.read_bytes())
     old_history = payload["continuous_invocations"]
@@ -70,11 +70,11 @@ def test_objective_keeps_all_three_old_histories_and_counts_only_new_interval(
     monkeypatch.setattr(code, "continuous_fixed_identity", lambda *a, **kw: None)
     monkeypatch.setattr(code, "video_objective_bindings", lambda *a: ({}, {"audited_pairs": 300}))
     # A separate invocation has its own runtime and snapshot, while the original remains immutable.
-    launcher = invoke(0, 5, base)
+    launcher = invoke(0, 10, base)
     launch = json.loads(launcher.read_bytes())
     raw = root / "artifacts/train/run.json"
     old_raw = first_dir / "old-run.json"
-    old_raw.write_bytes((root / "artifacts/train/run-invocation-0010.json").read_bytes())
+    old_raw.write_bytes((root / "artifacts/train/run-invocation-0005.json").read_bytes())
     payload = json.loads(base.read_bytes())
     for key in ("continuous_invocations", "continuous_matched_invocations", "rank64_invocations"):
         payload[key][0]["runtime_report_observation"] = code.bind(old_raw)
@@ -85,7 +85,7 @@ def test_objective_keeps_all_three_old_histories_and_counts_only_new_interval(
     launcher.write_text(json.dumps(launch))
     out = root / "artifacts/exposure022"
     result = code.prepare_continuous(root, legacy, out, index, launcher, video_objective=True)
-    assert result["video_pair_objective_actual_global_draws_seen"] == 60
+    assert result["video_pair_objective_actual_global_draws_seen"] == 120
     assert result["continuous_actual_global_draws_seen"] == 240
     assert result["continuous_matched_actual_global_draws_seen"] == 240
     assert result["rank64_actual_global_draws_seen"] == 120
