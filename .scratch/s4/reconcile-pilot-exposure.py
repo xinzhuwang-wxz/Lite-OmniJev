@@ -3630,6 +3630,80 @@ def continuous_fixed_identity(
     require(actual == expected, "continuous_runtime_config_identity")
 
 
+def program_controller_summary(root, path, controller, output, bindings):
+    """A closed orchestration summary is verified separately from raw update reports."""
+    require(
+        controller.get("policy_family") == "monitored_full_course"
+        and controller.get("decision_sha256") == PROGRAM_MONITORED_POLICY_SHA
+        and controller.get("status") == "course_completed"
+        and controller.get("exit_code") == 0
+        and controller.get("steps_completed") == 100
+        and controller.get("formal_quality_gate") == "not_passed_by_this_controller"
+        and controller.get("full_course_scope") == "all1200 fixed course draws; not all S4 data",
+        "program_controller_closed_summary",
+    )
+    expected = list(zip((10, 20, 40, 60, 80), (20, 40, 60, 80, 100), strict=True))
+    require(
+        [(row["start_step"], row["end_step"]) for row in controller["segments"]] == expected,
+        "program_controller_complete_segments",
+    )
+    for row in controller["segments"]:
+        end = row["end_step"]
+        for key, prefix in (("launch", "launch"), ("screen", "dev50")):
+            b = row[key]
+            expected_path = root / f"reports/s4-program-stratified-{prefix}-step{end:04d}.json"
+            require(
+                Path(b["path"]) == expected_path and sha(expected_path) == b["sha256"],
+                "program_controller_segment_receipt_sha",
+            )
+            bindings[str(expected_path)] = b["sha256"]
+        launch = json.loads(Path(row["launch"]["path"]).read_bytes())
+        screen = json.loads(Path(row["screen"]["path"]).read_bytes())
+        eb = launch["exposure_binding"]
+        require(
+            launch["policy_family"] == "monitored_full_course"
+            and launch["decision_sha256"] == PROGRAM_MONITORED_POLICY_SHA
+            and launch["wrapper_sha256"] == PROGRAM_MONITORED_RUNNER_SHA
+            and launch["status"] == ("completed" if end == 100 else "paused")
+            and launch["exit_code"] == 0
+            and launch["stage_gate"] is False
+            and (eb["start_step"], eb["end_step"]) == (row["start_step"], end),
+            "program_controller_segment_identity",
+        )
+        for key in ("final_report", "runtime_report_snapshot"):
+            b = eb[key]
+            file = Path(b["path"])
+            require(
+                file.is_absolute() and sha(file) == b["sha256"], "program_controller_snapshot_sha"
+            )
+            bindings[str(file)] = b["sha256"]
+        runtime = json.loads(Path(eb["runtime_report_snapshot"]["path"]).read_bytes())
+        require(
+            runtime["steps_completed"] == end
+            and runtime["adapter_sha256"] == row["adapter_sha256"]
+            and runtime["data_sha256"] == continuous_profile(program_stratified=True)["data_sha"]
+            and screen["status"] == "completed"
+            and screen["exit_code"] == 0
+            and screen["step"] == end
+            and screen["paired_input_hashes_verified"] == 50
+            and screen["candidate"]["count"] == 50
+            and screen["adapter_sha256"] == row["adapter_sha256"],
+            "program_controller_checked_screen",
+        )
+    best = controller["best_checked"]
+    best_path = root / f"reports/s4-program-stratified-dev50-step{best['step']:04d}.json"
+    require(json.loads(best_path.read_bytes()) == best, "program_controller_actual_best_screen")
+    bindings[str(best_path)] = sha(best_path)
+    snapshot = output / "controller-summary-snapshot.json"
+    snapshot.write_bytes(path.read_bytes())
+    bindings[str(snapshot)] = sha(snapshot)
+    return {
+        "observation": bind(path),
+        "immutable_snapshot": bind(snapshot),
+        "role": "closed orchestrator summary; not an additional optimizer invocation",
+    }
+
+
 def reuse_unchanged_inventory(base_path, base, combined, output, bindings):
     """Reuse an existing full isolation proof only for exactly the same manifest."""
     manifest_path = base_path.with_name("inventory-manifest.json")
@@ -4036,6 +4110,7 @@ def prepare_continuous(
             | {final_path, snapshot_path}
         )
         updates, unknown = [], []
+        controller_summaries = []
         for path in sorted(discovered):
             try:
                 r, b = read_json(path)
@@ -4043,6 +4118,28 @@ def prepare_continuous(
                 require(
                     path.name != "run.json" and path not in known_paths,
                     "unreadable_training_report",
+                )
+                continue
+            if (
+                monitored
+                and path.name == "controller-summary-snapshot.json"
+                and str(path) in prior_bindings
+            ):
+                require(
+                    r.get("policy_family") == "monitored_full_course"
+                    and r.get("decision_sha256") == PROGRAM_MONITORED_POLICY_SHA
+                    and r.get("status") == "course_completed"
+                    and r.get("steps_completed") == 100
+                    and r.get("formal_quality_gate") == "not_passed_by_this_controller",
+                    "program_prior_controller_snapshot_identity",
+                )
+                continue
+            if (
+                monitored
+                and path == root / "reports/s4-program-stratified-full-controller-001.json"
+            ):
+                controller_summaries.append(
+                    program_controller_summary(root, path, r, output, bindings)
                 )
                 continue
             if (
@@ -4094,7 +4191,11 @@ def prepare_continuous(
             inventory_mode = "fresh_full_inventory"
         require(
             all(sha(Path(p)) == h for p, h in bindings.items())
-            and all(sha(Path(p)) == h for p, h in observed_runtimes.items()),
+            and all(sha(Path(p)) == h for p, h in observed_runtimes.items())
+            and all(
+                sha(Path(item["observation"]["path"])) == item["observation"]["sha256"]
+                for item in controller_summaries
+            ),
             "mutable_report_or_input",
         )
         invocation = {
@@ -4123,6 +4224,7 @@ def prepare_continuous(
             "scope": (
                 "Known saved reports; pool capacity is not actual exposure or quality acceptance"
             ),
+            "controller_summaries": controller_summaries,
             "inventory_verification_mode": inventory_mode,
             "inventory_full_audit_origin": audit_origin,
             "continuous_main_pool_included": True,

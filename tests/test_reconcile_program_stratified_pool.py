@@ -275,3 +275,101 @@ def test_saved_invocation_cannot_relax_legacy_runtime_identity(tmp_path, monkeyp
             invoke(0, 10, base),
             saved_invocation=True,
         )
+
+
+def controller_fixture(tmp_path):
+    code = module()
+    root = tmp_path / "root"
+    reports = root / "reports"
+    reports.mkdir(parents=True)
+    segments = []
+    screens = []
+    for start, end in zip((10, 20, 40, 60, 80), (20, 40, 60, 80, 100), strict=True):
+        adapter = str(end).zfill(64)
+        raw = {
+            "steps_completed": end,
+            "adapter_sha256": adapter,
+            "data_sha256": code.continuous_profile(program_stratified=True)["data_sha"],
+        }
+        snapshot = reports / f"s4-program-stratified-runtime-step{end:04d}.json"
+        final = reports / f"s4-program-stratified-training-step{end:04d}.json"
+        for path in (snapshot, final):
+            path.write_text(json.dumps(raw))
+        launch = reports / f"s4-program-stratified-launch-step{end:04d}.json"
+        launch.write_text(
+            json.dumps(
+                {
+                    "policy_family": "monitored_full_course",
+                    "decision_sha256": code.PROGRAM_MONITORED_POLICY_SHA,
+                    "wrapper_sha256": code.PROGRAM_MONITORED_RUNNER_SHA,
+                    "stage_gate": False,
+                    "status": "completed" if end == 100 else "paused",
+                    "exit_code": 0,
+                    "exposure_binding": {
+                        "start_step": start,
+                        "end_step": end,
+                        "final_report": code.bind(final),
+                        "runtime_report_snapshot": code.bind(snapshot),
+                    },
+                }
+            )
+        )
+        screen = reports / f"s4-program-stratified-dev50-step{end:04d}.json"
+        payload = {
+            "status": "completed",
+            "exit_code": 0,
+            "step": end,
+            "paired_input_hashes_verified": 50,
+            "candidate": {"count": 50},
+            "adapter_sha256": adapter,
+        }
+        screen.write_text(json.dumps(payload))
+        screens.append(payload)
+        segments.append(
+            {
+                "start_step": start,
+                "end_step": end,
+                "launch": code.bind(launch),
+                "screen": code.bind(screen),
+                "adapter_sha256": adapter,
+            }
+        )
+    controller = {
+        "policy_family": "monitored_full_course",
+        "decision_sha256": code.PROGRAM_MONITORED_POLICY_SHA,
+        "status": "course_completed",
+        "exit_code": 0,
+        "steps_completed": 100,
+        "formal_quality_gate": "not_passed_by_this_controller",
+        "full_course_scope": "all1200 fixed course draws; not all S4 data",
+        "segments": segments,
+        "best_checked": screens[0],
+    }
+    path = reports / "s4-program-stratified-full-controller-001.json"
+    path.write_text(json.dumps(controller))
+    output = tmp_path / "exposure"
+    output.mkdir()
+    return code, root, path, controller, output
+
+
+def test_closed_controller_is_a_bound_summary_not_an_extra_optimizer_invocation(tmp_path):
+    code, root, path, controller, output = controller_fixture(tmp_path)
+    bindings = {}
+    result = code.program_controller_summary(root, path, controller, output, bindings)
+    assert str(path) not in bindings
+    assert result["immutable_snapshot"]["sha256"] == code.sha(path)
+    assert result["role"].endswith("not an additional optimizer invocation")
+    assert len(bindings) == 21
+
+
+@pytest.mark.parametrize("bad", ["quality_pass", "missing_segment", "mutated_screen"])
+def test_controller_summary_must_preserve_quality_failure_and_complete_bound_chain(tmp_path, bad):
+    code, root, path, controller, output = controller_fixture(tmp_path)
+    if bad == "quality_pass":
+        controller["formal_quality_gate"] = "passed"
+    elif bad == "missing_segment":
+        controller["segments"].pop()
+    else:
+        Path(controller["segments"][0]["screen"]["path"]).write_text("{}")
+    with pytest.raises(ValueError, match="program_controller_"):
+        code.program_controller_summary(root, path, controller, output, {})
