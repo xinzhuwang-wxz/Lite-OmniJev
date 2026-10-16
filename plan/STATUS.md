@@ -3,10 +3,10 @@
 更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
 
 ## 当前票与下一步
-- **当前live**：固定paired课程第2次invocation训练session46306，root入口/root/autodl-tmp/resume-continuous-matched-pool-step0020.py，日志s4-continuous-matched-pool-launch-002.log。恢复step0010完整AdamW/RNG，same f2db init/data/config/source235ad68，目标累计20steps；仅本段10、240秒。20min保守观察窗口UTC04:20–04:40（本地12:20–12:40）；wrapper拒绝无法在窗口内完成的下一段。无自动100step跑满。结束接.scratch/s4/evaluate-continuous-matched-pool-step0020-dev50.py/180秒，不并行开GPU。
-- 第1段52764已paused10/exit0/175.232秒，adapterf6e9db3ffe88644a932e85eb6832918a42657fdb7c87628bcb7d4e09024e0fe2。固定DEV50 session12095已34/50vsparent33、Brier.424982vs.447486/ECE.080932vs.104194、coverage.12持平，50inputhash同；小幅正向筛查，不是S4晋级。
+- **当前执行**：r16→r64初始化GPU对照55361已terminal/exit1/40.716秒：12完整输入一致，但joint最大差.030967、logit差.125，超过.001，不允许据此训练。保留失败receipt；gradient所有者准备同环境fresh r16/r64最小对照，尚未再次启GPU。CPU扩展258模块旧前缀bitexact、新B零、scale2只证明数学变换；运行时CPU配置支持不替数值验收。根会话已准备LoopConfig仅16/32或64/128成对契约，P0固定16/32不变。
+- 固定paired连续课程已停止：step10 DEV50 34/50vs33，但video150111/150vs父116；step20 DEV50 30/50、Brier.474697/ECE.159290，停止第3段。12:20–12:40窗口已结束，不自动跑100steps。parent保持f2db。
 - 固定pool daf60fb：artifacts/s4-continuous-matched-pool-001，report2c51e16c…/data17cb9a00…/configd8e9e5b0…；CPU32.150秒/isolated。300exact text+program oppositeofficialgold pairs=600video families，+原600replay(420unique原题)，storage1200/global100steps仅上限/first10steps。排660specifiedfamilies，不称全历史未见；每step真实shuffle三相邻pair+2cross+4old。CE/seed42/16frames/1120/rank16alpha32/LR2e-5不变，parent仍f2db。规则reports/explore/continuous-matched-policy-001.md。
-- 当前完整曝光019：artifacts/s4-pilot-exposure-019/report.json SHAa72b12182192a75600afd58a3ef67d8d3238388a70e4017dfbae38e92d9f2a88，33.323秒/isolated/78known/unknown0；newmatched实际120draw独立记录，旧continuous240+两snapshot和018全bindings保留。newpool只append1/current唯一；run.json不永久绑定，step0010snapshot/fullcheckpoint已核。第二段终态后需020，不能用019冒充更新后完整库存。continuous_main_pool所有者仅CPU helper/证据，训练活跃期间禁止完整inventory。
+- 历史曝光019：artifacts/s4-pilot-exposure-019/report.json SHAa72b12182192a75600afd58a3ef67d8d3238388a70e4017dfbae38e92d9f2a88，33.323秒/isolated/78known/unknown0；newmatched实际120draw独立记录，旧continuous240+两snapshot和018全bindings保留。newpool只append1/current唯一；run.json不永久绑定，step0010snapshot/fullcheckpoint已核。020已真实闭合：report SHA eb7502b939da6339d4944421cfafae297e2251101f88c9327a4466f9226cc81f，35.934秒/isolated/80known/unknown0；matched累计240draw，旧continuous240独立保留。continuous_main_pool所有者仅CPU helper/证据，训练活跃期间禁止完整inventory。
 - 新策略依据：pairedTRAIN12真实before/after7→9/12，legalCE.710300→.591083(-16.78%)、pairboth2→3/6、概率方向2→4/6、12完整输入与mapping前后一致；非饱和/非泛化/同预测仍3/6。只支持部分可学，故改为固定课程保持优化器连续、有限窗口看轨迹，避免只跑一遍即下能力结论。reports/explore/paired-train12-actual-001与reports/s4-paired-train12-{before,after}-001。
 - 当前票s4:01 claimed/main-session，规格.scratch/s4/spec.md、iteration-policy.md。P0/S0–S3与S4数据/gate工程通过；S4模型质量未通过，S5/S6/FINAL pending。正式S4前必须刷新gold准入绑定/完整dev/独立私有gate。
 - 当前工作parent f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3，artifacts/s4-temporal-coverage-train-001/adapter：video150116、originalcross10074、old50 audio38/image40/screenshot50/text49。完整video500354/500=70.8%/Brier.381444/ECE.061116/coverage.164，365.744秒；image500410/500=82%/Brier.321490/ECE.150568/coverage.68，207.675秒。视频门91.374%、图像门84.778%仍未达。CE0 4b8e422f…/S3 1bebae31…保留回退，不继承别的模型成绩。
@@ -39,7 +39,7 @@
 ## 已验收数据与入口
 - .scratch/s4/selected-gold-manifest-001.json SHA e073a601…：六cohort各3000cal/1000hold，原dev各500；image/audio/crossmodal额外dev各500单列。旧AOK623/211、video900/300保留为来源诊断及历史曝光，不重复计入主配额。
 - reports/s4-gold-data-admission-001.json evidenceSHA9cf11cea…：来源代码128绑定、source链154工件、CLINC原始Parquet全链重放、Clotho保留120完整字段重放、13500条整理记录仅URI变化、19973媒体路径SHA验证均通过。
-- 历史34报告基线保留；最新019覆盖78known、unknown0；新invocation更新后待020。所有曝光只认实际报告，不把准备池容量算已训练。
+- 历史34报告基线保留；最新020覆盖80known、unknown0；matched累计240draw与旧continuous240分别核算。所有曝光只认实际报告，不把准备池容量算已训练。
 - gold准入绑定的远端总清单（新增TRAIN组合之后仍保留其原始绑定）：artifacts/s4-gold-inventory-001/crossmodal-dev-002/inventory-manifest.json SHA6eb3224906c96ad04042b019f41acfcc533789b8e6b5105c1a1c490a20b53769。144938当前/历史观测零跨池；16963图像引用全定位、12463唯一图像RGB实解码通过，缓存observed-image-rgb-cache-002.json SHA45ab0b7a…。
 - GUI3000/1000保留原178；audio为Clotho1400/500+speech1600/500，原Clotho120保留；video为CLEVRER validation3000/1000；image为VQA原题3000/1000；crossmodal同池组件AND3000/1000。crossmodal校准/封存依赖组610/206，不声称IID或有效N。
 - speech-gold-001/allocation.jsonl原始speaker/book/text/media别名、quarantined-reserves/exclusions.json SHA8901483c…继续保留。新增训练组合必须只用train并维护组件账本，不能挪预留数据。

@@ -1,0 +1,104 @@
+{
+  "status": "paused",
+  "exit_code": 0,
+  "quality_passed": false,
+  "source_commit": "235ad68",
+  "source_archive_sha256": "e036f0372e26cd4c2e3d58fe8fe955c03ddd839d57ed2f39e7b67f97418301e2",
+  "selected_init_adapter": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-temporal-coverage-train-001/adapter",
+    "weights_sha256": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+    "config_sha256": "a4fc244afa7a308262478aad466e250592fc15176d447ea12390d8bf321539ad"
+  },
+  "parent_selection": "root_selected_f2db_balanced_retention_and_full_video_evidence",
+  "previous_launch": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-continuous-matched-pool-launch-001.json",
+    "sha256": "f9c4d0fa7e6db07103f377002a09a2ca78d1e82a2f68c45faf7ef1d27d61c307"
+  },
+  "screening_report": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-continuous-matched-pool-dev50-001.json",
+    "sha256": "75365e91cf570e8debdb67420b0ab2906520d873b82693b35ff1a3218e904d03"
+  },
+  "command": [
+    "timeout",
+    "--signal=INT",
+    "--kill-after=20s",
+    "240",
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.train_s1",
+    "run",
+    "--config",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-001/config-ce.json",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--asset-manifest",
+    "/root/autodl-tmp/lite-omnijev/artifacts/manifests/e4b.json",
+    "--data",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-001/train.jsonl",
+    "--allocation-ledger",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-001/allocation-ledger.jsonl",
+    "--output-dir",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-train-001",
+    "--init-adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-temporal-coverage-train-001/adapter",
+    "--init-adapter-sha256",
+    "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+    "--resume-from",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-train-001/checkpoints/step-0010",
+    "--invocation-steps",
+    "10",
+    "--report",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s4-continuous-matched-pool-training-002.json"
+  ],
+  "optimizer_boundary": "Restore complete step0010 AdamW and RNG; no reinitialization",
+  "screening_stop": "DEV50 after step0020; no automatic further training",
+  "cost_usd": null,
+  "wrapper_sha256": "f9136a7b59ad88578f12de7cba690af8d7cbbe95d70bc7ff49240d54c907c8fe",
+  "observation_deadline_utc": "2026-10-16T04:40:00Z",
+  "continuation_reason": "Bounded fixed-course trajectory; no quality promotion",
+  "exposure_binding": {
+    "base_exposure_report": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-exposure-019/report.json",
+      "sha256": "a72b12182192a75600afd58a3ef67d8d3238388a70e4017dfbae38e92d9f2a88"
+    },
+    "prepared_report": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-001/report.json",
+      "sha256": "2c51e16cb88ab91dfb45dca84a2325b371ad259dce522a01fa50e042090cfa87"
+    },
+    "config_file": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-001/config-ce.json",
+      "sha256": "d8e9e5b0fc8427b32f39165c58486bfd93123fea1a584b5c0f8508efcb389414"
+    },
+    "runtime_data": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-train-001/data.jsonl",
+      "sha256": "17cb9a0066639dafd1feb21e3819cc38a367c86e78ce2a2907a5047d6cb437aa"
+    },
+    "final_report": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-continuous-matched-pool-training-002.json",
+      "sha256": "9a94e97d0d61e19454df05eaf46eb03d76750f9b5f1ab1c7a6c12bb4e5b7703b"
+    },
+    "runtime_report_snapshot": {
+      "path": "/root/autodl-tmp/s1-text-lora-001/reports/s4-continuous-matched-pool-runtime-step0020.json",
+      "sha256": "4e1f30952fa4796efef09139c9d3b3b4ade8ab2413da0b3b795dad1771189ab0"
+    },
+    "runtime_report_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-train-001/run.json",
+    "source_files": [
+      {
+        "path": "/root/autodl-tmp/s4-continuous-code-235ad68/train/trainer.py",
+        "sha256": "34826e562394511ec677e2452cfa0dd94f0bc8bef8a9e4552f0cfa71387993a5"
+      },
+      {
+        "path": "/root/autodl-tmp/s4-continuous-code-235ad68/train/checkpoint.py",
+        "sha256": "666ec9a09314d281c057c09158981eb539761ff0d49294874fc618e6b5d76508"
+      },
+      {
+        "path": "/root/autodl-tmp/s4-continuous-code-235ad68/scripts/train_s1.py",
+        "sha256": "7d33ff18f6323b0fae7b4853af329ba575fe6d02045574e7bc1a147015bf2141"
+      }
+    ],
+    "start_step": 10,
+    "end_step": 20,
+    "resume_from": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-continuous-matched-pool-train-001/checkpoints/step-0010"
+  },
+  "wall_seconds": 175.51693163253367
+}

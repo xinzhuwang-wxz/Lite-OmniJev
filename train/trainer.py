@@ -80,8 +80,8 @@ class LoopConfig(Contract):
     accumulation: int = Field(ge=1, le=64)
     max_length: int = Field(default=2048, ge=32, le=4096)
     learning_rate: float = Field(default=1e-4, gt=0, le=0.001)
-    rank: Literal[16] = 16
-    alpha: Literal[32] = 32
+    rank: Literal[16, 64] = 16
+    alpha: Literal[32, 128] = 32
     dtype: Literal["bfloat16"] = "bfloat16"
     modality: Literal["text", "image", "screenshot", "audio", "video", "mixed"] = "text"
     video_num_frames: Literal[8, 16] = 16
@@ -114,6 +114,8 @@ class LoopConfig(Contract):
 
     @model_validator(mode="after")
     def validate_loop(self) -> LoopConfig:
+        if (self.rank, self.alpha) not in ((16, 32), (64, 128)):
+            raise ValueError("decoder LoRA requires rank/alpha 16/32 or 64/128")
         if self.pair_loss_weight not in (0.0, 0.1):
             raise ValueError("claim pair pilot weight must be 0 or 0.1")
         pair_inputs = (
