@@ -1,0 +1,62 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "stage_gate": false,
+  "training_authorized": false,
+  "gpu_requested": true,
+  "budget_seconds": 120,
+  "step": 40,
+  "cost": null,
+  "adapter_sha256": "5e5447ad28d19106106cce4e43a388627039fb3293ef2877edae316c571aa691",
+  "training_report_sha256": "b56fc8b8656f5dd7b28599a6f93466434dbbdcb57066be55e54d58cb53c854ec",
+  "launch_report_sha256": "03a594a894f71e78d8ef60321d5adf4b06172f6e255c7ed559df652743824409",
+  "window": {
+    "policy_family": "monitored_full_course",
+    "window_start_utc": "2026-10-16T06:26:09Z",
+    "window_deadline_utc": "2026-10-16T07:56:09Z",
+    "decision_sha256": "cd4a140bb45b0acc7dde986648a9f99b12c476bf078a9f8166791ce8e22f6399",
+    "prepared_report_sha256": "ac2f17fc3f5417e93e04d15292763384858f5e3ba1c4de533ca6f5e57d0aaf99",
+    "target_step": 100,
+    "adr_sha256": "68baf7b31227e0474e22ba2a5869b6a09b0b825965c58ff6d5ad8d8099f5a3ff"
+  },
+  "wrapper_sha256": "56357d8b6bc6b764c7241de2d9b6533222cbb069ef1e638e580a23a45a5b9530",
+  "parent": {
+    "accuracy": 0.66,
+    "brier": 0.44748601999097937,
+    "count": 50,
+    "coverage_at_error": 0.12,
+    "ece15": 0.10419439341273157,
+    "max_error": 0.05
+  },
+  "candidate": {
+    "accuracy": 0.68,
+    "brier": 0.48105741444999933,
+    "count": 50,
+    "coverage_at_error": 0.08,
+    "ece15": 0.20574377923543413,
+    "max_error": 0.05
+  },
+  "parent_probability_diagnostics": {
+    "joint_nll": 0.63171636979639,
+    "conditional_nll": 0.6317154565244932,
+    "mean_p_U": 9.132706809480958e-07,
+    "yes_predictions": 36
+  },
+  "candidate_probability_diagnostics": {
+    "joint_nll": 0.7074384716850455,
+    "conditional_nll": 0.7074376403230462,
+    "mean_p_U": 8.313611311794147e-07,
+    "yes_predictions": 31
+  },
+  "paired_input_hashes_verified": 50,
+  "corrected_vs_parent": 3,
+  "regressed_vs_parent": 2,
+  "disposition": "monitored_full_course_checkpoint_review",
+  "actual_training_loss_first": 0.6750568966162973,
+  "actual_training_loss_last": 0.46115088970812695,
+  "learning_observed": "root must review actual loss/gradient/exposure evidence",
+  "candidate_receipt_sha256": "18d552de0a85b5387607e327de4886d3b6492b9d57f9fff79dbc2a426260e363",
+  "candidate_records_sha256": "cf33cfa981d079be969ad042f13a9353f151f470da30d4f0e0c64ed687e81b2c",
+  "next_step": "No automatic continuation or quality promotion",
+  "wall_seconds": 63.140711061656475
+}

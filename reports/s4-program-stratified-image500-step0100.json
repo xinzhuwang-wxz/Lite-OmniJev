@@ -1,0 +1,71 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-pool-train-001/adapter-invocation-step-0100",
+    "--data",
+    "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/dev.jsonl",
+    "--passes",
+    "1",
+    "--image-max-soft-tokens",
+    "1120",
+    "--output-dir",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-image500-step0100/eval",
+    "--report",
+    "/root/autodl-tmp/s1-text-lora-001/reports/s4-program-stratified-image500-step0100.json",
+    "--media-root",
+    "/root/autodl-tmp/s0-media-development-002/artifacts/media-dev-002/image-a/media"
+  ],
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "e46550143b28f8798484515f0abe21996fe92ad241625a4cf6da15dc093277fd",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-pool-train-001/adapter-invocation-step-0100",
+  "data_sha256": "38efa78efe62ebdd8523c7372b8c0ac87a9030a18d429db488f44e5aad08e7de",
+  "samples": 500,
+  "passes": 1,
+  "video_num_frames": 16,
+  "repeat_identical": null,
+  "metrics": {
+    "count": 500,
+    "accuracy": 0.828,
+    "ece15": 0.1509038982892164,
+    "brier": 0.31584475987536764,
+    "coverage_at_error": 0.682,
+    "max_error": 0.05,
+    "product_accuracy": 0.828,
+    "mean_p_insufficient": 5.750747861238132e-06,
+    "max_p_insufficient": 0.00024177033995288432,
+    "predicted_insufficient": 0
+  },
+  "counterfactual": false,
+  "code_revision": null,
+  "script_sha256": "12d387e778a685a8f49ef223f5fa2d26538e3e6a052c7c8e5013677186ad9c68",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "b1f9a9e9d09c42ad1d25a38cf33eaeec96c568cd0b32bc0742da0df40dbde514",
+  "timing": {
+    "started_at": 1792136417.6824107,
+    "finished_at": 1792136613.6187856,
+    "duration_seconds": 195.9363751411438
+  },
+  "image_max_soft_tokens": {
+    "requested": 1120,
+    "effective": 1120
+  }
+}

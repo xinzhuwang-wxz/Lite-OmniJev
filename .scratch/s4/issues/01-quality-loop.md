@@ -61,3 +61,5 @@ r64 first10实际188.714秒结束，DEV31/50vsown34、Brier略降/ECE变差，�
 条件排序first10实际191.140秒completed/paused，DEV32/50vsCE31/own34，Brier.453986变差，shortlistfalse，停止扩量/采用。此小试未取得可用创新收益。新只读证据确认300对严格in/out，缺motion/startend/collisiontarget，而旧rawcontinuous只是temporal关键词；下一官方程序分层课程先CPU准备/退出条件，不重复失败随机长跑。022完整曝光CPU审计中，当前GPU均terminal。
 
 022实际52.531秒isolated/86known/unknown0闭合，四条链分别240/240/120/120，旧bindings/snapshots保持。下一官方程序四分层课程由gradient仅CPU构建，600视频4组各150且各75yes/no、exact600replay；保留f2db/rank16/LR/CE，20min含评估、10/20条件推进，未启动GPU。原窄in/out/关键词池失败证据不覆盖；容量/排除不足不得私自重复补齐。
+
+2026-10-16用户新决策ADR0023：完整分层课程100step/1200draw已完成（600原TRAIN视频+600回放，非全部8299视频）。候选e465，video500372/500=74.4%vsparent70.8%，image50082.8%vs82.0%，audio50079.8%；原视频/图像质量gate未达，保留真实失败。继续text/screenshot/cross完整保留复核、必要独立汇总，再按实测质量局限决定S4出口并接S5/S6；不假称原门通过。曝光028与fresh UID inventory已真实isolated通过，calibration Linux6项边界实测通过，真实fit尚待。详见STATUS与reports/s4-program-stratified-*。

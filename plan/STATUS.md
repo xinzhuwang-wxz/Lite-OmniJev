@@ -3,20 +3,15 @@
 更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
 
 ## 当前票与下一步
-- **当前执行**：条件排序first10 94264已terminal/paused10/exit0/191.140秒，adapterb72c863479b47c8b567575c8bc03624f1dac7e11adb65ec391c440094aec1f12。DEV82257真实69.922秒：32/50vs匹配CE31/自身init34，Brier.453986劣于CE.440117/own.442514、ECE.095808改善、coverage.08下降。shortlistfalse，停止续训/150/500/采用；parent仍f2db。
-- **当前CPU准备**：gradient所有者构建官方程序四分层固定1200课程，依据reports/explore/s4-generalization-next-001.md：600视频4组各150/75yes75no，exact原600replay，f2db/rank16/CE/LR2e-5/16frames/1120保持，10/20检查且总20min含评估，第一GPU尚未启动。300pairs旧课程只in/out，缺motion/startend/collisiontargets；旧rawcontinuous仅关键词temporal且失败，不复跑。新数据尚pending，先查容量/来源/准入/排除范围，不私自补齐。当前无GPUlive。
-- 排序CPU实际准备5.460秒exit0：300对/600官方TRAIN原题/1200canonical ledger/原600replay，source7b75f9f/archive49b11d24…，prep371bb26d…/sidecarc1ba3471…/configf38c6672…；仅五个video_pair字段变化，旧samefamily claim guard不变。rootdecision6b7ecc32…明确本轮是在CE能拟合但DEV退化后，检验共同问题先验梯度的归纳偏置，不声称无视觉梯度/缺容量/新标签/RLCD。
-- 真实已曝光TRAIN12机制probe002 session36048完成50.428秒：init7/12→after11/12、jointCE.671193→.369811、pairboth1→5/6、direction3→6/6，12完整input/mapping一致、无grad。仅实际first120draw选6整对，不是旧未曝光30pair诊断。probe001因legacy source/configmetadata在GPU前失败11.783秒，保留；修正真实CPU预检后用b97source成功。
-- r64CE first10 terminal81664/paused10/exit0/188.714秒、adapter07c2…；DEV55458真实31/50vs自身34、Brier.440117vs.442514、ECE.140922变差。停止续训/150/500，不采用。root工作parent仍f2db。最新完整曝光022真实52.531秒/86known/unknown0/isolated，report960a6b661f6414a514fa3274979b3a979669544979632251f52838f1f882edcb：原continuous240/matched240/rank64CE120/新排序120独立；021全bindings/旧5snapshot保持，共享1200poolappend0/current唯一。
-- 数值诊断55361真实failed/40.716秒；同进程control88154真实completed/49.545秒但parityfalse。fresh16与历史/重复完全一致；r64最大joint差.030967/logit.125，12输入全一致，0argmax变化；LoRA FP32/base BF16。保留失败，不能宣称输出不变。新code b97edc0/archive636aca42…仅允许LoopConfig16/32或64/128、P0固定16/32；68训练回归+11扩展回归、ruff/mypy通过，远端配置检查通过。当前实验是有独立baseline的容量候选，非放宽概率阈值。
-- 固定paired连续课程已停止：step10 DEV50 34/50vs33，但video150111/150vs父116；step20 DEV50 30/50、Brier.474697/ECE.159290，停止第3段。12:20–12:40窗口已结束，不自动跑100steps。parent保持f2db。
-- 固定pool daf60fb：artifacts/s4-continuous-matched-pool-001，report2c51e16c…/data17cb9a00…/configd8e9e5b0…；CPU32.150秒/isolated。300exact text+program oppositeofficialgold pairs=600video families，+原600replay(420unique原题)，storage1200/global100steps仅上限/first10steps。排660specifiedfamilies，不称全历史未见；每step真实shuffle三相邻pair+2cross+4old。CE/seed42/16frames/1120/rank16alpha32/LR2e-5不变，parent仍f2db。规则reports/explore/continuous-matched-policy-001.md。
-- 历史曝光019：artifacts/s4-pilot-exposure-019/report.json SHAa72b12182192a75600afd58a3ef67d8d3238388a70e4017dfbae38e92d9f2a88，33.323秒/isolated/78known/unknown0；newmatched实际120draw独立记录，旧continuous240+两snapshot和018全bindings保留。newpool只append1/current唯一；run.json不永久绑定，step0010snapshot/fullcheckpoint已核。020已真实闭合：report SHA eb7502b939da6339d4944421cfafae297e2251101f88c9327a4466f9226cc81f，35.934秒/isolated/80known/unknown0；matched累计240draw，旧continuous240独立保留。continuous_main_pool所有者仅CPU helper/证据，训练活跃期间禁止完整inventory。
-- 新策略依据：pairedTRAIN12真实before/after7→9/12，legalCE.710300→.591083(-16.78%)、pairboth2→3/6、概率方向2→4/6、12完整输入与mapping前后一致；非饱和/非泛化/同预测仍3/6。只支持部分可学，故改为固定课程保持优化器连续、有限窗口看轨迹，避免只跑一遍即下能力结论。reports/explore/paired-train12-actual-001与reports/s4-paired-train12-{before,after}-001。
-- 当前票s4:01 claimed/main-session，规格.scratch/s4/spec.md、iteration-policy.md。P0/S0–S3与S4数据/gate工程通过；S4模型质量未通过，S5/S6/FINAL pending。正式S4前必须刷新gold准入绑定/完整dev/独立私有gate。
-- 当前工作parent f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3，artifacts/s4-temporal-coverage-train-001/adapter：video150116、originalcross10074、old50 audio38/image40/screenshot50/text49。完整video500354/500=70.8%/Brier.381444/ECE.061116/coverage.164，365.744秒；image500410/500=82%/Brier.321490/ECE.150568/coverage.68，207.675秒。视频门91.374%、图像门84.778%仍未达。CE0 4b8e422f…/S3 1bebae31…保留回退，不继承别的模型成绩。
-- 用户明确主线与探索继续相辅相成，未暂停探索；模型完成前不做HF。最终开源HF已有用户意向，账号/目标及真实发布前置闭合后再进行；不扩生产运营。OpenAI Decisions仍暂缓。
-- 用户09:18给剩24h：保守至10-17 09:15，至少03:15起留6h导出/验收/修复；非平台核验、不续租/开关卡。.scratch/s4/wallclock-budget.md。最近完整handoff仍plan/handoff-2026-10-15-s3-complete.md；本STATUS是当前唯一接续入口。
+- 当前票s4:01 claimed/main-session。用户2026-10-16明确接受实测质量局限下推进，ADR0023已记录：保留原gate失败，不假称原目标通过；完整实测、有界优化后可closed_with_measured_quality_limitations。正确性、数值、来源、隔离不放宽。S5/S6/FINAL尚未完成。
+- **完整课程已完成**：官方程序四分层CE，100step/1200实际draw=600原TRAIN视频family+600exact回放；不是全部8299条视频或原方案大规模全量。f2db parent/rank16/LR2e-5/16frames/1120不变，全AdamW/RNG连续恢复，检查点每5步，DEV在10/20/40/60/80/100监控。90min用户新窗口独立保留，旧20min文件不改。controller session78190 exit0/course_completed；reports/s4-program-stratified-full-controller-001.json。
+- **当前最有潜力候选e46550143b28f8798484515f0abe21996fe92ad241625a4cf6da15dc093277fd**：远端artifacts/s4-program-stratified-pool-train-001/adapter-invocation-step-0100；training report421b950611a8e8db3fa1b0ae75c960790ae56c29a80a218976c171fbdf67ae97。待完整旧模态/跨模态复核后正式采用；f2db/CE0/S3仍保留，不继承历史分数。
+- 完整video500真实372/500=74.4%（parent354=70.8%，+3.6pp），Brier.367875改善、ECE.079020及coverage.06变差，366.635秒exit0，原91.374%目标未达；完整image500414/500=82.8%（parent410=82.0%），Brier.315845/ECE.150904/coverage.682，原84.778%未达；完整audio500399/500=79.8%，Brier.323714/ECE.129549/coverage.124，227.215秒exit0。证据reports/s4-program-stratified-{video,image,audio}500-step0100.json。
+- **当前GPU**：screenshot500 session22798运行；text500第一次failed exit1/14.753秒：纯文本错误传image_max_soft_tokens，gradient负责最小CLI修复和CPU测试，失败记录保留、随后新路径重试；结束串行接originalcrossmodal500（generic runner10a42110…），不重复已完成评测。完整DEV50 step10034/50/Brier.419482；此前20step30/50没有因3题噪声停整轮，完整video500随后验证增益。不宣称能力饱和或SOTA。
+- 完整训练曝光028已CPU实际56.472秒/99known/unknown0/isolated闭合，600video+600replay完整计入；inventory manifest807003d0dfc3443f69f3d992566c62d60e7e7824db2655e1347e8bb9d546d6b8。S5 fresh UID inventory实际19.056秒exit0/isolated/boundarytrue，receipt e14f7dd48d07bffe779ea1998e0e17bdb044a70438255d930173aa5241aa6ea0；UID64101/64102永久保留，后续不得复用。
+- **S5下一步**：真实private calibration producer daeaa7f/a030f2…已review，无已知源码阻断；实际Linux边界6项(normal/timeout/TERM/parentkill/competition/stale recovery)全部通过5.626秒，ACL精确恢复、无残留UID进程，reports/s5-calibration-linux-boundary-001.json。bounded所有者仅metadata构建实际7组18000校准JobSpec（11组无数据明确unfitted），私有行/原始logits/logs不供agent读取。实际fit尚未运行：已确认cal媒体原0700/0600，bounded负责最小private-media snapshot fallback，禁止修改原权限/复制holdout全目录；需完整保留复核及匹配推理精度；BF16校准不能无验证套用FP32服务。新UID建议64201/64202核空闲后用。
+- user授权创新/探索继续与主线相辅相成；模型完成前不做HF；OpenAI Decisions暂缓。r64/条件排序等失败路线停止，保留reports/explore，不为了清单重跑。新分层覆盖是已测增益，不宣称颠覆性创新。
+- 用户09:18给剩24h：保守至10-17 09:15，03:15起至少6h导出/验收/修复；非平台核验、不续租/开关卡。.scratch/s4/wallclock-budget.md。唯一接续入口本STATUS；最近完整handoff plan/handoff-2026-10-15-s3-complete.md。
 
 ## 已停止或保留的路线
 
@@ -70,6 +65,6 @@
 ## 环境与授权
 - 远端/root/autodl-tmp/s1-text-lora-001，主checkout仍869ee95；后续实跑使用具名不可变源码快照，勿盲覆盖远端主树。SSH mux /tmp/omnijev-ssh-root-final，端口48926；训练Python /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python；H20约95GiB。
 - 用户指定：常规实现/测试Sol6.1，简单执行/监控Luna6，主会话负责分析/统筹；原生子代理独立worktree。所有凭据在项目外，不写入Git/日志。
-- 用户授权有界创新/RL与实测资源调整；先小批量、有效再扩大，持续监控与早停。冻结基座/无新分类头/不换引擎、质量门不降、5b不启用。大预算/付费/租卡开关/生产部署仍须用户决定；不push。
+- 用户授权有界创新/RL与实测资源调整；先小批量、有效再扩大，持续监控与早停。冻结基座/无新分类头/不换引擎、质量推进按ADR0023透明记录、正确性不放宽、5b不启用。大预算/付费/租卡开关/生产部署仍须用户决定；不push。
 - S5、S6和FINAL尚未完成；终局包含真实API/单卡/端侧/浏览器/性能与无未解决问题。快与低成本须同条件实测，未知价格不编造成本，无同条件Jev实测不声称超越。
 - 用户2026-10-16明确暂缓OpenAI Decisions对照；保留资料，不请求凭据、不接入、不付费。继续S4主线。GPU真正用完再通知用户关卡，不代执行关机。

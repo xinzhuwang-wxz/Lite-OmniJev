@@ -1,0 +1,9 @@
+{
+  "policy_family": "monitored_full_course",
+  "window_start_utc": "2026-10-16T06:26:09Z",
+  "window_deadline_utc": "2026-10-16T07:56:09Z",
+  "decision_sha256": "cd4a140bb45b0acc7dde986648a9f99b12c476bf078a9f8166791ce8e22f6399",
+  "prepared_report_sha256": "ac2f17fc3f5417e93e04d15292763384858f5e3ba1c4de533ca6f5e57d0aaf99",
+  "target_step": 100,
+  "adr_sha256": "68baf7b31227e0474e22ba2a5869b6a09b0b825965c58ff6d5ad8d8099f5a3ff"
+}

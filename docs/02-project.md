@@ -4,6 +4,8 @@
 范围：单步多模态判断的 API、单卡包、E2B 端侧包；第十一节进阶优化/探索按ADR0015在对应阶段评估并自主开展有界实验；5b多步决策仍需范围决策。
 版本、成本、准确率、时延均需实测；P0工程闭环已完成（reports/p0-engineering-acceptance.md）。当前S0已按批准ADR0010/ADR0012通过：教师复现、数值/网关/浏览器、缓存实测、六开发cohort/30支持基线及预算汇总齐全；新增真人双标/κ/用户gate账号要求删除，改用现成可靠gold。s0:08已关闭；S1已通过（reports/s1-stage-acceptance-001.json）。S2已通过（reports/s2-stage-acceptance-budget1120-001.json，v2+1120图像预算；非最终性能默认）；S3已通过（reports/s3-stage-acceptance-stable-001.json）；S4现成gold与私有gate工程s0:05已通过（reports/s4-gold-gate-engineering-acceptance-001.json），继续s4:01模型质量闭环；当前状态以plan/STATUS.md为准；S0交接plan/handoff-2026-10-15-s0-complete.md与reports/s0-stage-acceptance-001.json保留。
 
+原质量目标与阶段推进按用户2026-10-16决策分开记录：见 ADR0023（`adr/0023-measured-quality-stage-progression.md`）。完整训练/实测及有界优化后，可带明确已接受质量局限推进后续交付；原始质量gate的failed结果保留，不假称达标，正确性/数值/隔离要求保持。
+
 ## 当前基线与栈
 
 2026-10-13 初始本地只有 HTML，远端只有 Apache-2.0 LICENSE；不存在可复用应用或真实 build/test 脚本。

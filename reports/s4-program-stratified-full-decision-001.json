@@ -1,0 +1,35 @@
+{
+  "policy_family": "monitored_full_course",
+  "decision": "run_monitored_full_course",
+  "reviewer": "root",
+  "user_authorized_supersession": true,
+  "prepared_report_sha256": "ac2f17fc3f5417e93e04d15292763384858f5e3ba1c4de533ca6f5e57d0aaf99",
+  "config_sha256": "326b406eb23ce47c4854afe64d535a95ad91be94a68844109329e43872c6aaea",
+  "initializer_sha256": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+  "target_step": 100,
+  "window_start_utc": "2026-10-16T06:26:09Z",
+  "window_deadline_utc": "2026-10-16T07:56:09Z",
+  "latest_exposure_report": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-exposure-022/report.json",
+  "latest_exposure_report_sha256": "960a6b661f6414a514fa3274979b3a979669544979632251f52838f1f882edcb",
+  "adr_sha256": "68baf7b31227e0474e22ba2a5869b6a09b0b825965c58ff6d5ad8d8099f5a3ff",
+  "resume_from_step": 10,
+  "segments": [
+    20,
+    40,
+    60,
+    80,
+    100
+  ],
+  "max_segment_seconds": 500,
+  "evaluation_steps": [
+    20,
+    40,
+    60,
+    80,
+    100
+  ],
+  "pause_for_analysis_correct_drop": 5,
+  "small_slice_fluctuation_is_not_stage_gate": true,
+  "full_course_scope": "1200 prepared draws, including600 originalvideos and600 replay; not all8299 or allS4training",
+  "formal_quality_results_preserved": true
+}
