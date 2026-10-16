@@ -110,7 +110,11 @@ def pilot_paths(
     learnability: bool = False,
     temporal_coverage: bool = False,
     coverage_segment002: bool = False,
+    polarity_arm: str | None = None,
 ) -> list[tuple[str, Path, Path, Path]]:
+    if polarity_arm is not None:
+        require(polarity_arm in {"control", "polarity"}, "polarity_single_arm")
+        coverage_segment002 = True
     paths = [
         (
             name,
@@ -205,6 +209,16 @@ def pilot_paths(
                 root / "artifacts/s4-temporal-coverage-pilot-002",
             )
         )
+    if polarity_arm is not None:
+        name = "s4-video-polarity-" + polarity_arm
+        paths.append(
+            (
+                name,
+                root / "reports" / (name + "-training-001.json"),
+                root / "artifacts" / (name + "-train-001"),
+                root / "artifacts/s4-video-polarity-pilot-001" / polarity_arm,
+            )
+        )
     return paths
 
 
@@ -257,6 +271,171 @@ def learnability_subset(prepared: Path, source: Path) -> dict[str, int]:
     targets = [r["questions"][0]["target"]["value"] for r in subset.values()]
     require(targets.count("yes") == targets.count("no") == 6, "learnability_gold_balance")
     return {"unique_samples": 12, "unique_families": 12, "yes": 6, "no": 6, "scheduled_draws": 120}
+
+
+POLARITY_DATA = {
+    "control": "f7cbd1a5ee86c92cb13fc9377d9942b4e6907e0182d685431103b4d20ddc85bc",
+    "polarity": "0235ff3f039c28229c897bf79a5f353958d34d4bda486035cc72a21df691cb84",
+}
+
+
+def arm_current_inventory(combined: dict[str, Any], artifact: dict[str, Any]) -> None:
+    require(
+        artifact["expected_pool"] == "train" and artifact["exposure"] == "current",
+        "polarity_current_train",
+    )
+    # Historical inventory is not a claim that every row was actually drawn.
+    for prior in combined["samples"]:
+        if prior["expected_pool"] == "train":
+            prior["exposure"] = "historical"
+    combined["samples"].append(artifact)
+
+
+def polarity_terminal_binding(arm: str, launch: dict[str, Any], final: dict[str, Any]) -> None:
+    require(arm in POLARITY_DATA and launch.get("arm") == arm, "polarity_single_arm")
+    claim_terminal(final, "s4-video-polarity-" + arm)
+    require(
+        launch.get("status") in {"completed", "failed"} and type(launch.get("exit_code")) is int,
+        "polarity_launcher_nonterminal",
+    )
+    require(
+        launch["selected_init_adapter"] == final.get("init_adapter")
+        and final["init_adapter"]["weights_sha256"]
+        == "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+        "polarity_actual_parent",
+    )
+    require(final.get("data_sha256") == POLARITY_DATA[arm], "polarity_actual_data")
+    c = dict(final["config"])
+    if "init_adapter" in c:
+        require(c.pop("init_adapter") == launch["selected_init_adapter"], "polarity_config_init")
+    parsed = LoopConfig.model_validate(c)
+    require(
+        parsed.reference_kl_weight == parsed.pair_loss_weight == parsed.brier_weight == 0
+        and parsed.midway_step == parsed.checkpoint_every == 5,
+        "polarity_ce_contract",
+    )
+    require(
+        launch.get("training_limit_seconds") == 240 and launch.get("dev50_limit_seconds") == 180,
+        "polarity_launcher_budget",
+    )
+
+
+def polarity_bindings(
+    root: Path,
+    prepared: Path,
+    prep: dict[str, Any],
+    final: dict[str, Any],
+    runtime: dict[str, Any],
+    arm: str | None,
+) -> tuple[dict[str, str], dict[str, str]]:
+    require(arm in POLARITY_DATA, "polarity_single_arm")
+    assert arm is not None
+    launch_path = root / "reports" / ("s4-video-polarity-" + arm + "-launch-001.json")
+    launch, lb = read_json(launch_path)
+    polarity_terminal_binding(arm, launch, final)
+    polarity_terminal_binding(arm, launch, runtime)
+    require(
+        prep.get("status") == "cpu_prepared_pending_root_training_decision"
+        and prep.get("exit_code") == 0
+        and prep.get("training_authorized") is False
+        and prep.get("families") == 30
+        and prep["arms"][arm]["inventory_isolation"] == "isolated",
+        "polarity_prepared_isolation",
+    )
+    require(
+        sha(prepared.parent / "report.json") == launch["prepared_report_sha256"],
+        "polarity_preparation_receipt",
+    )
+    bindings = {lb["path"]: lb["sha256"]}
+    for name, expected in prep["arms"][arm]["output_sha256"].items():
+        require(Path(name).name == name, "polarity_safe_filename")
+        b = bind(prepared / name)
+        require(b["sha256"] == expected, "polarity_preparation_output")
+        bindings[b["path"]] = b["sha256"]
+    audit = json.loads((prepared / "inventory-audit.json").read_bytes())
+    require(
+        audit["outcome"] == "isolated"
+        and audit["manifest_sha256"] == sha(prepared / "inventory-manifest.json"),
+        "polarity_bound_isolation",
+    )
+    for path, expected in launch["bound_inputs_sha256"].items():
+        require(sha(Path(path)) == expected, "polarity_launcher_input")
+        bindings[path] = expected
+    runner = root.parent / "s4-video-polarity-launch-code-002/launch-video-polarity-pilot.py"
+    require(sha(runner) == launch["launcher_sha256"], "polarity_launcher_code")
+    bindings[str(runner)] = launch["launcher_sha256"]
+    final_path = root / "reports" / ("s4-video-polarity-" + arm + "-training-001.json")
+    actual = launch["actual_training_receipt"]
+    require(
+        actual["path"] == str(final_path)
+        and actual["sha256"] == sha(final_path)
+        and actual["status"] == final["status"]
+        and actual["steps_completed"] == final["steps_completed"],
+        "polarity_launcher_training_receipt",
+    )
+    argv = launch["training_argv"]
+    require(
+        argv[:4] == ["timeout", "--signal=INT", "--kill-after=20s", "240"],
+        "polarity_training_timeout",
+    )
+    for flag, expected in {
+        "--data": str(prepared / "train.jsonl"),
+        "--allocation-ledger": str(prepared / "allocation-ledger.jsonl"),
+        "--config": str(prepared / "config-ce.json"),
+        "--output-dir": str(root / "artifacts" / ("s4-video-polarity-" + arm + "-train-001")),
+        "--init-adapter": launch["selected_init_adapter"]["path"],
+        "--init-adapter-sha256": launch["selected_init_adapter"]["weights_sha256"],
+    }.items():
+        require(
+            argv.count(flag) == 1 and argv[argv.index(flag) + 1] == expected,
+            "polarity_launcher_argv",
+        )
+    c = {k: v for k, v in final["config"].items() if k != "init_adapter"}
+    require(
+        LoopConfig.model_validate(c)
+        == LoopConfig.model_validate(json.loads((prepared / "config-ce.json").read_bytes())),
+        "polarity_config_exact",
+    )
+    samples = canonical_rows(prepared / "train.jsonl")
+    from scripts.s1_text_pools import canonical_sample_sha
+
+    rows = [
+        json.loads(line)
+        for line in (prepared / "allocation-ledger.jsonl").read_bytes().splitlines()
+        if line.strip()
+    ]
+    require(
+        len(rows) == len(samples) == 120 and len({r["item_id"] for r in rows}) == 120,
+        "polarity_ledger_count",
+    )
+    for r in rows:
+        sample = Sample.model_validate(samples[r["item_id"]])
+        require(
+            r["pool"] == "train"
+            and r["family_id"] == sample.meta.family_id
+            and r["derived_sample_sha256"] == canonical_sample_sha(sample),
+            "polarity_exact_ledger",
+        )
+    arm_manifest = Manifest.model_validate_json((prepared / "inventory-manifest.json").read_bytes())
+    mapping = version_mapping(arm_manifest)
+    version = "clevrer-train-video-noul-polarity-" + arm + "-v1"
+    require(
+        mapping.get(version) == "video"
+        and len([s for s in samples.values() if s["meta"]["data_version"] == version]) == 60,
+        "polarity_video_mapping",
+    )
+    if final["status"] == "completed":
+        weights = (
+            root
+            / "artifacts"
+            / ("s4-video-polarity-" + arm + "-train-001/adapter/adapter_model.safetensors")
+        )
+        require(
+            sha(weights) == final.get("adapter_sha256") == runtime.get("adapter_sha256"),
+            "polarity_output_weights",
+        )
+        bindings[str(weights)] = sha(weights)
+    return bindings, mapping
 
 
 def segment002_parent(prep: dict[str, Any], launch: dict[str, Any], final: dict[str, Any]) -> None:
@@ -591,7 +770,11 @@ def base_inventory(
     learnability: bool = False,
     temporal_coverage: bool = False,
     coverage_segment002: bool = False,
+    polarity_arm: str | None = None,
 ) -> tuple[Path, dict[str, str] | None]:
+    if polarity_arm is not None:
+        require(polarity_arm in {"control", "polarity"}, "polarity_single_arm")
+        coverage_segment002 = True
     if (
         temporal_curriculum
         or temporal_brier
@@ -600,7 +783,11 @@ def base_inventory(
         or coverage_segment002
     ):
         exposure = root / (
-            "artifacts/s4-pilot-exposure-008"
+            "artifacts/s4-pilot-exposure-010"
+            if polarity_arm == "polarity"
+            else "artifacts/s4-pilot-exposure-009"
+            if polarity_arm == "control"
+            else "artifacts/s4-pilot-exposure-008"
             if coverage_segment002
             else "artifacts/s4-pilot-exposure-007"
             if temporal_coverage
@@ -626,6 +813,8 @@ def base_inventory(
                 ),
                 "mutated005_bound_input",
             )
+        if polarity_arm == "polarity":
+            require(report.get("polarity_arm") == "control", "prior_control_exposure_required")
         path = exposure / "inventory-manifest.json"
         require(
             sha(path) == report["output_sha256"]["inventory-manifest.json"],
@@ -671,7 +860,11 @@ def prepare(
     learnability: bool = False,
     temporal_coverage: bool = False,
     coverage_segment002: bool = False,
+    polarity_arm: str | None = None,
 ) -> dict[str, Any]:
+    if polarity_arm is not None:
+        require(polarity_arm in {"control", "polarity"}, "polarity_single_arm")
+        coverage_segment002 = True
     started = time.monotonic()
     require(
         all(p.is_absolute() for p in (root, legacy_root, output, historical_index)),
@@ -689,6 +882,7 @@ def prepare(
             learnability=learnability,
             temporal_coverage=temporal_coverage,
             coverage_segment002=coverage_segment002,
+            polarity_arm=polarity_arm,
         )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
@@ -699,6 +893,9 @@ def prepare(
         bindings: dict[str, str] = {inventory_binding["path"]: inventory_binding["sha256"]}
         if base_preparation_binding is not None:
             bindings[base_preparation_binding["path"]] = base_preparation_binding["sha256"]
+        if polarity_arm is not None and base_preparation_binding is not None:
+            prior_base = json.loads(Path(base_preparation_binding["path"]).read_bytes())
+            bindings.update(prior_base["all_bound_input_sha256"])
         pilots, new_artifacts = [], []
         for name, final_path, run_dir, preparation_dir in pilot_paths(
             root,
@@ -709,6 +906,7 @@ def prepare(
             learnability=learnability,
             temporal_coverage=temporal_coverage,
             coverage_segment002=coverage_segment002,
+            polarity_arm=polarity_arm,
         ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
@@ -739,6 +937,15 @@ def prepare(
                 temporal_coverage or coverage_segment002
             ) and name == "s4-temporal-coverage"
             is_segment002 = coverage_segment002 and name == "s4-temporal-coverage-segment002"
+            is_polarity = polarity_arm is not None and name == "s4-video-polarity-" + polarity_arm
+            if is_polarity:
+                claim_terminal(final, name)
+                claim_terminal(runtime_report, name)
+                require(
+                    final.get("config") == runtime_report.get("config")
+                    and final.get("init_adapter") == runtime_report.get("init_adapter"),
+                    "polarity_final_run_identity",
+                )
             if is_learnability:
                 learnability_terminal(final)
                 learnability_terminal(runtime_report)
@@ -746,7 +953,7 @@ def prepare(
                     final.get("config") == runtime_report.get("config"),
                     "learnability_runtime_config_mismatch",
                 )
-            if is_claim or is_temporal or is_brier or is_coverage or is_segment002:
+            if is_claim or is_temporal or is_brier or is_coverage or is_segment002 or is_polarity:
                 claim_terminal(final, name)
                 claim_terminal(runtime_report, name)
                 require(
@@ -758,8 +965,29 @@ def prepare(
             runtime_data = run_dir / "data.jsonl"
             runtime_binding = bind(runtime_data)
             require(runtime_binding["sha256"] == final.get("data_sha256"), "runtime_data_sha")
-            prep_report, prep_report_binding = read_json(preparation_dir / "report.json")
-            if is_learnability:
+            prep_receipt = (
+                preparation_dir.parent / "report.json"
+                if is_polarity
+                else preparation_dir / "report.json"
+            )
+            prep_report, prep_report_binding = read_json(prep_receipt)
+            if is_polarity:
+                extra_bindings, extra_mapping = polarity_bindings(
+                    root, preparation_dir, prep_report, final, runtime_report, polarity_arm
+                )
+                for bound_path, expected in extra_bindings.items():
+                    require(
+                        bound_path not in bindings or bindings[bound_path] == expected,
+                        "mutable_report",
+                    )
+                    bindings[bound_path] = expected
+                for version, cohort in extra_mapping.items():
+                    require(
+                        version not in mappings or mappings[version] == cohort,
+                        "inventory_version_conflict",
+                    )
+                    mappings[version] = cohort
+            elif is_learnability:
                 require(
                     prep_report.get("status") == "ready_for_preflight"
                     and prep_report.get("exit_code") == 0
@@ -908,9 +1136,12 @@ def prepare(
                     bindings[b["path"]] = b["sha256"]
             preparation_data = preparation_dir / "train.jsonl"
             preparation_binding = bind(preparation_data)
-            expected = prep_report["output_sha256"].get(
-                "train", prep_report["output_sha256"].get("train.jsonl")
+            expected_outputs = (
+                prep_report["arms"][polarity_arm]["output_sha256"]
+                if is_polarity
+                else prep_report["output_sha256"]
             )
+            expected = expected_outputs.get("train", expected_outputs.get("train.jsonl"))
             require(preparation_binding["sha256"] == expected, "preparation_data_sha")
             comparison = equivalent(runtime_data, preparation_data)
             if is_learnability:
@@ -920,7 +1151,7 @@ def prepare(
                         root / "artifacts/s4-temporal-curriculum-pilot-001/train.jsonl",
                     )
                 )
-            if is_claim or is_temporal or is_brier or is_coverage or is_segment002:
+            if is_claim or is_temporal or is_brier or is_coverage or is_segment002 or is_polarity:
                 require(comparison["rows"] == 120, "claim_runtime_count")
             require(
                 all(version in mappings for version in comparison["data_versions"]),
@@ -929,7 +1160,7 @@ def prepare(
             artifact = {
                 **runtime_binding,
                 "cohorts_by_data_version": {v: mappings[v] for v in comparison["data_versions"]},
-                "exposure": "historical",
+                "exposure": "current" if is_polarity else "historical",
                 "expected_pool": "train",
             }
             appended = False
@@ -937,7 +1168,10 @@ def prepare(
                 require(
                     runtime_binding["sha256"] not in all_hashes, "canonical_sha_nontrain_collision"
                 )
-                combined["samples"].append(artifact)
+                if is_polarity:
+                    arm_current_inventory(combined, artifact)
+                else:
+                    combined["samples"].append(artifact)
                 new_artifacts.append(artifact)
                 hashes.add(runtime_binding["sha256"])
                 all_hashes.add(runtime_binding["sha256"])
@@ -961,7 +1195,8 @@ def prepare(
                     "status": final["status"],
                     "steps_completed": final["steps_completed"],
                     "update_bearing": final["steps_completed"] > 0,
-                    "appended_historical_train": appended,
+                    "appended_historical_train": appended and not is_polarity,
+                    **({"appended_current_train": appended} if is_polarity else {}),
                     "final_report": final_binding,
                     "run_report": run_binding,
                     "runtime_data": runtime_binding,
@@ -1116,6 +1351,8 @@ def prepare(
             report["temporal_coverage_included"] = True
         if coverage_segment002:
             report["coverage_segment002_included"] = True
+        if polarity_arm is not None:
+            report["polarity_arm"] = polarity_arm
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -1189,6 +1426,11 @@ def main() -> int:
         action="store_true",
         help="Use008 base; bind terminal segment002 to launcher-selected parent",
     )
+    parser.add_argument(
+        "--polarity-arm",
+        choices=["control", "polarity"],
+        help="Bind terminal single arm; control uses009, polarity requires010 settled control",
+    )
     args = parser.parse_args()
     try:
         report = prepare(
@@ -1204,6 +1446,7 @@ def main() -> int:
             learnability=args.learnability,
             temporal_coverage=args.temporal_coverage,
             coverage_segment002=args.coverage_segment002,
+            polarity_arm=args.polarity_arm,
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
