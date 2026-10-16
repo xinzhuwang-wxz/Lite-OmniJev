@@ -113,7 +113,8 @@ def main() -> int:
             row = json.loads(line)
             if row.get("pass", 0) == 0:
                 d3p[row["id"]] = row
-    total = valid = 0
+    total = len(vlm)
+    valid = 0
     matched_truth = matched_vlm = truth_object_total = 0
     buckets = {k: prf_counts() for k in PREDICATES}
     cascade_correct = d3p_correct = resolved = executor_correct = 0
@@ -124,7 +125,6 @@ def main() -> int:
         row = vlm.get(question["id"])
         answer = None
         if row and row.get("summary_valid") and row.get("summary"):
-            total += 1
             valid += 1
             summary = row["summary"]
             truth_summary = truth.get(question["id"], {}).get("summary")
