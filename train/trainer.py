@@ -943,8 +943,11 @@ def verified_assets(model_dir: Path, manifest_path: Path) -> dict[str, str]:
     manifest = json.loads(manifest_path.read_text())
     models = manifest.get("models", [])
     matching = [m for m in models if m.get("revision") == model_dir.name]
-    if len(matching) != 1 or matching[0].get("repo_id") != "google/gemma-4-E4B-it":
-        raise ValueError("model directory must identify the manifest's pinned E4B revision")
+    if len(matching) != 1 or matching[0].get("repo_id") not in {
+        "google/gemma-4-E4B-it",
+        "google/gemma-4-E2B-it",
+    }:
+        raise ValueError("model directory must identify the manifest's pinned E4B or E2B revision")
     model = matching[0]
     if not re.fullmatch(r"[0-9a-f]{40}", model_dir.name):
         raise ValueError("model revision must be immutable")
