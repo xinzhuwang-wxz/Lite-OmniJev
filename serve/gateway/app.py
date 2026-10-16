@@ -23,6 +23,7 @@ from starlette.responses import Response
 
 from data.schema import Media, Prefix, Question, answer_tokens
 from scripts.check_tokens import OfficialTokenizerAdapter
+from serve.gateway.calibration import CalibrationRegistry
 from serve.vllm_chat import VllmChatClient, VllmChatProtocolError
 from train.multimodal import (
     configure_image_processor,
@@ -144,8 +145,19 @@ def create_app(
     tokenizer: ChatTokenizer | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     processor: Any = None,
+    calibration_registry: CalibrationRegistry | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
+    if calibration_registry is not None and (
+        settings.model_dir is None
+        or settings.model_dir.resolve() != calibration_registry.model_dir
+        or settings.upstream_url is None
+        or settings.upstream_url.rstrip("/") != calibration_registry.upstream_url
+        or settings.upstream_model != calibration_registry.upstream_model
+        or settings.model_version != calibration_registry.model_version
+        or not settings.raw_logprobs_confirmed
+    ):
+        raise ValueError("gateway settings differ from verified calibration deployment")
     runtime_tokenizer = tokenizer
     runtime_processor = processor
     canonical_mode = settings.media_root is not None
@@ -195,6 +207,18 @@ def create_app(
             if not canonical_mode or runtime_processor is None:
                 raise ValueError("image token budget requires the canonical media processor")
             configure_image_processor(runtime_processor, settings.image_max_soft_tokens)
+        if calibration_registry is not None:
+            active_tokenizer = (
+                getattr(runtime_processor, "tokenizer", None)
+                if canonical_mode
+                else runtime_tokenizer
+            )
+            active_template = (
+                getattr(runtime_processor, "chat_template", None)
+                if canonical_mode
+                else getattr(runtime_tokenizer, "template", None)
+            )
+            calibration_registry.verify_runtime(active_tokenizer, active_template)
         async with httpx.AsyncClient(timeout=30, transport=transport) as client:
             application.state.client = client
             chat_client = (
@@ -289,9 +313,23 @@ def create_app(
         }
 
     def format_answer(
-        item: InputQuestion, question: Question, labels: list[str], logits: dict[str, float]
+        item: InputQuestion,
+        question: Question,
+        labels: list[str],
+        logits: dict[str, float],
+        prefix: Prefix,
+        token_ids: dict[str, int],
     ) -> dict[str, Any]:
-        readout = read_probabilities(logits, answer_tokens(question))
+        calibration_metadata: dict[str, str] = {"calibration": "unfitted"}
+        if calibration_registry is None:
+            readout = read_probabilities(logits, answer_tokens(question))
+        else:
+            try:
+                readout, calibration_metadata = calibration_registry.read(
+                    prefix.media, question, logits, token_ids
+                )
+            except (ValueError, OSError):
+                raise HTTPException(503, "Calibration deployment binding unavailable") from None
         values = list(readout.probabilities.values())
         probabilities = dict(zip(labels, values, strict=True))
         result: dict[str, Any] = {
@@ -299,7 +337,7 @@ def create_app(
             "probabilities": probabilities,
             "confidence": readout.confidence,
             "p_insufficient": readout.p_insufficient,
-            "calibration": "unfitted",
+            **calibration_metadata,
             "confidence_semantics": "normalized_peak_non_U",
         }
         if item.type == "choice":
@@ -396,7 +434,14 @@ def create_app(
             timings["upstream"] += time.perf_counter() - upstream_started
         return (
             qid,
-            format_answer(item, question, labels, raw.raw_logprobs),
+            format_answer(
+                item,
+                question,
+                labels,
+                raw.raw_logprobs,
+                prefix,
+                prepared.answer_token_ids if calibration_registry is not None else {},
+            ),
             raw.usage["prompt_tokens"],
             raw.usage["completion_tokens"],
         )
@@ -458,10 +503,20 @@ def create_app(
             ) from error
         finally:
             timings["upstream"] += time.perf_counter() - upstream_started
-        return qid, format_answer(item, question, labels, logits), count, generated
+        return (
+            qid,
+            format_answer(item, question, labels, logits, prefix, token_ids),
+            count,
+            generated,
+        )
 
     @application.post("/v1/systemone")
     async def systemone(request: DecisionRequest, http_request: Request) -> dict[str, Any]:
+        if calibration_registry is not None:
+            try:
+                calibration_registry.ensure_current()
+            except (ValueError, OSError):
+                raise HTTPException(503, "Calibration deployment binding unavailable") from None
         use_canonical = canonical_mode or bool(request.media)
         if not settings.upstream_url or not settings.raw_logprobs_confirmed:
             raise HTTPException(503, "Configure a pinned backend with verified raw_logprobs mode")
