@@ -1,0 +1,86 @@
+{
+  "actual_draw_pair_offsets": [
+    0,
+    2,
+    4
+  ],
+  "automatic_full_run_authorized": false,
+  "cost": null,
+  "draw_order_canonical_sha256": "77e150451e0c80b0d8cfe958cec0fa50a3fb1eb2f03d21e1a7ad4fa1c992124d",
+  "duration_seconds": 32.15015425905585,
+  "exclusions": {
+    "continuous_actual_draws": 240,
+    "continuous_data_sha256": "aeee70458ca202e68f80f9d9b7dc617929a4bc1d4c2eb1e81113a25a207441a0",
+    "continuous_runtime_sha256": "0f752026918cbdfa1bdd66c3bb82520f41d0c77288b505cce460ec745143bb9d",
+    "continuous_video_families": 120,
+    "learnability_families": 12,
+    "learnability_report_sha256": "74dcab30629ffe733864e79eea5f8275ca58b849d6749f6613de529996200c03",
+    "lineage408": 408,
+    "native_course_families": 60,
+    "scope": "f2db plus actual continuous20steps/TRAIN12/native; not globally unseen",
+    "union": 540,
+    "union_with_matched": 660,
+    "union_with_native": 600
+  },
+  "exit_code": 0,
+  "exposure_base": {
+    "manifest_sha256": "abc52892b70e60f7c2f60d1946d167a31d4d7ab5d37d0a320c6c79b084e6e970",
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-pilot-exposure-018",
+    "report_sha256": "b70aa762a2d66492b53d5a44a03c1877d9d3fcd2861e7c5ad43c77b84715e659"
+  },
+  "global_steps": 100,
+  "gold_counts": {
+    "no": 300,
+    "yes": 300
+  },
+  "gpu_used": false,
+  "helper_sha256": "2fc1edec6a7dd41293e29f261ad6cf1f20db0767e45beec2c22cad6e6ff38bc6",
+  "inventory_isolation": "isolated",
+  "invocation_steps_initial": 10,
+  "media_verified_unique": 600,
+  "nonmedia_prefix_question_equal": true,
+  "original_postfix": "exact native in/out before/after equality; official gold unchanged",
+  "output_sha256": {
+    "allocation-ledger.jsonl": "1d18f75d395a6935b1fdececd7530d543144b4fa0e2a0974c31541b3d9c5fbb3",
+    "components.jsonl": "09f5afde85066da920ab1b521c73cddfa2742d6b5a7eeec2a76c716e7fd825f0",
+    "config-ce.json": "d8e9e5b0fc8427b32f39165c58486bfd93123fea1a584b5c0f8508efcb389414",
+    "draw-recipe.json": "59787eb6dc7f392351a3a3e2e8448e74e5180920cf8c3dc8c4585e6522f2f54d",
+    "inventory-audit.json": "63e7bc6034cd1cda55fe3d822c76da187aff9448208230251a4c9e81edb2632a",
+    "inventory-manifest.json": "c1638c23924f4b9bcae01c61e924d4bb44118bd1997dcfc509c566993718a283",
+    "matched-pair-metadata.json": "879fec9a0dabe9f12fd65eddaa8f963d93f3c2c58d5d8555eada8fa2c1f44afe",
+    "train.jsonl": "17cb9a0066639dafd1feb21e3819cc38a367c86e78ce2a2907a5047d6cb437aa"
+  },
+  "pair_count": 300,
+  "pair_metadata_only": true,
+  "parent_model": null,
+  "pending_parent_selection": true,
+  "per_step": {
+    "audio": 1,
+    "crossmodal": 2,
+    "image": 1,
+    "screenshot": 1,
+    "text": 1,
+    "video": 6
+  },
+  "prepared_input_limitation": "nonmedia fields verified; no tensor preparation or GPU",
+  "replay_draws": 600,
+  "replay_report_sha256": "bdf25dbe6955b983d263d13d3436f930481dc908241ef12b56526545156b1cc9",
+  "replay_unique_samples": 420,
+  "reused_helper_sha256": {
+    "inspect-temporal-order-contrast": "c4346e8d61613c710e9dbca78d6796776984402bfc85f30add342d857ddfa5c8",
+    "prepare-claim-pair-pilot": "d22464f4dd7ea151b755b34cf66c5966addc6d3a8c640941f820e264d552be4d"
+  },
+  "root_observation_window_seconds": 1200,
+  "root_usual_max_steps_before_reconsideration": 50,
+  "source_admission": "existing ADR0005 CC0 full8299 TRAIN scope",
+  "source_sha256": {
+    "annotations": "e7f9185ad3dde8139b839b00f0f75483374dd0325a3cbec2dac882078497784c",
+    "questions": "11181da673d223f41fb596aacfbbd3ff83d39af7f09a3210549e98cb283714b4",
+    "readme": "a4838cc68b79ba049b54f95def1714cdbbd1380193d7d2a5d1a85440ac862e7b",
+    "train": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948"
+  },
+  "status": "data_ready_only",
+  "training_authorized": false,
+  "video_families": 600,
+  "video_rows": 600
+}
