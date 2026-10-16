@@ -477,7 +477,9 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         parser = PrivateParser(description=__doc__)
-        parser.add_argument("--job", choices=["inventory-audit", "calibration-fit"], required=True)
+        parser.add_argument(
+            "--job", choices=["inventory-audit", "calibration-fit", "holdout-eval"], required=True
+        )
         parser.add_argument("--inventory", type=Path)
         parser.add_argument("--spec", type=Path)
         parser.add_argument("--sha256", required=True)
@@ -487,7 +489,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--probe-uid", type=int, required=True)
         parser.add_argument("--timeout", type=int, default=300, help="audit child seconds only")
         args = parser.parse_args(argv)
-        if args.job == "calibration-fit":
+        if args.job in ("calibration-fit", "holdout-eval"):
             if args.spec is None or args.inventory is not None:
                 raise JobRejected("invalid_arguments")
             from scripts.private_calibration import execute as execute_calibration
@@ -501,6 +503,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.worker_uid,
                     args.probe_uid,
                     args.timeout,
+                    job_kind=args.job,
                 )
             except Exception:
                 # No private validation messages, rows, paths or worker logs leave the job.
@@ -511,7 +514,7 @@ def main(argv: list[str] | None = None) -> int:
                         os.chmod(args.report, 0o600)
                         json.dump(
                             {
-                                "job": "calibration-fit",
+                                "job": args.job,
                                 "outcome": "rejected",
                                 "categories": ["job_failed"],
                                 "exit_code": 1,

@@ -744,6 +744,89 @@ def snapshot_media(
     }
 
 
+def export_calibration_receipt(
+    spec: JobSpec,
+    output: Path,
+    exported: Path,
+    receipt: dict[str, Any],
+    expected: str,
+    code_sha: str,
+) -> None:
+    from scripts import private_gold_job as broker
+
+    first = spec.datasets[0]
+    assert first.adapter_dir is not None and first.adapter_files is not None
+    require(
+        receipt["status"] == "fitted"
+        and receipt["exit_code"] == 0
+        and receipt["spec_sha256"] == expected
+        and receipt["code_sha256"] == code_sha
+        and receipt["missing_groups"] == sorted(ALL_GROUPS - GROUP_COUNTS.keys()),
+        "invalid_worker_receipt",
+    )
+    require(
+        {e["group"] for e in receipt["artifacts"]} == set(GROUP_COUNTS)
+        and len(receipt["artifacts"]) == 7,
+        "invalid_group_exports",
+    )
+    require(stage.code_hash() == code_sha, "code_changed_during_job")
+    stage.bind_files(first.model_dir, first.model_files)
+    stage.bind_files(first.adapter_dir, first.adapter_files, adapter=True)
+    raw_receipt = broker.bounded_read(output / "raw-receipt.json", 1024**2)
+    require(
+        hashlib.sha256(raw_receipt).hexdigest() == receipt["raw_logits_receipt_sha256"],
+        "raw_receipt_changed",
+    )
+    official = probe(Path(first.model_dir))
+    require(official["status"] == "passed", "official_token_probe_failed")
+    raw_meta = json.loads(raw_receipt)
+    require(
+        raw_meta["code_sha256"] == code_sha
+        and raw_meta["spec_sha256"] == expected
+        and raw_meta["model_files"] == first.model_files
+        and raw_meta["adapter_files"] == first.adapter_files
+        and raw_meta["logits_kind"] == "raw_logits"
+        and raw_meta["runtime_recipe"]
+        == {"engine": "transformers", "dtype": "bfloat16", "adapter_mode": "native_lora"}
+        and raw_meta["complete_legal_logits"] is True
+        and raw_meta["official_template_sha256"] == official["template_sha256"]
+        and raw_meta["answer_token_map_sha256"]
+        == hashlib.sha256(
+            json.dumps(official["answer_token_ids"], sort_keys=True).encode()
+        ).hexdigest(),
+        "invalid_raw_provenance",
+    )
+    exported.mkdir(mode=0o700)
+    for entry in receipt["artifacts"]:
+        name = entry["path"]
+        require(
+            name == entry["group"].replace("/", "-") + "-temperature.json",
+            "invalid_artifact_path",
+        )
+        payload = broker.bounded_read(output / name, 1024**2)
+        artifact = TemperatureArtifact.model_validate_json(payload)
+        require(
+            hashlib.sha256(payload).hexdigest() == entry["sha256"]
+            and artifact.binding.model_dump() == entry["binding"]
+            and artifact.rows == GROUP_COUNTS[entry["group"]]
+            and artifact.binding.adapter_weights_sha256
+            == first.adapter_files["adapter_model.safetensors"]
+            and artifact.binding.base_revision == first.base_revision
+            and artifact.binding.code_revision == spec.producer_revision
+            and artifact.binding.seed == 42
+            and f"{artifact.binding.cohort}/{artifact.binding.primitive}" == entry["group"]
+            and artifact.binding.official_template_sha256 == raw_meta["official_template_sha256"]
+            and artifact.binding.answer_token_map_sha256 == raw_meta["answer_token_map_sha256"]
+            and artifact.binding.raw_logits_receipt_sha256 == receipt["raw_logits_receipt_sha256"],
+            "invalid_temperature_export",
+        )
+        with (exported / name).open("xb") as stream:
+            os.chmod(stream.name, 0o600)
+            stream.write(payload)
+    (exported / "raw-receipt.json").write_bytes(raw_receipt)
+    (exported / "raw-receipt.json").chmod(0o600)
+
+
 def _execute(
     source: Path,
     expected: str,
@@ -752,10 +835,16 @@ def _execute(
     worker_uid: int,
     probe_uid: int,
     timeout: int,
+    *,
+    job_kind: Literal["calibration-fit", "holdout-eval"] = "calibration-fit",
 ) -> dict[str, Any]:
     """Reuse the existing UID broker; data parsing happens only in fixed child phases."""
     from scripts import private_gold_job as broker
 
+    require(job_kind in ("calibration-fit", "holdout-eval"), "unknown_fixed_job")
+    from scripts import private_holdout as holdout
+
+    contract: Any = holdout if job_kind == "holdout-eval" else sys.modules[__name__]
     begun = time.monotonic()
     require(sys.platform == "linux" and os.geteuid() == 0, "boundary_unavailable")
     require(
@@ -782,7 +871,7 @@ def _execute(
     require(not report.exists() and not report.is_symlink(), "report_exists")
     raw_spec = broker.bounded_read(source, 4 * 1024**2)
     require(hashlib.sha256(raw_spec).hexdigest() == expected, "spec_sha_mismatch")
-    spec = JobSpec.model_validate_json(raw_spec)
+    spec = contract.JobSpec.model_validate_json(raw_spec)
     runtime = Path(spec.runtime_python.path)
     broker.safe_path(runtime.parent)
     broker.safe_path(runtime.resolve())
@@ -809,7 +898,7 @@ def _execute(
     registered = {
         (row.path, row.sha256)
         for row in inventory_manifest.samples
-        if row.expected_pool == "calibration" and row.exposure == "current"
+        if row.expected_pool == spec.datasets[0].pool and row.exposure == "current"
     }
     sealed_sources = [
         Path(row.path)
@@ -818,6 +907,20 @@ def _execute(
     ]
     for item in spec.datasets:
         stage.verify_catalog(item)
+        assert item.admission is not None
+        declaration = stage.Admission.model_validate_json(
+            stage.binding(item.admission).read_bytes()
+        )
+        require(
+            (
+                declaration.data_sha256,
+                declaration.pool,
+                declaration.cohort,
+                declaration.expected_rows,
+            )
+            == (item.data.sha256, item.pool, item.cohort, item.expected_rows),
+            "per_source_admission_mismatch",
+        )
         require(
             (item.data.path, item.data.sha256) in registered, "calibration_not_in_current_inventory"
         )
@@ -909,7 +1012,11 @@ def _execute(
                     public_readonly(Path(directory) / name)
                 else:
                     copy_bound(Path(directory) / name, digest, inputs / kind / name)
+        extras = (
+            holdout.snapshot_extras(spec, inputs, copy_bound) if job_kind == "holdout-eval" else {}
+        )
         state = {
+            **extras,
             "job_started_monotonic": begun,
             "spec": spec.model_dump(),
             "source_spec_sha256": expected,
@@ -952,7 +1059,12 @@ def _execute(
 
         def child(phase: str, seconds: int) -> None:
             phase_progress(
-                {"_runtime_probe": "runtime", "_plan": "plan", "_fit": "inference"}[phase]
+                {
+                    "_runtime_probe": "runtime",
+                    "_plan": "plan",
+                    "_fit": "inference",
+                    "_evaluate": "inference",
+                }[phase]
             )
             with (output / (phase + ".log")).open("xb") as log:
                 os.chmod(log.name, 0o600)
@@ -961,7 +1073,7 @@ def _execute(
                     [
                         str(runtime),
                         "-m",
-                        "scripts.private_calibration",
+                        contract.__name__,
                         phase,
                         "--state",
                         str(state_path),
@@ -1025,7 +1137,7 @@ def _execute(
         child("_plan", 120)
         plan = json.loads(broker.bounded_read(output / "media-plan.json", 64 * 1024**2))
         require(
-            plan["groups"] == GROUP_COUNTS and isinstance(plan["media"], dict),
+            plan["groups"] == contract.GROUP_COUNTS and isinstance(plan["media"], dict),
             "invalid_private_media_plan",
         )
         phase_progress("media_snapshot")
@@ -1041,89 +1153,26 @@ def _execute(
         os.chown(inputs / "media-map.json", 0, worker_uid)
         (inputs / "media-map.json").chmod(0o440)
         readonly_directories()
-        child("_fit", timeout)
+        child("_evaluate" if job_kind == "holdout-eval" else "_fit", timeout)
         receipt = json.loads(broker.bounded_read(output / "receipt.json", 1024**2))
-        require(
-            receipt["status"] == "fitted"
-            and receipt["exit_code"] == 0
-            and receipt["spec_sha256"] == expected
-            and receipt["code_sha256"] == code_sha
-            and receipt["missing_groups"] == sorted(ALL_GROUPS - GROUP_COUNTS.keys()),
-            "invalid_worker_receipt",
-        )
-        require(
-            {e["group"] for e in receipt["artifacts"]} == set(GROUP_COUNTS)
-            and len(receipt["artifacts"]) == 7,
-            "invalid_group_exports",
-        )
-        require(stage.code_hash() == code_sha, "code_changed_during_job")
-        stage.bind_files(first.model_dir, first.model_files)
-        stage.bind_files(first.adapter_dir, first.adapter_files, adapter=True)
-        raw_receipt = broker.bounded_read(output / "raw-receipt.json", 1024**2)
-        require(
-            hashlib.sha256(raw_receipt).hexdigest() == receipt["raw_logits_receipt_sha256"],
-            "raw_receipt_changed",
-        )
-        official = probe(Path(first.model_dir))
-        require(official["status"] == "passed", "official_token_probe_failed")
-        raw_meta = json.loads(raw_receipt)
-        require(
-            raw_meta["code_sha256"] == code_sha
-            and raw_meta["spec_sha256"] == expected
-            and raw_meta["model_files"] == first.model_files
-            and raw_meta["adapter_files"] == first.adapter_files
-            and raw_meta["logits_kind"] == "raw_logits"
-            and raw_meta["runtime_recipe"]
-            == {"engine": "transformers", "dtype": "bfloat16", "adapter_mode": "native_lora"}
-            and raw_meta["complete_legal_logits"] is True
-            and raw_meta["official_template_sha256"] == official["template_sha256"]
-            and raw_meta["answer_token_map_sha256"]
-            == hashlib.sha256(
-                json.dumps(official["answer_token_ids"], sort_keys=True).encode()
-            ).hexdigest(),
-            "invalid_raw_provenance",
-        )
-        exported.mkdir(mode=0o700)
-        for entry in receipt["artifacts"]:
-            name = entry["path"]
-            require(
-                name == entry["group"].replace("/", "-") + "-temperature.json",
-                "invalid_artifact_path",
-            )
-            payload = broker.bounded_read(output / name, 1024**2)
-            artifact = TemperatureArtifact.model_validate_json(payload)
-            require(
-                hashlib.sha256(payload).hexdigest() == entry["sha256"]
-                and artifact.binding.model_dump() == entry["binding"]
-                and artifact.rows == GROUP_COUNTS[entry["group"]]
-                and artifact.binding.adapter_weights_sha256
-                == first.adapter_files["adapter_model.safetensors"]
-                and artifact.binding.base_revision == first.base_revision
-                and artifact.binding.code_revision == spec.producer_revision
-                and artifact.binding.seed == 42
-                and f"{artifact.binding.cohort}/{artifact.binding.primitive}" == entry["group"]
-                and artifact.binding.official_template_sha256
-                == raw_meta["official_template_sha256"]
-                and artifact.binding.answer_token_map_sha256 == raw_meta["answer_token_map_sha256"]
-                and artifact.binding.raw_logits_receipt_sha256
-                == receipt["raw_logits_receipt_sha256"],
-                "invalid_temperature_export",
-            )
-            with (exported / name).open("xb") as stream:
-                os.chmod(stream.name, 0o600)
-                stream.write(payload)
-        (exported / "raw-receipt.json").write_bytes(raw_receipt)
-        (exported / "raw-receipt.json").chmod(0o600)
+        if job_kind == "holdout-eval":
+            holdout.export_receipt(spec, output, receipt, expected, code_sha)
+        else:
+            export_calibration_receipt(spec, output, exported, receipt, expected, code_sha)
     # The original run, rows, inputs, and worker logs remain root-only after lease revocation.
     result = {
         **receipt,
         "media_snapshot": media_snapshot,
         "root_traverse_acl": acl_evidence,
-        "boundary": "fresh_ordinary_uid_fixed_calibration_job",
+        "boundary": (
+            "fresh_ordinary_uid_fixed_holdout_job"
+            if job_kind == "holdout-eval"
+            else "fresh_ordinary_uid_fixed_calibration_job"
+        ),
         "ordinary_identity_boundary": True,
         "runtime_python_sha256": spec.runtime_python.sha256,
         "inventory_sha256": spec.inventory.sha256,
-        "export_directory": str(exported),
+        "export_directory": None if job_kind == "holdout-eval" else str(exported),
         "duration_seconds": time.monotonic() - begun,
         "no_network_namespace_claim": True,
         "cost_usd": None,
@@ -1141,11 +1190,18 @@ def execute(
     worker_uid: int,
     probe_uid: int,
     timeout: int,
+    *,
+    job_kind: Literal["calibration-fit", "holdout-eval"] = "calibration-fit",
 ) -> dict[str, Any]:
     progress_path = report.with_suffix(".public-progress.json")
     existed = progress_path.exists() or progress_path.is_symlink()
     try:
-        return _execute(source, expected, work_root, report, worker_uid, probe_uid, timeout)
+        if job_kind == "calibration-fit":
+            return _execute(source, expected, work_root, report, worker_uid, probe_uid, timeout)
+        require(job_kind == "holdout-eval", "unknown_fixed_job")
+        return _execute(
+            source, expected, work_root, report, worker_uid, probe_uid, timeout, job_kind=job_kind
+        )
     except BaseException:
         if not existed and progress_path.exists():
             from scripts.private_gold_job import bounded_read
