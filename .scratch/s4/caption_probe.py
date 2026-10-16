@@ -17,15 +17,20 @@ from pathlib import Path
 
 PERCEPTION_PROMPT = (
     "Watch the video and answer with a JSON object only, no other text.\n"
+    "Rules: each object name is exactly \"<color> <material> <shape>\"; color is one "
+    "of yellow, red, blue, green, gray, purple, brown, cyan (never gold); material "
+    "is metal or rubber; shape is sphere, cube, or cylinder.\n"
     "Schema:\n"
     '{"objects": [{"name": "<color> <material> <shape>", "first_seen": '
-    '"start|early|middle|late|end", "last_seen": "start|early|middle|late|end"}],\n'
+    '"start|early|middle|late|end", "last_seen": "start|early|middle|late|end", '
+    '"moving": true|false}],\n'
     ' "entry_order": ["<name> before <name>", ...],\n'
     ' "collisions": [{"between": ["<name>", "<name>"], "when": '
     '"early|middle|late"}],\n'
     ' "present_at_start": ["<name>", ...], "present_at_end": ["<name>", ...]}\n'
-    "Use only objects you actually see. If unsure about ordering, omit it from "
-    "entry_order rather than guessing."
+    "first_seen is start for objects visible from the very beginning. moving is "
+    "true only if the object changes position. Use only objects you actually see. "
+    "If unsure about ordering, omit it from entry_order rather than guessing."
 )
 PHASES = ("start", "early", "middle", "late", "end")
 
@@ -58,6 +63,8 @@ def validate_summary(text: str) -> dict | None:
         for phase_key in ("first_seen", "last_seen"):
             if entry.get(phase_key) not in PHASES:
                 return None
+        if not isinstance(entry.get("moving"), bool):
+            return None
         if entry["name"] in names:
             return None
         names.add(entry["name"])
@@ -92,7 +99,7 @@ def validate_summary(text: str) -> dict | None:
 def self_test() -> None:
     good = (
         '{"objects": [{"name": "red metal cube", "first_seen": "start", '
-        '"last_seen": "end"}], "entry_order": [], "collisions": [], '
+        '"last_seen": "end", "moving": true}], "entry_order": [], "collisions": [], '
         '"present_at_start": ["red metal cube"], "present_at_end": ["red metal cube"]}'
     )
     assert validate_summary("noise " + good + " trailing") is not None
