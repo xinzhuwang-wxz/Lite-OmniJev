@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import importlib.util
+import inspect
 import json
 import math
 import os
@@ -27,6 +28,28 @@ INIT_SHA = "62920299c7a1ac33b2a874b586a9d7f3ea3eaa4e38198bc20388642482318fc6"
 AFTER_SHA = "07c2d4dc397c75b0d030d3aa2822e1dfeac27f3653b633dc42aa92dcb4803bc4"
 TRAIN_REPORT = ROOT / "reports/s4-rank64-matched-pilot-training-001.json"
 AFTER = ROOT / "artifacts/s4-rank64-matched-pilot-train-001/adapter-invocation-step-0010"
+
+
+RUNTIME_CODE = {
+    "train/trainer.py": "3313f86fc85f51287ddcbefa7e4318ec4e4b5fb269dc18943b68e2201fe2c5d3",
+    "train/multimodal.py": "327c78103d16b571a7fd81b7d43c0a3f1be42dfef5cb03cede4faa71201e1b10",
+    "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+    "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b",
+}
+
+
+def normalized_loop_fields(value, trained, before):
+    require(
+        value == {**trained["config"], "sample_count": 12},
+        "exact actual training configuration subset",
+    )
+    require(
+        value.get("init_adapter") == trained["init_adapter"] == before,
+        "verified initializer metadata",
+    )
+    normalized = dict(value)
+    normalized.pop("init_adapter")
+    return normalized
 
 
 def exposed_pairs(samples, metadata, recipe, seed):
@@ -208,7 +231,21 @@ def main():
         )
         for name, digest in source["asset_hashes"].items():
             require(sha(base.MODEL / name) == digest, "official assets")
-        config = base.LoopConfig.model_validate_json((a.inputs / "config.json").read_bytes())
+        for name, digest in RUNTIME_CODE.items():
+            require(sha(Path(name)) == digest, "frozen b97rank64 runtime code")
+        require(
+            Path(inspect.getfile(base.LoopConfig)).resolve() == Path("train/trainer.py").resolve(),
+            "loaded rank64 config source",
+        )
+        trained = json.loads(TRAIN_REPORT.read_bytes())
+        raw_config = json.loads((a.inputs / "config.json").read_bytes())
+        normalized = normalized_loop_fields(raw_config, trained, source["before"])
+        config = base.LoopConfig.model_validate(normalized)
+        report.update(
+            runtime_source="frozen b97edc0",
+            runtime_code_sha256=RUNTIME_CODE,
+            config_metadata_normalization="verified init_adapter removed in-memory for LoopConfig",
+        )
         samples = base.smoke_samples(
             config, a.inputs / "train.jsonl", expected_data_versions=config.expected_data_versions
         )

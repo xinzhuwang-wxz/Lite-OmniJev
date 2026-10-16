@@ -63,3 +63,19 @@ def test_logodds_direction_is_distinct_from_both_correct():
     assert result["pair_logodds_direction"] == 6
     assert result["pair_both_correct"] == 0
     assert result["correct"] == 6
+
+
+def test_only_verified_initializer_metadata_is_removed():
+    before = {"path": "frozen", "weights_sha256": "a" * 64, "config_sha256": "b" * 64}
+    trained = {
+        "config": {"sample_count": 1200, "rank": 64, "alpha": 128, "init_adapter": before},
+        "init_adapter": before,
+    }
+    value = {**trained["config"], "sample_count": 12}
+    normalized = module.normalized_loop_fields(value, trained, before)
+    assert normalized == {"sample_count": 12, "rank": 64, "alpha": 128}
+    assert value["init_adapter"] == before
+    with pytest.raises(ValueError, match="subset"):
+        module.normalized_loop_fields({**value, "rank": 16}, trained, before)
+    with pytest.raises(ValueError, match="initializer"):
+        module.normalized_loop_fields(value, trained, {**before, "path": "wrong"})
