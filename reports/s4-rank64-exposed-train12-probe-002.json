@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "gpu_requested": true,
+  "budget_seconds": 120,
+  "cost": null,
+  "training_authorized": false,
+  "scope": "actual exposed TRAIN fit only; no generalization or gate claim",
+  "probe_sha256": "5d0a0e7e454471355a7a1a16a546383fd0da5868e6b6242da85634f1d8694e03",
+  "runtime_source": "frozen b97edc0",
+  "runtime_code_sha256": {
+    "train/trainer.py": "3313f86fc85f51287ddcbefa7e4318ec4e4b5fb269dc18943b68e2201fe2c5d3",
+    "train/multimodal.py": "327c78103d16b571a7fd81b7d43c0a3f1be42dfef5cb03cede4faa71201e1b10",
+    "train/template.py": "be82e8a5973a8e3ebba81e5df6dac8478c7b4d9b0984c2320f05fe792eca4a36",
+    "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b"
+  },
+  "config_metadata_normalization": "verified init_adapter removed in-memory for LoopConfig",
+  "input_report_sha256": "1f66d578868939c23c242ee487490b7c455d900e6725dac01848a795e11c6ce9",
+  "parity_of_inputs_verified": 12,
+  "arms": {
+    "before": {
+      "pairs": 6,
+      "pair_both_correct": 1,
+      "pair_yes_probability_aligned": 3,
+      "pair_same_prediction": 5,
+      "same_prediction_limitation": "same outputs do not establish that the model ignored media",
+      "correct": 7,
+      "samples": 12,
+      "mean_joint_ce": 0.6711930941846518,
+      "mean_conditional_nll": 0.6711924745896152,
+      "mean_gold_margin": 0.17708333333333334,
+      "pair_logodds_direction": 3
+    },
+    "after": {
+      "pairs": 6,
+      "pair_both_correct": 5,
+      "pair_yes_probability_aligned": 6,
+      "pair_same_prediction": 1,
+      "same_prediction_limitation": "same outputs do not establish that the model ignored media",
+      "correct": 11,
+      "samples": 12,
+      "mean_joint_ce": 0.36981102158768314,
+      "mean_conditional_nll": 0.36981040228076606,
+      "mean_gold_margin": 1.0416666666666667,
+      "pair_logodds_direction": 6
+    }
+  },
+  "full_base_loads": 1,
+  "forward_count": 24,
+  "gradients_present": false,
+  "records_sha256": "3ab90a7314800522941299e710227b305ed1d8851055755578ce1a90e8bb9491",
+  "dtype": "bfloat16",
+  "duration_seconds": 50.427913550287485
+}

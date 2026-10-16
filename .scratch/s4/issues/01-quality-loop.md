@@ -55,3 +55,5 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 独立r64自身DEV50真实34/50/Brier.442514，达到研究筛选；rootreview8468c583…仅准first10/360秒。CPUpreflight29.159秒ready、actualderivedconfige0191602…已固定，训练session81664/PID259607/SwanLab nkksm663，终态须自身+2题（36/50）/Brier改善才宽video150，不自动续训。新跨视频条件排序objective仅CPU数学提案/准备，与旧同family pair contract隔离，尚未训练或声称创新收益。
 
 r64 first10实际188.714秒结束，DEV31/50vsown34、Brier略降/ECE变差，政策shortlistfalse，停止续训/150/500，不采用07c2。下一仅实际exposed6pairs机制诊断和有界条件排序CPU集成；021曝光独立profile准备/实际audit，当前无GPUlive，不宣称质量进展。
+
+实际exposedTRAIN12显示rank64CE可拟合（7→11/12、direction6/6）但DEV退化；批准一次条件排序比较归纳偏置，不诊断成无梯度/缺容量。newcore7b75、实际CPU准备300pairs/1200ledger通过；rootdecision6b7ecc32…限first10/240秒，session94264/PID289855/SwanLab e4jvjvwx，DEV≥36且Brier<.4401167682才宽复核。021完整isolated/unknown0已闭合rank64CE120draw；排序活跃时不跑全inventory，终态接022。131 root回归+24数据契约/准备+9wrapper、mypy/ruff通过，仍无S4质量通过。
