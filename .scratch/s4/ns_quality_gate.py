@@ -19,6 +19,7 @@ from ns_cascade import END_INDEX, Scene, execute  # noqa: E402
 
 VLM_PHASE_MAP = {"start": 0, "early": 1, "middle": 3, "late": 5, "end": 7}
 KEY_IGNORE = {"metal", "rubber", "object"}
+PREDICATES = ("colors", "shapes", "materials", "enterers", "exiters", "moving", "collisions")
 
 
 def object_key(name: str) -> frozenset:
@@ -45,12 +46,23 @@ def mapped_scene(summary: dict) -> dict:
     return mapped
 
 
-def prf(predicted: set, truth: set) -> dict:
-    tp = len(predicted & truth)
-    precision = tp / len(predicted) if predicted else 1.0
-    recall = tp / len(truth) if truth else 1.0
+def prf_counts() -> dict:
+    return {"tp": 0, "fp": 0, "fn": 0}
+
+
+def prf_from(counts: dict) -> dict:
+    tp, fp, fn = counts["tp"], counts["fp"], counts["fn"]
+    precision = tp / (tp + fp) if tp + fp else 1.0
+    recall = tp / (tp + fn) if tp + fn else 1.0
     f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
-    return {"precision": round(precision, 3), "recall": round(recall, 3), "f1": round(f1, 3), "n_truth": len(truth)}
+    return {
+        "precision": round(precision, 3),
+        "recall": round(recall, 3),
+        "f1": round(f1, 3),
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+    }
 
 
 def sets_from(summary: dict | None) -> dict | None:
@@ -102,8 +114,8 @@ def main() -> int:
             if row.get("pass", 0) == 0:
                 d3p[row["id"]] = row
     total = valid = 0
-    matched_truth = matched_vlm = 0
-    buckets = {k: {"p": set(), "t": set()} for k in ("colors", "shapes", "materials", "enterers", "exiters", "moving", "collisions")}
+    matched_truth = matched_vlm = truth_object_total = 0
+    buckets = {k: prf_counts() for k in PREDICATES}
     cascade_correct = d3p_correct = resolved = executor_correct = 0
     for question in questions:
         gold = question["target"]["value"]
@@ -119,14 +131,17 @@ def main() -> int:
             v_sets = sets_from(summary)
             t_sets = sets_from(truth_summary) if truth_summary else None
             if t_sets:
-                for key in buckets:
-                    buckets[key]["p"].update(v_sets[key])
-                    buckets[key]["t"].update(t_sets[key])
+                # per-video micro counts (never set-union across videos)
+                for key in PREDICATES:
+                    overlap = v_sets[key] & t_sets[key]
+                    buckets[key]["tp"] += len(overlap)
+                    buckets[key]["fp"] += len(v_sets[key] - t_sets[key])
+                    buckets[key]["fn"] += len(t_sets[key] - v_sets[key])
                 v_keys = {object_key(o["name"]) for o in summary.get("objects", [])}
                 t_keys = {object_key(o["name"]) for o in truth_summary.get("objects", [])}
                 matched_truth += len(v_keys & t_keys)
                 matched_vlm += len(v_keys)
-                truth_object_total = len(t_keys)
+                truth_object_total += len(t_keys)
             scene = Scene(mapped_scene(summary))
             answer = execute(question["instruction"], scene)
         if answer is not None:
@@ -135,29 +150,24 @@ def main() -> int:
             cascade_correct += int(answer == gold)
         else:
             cascade_correct += int(direct.get("prediction") == gold)
-    object_recall_denominator = sum(
-        len({object_key(o["name"]) for o in truth.get(q["id"], {}).get("summary", {}).get("objects", [])})
-        for q in questions
-        if q["id"] in truth
-    )
     report = {
         "gate": {
             "scenes_seen": len(vlm),
             "valid_rate": round(valid / max(1, total), 3),
-            "object_recall_color_shape_key": round(matched_truth / max(1, object_recall_denominator), 3),
+            "object_recall_color_shape_key": round(matched_truth / max(1, truth_object_total), 3),
             "object_precision_color_shape_key": round(matched_truth / max(1, matched_vlm), 3),
             "cascade_accuracy": round(cascade_correct / len(questions), 4),
             "cascade_correct": cascade_correct,
             "d3p_direct": d3p_correct,
             "gate_pass": {
                 "valid_ge_80": valid / max(1, total) >= 0.8,
-                "recall_ge_70": matched_truth / max(1, object_recall_denominator) >= 0.7,
+                "recall_ge_70": matched_truth / max(1, truth_object_total) >= 0.7,
             },
         },
         "executor": {"resolved": resolved, "correct": executor_correct},
-        "predicate_diagnostics": {k: prf(v["p"], v["t"]) for k, v in buckets.items()},
+        "predicate_diagnostics": {k: prf_from(v) for k, v in buckets.items()},
         "rl_formalizer_targets": sorted(
-            (k for k, v in buckets.items() if v["t"] and len(v["p"] & v["t"]) / len(v["t"]) < 0.7),
+            k for k, v in buckets.items() if v["fn"] > 0 and v["tp"] / (v["tp"] + v["fn"]) < 0.7
         ),
         "vlm_phase_map_5to8": VLM_PHASE_MAP,
     }
