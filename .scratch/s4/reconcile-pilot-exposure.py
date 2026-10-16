@@ -112,10 +112,13 @@ def pilot_paths(
     coverage_segment002: bool = False,
     polarity_arm: str | None = None,
     coverage_segment003: bool = False,
+    temporal_order_contrast: bool = False,
 ) -> list[tuple[str, Path, Path, Path]]:
     if polarity_arm is not None:
         require(polarity_arm in {"control", "polarity"}, "polarity_single_arm")
         coverage_segment002 = True
+    if temporal_order_contrast:
+        coverage_segment003 = True
     if coverage_segment003:
         coverage_segment002 = True
     paths = [
@@ -229,6 +232,15 @@ def pilot_paths(
                 root / "reports/s4-temporal-coverage-training-003.json",
                 root / "artifacts/s4-temporal-coverage-train-003",
                 root / "artifacts/s4-temporal-coverage-pilot-003",
+            )
+        )
+    if temporal_order_contrast:
+        paths.append(
+            (
+                "s4-temporal-order-contrast",
+                root / "reports/s4-temporal-order-contrast-training-001.json",
+                root / "artifacts/s4-temporal-order-contrast-train-001",
+                root / "artifacts/s4-temporal-order-contrast-pilot-001",
             )
         )
     return paths
@@ -447,6 +459,289 @@ def polarity_bindings(
             "polarity_output_weights",
         )
         bindings[str(weights)] = sha(weights)
+    return bindings, mapping
+
+
+def order_parent_binding(
+    prep: dict[str, Any], launch: dict[str, Any], final: dict[str, Any]
+) -> None:
+    require(
+        prep.get("status") == "data_ready_only"
+        and prep.get("exit_code") == 0
+        and prep.get("parent_model") is None
+        and prep.get("training_authorized") is False
+        and prep.get("pending_parent_selection") is True
+        and prep.get("inventory_isolation") == "isolated"
+        and prep.get("safe_family_count") == prep.get("video_families") == 30
+        and prep.get("video_rows") == prep.get("independently_evaluated_programs") == 60,
+        "order_preparation_contract",
+    )
+    require(
+        launch.get("status") in {"completed", "failed"}
+        and type(launch.get("exit_code")) is int
+        and launch.get("parent_selection")
+        == "root_selected_f2db_balanced_retention_and_full_video_evidence",
+        "order_launcher_terminal_parent",
+    )
+    require(
+        final.get("init_adapter") == launch["selected_init_adapter"]
+        and final["init_adapter"]["weights_sha256"]
+        == "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+        "order_actual_parent",
+    )
+    config = dict(final["config"])
+    if "init_adapter" in config:
+        require(config.pop("init_adapter") == final["init_adapter"], "order_config_parent")
+    c = LoopConfig.model_validate(config)
+    require(
+        c.seed == 42
+        and c.steps == 10
+        and c.sample_count == 120
+        and c.accumulation == 12
+        and c.checkpoint_every == c.midway_step == 5
+        and c.reference_kl_weight == c.pair_loss_weight == c.brier_weight == 0,
+        "order_ce_budget",
+    )
+
+
+def order_program_binding(sample: Sample, row: dict[str, Any]) -> None:
+    from data.schema import HardTarget
+
+    p = row["program_provenance"]
+    program = p["program"]
+    require(
+        p["original_postfix_execution"] == "not_executed_source_binding_only",
+        "order_postfix_boundary",
+    )
+    require(
+        program["schema_version"] == "clevrer-collision-order-program-v1"
+        and program["operation"] == "less_frame"
+        and len(program["events"]) == 2,
+        "order_program_schema",
+    )
+    frames = [e["frame"] for e in program["events"]]
+    require(
+        all(type(f) is int and f >= 0 for f in frames) and abs(frames[0] - frames[1]) >= 16,
+        "order_frame_gap",
+    )
+    truth = "yes" if frames[0] < frames[1] else "no"
+    require(
+        sample.meta.pool == "train"
+        and sample.meta.modality == ["video"]
+        and len(sample.questions) == 1
+        and sample.questions[0].type == "noul"
+        and isinstance(sample.questions[0].target, HardTarget)
+        and sample.questions[0].target.value == program["result"] == truth
+        and sample.questions[0].target.source == "clevrer_collision_annotation_less_frame_v1",
+        "order_program_gold",
+    )
+    require(
+        hashlib.sha256(json.dumps(program, sort_keys=True).encode()).hexdigest()
+        == p["program_sha256"]
+        and hashlib.sha256(json.dumps(p, sort_keys=True).encode()).hexdigest()
+        == sample.meta.source_sha256,
+        "order_program_provenance_hash",
+    )
+
+
+def order_contrast_bindings(
+    root: Path, prepared: Path, prep: dict[str, Any], final: dict[str, Any], runtime: dict[str, Any]
+) -> tuple[dict[str, str], dict[str, str]]:
+    import zipfile
+    from collections import Counter
+
+    from scripts.s1_text_pools import canonical_sample_sha
+
+    launch_path = root / "reports/s4-temporal-order-contrast-launch-001.json"
+    launch, lb = read_json(launch_path)
+    order_parent_binding(prep, launch, final)
+    order_parent_binding(prep, launch, runtime)
+    require(
+        sha(prepared / "report.json")
+        == launch["prepared_report_sha256"]
+        == "7870a39aec8f64939dabd4035f2416b4a1c454f8dd9ec7e88f9891ffbffc28ab",
+        "order_frozen_preparation",
+    )
+    require(
+        final["data_sha256"]
+        == runtime["data_sha256"]
+        == "f16fbf93029461cf520522f4037ff829284a7a4a7c531d1ecd4b9e0b7bbe8ef1",
+        "order_fixed_data",
+    )
+    bindings = {lb["path"]: lb["sha256"]}
+
+    def bound(path: Path, expected: str) -> None:
+        require(sha(path) == expected, "order_bound_input")
+        bindings[str(path)] = expected
+
+    for name, expected in prep["output_sha256"].items():
+        require(Path(name).name == name, "order_safe_output_name")
+        bound(prepared / name, expected)
+    sources = root.parent / "s4-temporal-order-prepare-owned-001"
+    bound(sources / "prepare-temporal-order-contrast.py", prep["helper_sha256"])
+    for name, expected in prep["reused_helper_sha256"].items():
+        require(
+            name in {"inspect-temporal-order-contrast", "prepare-claim-pair-pilot"},
+            "order_reused_helper_scope",
+        )
+        bound(sources / (name + ".py"), expected)
+    for path, expected in [
+        (
+            root / "artifacts/s4-pilot-exposure-012/report.json",
+            launch["latest_exposure_report_sha256"],
+        ),
+        (
+            root / "artifacts/s4-temporal-coverage-video500-001/receipt.json",
+            launch["parent_full_video_receipt_sha256"],
+        ),
+        (
+            root / "artifacts/s4-temporal-coverage-old-retention-001/receipt.json",
+            launch["retention_report_sha256"],
+        ),
+        (
+            root / "artifacts/s4-temporal-coverage-video150-001/receipt.json",
+            launch["video_screen_sha256"],
+        ),
+        (
+            root / "artifacts/s4-temporal-coverage-original100-001/receipt-recovered-002.json",
+            launch["cross_screen_sha256"],
+        ),
+    ]:
+        bound(path, expected)
+    require(
+        launch["latest_exposure_report_sha256"]
+        == prep["exposure_base"]["report_sha256"]
+        == "db21553a169282aa4eb440e8fe79b5021e9ac6d37357e90bb27dc8be53f85fdf",
+        "order_base012_binding",
+    )
+    official = root.parent / "lite-omnijev/source-audit/clevrer-official/files"
+    annotations = official / "annotations/train/annotation_train.zip"
+    for path, expected in [
+        (annotations, prep["source_sha256"]["annotations"]),
+        (official / "questions/train.json", prep["source_sha256"]["questions"]),
+        (official / "README.txt", prep["source_sha256"]["readme"]),
+        (root / "artifacts/s3-pools-video-001/run-a/train.jsonl", prep["source_sha256"]["train"]),
+    ]:
+        bound(path, expected)
+    samples = canonical_rows(prepared / "train.jsonl")
+    ledger = [
+        json.loads(line)
+        for line in (prepared / "allocation-ledger.jsonl").read_bytes().splitlines()
+        if line.strip()
+    ]
+    require(
+        len(ledger) == len(samples) == 120 and len({r["item_id"] for r in ledger}) == 120,
+        "order_ledger120",
+    )
+    originals = {
+        canonical_sample_sha(Sample.model_validate(r)): r
+        for r in canonical_rows(root / "artifacts/s3-pools-video-001/run-a/train.jsonl").values()
+    }
+    video = []
+    family_programs: dict[str, list[dict[str, Any]]] = {}
+    checked_members = {}
+    with zipfile.ZipFile(annotations) as archive:
+        for row in ledger:
+            sample = Sample.model_validate(samples[row["item_id"]])
+            require(
+                row["pool"] == "train"
+                and row["family_id"] == sample.meta.family_id
+                and row["derived_sample_sha256"] == canonical_sample_sha(sample),
+                "order_exact_allocation",
+            )
+            if sample.meta.modality != ["video"]:
+                continue
+            order_program_binding(sample, row)
+            family_programs.setdefault(sample.meta.family_id, []).append(
+                row["program_provenance"]["program"]
+            )
+            video.append(sample)
+            p = row["program_provenance"]
+            require(
+                p["annotations_zip_sha256"] == prep["source_sha256"]["annotations"]
+                and p["official_questions_sha256"] == prep["source_sha256"]["questions"]
+                and p["source_sample_sha256"] == row["original_sample_sha256"],
+                "order_source_provenance",
+            )
+            original = Sample.model_validate(originals[p["source_sample_sha256"]])
+            require(
+                original.prefix == sample.prefix
+                and original.meta.family_id == sample.meta.family_id,
+                "order_original_train_component",
+            )
+            name = p["annotation_member"]
+            require(
+                not Path(name).is_absolute()
+                and ".." not in Path(name).parts
+                and name.endswith(
+                    f"/annotation_{int(sample.meta.family_id.split(':')[1]):05d}.json"
+                )
+                and archive.namelist().count(name) == 1,
+                "order_annotation_member_identity",
+            )
+            if name not in checked_members:
+                info = archive.getinfo(name)
+                require(
+                    0 < info.file_size < 5_000_000 and not info.flag_bits & 1,
+                    "order_bounded_member",
+                )
+                checked_members[name] = hashlib.sha256(archive.read(info)).hexdigest()
+            require(checked_members[name] == p["annotation_sha256"], "order_annotation_member_sha")
+    counts = Counter(s.meta.family_id for s in video)
+    require(
+        len(video) == 60 and len(counts) == 30 and set(counts.values()) == {2},
+        "order30_families60_programs",
+    )
+    for programs in family_programs.values():
+        require(
+            len(programs) == 2
+            and programs[0]["events"] == list(reversed(programs[1]["events"]))
+            and {p["result"] for p in programs} == {"yes", "no"},
+            "order_independent_pair_programs",
+        )
+    replay = canonical_rows(root / "artifacts/s4-temporal-curriculum-pilot-001/train.jsonl")
+    require(
+        {k: v for k, v in samples.items() if v["meta"]["modality"] != ["video"]}
+        == {k: v for k, v in replay.items() if v["meta"]["modality"] != ["video"]},
+        "order_same60_replay",
+    )
+    bound(
+        root / "artifacts/s4-temporal-curriculum-pilot-001/report.json",
+        prep["replay_report_sha256"],
+    )
+    config = {k: v for k, v in final["config"].items() if k != "init_adapter"}
+    require(
+        LoopConfig.model_validate(config)
+        == LoopConfig.model_validate(json.loads((prepared / "config-ce.json").read_bytes())),
+        "order_exact_config",
+    )
+    audit = json.loads((prepared / "inventory-audit.json").read_bytes())
+    require(
+        audit["outcome"] == "isolated"
+        and audit["manifest_sha256"] == sha(prepared / "inventory-manifest.json"),
+        "order_prepared_isolation",
+    )
+    mapping = version_mapping(
+        Manifest.model_validate_json((prepared / "inventory-manifest.json").read_bytes())
+    )
+    require(
+        mapping.get("clevrer-train-collision-order-v1") == "video"
+        and all(s.meta.data_version == "clevrer-train-collision-order-v1" for s in video),
+        "order_program_version_mapping",
+    )
+    parent = launch["selected_init_adapter"]
+    for name, expected in [
+        ("adapter_model.safetensors", parent["weights_sha256"]),
+        ("adapter_config.json", parent["config_sha256"]),
+    ]:
+        bound(Path(parent["path"]) / name, expected)
+    if final["status"] == "completed":
+        bound(
+            root
+            / "artifacts/s4-temporal-order-contrast-train-001/adapter/adapter_model.safetensors",
+            final["adapter_sha256"],
+        )
+        require(final["adapter_sha256"] == runtime["adapter_sha256"], "order_final_adapter")
     return bindings, mapping
 
 
@@ -850,7 +1145,10 @@ def base_inventory(
     coverage_segment002: bool = False,
     polarity_arm: str | None = None,
     coverage_segment003: bool = False,
+    temporal_order_contrast: bool = False,
 ) -> tuple[Path, dict[str, str] | None]:
+    if temporal_order_contrast:
+        coverage_segment003 = True
     if coverage_segment003:
         coverage_segment002 = True
     if polarity_arm is not None:
@@ -864,7 +1162,9 @@ def base_inventory(
         or coverage_segment002
     ):
         exposure = root / (
-            "artifacts/s4-pilot-exposure-011"
+            "artifacts/s4-pilot-exposure-012"
+            if temporal_order_contrast
+            else "artifacts/s4-pilot-exposure-011"
             if coverage_segment003
             else "artifacts/s4-pilot-exposure-010"
             if polarity_arm == "polarity"
@@ -896,7 +1196,12 @@ def base_inventory(
                 ),
                 "mutated005_bound_input",
             )
-        if coverage_segment003:
+        if temporal_order_contrast:
+            require(
+                report.get("coverage_segment003_included") is True,
+                "prior_segment003_exposure_required",
+            )
+        elif coverage_segment003:
             require(report.get("polarity_arm") == "polarity", "prior_polarity_exposure_required")
         if polarity_arm == "polarity":
             require(report.get("polarity_arm") == "control", "prior_control_exposure_required")
@@ -947,10 +1252,13 @@ def prepare(
     coverage_segment002: bool = False,
     polarity_arm: str | None = None,
     coverage_segment003: bool = False,
+    temporal_order_contrast: bool = False,
 ) -> dict[str, Any]:
     if polarity_arm is not None:
         require(polarity_arm in {"control", "polarity"}, "polarity_single_arm")
         coverage_segment002 = True
+    if temporal_order_contrast:
+        coverage_segment003 = True
     if coverage_segment003:
         require(polarity_arm is None, "single_experiment_branch")
         coverage_segment002 = True
@@ -973,6 +1281,7 @@ def prepare(
             coverage_segment002=coverage_segment002,
             polarity_arm=polarity_arm,
             coverage_segment003=coverage_segment003,
+            temporal_order_contrast=temporal_order_contrast,
         )
         raw_inventory, inventory_binding = read_json(inventory_path)
         inventory = Manifest.model_validate(raw_inventory)
@@ -1000,6 +1309,7 @@ def prepare(
             coverage_segment002=coverage_segment002,
             polarity_arm=polarity_arm,
             coverage_segment003=coverage_segment003,
+            temporal_order_contrast=temporal_order_contrast,
         ):
             final, final_binding = read_json(final_path)
             runtime_report, run_binding = read_json(run_dir / "run.json")
@@ -1031,6 +1341,7 @@ def prepare(
             ) and name == "s4-temporal-coverage"
             is_segment002 = coverage_segment002 and name == "s4-temporal-coverage-segment002"
             is_segment003 = coverage_segment003 and name == "s4-temporal-coverage-segment003"
+            is_order = temporal_order_contrast and name == "s4-temporal-order-contrast"
             is_polarity = polarity_arm is not None and name == "s4-video-polarity-" + polarity_arm
             if is_polarity:
                 claim_terminal(final, name)
@@ -1055,6 +1366,7 @@ def prepare(
                 or is_segment002
                 or is_segment003
                 or is_polarity
+                or is_order
             ):
                 claim_terminal(final, name)
                 claim_terminal(runtime_report, name)
@@ -1073,7 +1385,23 @@ def prepare(
                 else preparation_dir / "report.json"
             )
             prep_report, prep_report_binding = read_json(prep_receipt)
-            if is_polarity:
+            if is_order:
+                extra_bindings, extra_mapping = order_contrast_bindings(
+                    root, preparation_dir, prep_report, final, runtime_report
+                )
+                for bound_path, expected in extra_bindings.items():
+                    require(
+                        bound_path not in bindings or bindings[bound_path] == expected,
+                        "mutable_report",
+                    )
+                    bindings[bound_path] = expected
+                for version, cohort in extra_mapping.items():
+                    require(
+                        version not in mappings or mappings[version] == cohort,
+                        "inventory_version_conflict",
+                    )
+                    mappings[version] = cohort
+            elif is_polarity:
                 extra_bindings, extra_mapping = polarity_bindings(
                     root, preparation_dir, prep_report, final, runtime_report, polarity_arm
                 )
@@ -1273,6 +1601,7 @@ def prepare(
                 or is_segment002
                 or is_segment003
                 or is_polarity
+                or is_order
             ):
                 require(comparison["rows"] == 120, "claim_runtime_count")
             require(
@@ -1282,7 +1611,7 @@ def prepare(
             artifact = {
                 **runtime_binding,
                 "cohorts_by_data_version": {v: mappings[v] for v in comparison["data_versions"]},
-                "exposure": "current" if is_polarity or is_segment003 else "historical",
+                "exposure": "current" if is_polarity or is_segment003 or is_order else "historical",
                 "expected_pool": "train",
             }
             appended = False
@@ -1290,7 +1619,7 @@ def prepare(
                 require(
                     runtime_binding["sha256"] not in all_hashes, "canonical_sha_nontrain_collision"
                 )
-                if is_polarity or is_segment003:
+                if is_polarity or is_segment003 or is_order:
                     arm_current_inventory(combined, artifact)
                 else:
                     combined["samples"].append(artifact)
@@ -1317,9 +1646,12 @@ def prepare(
                     "status": final["status"],
                     "steps_completed": final["steps_completed"],
                     "update_bearing": final["steps_completed"] > 0,
-                    "appended_historical_train": appended and not (is_polarity or is_segment003),
+                    "appended_historical_train": appended
+                    and not (is_polarity or is_segment003 or is_order),
                     **(
-                        {"appended_current_train": appended} if is_polarity or is_segment003 else {}
+                        {"appended_current_train": appended}
+                        if is_polarity or is_segment003 or is_order
+                        else {}
                     ),
                     "final_report": final_binding,
                     "run_report": run_binding,
@@ -1479,6 +1811,8 @@ def prepare(
             report["polarity_arm"] = polarity_arm
         if coverage_segment003:
             report["coverage_segment003_included"] = True
+        if temporal_order_contrast:
+            report["temporal_order_contrast_included"] = True
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -1562,6 +1896,11 @@ def main() -> int:
         action="store_true",
         help="Use011 base; bind third segment to selected250ef parent and468-family exclusion",
     )
+    parser.add_argument(
+        "--temporal-order-contrast",
+        action="store_true",
+        help="Use012 base; bind30-family independently evaluated order-program gold",
+    )
     args = parser.parse_args()
     try:
         report = prepare(
@@ -1579,6 +1918,7 @@ def main() -> int:
             coverage_segment002=args.coverage_segment002,
             polarity_arm=args.polarity_arm,
             coverage_segment003=args.coverage_segment003,
+            temporal_order_contrast=args.temporal_order_contrast,
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
