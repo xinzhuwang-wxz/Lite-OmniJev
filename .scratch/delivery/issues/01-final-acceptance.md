@@ -32,3 +32,10 @@ Blocked by: p0:04, s0:08, s0:05, s1:01, s2:01, s3:01, s4:01
 用户批准ADR0012：删除新增真人/12000双标/κ，05现在交付许可明确的现成gold独立封存数据和自动gate，仍为FINAL直接依赖；数据/质量/隔离保持，不能用开发题或教师标签冒充最终评测。
 
 2026-10-16用户最新发布去向：最终产品拟开源到Hugging Face，模型完成前不推进HF发布事务。已有离线包/模型卡模板仅准备，未创建仓库/上传/访问token；最终真实质量、三档包与验收门不变，生产运营授权不因此扩大。
+
+2026-10-16 20:45 导出窗口预排(01:30创新硬停后、03:15起验收缓冲前执行;候选冻结以实测汇总后决定,默认e465):
+1) 冻结:候选adapter e465(除非今晚B1/B2试点产出生效新候选且通过同等保留复核——预计不发生);记录JevBench/父基线/五模态DEV/校准温度runtime_recipe绑定。
+2) API/单卡包:base冻结revision+LoRA adapter+registry(vLLM --enable-lora路径),model card(实测数字:JevBench76.62/父76.19、五模态DEV、校准前后ECE/coverage)、data card(六cohort来源+哈希+许可)、许可证审计(CLEVRER CC-BY?Clotho/AOK/GUI-Odyssey/GUI源审计、OneJev教师只用于对照不蒸馏边界)、成本记录;三档目录模板f0eb151填充。
+3) E2B包:bootstrap候选e49accdf真实测量如实标注"端侧准备中,非S6验收";不冒称E2B通过。
+4) 真实验收:浏览器(Playwright Chromium)+网关同版本smoke、200题三运行时差异(E2B待S6则记录pending)、性能实测;缺什么明确pending,不虚标。
+5) 质量局限按ADR0023逐项写入发布说明;原始失败报告全部随包归档。
