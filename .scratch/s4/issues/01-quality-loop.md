@@ -35,3 +35,7 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 2026-10-16 10:34：固定1200draw池全局100步不变，真实10步暂停后完整AdamW/RNG恢复到20步；累计240draw，非1200。首DEV50 34/50/Brier.424180，第二DEV50运行session14990，禁止自动第3段。曝光014真实通过，015递推审计进行；原包装失败001与CPU recovered002永久保留。公开image500=410/500，不达S4。程序语义诊断支持原生事件条件/事件不存在分支是主要残余错误，不支持窄时间间隔主导；创新下一试须围绕此真实瓶颈。DecisionIndex已27/44eval-only、发布三档目录CPU模板完成，仍不代表模型/校准/端侧交付。
 
 10:39补充：step20 DEV50真实33/50/Brier.476134/ECE.144538，较step10退化，停止第3段rawcoverage；015真实isolated/unknown0、actual240draw/fullcheckpoint持续绑定通过。gradient仅CPU准备官方原生事件条件课程（事件不存在/存在、before/after），先有界CPU核验后才启动唯一10步GPU，不碰私有cal/holdout。
+
+本轮用户澄清：主线与自由探索继续并行相互促进，未暂停探索；模型出来前不再做HF。native课程10step完成，DEV50 33持平/Brier改善/ECE变差，fixedvideo150 session9982复核中，另CPU原生关系组和旧题型配对诊断，不预排下一段。发布S5registry仅CPU准备非激活；正式S4仍未过。
+
+11:13：native video150113vs116，原生关系22持平、absence8退化，停止配方，保留f2db不扩500。主线与探索并行授权保持，HF模型前不推进。下一仅CPU准备video-only10step/120draw（60原题两遍）以检验视频监督强度和混合回放稀释；不冒称严格单因子因果、旧模态尚未通过，不替换生产单LoRA。016实际曝光pin是CPU审计前置，拒绝用stale015绕过。
