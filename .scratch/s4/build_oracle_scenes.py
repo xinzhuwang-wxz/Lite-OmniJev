@@ -22,19 +22,25 @@ spec = importlib.util.spec_from_file_location(
 b1 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(b1)
 
-PHASES = ("start", "early", "middle", "late", "end")
+PHASES = ("start", "early", "quarter", "middle", "three_quarters", "late", "very_late", "end")
 
 
 def phase_of(frame: int, total: int) -> str:
     frac = frame / max(1, total - 1)
-    if frac <= 0.05:
+    if frac <= 0.04:
         return "start"
-    if frac < 0.35:
+    if frac <= 0.18:
         return "early"
-    if frac <= 0.65:
+    if frac <= 0.36:
+        return "quarter"
+    if frac <= 0.52:
         return "middle"
-    if frac < 0.95:
+    if frac <= 0.68:
+        return "three_quarters"
+    if frac <= 0.84:
         return "late"
+    if frac < 0.96:
+        return "very_late"
     return "end"
 
 

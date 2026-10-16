@@ -18,7 +18,22 @@ import re
 import sys
 from pathlib import Path
 
-PHASES = {"start": 0, "early": 1, "middle": 2, "late": 3, "end": 4}
+# Design iteration (single, coordinator-approved): the temporal grid widens from
+# 5 to 8 phases to remove ordering-tie errors; the executor's comparisons are
+# unchanged apart from the end index. Collision "when" values stay on the
+# coarse 3-word scale and are mapped onto the 8-grid at their thirds.
+PHASES = {
+    "start": 0,
+    "early": 1,
+    "quarter": 2,
+    "middle": 3,
+    "three_quarters": 4,
+    "late": 5,
+    "very_late": 6,
+    "end": 7,
+}
+END_INDEX = 7
+COLLISION_PHASE = {"early": 1, "middle": 3, "late": 6}
 ATTR = r"(?:yellow|red|blue|green|gray|purple|brown|cyan|metal|rubber|sphere|spheres|cube|cubes|cylinder|cylinders|object|objects|moving|stationary)"
 
 RE_ENTER_ANY = re.compile(rf"^Are there any ((?:{ATTR} ?)+)that enter the scene\?$")
@@ -90,7 +105,7 @@ class Scene:
     def anchor_phase(self, index: int, verb: str) -> int | None:
         if verb == "enters":
             return self.first[index] if self.first[index] >= 0 else None
-        return self.last[index] if 0 <= self.last[index] < 4 else None
+        return self.last[index] if 0 <= self.last[index] < END_INDEX else None
 
 
 def execute(instruction: str, scene: Scene) -> str | None:
@@ -144,7 +159,7 @@ def execute(instruction: str, scene: Scene) -> str | None:
             return None
         direction = match.group(2)
         for m in members:
-            if scene.last[m] < 0 or scene.last[m] == 4:
+            if scene.last[m] < 0 or scene.last[m] == END_INDEX:
                 continue
             if (direction == "after" and scene.last[m] >= anchor_phase) or (
                 direction == "before" and scene.last[m] <= anchor_phase
@@ -154,7 +169,7 @@ def execute(instruction: str, scene: Scene) -> str | None:
     match = RE_EXIT_ANY.match(text)
     if match:
         members = scene.members(class_tokens(match.group(1)))
-        return "yes" if any(scene.last[m] < 4 for m in members) else "no"
+        return "yes" if any(scene.last[m] < END_INDEX for m in members) else "no"
     match = RE_MOVING_EVENT.match(text)
     if match:
         want_moving = match.group(1) == "moving"
@@ -179,7 +194,7 @@ def execute(instruction: str, scene: Scene) -> str | None:
                 continue
             if boundary == "begins" and scene.first[m] == 0:
                 return "yes"
-            if boundary == "ends" and scene.last[m] == 4:
+            if boundary == "ends" and scene.last[m] == END_INDEX:
                 return "yes"
         return "no"
     match = RE_MOVING_PLAIN.match(text)
@@ -204,7 +219,7 @@ def execute(instruction: str, scene: Scene) -> str | None:
         boundary = match.group(2)
         if boundary == "begins":
             return "yes" if any(scene.first[m] == 0 for m in members) else "no"
-        return "yes" if any(scene.last[m] == 4 for m in members) else "no"
+        return "yes" if any(scene.last[m] == END_INDEX for m in members) else "no"
     match = RE_COLLISIONS_REL.match(text)
     if match:
         anchor = scene.anchor_index(class_tokens(match.group(2)))
@@ -213,7 +228,7 @@ def execute(instruction: str, scene: Scene) -> str | None:
         phase = scene.first[anchor]
         direction = match.group(1)
         for hit in scene.collisions:
-            when = PHASES.get(hit.get("when"), -1)
+            when = COLLISION_PHASE.get(hit.get("when"), -1)
             if when < 0:
                 continue
             if (direction == "before" and when < phase) or (direction == "after" and when > phase):
