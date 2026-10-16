@@ -57,3 +57,13 @@ uv run --extra training python -m scripts.train_smoke run \
 - CUDA 主机上必须实际跑满 10 步、有限 loss、非零有限 LoRA 梯度并保存适配器后，才可登记“text smoke 已通过”。
 - resume 的 CPU 等价性测试只覆盖小模型状态恢复；真实 E4B/GPU 仍须在 CUDA 主机实跑中验证。
 - 单卡内存、真实 E4B BF16 加载、GPU 算子确定性、实测学习曲线、媒体路径和推理概率对齐均未在本机验证；失败时留报告并修复，不降低门槛。
+
+## 固定池的分 invocation 安全续训
+
+`python -m scripts.train_s1 run ... --invocation-steps 10` 是可选执行步数上限，要求正整数；它不进入全局LoopConfig/checkpoint config hash。预先固定完整TRAIN池、全局steps、seed、初始化adapter及资产身份，再用同一个output目录和最新checkpoint续训。禁止把10步config改为100步或更换dataSHA来绕过resume校验。
+
+第一次在全局目标前完成10个完整optimizer step后，强制保存完整checkpoint（即使未到checkpoint_every），导出`adapter-invocation-step-0010/`，报告`status=paused, exit_code=0`。以相同参数加`--resume-from OUTPUT/checkpoints/step-0010 --invocation-steps 10`，从全局step10/draw120继续；到全局目标才`completed`。已有完整目标的checkpoint不再接受显式invocation续训。此参数不是秒级硬wall；外部超时仍须预留checkpoint flush余量。
+
+启用该参数时，以报告`adapter_dir`和`adapter_sha256`定位该step评测adapter；不假设仍在`adapter/`。`invocation`记录起点、此次完成步数、全局目标、下一draw和停止原因；`steps_completed`及losses仍是全局累计。每次CLI的`--report`使用独立文件名，保存各次证据；累计步数不能跨invocation相加重复计曝光。无该参数时原有行为、adapter路径、配置序列化及旧checkpoint恢复保持。
+
+CPU已通过小4步真实AdamW/dropout分段与连续的weights/optimizer/RNG/draw/loss精确一致，以及非周期强制保存、周期重合不重复写、非法limit和data/config/latest拒绝测试；真实Gemma/GPU边界仍待root有界smoke，不授权无人跑满100步。所有`paused`且`steps_completed>0`都已发生实际更新：当前exposure reconcile尚未识别paused，须由负责账本的主会话补接口后再宣称最新全库存覆盖，本切片不修改该模块。

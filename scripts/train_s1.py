@@ -83,6 +83,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--resume-from", type=Path)
+    parser.add_argument(
+        "--invocation-steps",
+        type=int,
+        help="positive optimizer-step limit for this invocation; global config stays immutable",
+    )
     parser.add_argument("--init-adapter", type=Path, help="local standard PEFT adapter directory")
     parser.add_argument(
         "--init-adapter-sha256", help="SHA256 of adapter_model.safetensors; repeat on resume"
@@ -103,6 +108,7 @@ def main(argv: list[str] | None = None) -> int:
             resume_from=args.resume_from,
             init_adapter=args.init_adapter,
             init_adapter_sha256=args.init_adapter_sha256,
+            invocation_steps=args.invocation_steps,
             scope=(
                 "S1 text decision-LoRA over frozen pool; training-pool-only with "
                 "ledger enforcement; not quality-gate evidence by itself"

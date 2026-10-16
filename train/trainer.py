@@ -1160,6 +1160,14 @@ def load_claim_pairs(
     return {row["positive_draw"]: row for row in expected}
 
 
+def validate_invocation_steps(invocation_steps: int | None) -> None:
+    """Execution limits never participate in immutable training/checkpoint identity."""
+    if invocation_steps is not None and (
+        type(invocation_steps) is not int or invocation_steps <= 0
+    ):
+        raise ValueError("invocation_steps must be a positive integer, not bool")
+
+
 def train_smoke(
     config: TrainConfig,
     model_dir: Path,
@@ -1172,8 +1180,17 @@ def train_smoke(
     reference_rows: list[dict[str, Any]] | None = None,
     reference_samples: list[Sample] | None = None,
     pair_rows: dict[int, dict[str, Any]] | None = None,
+    invocation_steps: int | None = None,
 ) -> None:
-    """Execute 10 optimizer steps, each accumulating 10 single-sequence examples."""
+    """Train through a global immutable trajectory, optionally stopping at a committed step."""
+    validate_invocation_steps(invocation_steps)
+    if invocation_steps is not None and resume_step >= config.steps:
+        raise ValueError("invocation checkpoint already reached the global step target")
+    end_step = (
+        config.steps
+        if invocation_steps is None
+        else min(config.steps, resume_step + invocation_steps)
+    )
     pair_weight = getattr(config, "pair_loss_weight", 0.0)
     if pair_weight and (
         pair_rows is None
@@ -1262,7 +1279,7 @@ def train_smoke(
         "history_limit": 256,
     }
     samples_seen = 0
-    for step in range(start_step, config.steps):
+    for step in range(start_step, end_step):
         step_started = time.perf_counter()
         prepare_wait = 0.0
         input_tokens = 0
@@ -1437,6 +1454,7 @@ def train_smoke(
             every is None
             or report["steps_completed"] % every == 0
             or report["steps_completed"] == config.steps
+            or (invocation_steps is not None and report["steps_completed"] == end_step)
         ):
             checkpoint_path = save_checkpoint(
                 output_dir,
@@ -1452,10 +1470,29 @@ def train_smoke(
             )
             report["checkpoint"] = str(checkpoint_path)
         write_json(output_dir / "run.json", report)
-    model.save_pretrained(
-        str(output_dir / "adapter"), safe_serialization=True, save_embedding_layers=False
+    adapter_dir = (
+        output_dir / "adapter"
+        if invocation_steps is None
+        else output_dir / f"adapter-invocation-step-{report['steps_completed']:04d}"
     )
-    adapter = output_dir / "adapter" / "adapter_model.safetensors"
+    if invocation_steps is not None and adapter_dir.exists():
+        raise ValueError("invocation adapter already exists; refusing to overwrite")
+    model.save_pretrained(str(adapter_dir), safe_serialization=True, save_embedding_layers=False)
+    adapter = adapter_dir / "adapter_model.safetensors"
+    if invocation_steps is not None:
+        report["adapter_dir"] = str(adapter_dir)
+        report["invocation"] = {
+            "steps_requested": invocation_steps,
+            "start_step": start_step,
+            "steps_completed": report["steps_completed"] - start_step,
+            "global_steps_target": config.steps,
+            "next_draw": report["steps_completed"] * config.accumulation,
+            "stop_reason": (
+                "global_steps_completed"
+                if report["steps_completed"] == config.steps
+                else "invocation_steps_limit"
+            ),
+        }
     if not adapter.is_file():
         raise ValueError("PEFT did not save a safetensors adapter")
     report["adapter_sha256"] = hashlib.sha256(adapter.read_bytes()).hexdigest()
@@ -1482,6 +1519,7 @@ def run(
     scope: str | None = None,
     init_adapter: Path | None = None,
     init_adapter_sha256: str | None = None,
+    invocation_steps: int | None = None,
 ) -> dict[str, Any]:
     start = time.monotonic()
     report: dict[str, Any] = {
@@ -1516,6 +1554,7 @@ def run(
     reference_rows = None
     pair_rows = None
     try:
+        validate_invocation_steps(invocation_steps)
         if (init_adapter is None) != (init_adapter_sha256 is None):
             raise ValueError("init-adapter and init-adapter-sha256 must be supplied together")
         if init_adapter is not None and init_adapter_sha256 is not None:
@@ -1658,6 +1697,8 @@ def run(
                 order=order,
             )
             resume_step = int(resume_metadata["step"])
+            if invocation_steps is not None and resume_step >= config.steps:
+                raise ValueError("invocation checkpoint already reached the global step target")
             accepted_resume = True
         if execute:
             payload = data_bytes(samples)
@@ -1668,6 +1709,9 @@ def run(
             write_json(output_dir / "run.json", report)
             telemetry = start_swanlab(monitoring_config, report)
             try:
+                invocation_args = (
+                    {} if invocation_steps is None else {"invocation_steps": invocation_steps}
+                )
                 train_smoke(
                     config,
                     model_dir,
@@ -1680,10 +1724,15 @@ def run(
                     reference_rows=reference_rows,
                     reference_samples=samples if reference_rows is not None else None,
                     pair_rows=pair_rows,
+                    **invocation_args,
                 )
             finally:
                 telemetry.finish(report)
-        report.update(status="completed" if execute else "ready", exit_code=0)
+        if execute and invocation_steps is not None:
+            status = "completed" if report["steps_completed"] == config.steps else "paused"
+        else:
+            status = "completed" if execute else "ready"
+        report.update(status=status, exit_code=0)
     except (Exception, KeyboardInterrupt) as exc:
         report.update(
             status="failed" if report["status"] == "running" else "blocked",
