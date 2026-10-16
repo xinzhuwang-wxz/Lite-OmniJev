@@ -1,0 +1,351 @@
+{
+  "status": "cpu_ready_gold_bootstrap_distillation_pending",
+  "exit_code": 0,
+  "gpu_used": false,
+  "scope": "real CPU assets/tokenizer/processor and meta-device LoRA; not model quality",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "source_script_sha256": "598108850498193b310b23b3bf5ed381c2f4e534dc67d9edcef1525fe25df770",
+  "cost": null,
+  "teacher": {
+    "adapter_sha256": "e46550143b28f8798484515f0abe21996fe92ad241625a4cf6da15dc093277fd",
+    "soft_labels": "pending_not_generated",
+    "forward_run": false
+  },
+  "calibration_read": false,
+  "holdout_read": false,
+  "new_model_download": false,
+  "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+  "manifest": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/configs/project-model-assets.json",
+    "sha256": "b1599bea082df695c5955d243004dab540862a7ea59fb67a22e274dda9f2afac"
+  },
+  "runtime_manifest": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-training-readiness-005/e2b-runtime-manifest.json",
+    "sha256": "dc92da2ba05816627461f0789ff285f33f7add43ced42e0cbc6769990acf5edd",
+    "derivation": "lossless bytes→size/lfs_sha256→upstream_sha256; .gitattributes verified separately"
+  },
+  "asset_hashes": {
+    "README.md": "3e0608a6be80e3eb040a5aa6c76707809503deb85be6360184a118fb6156526c",
+    "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+    "config.json": "1b28f3d2c3100f6c594754b81107428bd7b822a7f48272ca681dae9d2ec38330",
+    "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+    "model.safetensors": "2db5482b20d746879bb3ef79b5203e9075a2e2b98f54ec7c2f281c1477ddc550",
+    "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+    "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633",
+    ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930"
+  },
+  "resident_bytes": 10278849571,
+  "token_probe": {
+    "status": "passed",
+    "exit_code": 0,
+    "model_dir": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+    "answer_token_ids": {
+      "A": 236776,
+      "B": 236799,
+      "C": 236780,
+      "D": 236796,
+      "E": 236788,
+      "F": 236811,
+      "G": 236823,
+      "H": 236814,
+      "I": 236777,
+      "J": 236863,
+      "K": 236855,
+      "L": 236798,
+      "M": 236792,
+      "N": 236797,
+      "O": 236806,
+      "P": 236791,
+      "Q": 236935,
+      "R": 236794,
+      "S": 236773,
+      "T": 236774,
+      "U": 236836,
+      "0": 236771,
+      "1": 236770,
+      "2": 236778,
+      "3": 236800,
+      "4": 236812,
+      "5": 236810,
+      "6": 236825,
+      "7": 236832,
+      "8": 236828,
+      "9": 236819,
+      "yes": 4443,
+      "no": 1904
+    },
+    "answer_count": 33,
+    "failures": [],
+    "thinking_disabled": true,
+    "template_sha256": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+    "tokenizer_sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "shared_prefix_tokens": 24,
+    "prompt_tokens": 31,
+    "scope": "CPU text tokenizer/template only; no model logits, multimodal processor, or GPU parity claim"
+  },
+  "ledger_check": {
+    "ledger_rows": 1200,
+    "verified_train": 1200
+  },
+  "course": {
+    "kind": "gold_supervised_bootstrap_not_distillation",
+    "source": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-pool-001",
+    "data_sha256": "795f69fe9474523009bd953a0436bc505e85efdd4fb0f5e7c41e4d86c3bb028f",
+    "ledger_sha256": "b5172781520546ef974a57825fa8ce98033b20e6d8a66daf8c1f550efc186322",
+    "source_config_sha256": "326b406eb23ce47c4854afe64d535a95ad91be94a68844109329e43872c6aaea",
+    "source_report_sha256": "ac2f17fc3f5417e93e04d15292763384858f5e3ba1c4de533ca6f5e57d0aaf99",
+    "sample_count": 1200,
+    "unique_families": 1010,
+    "data_versions": {
+      "clotho-aqa-s3-pools-v1": 100,
+      "aokvqa-train-image-choice-s2-pools-v1": 100,
+      "clevrer-train-video-noul-s3-pools-v1": 600,
+      "crossmodal-controlled-train-pairs-v1": 200,
+      "gui-v2-screenshot-s2-pools-v1": 100,
+      "clinc-oos-plus-train-v1-s1-pools-v1": 100
+    },
+    "target_kinds": {
+      "hard": 1200
+    },
+    "modality_counts": {
+      "audio": 100,
+      "image": 200,
+      "video": 600,
+      "image+audio": 200,
+      "text": 100
+    },
+    "gold_priority": "original admitted targets unchanged; no teacher-derived labels added",
+    "e4b_adapter_inherited": false
+  },
+  "resident_projection_shapes": {
+    "count": 205,
+    "sha256": "74652d172bdb1edbe2b92ab3e4a1a2d4661f5154256838004c25122744b0befd",
+    "tensor_payload_loaded": false
+  },
+  "peft_meta": {
+    "status": "passed",
+    "real_architecture": "Gemma4ForConditionalGeneration",
+    "decoder_layers": 35,
+    "trainable_parameter_count": 24158208,
+    "trainable_tensors": 410,
+    "all_parameters_meta": true,
+    "trainable_names_sha256": "4712c9c522b7a49f2c58e1db812c1d3c82f150938b65abbb327b6577c2d56f8d",
+    "rank": 16,
+    "alpha": 32,
+    "weights_loaded": false
+  },
+  "processor_checks": [
+    {
+      "data_version": "clotho-aqa-s3-pools-v1",
+      "input_tokens": 633,
+      "prepared_sha256": "5a8ec48c46b925a62d55fde5799dba5760bc549426dea47f6bf94ce02aed1d3b",
+      "target_count": 3,
+      "cpu_tensor_shapes": {
+        "mm_token_type_ids": [
+          1,
+          633
+        ],
+        "input_features": [
+          1,
+          2260,
+          128
+        ],
+        "input_features_mask": [
+          1,
+          2260
+        ]
+      }
+    },
+    {
+      "data_version": "aokvqa-train-image-choice-s2-pools-v1",
+      "input_tokens": 1145,
+      "prepared_sha256": "0978a79ce9465d3c85d98d3d8aa3abf8fb708a5beee1b2598ca4f97d8a9c13d4",
+      "target_count": 5,
+      "cpu_tensor_shapes": {
+        "mm_token_type_ids": [
+          1,
+          1145
+        ],
+        "pixel_values": [
+          1,
+          10080,
+          768
+        ],
+        "image_position_ids": [
+          1,
+          10080,
+          2
+        ]
+      }
+    },
+    {
+      "data_version": "clevrer-train-video-noul-s3-pools-v1",
+      "input_tokens": 1177,
+      "prepared_sha256": "6f6bc0d1600ea2524c85e377ceba216556d0f0fdc18853b3643ba46397ec4ff2",
+      "target_count": 3,
+      "cpu_tensor_shapes": {
+        "mm_token_type_ids": [
+          1,
+          1177
+        ],
+        "pixel_values_videos": [
+          1,
+          16,
+          630,
+          768
+        ],
+        "video_position_ids": [
+          1,
+          16,
+          630,
+          2
+        ]
+      }
+    },
+    {
+      "data_version": "crossmodal-controlled-train-pairs-v1",
+      "input_tokens": 1923,
+      "prepared_sha256": "675907fcccfed9b3b4246243b89402249af781a9405ee49dee720613107fa95c",
+      "target_count": 3,
+      "cpu_tensor_shapes": {
+        "mm_token_type_ids": [
+          1,
+          1923
+        ],
+        "pixel_values": [
+          1,
+          10080,
+          768
+        ],
+        "image_position_ids": [
+          1,
+          10080,
+          2
+        ],
+        "input_features": [
+          1,
+          2723,
+          128
+        ],
+        "input_features_mask": [
+          1,
+          2723
+        ]
+      }
+    },
+    {
+      "data_version": "gui-v2-screenshot-s2-pools-v1",
+      "input_tokens": 1287,
+      "prepared_sha256": "40444aa2fd10c17a5039c519ef045044535bf91ba61763c32a639a285529e582",
+      "target_count": 5,
+      "cpu_tensor_shapes": {
+        "mm_token_type_ids": [
+          1,
+          1287
+        ],
+        "pixel_values": [
+          1,
+          10080,
+          768
+        ],
+        "image_position_ids": [
+          1,
+          10080,
+          2
+        ]
+      }
+    },
+    {
+      "data_version": "clinc-oos-plus-train-v1-s1-pools-v1",
+      "input_tokens": 169,
+      "prepared_sha256": "106f9a28918fe4d30720d83e210a205405547848f29160e11d3ca36645222ad2",
+      "target_count": 21,
+      "cpu_tensor_shapes": {}
+    }
+  ],
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "draft_config": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-training-readiness-005/gold-bootstrap-config.json",
+    "sha256": "0e2243cd9cda1395597a1540c1c76aa88ea33467793b71f30897e86907b4baf9",
+    "config": {
+      "seed": 42,
+      "sample_count": 1200,
+      "steps": 100,
+      "accumulation": 12,
+      "max_length": 4096,
+      "learning_rate": 2e-05,
+      "rank": 16,
+      "alpha": 32,
+      "dtype": "bfloat16",
+      "modality": "mixed",
+      "video_num_frames": 16,
+      "image_max_soft_tokens": 1120,
+      "media_root": null,
+      "media_roots": [
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/stage2-sources/aokvqa/coco-ccby-publicdomain-images",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/gui-odyssey-source-audit/media/app_split_train_under19_5gb/screenshots",
+        "/root/autodl-tmp/lite-omnijev/artifacts/data/quarantine/clotho-aqa/6473207/approved-audio-002",
+        "/root/autodl-tmp/s3-media-candidates-001/video/media",
+        "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-train-001",
+        "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-crossmodal-pairs-001"
+      ],
+      "midway_step": 10,
+      "expected_data_version": null,
+      "expected_data_versions": [
+        "aokvqa-train-image-choice-s2-pools-v1",
+        "clevrer-train-video-noul-s3-pools-v1",
+        "clinc-oos-plus-train-v1-s1-pools-v1",
+        "clotho-aqa-s3-pools-v1",
+        "crossmodal-controlled-train-pairs-v1",
+        "gui-v2-screenshot-s2-pools-v1"
+      ],
+      "checkpoint_every": 5,
+      "brier_weight": 0.0,
+      "preparation_mode": "lazy",
+      "preparation_cache_bytes": 134217728
+    }
+  },
+  "commands": {
+    "working_directory": "/root/autodl-tmp/s6-e2b-readiness-code-001",
+    "first10": "timeout --signal=INT --kill-after=20s 220s /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python -m scripts.train_s1 run --config /root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-training-readiness-005/gold-bootstrap-config.json --model-dir /root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7 --asset-manifest /root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-training-readiness-005/e2b-runtime-manifest.json --data /root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-pool-001/train.jsonl --allocation-ledger /root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-pool-001/allocation-ledger.jsonl --output-dir /root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001 --invocation-steps 10 --report /root/autodl-tmp/s1-text-lora-001/reports/s6-e2b-gold-step0010.json",
+    "next10_example_after_review": "timeout --signal=INT --kill-after=20s 220s /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python -m scripts.train_s1 run --config /root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-training-readiness-005/gold-bootstrap-config.json --model-dir /root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E2B-it/3e22461f65e89153144f8adb70e3b8c2cc9845a7 --asset-manifest /root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-training-readiness-005/e2b-runtime-manifest.json --data /root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-pool-001/train.jsonl --allocation-ledger /root/autodl-tmp/s1-text-lora-001/artifacts/s4-program-stratified-pool-001/allocation-ledger.jsonl --output-dir /root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001 --invocation-steps 10 --resume-from /root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-gold-bootstrap-001/checkpoints/step-0010 --report /root/autodl-tmp/s1-text-lora-001/reports/s6-e2b-gold-step0020.json",
+    "continuation": "Repeat only after measured review, using latest immutable checkpoint and new report filename; global100steps/1200draw not automatic authorization.",
+    "gpu_environment": "Launch in a fresh shell without CUDA_VISIBLE_DEVICES empty; this CPU script never launches these commands."
+  },
+  "gpu_initialized": false,
+  "duration_seconds": 23.005139438435435,
+  "cpu_receipt_remote_sha256": "18e93435103090d8586c05101a923a0c44fdc7380e84c2270ada6f8858d328df",
+  "cpu_receipt_remote_path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-e2b-training-readiness-005/report.json",
+  "source_binding": {
+    "core_commit": "324cf59",
+    "trainer_sha256": "32c7741333915dc1cd7c027dd8a52ab17b4888e1b37dd32c72f99b8106c4c1f3",
+    "archive_path": "/root/autodl-tmp/s6-e2b-readiness-final-001.tar",
+    "archive_sha256": "6a79a3c4a5adc15b903ee42d8266dfcee6cec9f82b5b2e26640c89a8a4571b4e"
+  },
+  "limitations": [
+    "Six real CPU representatives, not all1200 tensors or GPU forward verified",
+    "Fresh student, no E4B adapter inheritance or quality transfer",
+    "All1200 existing targets hard; no new explicit U-positive supervision in this bootstrap",
+    "Joint K+U cross-model distillation cache and training integration pending; SoftTarget alone drops U and is unsuitable",
+    "Original200k distillation course not executed or claimed",
+    "Non-Git deployed code reports code_revision unavailable; root launch must bind source archive/commit in its receipt"
+  ],
+  "preserved_failed_attempts": [
+    {
+      "remote_directory": "artifacts/s6-e2b-training-readiness-001",
+      "error": "project inventory bytes/lfs schema not runtime size/upstream schema"
+    },
+    {
+      "remote_directory": "artifacts/s6-e2b-training-readiness-002",
+      "error": "E2B runtime manifest did not already exist"
+    }
+  ]
+}
