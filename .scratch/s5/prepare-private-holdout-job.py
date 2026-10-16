@@ -12,6 +12,8 @@ from scripts import private_stage_eval as stage
 from scripts.s0_public_baselines import sha256_file
 from train.calibration import Binding
 
+PRIVATE = Path("/root/autodl-tmp/s1-text-lora-001/artifacts/s4-gold-inventory-001")
+
 
 def artifact(path: Path) -> stage.Artifact:
     return stage.Artifact(path=str(path), sha256=sha256_file(path))
@@ -73,6 +75,16 @@ def main() -> int:
         path = args.output / f"admission-{index:02d}.json"
         cal.write_private(path, declaration.model_dump())
         values = template.model_dump()
+        # Holdout pools relocate media per bundle; the calibration template roots
+        # do not match every holdout row's declared URI layout.
+        holdout_roots = {
+            "clotho-gold-001/holdout.jsonl": str(PRIVATE / "clotho-gold-001"),
+            "speech-gold-001/holdout.jsonl": str(PRIVATE / "crossmodal-source-bundle-001"),
+            "vqa-gold-001/holdout.jsonl": str(PRIVATE),
+        }
+        override = holdout_roots.get(Path(row["path"]).name)
+        if override is not None:
+            values["media_root"] = override
         values.update(
             mode="S5" if args.calibration_receipt else "S4",
             pool="holdout",
