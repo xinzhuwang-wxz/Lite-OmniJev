@@ -1,0 +1,95 @@
+{
+  "schema_version": "lite-omnijev.explore.s4-b1-grid-prep-001.v1",
+  "status": "cpu_built_and_validated_gpu_pilot_pending_main_scheduling",
+  "builder": ".scratch/s4/build-b1-consistency-grid.py",
+  "validator": ".scratch/s4/validate-b1-grid.py",
+  "inputs": {
+    "questions_train_json_sha256": "11181da673d223f41fb596aacfbbd3ff83d39af7f09a3210549e98cb283714b4",
+    "annotation_train_zip_sha256": "e7f9185ad3dde8139b839b00f0f75483374dd0325a3cbec2dac882078497784c",
+    "train_pool_sha256": "912c871f7467b36ea1837276536250539f16f2ae6c5eaf32f867912b9e49e948"
+  },
+  "outputs": {
+    "grid_jsonl": {
+      "path": "artifacts/s4-ensemble-oracle-001/b1-grid.jsonl",
+      "sha256": "41ebacc452cbd90ff4ffb5e2c5c2cc17d4f3b8a0ca950aebbead46b44e745fe9",
+      "rows": 126
+    },
+    "manifest": {
+      "path": "artifacts/s4-ensemble-oracle-001/b1-grid-manifest.json",
+      "sha256": "3bac13b6fe792b14560b125ca09472ffc5e67ce5ef15ce8d65c6986779fa6a39"
+    },
+    "supplementary_ledger": {
+      "path": "artifacts/s4-ensemble-oracle-001/b1-grid-ledger.jsonl",
+      "rows": 126,
+      "note": "grid ids declared train; original frozen ledgers unchanged"
+    }
+  },
+  "family": {
+    "scene_index": 5218,
+    "video_uri": "video/video_05218.mp4",
+    "pool": "train",
+    "license": "CC0-1.0"
+  },
+  "cells": {
+    "order_direct_before": 6,
+    "order_direct_after": 6,
+    "order_official_before": 6,
+    "order_official_after": 6,
+    "exist_begin": 6,
+    "exist_end": 6,
+    "exist_absent_begin": 16,
+    "collision_order_before": 10,
+    "collision_order_after": 10,
+    "enter_collision_before": 15,
+    "enter_collision_after": 15,
+    "u_premise_order": 24
+  },
+  "lattice": {
+    "items": 126,
+    "twin_groups": 43,
+    "transitivity_triples": 6,
+    "u_gold_items": 24
+  },
+  "validation": {
+    "sample_contract": "126/126 pydantic-valid",
+    "twin_gold_complementary_pairs_checked": 37,
+    "order_gold_equals_frame_comparison": true,
+    "transitivity_triples_consistent": 6,
+    "media_binding_matches_train_row": true
+  },
+  "wsft_layer": {
+    "builder": ".scratch/s4/build_b1_wsft_targets.py",
+    "grid_out": {
+      "path": "artifacts/s4-ensemble-oracle-001/b1-wsft-grid.jsonl",
+      "rows": 292,
+      "hard": 138,
+      "soft": 88,
+      "insufficient": 66,
+      "unique_ids": true
+    },
+    "ledger_out": {
+      "path": "artifacts/s4-ensemble-oracle-001/b1-wsft-ledger.jsonl",
+      "sha256_prefix": "48ccd7a719718169"
+    },
+    "epsilon": 0.05,
+    "duplication_ratios": {"unresolvable": [7, 3], "bracketed_tight": [17, 3]},
+    "observability_note": "14 order/collision cells are perception-unresolvable or tight at the real 16-frame sampling; WSFT converts them to partial-U instead of unwinnable hard labels",
+    "contract": "SoftTarget and InsufficientTarget only; partial-U via integer duplication, no schema change"
+  },
+  "gpu_pilot": {
+    "scheduler": "main only; this task starts no GPU",
+    "budget_seconds_per_arm": 240,
+    "arms": [
+      "b1-ce: existing scripts.train_s1 run, one-hot grid 126 rows, init-adapter e46550143b28, lr 2e-6, 40 steps",
+      "b1-wsft (primary): same with b1-wsft-grid.jsonl 292 rows, 60 steps",
+      "r1-coupled (optional, cut if window tight): plus beta twin-coupling loss (see s5-r1-grpo-lattice-prep-001)"
+    ],
+    "eval": "video150 (video-dev150.jsonl sha e9b91fed) + fixed DEV50, two consistent passes",
+    "gate_preregistered": {
+      "pass": "video150 >= 121/150 OR relation/existence subgroups >= +3pp, AND DEV50 no regression (>1 item drop stops)",
+      "wsft_extra": "relation slice >= +3pt with other slices <= 1pt regression and ECE not worse; abandon WSFT if wsft-vs-onehot <= 0.5pt over 2 seeds",
+      "fail_action": "stop route, keep evidence"
+    },
+    "estimated_gpu_minutes_including_eval": 20
+  }
+}
