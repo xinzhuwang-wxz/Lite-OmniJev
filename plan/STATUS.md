@@ -3,6 +3,7 @@
 更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
 
 ## 当前票与下一步
+- **23:08实时**：**fit007真实完成**(status=fitted,18000/18000,7203.8秒):七组温度全NLL改善(text 1.433/image 1.740/screenshot 1.848/audio-noul 2.426/video-noul 1.728/crossmodal-noul 3.076/audio-choice 0.05近零NLL),导出+绑定链核验通过。**holdout 003运行中**(UID65501/2,6000行,已过全部probe);001死于gates相对路径、002死于main截断sha(误杀已记录,UID未消耗)。holdout完成→S5原门汇总→网关激活(build-s5-registry-manifest.py已备)。用户决策ADR0024:U不作产品输出,U中心创新线关闭(WSFT/R1-B-wsft/孪生U取消);GPU窗口新序=D3P教师蒸馏(命令链就绪,worktree commit 022a9d6已合并)>B2 caption>R1-B-gold。新墙钟:模型10-17 06:00前就绪,04:30冻结,创新~03:30硬停。第二轮调研002已入主树(7维度8ideas;II-2合成记ADR轨道,II-3路由被零GPU分析证伪,II-5 SAS与II-4 PKI准备中)。
 - **20:12实时**：S5首次真实校准fit007已进入inference（text起，18000题，UID65301/2，job SHA af4b7b48…，producer fa83acc，GPU~49%）。此前fit003–006排障链四根因全修并留证：8个老池sealed行文件0644→0600（真实边界泄漏，probe正确拒绝）、/root/.ssh 0755→0700、沙箱代码补serve（producer修订fa83acce6f4b0345a2694ec883a81647a6279f8d，已部署/root/autodl-tmp/s5-calibration-code-fa83acc）、gui-gold-002 119张缺失校准媒体从quarantine源sha256验证恢复（reports/s5-gui-media-restore-001.json，119/119零失败）。UID 648xx/649xx/650xx/651xx(诊断)/652xx/653xx已消耗不复用。
 - 外榜收口：候选e465 JevBench231 76.62%/macro74.93%（两遍exit0）；父模型同协议基线76.19%/macro77.39%（reports/s4-parent-jevbench-001.json）。"不低于同尺寸基线"headline门通过（+0.43pp），macro−2.46pp如实记录（≈97%来自ambiguous家族n=7）；候选Brier/ECE/paraphrase全优，父ordinalMAE更优。S4原教师比率门未达，按ADR0023保留。
 - 当前票s4:01 claimed/main-session。用户2026-10-16明确接受实测质量局限下推进，ADR0023已记录：保留原gate失败，不假称原目标通过；完整实测、有界优化后可closed_with_measured_quality_limitations。正确性、数值、来源、隔离不放宽。S5/S6/FINAL尚未完成。
