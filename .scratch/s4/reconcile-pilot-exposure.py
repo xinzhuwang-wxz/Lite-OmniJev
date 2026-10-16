@@ -73,15 +73,19 @@ def equivalent(runtime: Path, preparation: Path) -> dict[str, Any]:
     }
 
 
-def terminal_report(report: dict[str, Any]) -> None:
-    require(report.get("status") in TERMINAL, "nonterminal_report")
+def terminal_report(report: dict[str, Any], *, allow_paused: bool = False) -> None:
+    require(
+        report.get("status") in TERMINAL | ({"paused"} if allow_paused else set()),
+        "nonterminal_report",
+    )
     require(
         type(report.get("steps_completed")) is int and report["steps_completed"] >= 0,
         "invalid_steps",
     )
     require(type(report.get("exit_code")) is int, "missing_final_exit_code")
     require(
-        report["status"] != "completed" or report["exit_code"] == 0, "inconsistent_final_status"
+        report["status"] not in {"completed", "paused"} or report["exit_code"] == 0,
+        "inconsistent_final_status",
     )
 
 
@@ -1708,7 +1712,7 @@ def prepare(
                 or report["steps_completed"] <= 0
             ):
                 continue
-            terminal_report(report)
+            terminal_report(report, allow_paused=True)
             data_sha = report.get("data_sha256")
             require(
                 isinstance(data_sha, str) and len(data_sha) == 64, "update_report_without_data_sha"
@@ -1845,6 +1849,491 @@ def prepare(
         raise
 
 
+CONTINUOUS_DATA_SHA = "aeee70458ca202e68f80f9d9b7dc617929a4bc1d4c2eb1e81113a25a207441a0"
+CONTINUOUS_CONFIG_SHA = "d8e9e5b0fc8427b32f39165c58486bfd93123fea1a584b5c0f8508efcb389414"
+CONTINUOUS_PREP_SHA = "bdf25dbe6955b983d263d13d3436f930481dc908241ef12b56526545156b1cc9"
+CONTINUOUS_BASE_SHA = "5872a667ef0935436430e22f8c041c85f4e4f2c0c4ffc1e0076e4a9e6525b15e"
+CONTINUOUS_PARENT_SHA = "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3"
+
+
+def continuous_interval(final: dict, start: int, end: int) -> dict:
+    """Cumulative optimizer steps define one non-overlapping exposure interval."""
+    terminal_report(final, allow_paused=True)
+    require(
+        type(start) is int and type(end) is int and 0 <= start <= end <= 100,
+        "continuous_step_interval",
+    )
+    require(final["steps_completed"] == end and end - start <= 10, "continuous_cumulative_steps")
+    require(final["status"] != "blocked" or end == start, "continuous_blocked_updates")
+    if final["status"] in {"paused", "completed"}:
+        require(end > start and final["exit_code"] == 0, "continuous_success_interval")
+        require(
+            (final["status"] == "completed") == (end == 100), "continuous_global_terminal_status"
+        )
+        invocation = final.get("invocation", {})
+        require(
+            invocation.get("start_step") == start
+            and invocation.get("steps_completed") == end - start
+            and invocation.get("steps_requested") == 10
+            and invocation.get("global_steps_target") == 100
+            and invocation.get("next_draw") == end * 12,
+            "continuous_invocation_receipt",
+        )
+    return {
+        "start_step": start,
+        "end_step": end,
+        "steps_this_invocation": end - start,
+        "actual_draw_interval": [12 * start, 12 * end],
+        "actual_draws_this_invocation": 12 * (end - start),
+        "actual_global_draws_seen": 12 * end,
+        "global_pool_draw_capacity": 1200,
+        "cumulative_steps_are_not_summed": True,
+        "actual_seen_boundary": "completed optimizer blocks",
+        "partial_step_draws_unknown": final["status"] == "failed",
+        "possible_global_draws_seen_upper_bound": (
+            min(100, start + 10, end + 1) * 12 if final["status"] == "failed" else end * 12
+        ),
+    }
+
+
+def continuous_checkpoint(
+    path: Path, final: dict, expected_step: int, bindings: dict[str, str]
+) -> dict:
+    import random
+
+    from train.checkpoint import load_checkpoint_metadata, verify_checkpoint
+
+    require(path.is_absolute(), "continuous_checkpoint_absolute")
+    metadata = load_checkpoint_metadata(path)
+    order = list(range(1200))
+    random.Random(42).shuffle(order)
+    step = verify_checkpoint(
+        metadata,
+        config=final["config"],
+        model_revision=final["model_revision"],
+        data_sha256=final["data_sha256"],
+        asset_hashes=final["asset_hashes"],
+        order=order,
+    )
+    require(step == expected_step, "continuous_checkpoint_step")
+    files = [path / "checkpoint.json", *(path / n for n in metadata["file_sha256"])]
+    for file in files:
+        bindings[str(file)] = sha(file)
+    return {
+        "path": str(path),
+        "step": step,
+        "metadata": bind(path / "checkpoint.json"),
+        "tensor_sha256": metadata["file_sha256"],
+        "config_sha256": metadata["config_sha256"],
+        "order_sha256": metadata["order_sha256"],
+    }
+
+
+def continuous_fixed_identity(prep: dict, config: dict, final: dict) -> None:
+    require(
+        prep.get("status") == "data_ready_only"
+        and prep.get("parent") is None
+        and prep.get("training_authorized") is False
+        and prep.get("inventory_isolation") == "isolated",
+        "continuous_data_only_preparation",
+    )
+    require(
+        (
+            config.get("steps"),
+            config.get("sample_count"),
+            config.get("accumulation"),
+            config.get("seed"),
+            config.get("rank"),
+            config.get("alpha"),
+            config.get("video_num_frames"),
+            config.get("image_max_soft_tokens"),
+        )
+        == (100, 1200, 12, 42, 16, 32, 16, 1120),
+        "continuous_frozen_config",
+    )
+    require(
+        not any(
+            config.get(k, 0) for k in ("pair_loss_weight", "reference_kl_weight", "brier_weight")
+        ),
+        "continuous_ce_only",
+    )
+    parent = final.get("init_adapter", {})
+    require(
+        parent.get("weights_sha256") == CONTINUOUS_PARENT_SHA, "continuous_original_f2db_parent"
+    )
+    actual = dict(final["config"])
+    require(actual.pop("init_adapter", None) == parent, "continuous_config_parent")
+    expected = LoopConfig.model_validate(config).model_dump()
+    # Mirror the trainer's historical zero-loss compatibility normalization.
+    from train.trainer import REFERENCE_FIELDS
+
+    if not expected.get("reference_kl_weight", 0):
+        for field in REFERENCE_FIELDS:
+            expected.pop(field, None)
+    if expected.get("brier_weight") == 0:
+        expected.pop("brier_weight")
+    if expected.get("preparation_mode") == "eager":
+        expected.pop("preparation_mode")
+        expected.pop("preparation_cache_bytes")
+    require(actual == expected, "continuous_runtime_config_identity")
+
+
+def prepare_continuous(
+    root: Path, legacy_root: Path, output: Path, historical_index: Path, launch_path: Path
+) -> dict:
+    """One settled invocation over one immutable pool, based on the preceding inventory."""
+    started = time.monotonic()
+    require(
+        all(p.is_absolute() for p in (root, legacy_root, output, historical_index, launch_path)),
+        "absolute_paths",
+    )
+    require(not output.exists(), "output_exists")
+    output.mkdir(parents=True, mode=0o700)
+    try:
+        launch, launch_binding = read_json(launch_path)
+        require(
+            launch.get("status") in TERMINAL | {"paused"} and type(launch.get("exit_code")) is int,
+            "continuous_launch_terminal",
+        )
+        eb = launch["exposure_binding"]
+        bindings = {launch_binding["path"]: launch_binding["sha256"]}
+
+        def bound(key):
+            b = eb[key]
+            path = Path(b["path"])
+            require(
+                path.is_absolute() and sha(path) == b["sha256"], "continuous_launcher_bound_input"
+            )
+            bindings[str(path)] = b["sha256"]
+            return path
+
+        base_path = bound("base_exposure_report")
+        base, base_binding = read_json(base_path)
+        require(
+            base.get("status") == "known_pilot_exposures_reconciled"
+            and base.get("exit_code") == 0
+            and base.get("unknown_update_bearing_inputs") == 0,
+            "continuous_base_passed",
+        )
+        start, end = eb["start_step"], eb["end_step"]
+        history = base.get("continuous_invocations", [])
+        if history:
+            previous = history[-1]
+            require(
+                previous["end_step"] == start and previous["status"] == "paused",
+                "continuous_prior_interval",
+            )
+        else:
+            require(
+                start == 0 and base_binding["sha256"] == CONTINUOUS_BASE_SHA,
+                "continuous_initial013",
+            )
+        prior_bindings = base["all_bound_input_sha256"]
+        require(
+            all(sha(Path(p)) == h for p, h in prior_bindings.items()), "continuous_prior_mutation"
+        )
+        bindings.update(prior_bindings)
+        base_inventory = base_path.with_name("inventory-manifest.json")
+        require(
+            sha(base_inventory) == base["output_sha256"]["inventory-manifest.json"],
+            "continuous_base_inventory_sha",
+        )
+        bindings[str(base_inventory)] = sha(base_inventory)
+        inventory = Manifest.model_validate_json(base_inventory.read_bytes())
+        mappings = version_mapping(inventory)
+        combined = inventory.model_dump(mode="json", exclude_none=True)
+        prep_path = bound("prepared_report")
+        require(sha(prep_path) == CONTINUOUS_PREP_SHA, "continuous_preparation_sha")
+        prep = json.loads(prep_path.read_bytes())
+        for name, expected in prep["output_sha256"].items():
+            require(Path(name).name == name, "continuous_safe_preparation_name")
+            path = prep_path.with_name(name)
+            require(sha(path) == expected, "continuous_preparation_output_sha")
+            bindings[str(path)] = expected
+        config_path = bound("config_file")
+        require(sha(config_path) == CONTINUOUS_CONFIG_SHA, "continuous_global_config_sha")
+        config = json.loads(config_path.read_bytes())
+        final_path, snapshot_path = bound("final_report"), bound("runtime_report_snapshot")
+        require(
+            snapshot_path.name != "run.json" and final_path != snapshot_path,
+            "continuous_immutable_report_names",
+        )
+        final, runtime = json.loads(final_path.read_bytes()), json.loads(snapshot_path.read_bytes())
+        final_core = dict(final)
+        ledger_check = final_core.pop("allocation_ledger_check", None)
+        if ledger_check is not None:
+            require(
+                ledger_check.get("verified_train") == 1200
+                and ledger_check.get("ledger_rows", 0) >= 1200,
+                "continuous_final_train_ledger_check",
+            )
+        require(final_core == runtime, "continuous_final_snapshot_identity")
+        require(
+            final["status"] == launch["status"] and final["exit_code"] == launch["exit_code"],
+            "continuous_launcher_terminal_identity",
+        )
+        raw_path = Path(eb["runtime_report_path"])
+        require(
+            raw_path.is_absolute()
+            and raw_path.name == "run.json"
+            and sha(raw_path) == sha(snapshot_path),
+            "continuous_current_runtime_snapshot",
+        )
+        # run.json is deliberately observed, never persisted as an immutable history binding.
+        mutable_observation = bind(raw_path)
+        interval = continuous_interval(final, start, end)
+        continuous_fixed_identity(prep, config, final)
+        runtime_data = bound("runtime_data")
+        require(
+            sha(runtime_data) == final["data_sha256"] == CONTINUOUS_DATA_SHA,
+            "continuous_runtime_data_sha",
+        )
+        comparison = equivalent(runtime_data, prep_path.with_name("train.jsonl"))
+        require(
+            comparison["rows"] == 1200 and all(v in mappings for v in comparison["data_versions"]),
+            "continuous_pool_mapping",
+        )
+        sources = eb["source_files"]
+        if history:
+            require(sources == history[-1]["source_files"], "continuous_source_identity_changed")
+        require(
+            {"trainer.py", "checkpoint.py", "train_s1.py"}
+            <= {Path(b["path"]).name for b in sources},
+            "continuous_source_bindings_required",
+        )
+        for b in sources:
+            path = Path(b["path"])
+            require(path.is_absolute() and sha(path) == b["sha256"], "continuous_source_sha")
+            bindings[str(path)] = b["sha256"]
+        parent = final["init_adapter"]
+        require(
+            launch.get("selected_init_adapter") == parent
+            and launch.get("parent_selection")
+            == "root_selected_f2db_balanced_retention_and_full_video_evidence",
+            "continuous_root_selected_parent",
+        )
+        require(
+            runtime_data == raw_path.parent / "data.jsonl", "continuous_actual_runtime_data_path"
+        )
+        parent_dir = Path(parent["path"])
+        require(
+            parent_dir.is_absolute()
+            and sha(parent_dir / "adapter_model.safetensors") == CONTINUOUS_PARENT_SHA,
+            "continuous_parent_weights_sha",
+        )
+        bindings[str(parent_dir / "adapter_model.safetensors")] = CONTINUOUS_PARENT_SHA
+        require(
+            sha(parent_dir / "adapter_config.json") == parent["config_sha256"],
+            "continuous_parent_config_sha",
+        )
+        bindings[str(parent_dir / "adapter_config.json")] = parent["config_sha256"]
+        run_dir = raw_path.parent
+        resume = eb["resume_from"]
+        resume_identity = None
+        if start:
+            require(
+                resume == final.get("resumed_from") == history[-1]["checkpoint"]["path"],
+                "continuous_exact_resume_path",
+            )
+            require(Path(resume).parent == run_dir / "checkpoints", "continuous_same_output_resume")
+            resume_identity = continuous_checkpoint(Path(resume), final, start, bindings)
+            require(
+                resume_identity == history[-1]["checkpoint"],
+                "continuous_resume_checkpoint_identity",
+            )
+        else:
+            require(resume is None and not final.get("resumed_from"), "continuous_first_no_resume")
+        checkpoint = None
+        adapter = None
+        if final["status"] in {"paused", "completed"}:
+            checkpoint_path = run_dir / "checkpoints" / f"step-{end:04d}"
+            require(final.get("checkpoint") == str(checkpoint_path), "continuous_output_checkpoint")
+            checkpoint = continuous_checkpoint(checkpoint_path, final, end, bindings)
+            adapter_dir = run_dir / f"adapter-invocation-step-{end:04d}"
+            require(final.get("adapter_dir") == str(adapter_dir), "continuous_output_adapter")
+            adapter = bind(adapter_dir / "adapter_model.safetensors")
+            require(adapter["sha256"] == final["adapter_sha256"], "continuous_adapter_sha")
+            bindings[adapter["path"]] = adapter["sha256"]
+            bindings[str(adapter_dir / "adapter_config.json")] = sha(
+                adapter_dir / "adapter_config.json"
+            )
+        else:
+            # Failed partial updates remain exposure even without a final adapter/checkpoint.
+            if final.get("checkpoint"):
+                path = Path(final["checkpoint"])
+                require(
+                    path.parent == run_dir / "checkpoints", "continuous_failed_checkpoint_scope"
+                )
+                checkpoint = continuous_checkpoint(
+                    path, final, int(path.name.removeprefix("step-")), bindings
+                )
+                require(start <= checkpoint["step"] <= end, "continuous_failed_checkpoint_range")
+        appended = []
+        if end > start:
+            existing = [a for a in combined["samples"] if a["sha256"] == CONTINUOUS_DATA_SHA]
+            if existing:
+                require(
+                    len(existing) == 1
+                    and existing[0]["expected_pool"] == "train"
+                    and existing[0]["exposure"] == "current",
+                    "continuous_single_current_pool",
+                )
+            else:
+                artifact = {
+                    **bind(runtime_data),
+                    "expected_pool": "train",
+                    "exposure": "current",
+                    "cohorts_by_data_version": {
+                        v: mappings[v] for v in comparison["data_versions"]
+                    },
+                }
+                arm_current_inventory(combined, artifact)
+                appended.append(artifact)
+                component_path = prep_path.with_name("components.jsonl")
+                combined["component_ledgers"].append(bind(component_path))
+        hashes = {a["sha256"] for a in combined["samples"] if a["expected_pool"] == "train"}
+        index, index_binding = read_json(historical_index)
+        require(
+            index.get("status") == "indexed" and not index.get("unresolved"), "old_index_incomplete"
+        )
+        bindings[index_binding["path"]] = index_binding["sha256"]
+        known_paths = set()
+        for item in index["files"]:
+            require(
+                item["sha256"] in hashes and sha(Path(item["path"])) == item["sha256"],
+                "continuous_indexed_input",
+            )
+            bindings[item["path"]] = item["sha256"]
+            for b in item["report_bindings"]:
+                path = Path(b["path"])
+                require(sha(path) == b["sha256"], "old_report_mutated")
+                require(
+                    json.loads(path.read_bytes()).get("data_sha256") == item["sha256"],
+                    "old_report_input_binding",
+                )
+                bindings[str(path)] = b["sha256"]
+                known_paths.add(path)
+        discovered = (
+            known_paths
+            | set((root / "reports").glob("*.json"))
+            | set((root / "artifacts").rglob("run.json"))
+            | set((legacy_root / "artifacts/training").rglob("run.json"))
+            | {Path(p) for p in prior_bindings if Path(p).suffix == ".json"}
+            | {final_path, snapshot_path}
+        )
+        updates, unknown = [], []
+        for path in sorted(discovered):
+            try:
+                r, b = read_json(path)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                require(
+                    path.name != "run.json" and path not in known_paths,
+                    "unreadable_training_report",
+                )
+                continue
+            if (
+                not isinstance(r, dict)
+                or type(r.get("steps_completed")) is not int
+                or r["steps_completed"] <= 0
+            ):
+                continue
+            terminal_report(r, allow_paused=True)
+            data_sha = r.get("data_sha256")
+            require(
+                isinstance(data_sha, str) and len(data_sha) == 64, "update_report_without_data_sha"
+            )
+            if path != raw_path:
+                require(
+                    str(path) not in bindings or bindings[str(path)] == b["sha256"],
+                    "mutable_report",
+                )
+                bindings[str(path)] = b["sha256"]
+            entry = {
+                "report": b,
+                "data_sha256": data_sha,
+                "steps_completed": r["steps_completed"],
+                "status": r["status"],
+            }
+            updates.append(entry)
+            if data_sha not in hashes:
+                unknown.append(entry)
+        write(
+            output / "discovered-update-reports.json",
+            {"update_reports": updates, "unknown": unknown},
+        )
+        require(not unknown, "unknown_update_bearing_input")
+        write(output / "inventory-manifest.json", combined)
+        audit = audit_manifest(output / "inventory-manifest.json")
+        write(output / "inventory-audit.json", audit.model_dump(mode="json"))
+        require(audit.outcome == "isolated", "full_inventory_rejected")
+        require(
+            all(sha(Path(p)) == h for p, h in bindings.items())
+            and sha(raw_path) == mutable_observation["sha256"],
+            "mutable_report_or_input",
+        )
+        invocation = {
+            **interval,
+            "status": final["status"],
+            "update_bearing": end > start,
+            "launch_report": launch_binding,
+            "final_report": bind(final_path),
+            "runtime_report_snapshot": bind(snapshot_path),
+            "runtime_report_observation": mutable_observation,
+            "checkpoint": checkpoint,
+            "resume_checkpoint": resume_identity,
+            "adapter": adapter,
+            "original_init_adapter": parent,
+            "source_files": sources,
+        }
+        history = [*history, invocation]
+        report = {
+            "status": "known_pilot_exposures_reconciled",
+            "exit_code": 0,
+            "gpu_used": False,
+            "scope": (
+                "Known saved reports; pool capacity is not actual exposure or quality acceptance"
+            ),
+            "continuous_main_pool_included": True,
+            "base_exposure_report": base_binding,
+            "base_inventory": bind(base_inventory),
+            "historical_index": index_binding,
+            "continuous_invocations": history,
+            "actual_global_draws_seen": end * 12,
+            "global_pool_draw_capacity": 1200,
+            "pilots": [invocation],
+            "appended_artifacts": appended,
+            "indexed_input_files": len(index["files"]),
+            "discovered_update_bearing_reports": len(updates),
+            "unknown_update_bearing_inputs": 0,
+            "all_bound_input_sha256": bindings,
+            "output_sha256": {
+                n: sha(output / n)
+                for n in (
+                    "inventory-manifest.json",
+                    "inventory-audit.json",
+                    "discovered-update-reports.json",
+                )
+            },
+            "runner_sha256": sha(Path(__file__)),
+            "duration_seconds": time.monotonic() - started,
+            "cost": None,
+        }
+        write(output / "report.json", report)
+        return report
+    except Exception as exc:
+        if not (output / "report.json").exists():
+            write(
+                output / "report.json",
+                {
+                    "status": "rejected",
+                    "exit_code": 1,
+                    "gpu_used": False,
+                    "category": str(exc) if isinstance(exc, ValueError) else type(exc).__name__,
+                },
+            )
+        raise
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
@@ -1901,24 +2390,38 @@ def main() -> int:
         action="store_true",
         help="Use012 base; bind30-family independently evaluated order-program gold",
     )
+    parser.add_argument("--continuous-main-pool", action="store_true")
+    parser.add_argument("--continuous-launch-report", type=Path)
     args = parser.parse_args()
     try:
-        report = prepare(
-            args.root,
-            args.legacy_root,
-            args.output_dir,
-            args.historical_index
-            or args.root / "artifacts/s4-gold-inventory-001/historical-training-index.json",
-            crossmodal_retention=args.crossmodal_retention,
-            claim_pair=args.claim_pair,
-            temporal_curriculum=args.temporal_curriculum,
-            temporal_brier=args.temporal_brier,
-            learnability=args.learnability,
-            temporal_coverage=args.temporal_coverage,
-            coverage_segment002=args.coverage_segment002,
-            polarity_arm=args.polarity_arm,
-            coverage_segment003=args.coverage_segment003,
-            temporal_order_contrast=args.temporal_order_contrast,
+        report = (
+            prepare_continuous(
+                args.root,
+                args.legacy_root,
+                args.output_dir,
+                args.historical_index
+                or args.root / "artifacts/s4-gold-inventory-001/historical-training-index.json",
+                args.continuous_launch_report
+                or args.root / "reports/s4-continuous-main-pool-launch-001.json",
+            )
+            if args.continuous_main_pool
+            else prepare(
+                args.root,
+                args.legacy_root,
+                args.output_dir,
+                args.historical_index
+                or args.root / "artifacts/s4-gold-inventory-001/historical-training-index.json",
+                crossmodal_retention=args.crossmodal_retention,
+                claim_pair=args.claim_pair,
+                temporal_curriculum=args.temporal_curriculum,
+                temporal_brier=args.temporal_brier,
+                learnability=args.learnability,
+                temporal_coverage=args.temporal_coverage,
+                coverage_segment002=args.coverage_segment002,
+                polarity_arm=args.polarity_arm,
+                coverage_segment003=args.coverage_segment003,
+                temporal_order_contrast=args.temporal_order_contrast,
+            )
         )
     except Exception:
         print(json.dumps({"status": "rejected", "exit_code": 1}))
