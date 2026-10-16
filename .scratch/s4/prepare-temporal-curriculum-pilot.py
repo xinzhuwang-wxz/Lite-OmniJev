@@ -455,7 +455,7 @@ def prepare(
                 s.meta.family_id for bucket in video.values() for s in bucket
             ),
             "historical_exclusion_scope": (
-                "prior temporal curriculum60families only; not all historical exposures"
+                "explicit excluded_prior_families; not all historical exposures"
             ),
             "provenance": selection_provenance,
         }
