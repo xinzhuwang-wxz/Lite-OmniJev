@@ -1,0 +1,85 @@
+{
+  "schema": "lite-omnijev.release-inventory.v1",
+  "tier": "edge",
+  "template_only": true,
+  "release_version": null,
+  "stage_acceptance": "not_evaluated",
+  "files": [
+    {
+      "id": "README.md",
+      "state": "available",
+      "path": "README.md",
+      "size": 707,
+      "actual_sha256": "bc4f52027a89f326b113f9593793bce6c83f0b68396209caa1a373b2eb9c7158",
+      "meaning": "template file integrity only"
+    },
+    {
+      "id": "bindings.template.json",
+      "state": "available",
+      "path": "bindings.template.json",
+      "size": 612,
+      "actual_sha256": "3fb474676994042fe25f22cbd846573d09f9c3f90a2f163f4a47fe0338b6e8ee",
+      "meaning": "template file integrity only"
+    },
+    {
+      "id": "e2b-merged",
+      "state": "pending",
+      "path": "model/e2b-merged-manifest.json",
+      "reason": "Accepted distilled E2B decision weights and merged LoRA pending"
+    },
+    {
+      "id": "e2b-gguf",
+      "state": "pending",
+      "path": "model/gguf/manifest.json",
+      "reason": "E2B Q4_K_M and required multimodal projector artifacts pending; fallback quality not chosen"
+    },
+    {
+      "id": "calibration",
+      "state": "pending",
+      "path": "calibration/index.json",
+      "reason": "Bound E2B modality by primitive calibration pending"
+    },
+    {
+      "id": "runtime",
+      "state": "pending",
+      "path": "runtime/manifest.json",
+      "reason": "Selected target ABI/runtime dependencies and actual copied binaries pending"
+    },
+    {
+      "id": "launch",
+      "state": "pending",
+      "path": "bin/run-offline.sh",
+      "reason": "One-command actual target offline decision runner pending"
+    },
+    {
+      "id": "compatibility",
+      "state": "pending",
+      "path": "docs/compatibility.json",
+      "reason": "Actual E2B vision/logits/audio/LiteRT feasibility outcomes pending"
+    },
+    {
+      "id": "same200",
+      "state": "pending",
+      "path": "evidence/same200.json",
+      "reason": "Server/GGUF/edge identical200 differences pending"
+    },
+    {
+      "id": "target-memory-latency",
+      "state": "pending",
+      "path": "evidence/device.json",
+      "reason": "Actual supported target hardware offline memory/latency/modality results pending"
+    },
+    {
+      "id": "rollback",
+      "state": "pending",
+      "path": "bin/rollback.sh",
+      "reason": "Version-coupled offline rollback pending"
+    },
+    {
+      "id": "cards-and-licenses",
+      "state": "pending",
+      "path": "docs/cards-and-licenses.json",
+      "reason": "Final model/data/runtime licensing and capability cards pending"
+    }
+  ]
+}

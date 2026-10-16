@@ -1,0 +1,85 @@
+{
+  "schema": "lite-omnijev.bundle-template-cpu.v1",
+  "status": "templates_created_release_blocked",
+  "stage_gate": false,
+  "gpu_used": false,
+  "checks": [
+    {
+      "tier": "api",
+      "command": [
+        "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
+        ".scratch/delivery/release-readiness/check_inventory.py",
+        "--manifest",
+        ".scratch/delivery/bundle-template/api/manifest.json",
+        "--root",
+        ".scratch/delivery/bundle-template/api"
+      ],
+      "exit_code": 1,
+      "status": "inventory_incomplete",
+      "verified": 2,
+      "pending": 8,
+      "invalid": 0
+    },
+    {
+      "tier": "single-card",
+      "command": [
+        "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
+        ".scratch/delivery/release-readiness/check_inventory.py",
+        "--manifest",
+        ".scratch/delivery/bundle-template/single-card/manifest.json",
+        "--root",
+        ".scratch/delivery/bundle-template/single-card"
+      ],
+      "exit_code": 1,
+      "status": "inventory_incomplete",
+      "verified": 2,
+      "pending": 10,
+      "invalid": 0
+    },
+    {
+      "tier": "edge",
+      "command": [
+        "/Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/python",
+        ".scratch/delivery/release-readiness/check_inventory.py",
+        "--manifest",
+        ".scratch/delivery/bundle-template/edge/manifest.json",
+        "--root",
+        ".scratch/delivery/bundle-template/edge"
+      ],
+      "exit_code": 1,
+      "status": "inventory_incomplete",
+      "verified": 2,
+      "pending": 10,
+      "invalid": 0
+    }
+  ],
+  "archive_roundtrip": {
+    "command": "copytree + manifest directory materialization + tarfile roundtrip (standard library); temporary paths cleaned",
+    "exit_code": 0,
+    "archive_bytes": 5149,
+    "archive_sha256": "29240c171416dee307a87d5a7794f6bbca031b3e9c2493250c9da25b1b8302d0",
+    "archive_members": 37,
+    "three_manifests_template_only": true,
+    "model_artifacts_in_archive": false
+  },
+  "source_contract_sha256": {
+    "docs/Lite-OmniJev\u8bbe\u8ba1\u65b9\u6848-\u6700\u7ec8\u7248.html": "e23d7537c676cb5ead8f64e5de0d518c04f06d2901ac527c553519facdeb4957",
+    ".scratch/delivery/spec.md": "7d49e9088ab63d7cb483e091beef26cd0c58dcfd5f8d3ddacc54a10d224e4da3",
+    ".scratch/delivery/issues/01-final-acceptance.md": "6d6cebf385a0e24c4073c2e0e0555653bfbe1a8692a498d26d7d69194b7ca62d",
+    "docs/adr/0010-measured-performance-targets.md": "e9b6d5b6e97625e738cac8be6c2bd25d9fa2f8a80178bb6f13c258130d76fc28"
+  },
+  "host": {
+    "architecture": "arm64",
+    "clang": "/usr/bin/clang",
+    "cmake": "/opt/homebrew/bin/cmake",
+    "ollama": "/opt/homebrew/bin/ollama",
+    "interpretation": "Tool paths observed only; no native E2B runtime/model/device acceptance claimed"
+  },
+  "not_tested": [
+    "No actual E2B decision/quantized model exists for this package template",
+    "No GPU, runtime inference, device, calibration or holdout execution",
+    "No Android/iOS app or production deployment",
+    "No S4/S5/S6/FINAL release acceptance"
+  ],
+  "final_template_recheck_exit_code": 0
+}

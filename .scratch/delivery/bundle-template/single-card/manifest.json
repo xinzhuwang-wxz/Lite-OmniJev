@@ -1,0 +1,85 @@
+{
+  "schema": "lite-omnijev.release-inventory.v1",
+  "tier": "single-card",
+  "template_only": true,
+  "release_version": null,
+  "stage_acceptance": "not_evaluated",
+  "files": [
+    {
+      "id": "README.md",
+      "state": "available",
+      "path": "README.md",
+      "size": 714,
+      "actual_sha256": "39ab6db8742fadb53d2cea8b5bc3fbbf738b421492122c9bfd20ec88ec416f47",
+      "meaning": "template file integrity only"
+    },
+    {
+      "id": "bindings.template.json",
+      "state": "available",
+      "path": "bindings.template.json",
+      "size": 619,
+      "actual_sha256": "f094d74846f9f090f3fafdcc4d76ff284e496da5ebfd8e165d03067db614c762",
+      "meaning": "template file integrity only"
+    },
+    {
+      "id": "e4b-fp8",
+      "state": "pending",
+      "path": "model/e4b-fp8/manifest.json",
+      "reason": "Generated FP8 weights and quality gate pending"
+    },
+    {
+      "id": "e4b-w4a16",
+      "state": "pending",
+      "path": "model/e4b-w4a16/manifest.json",
+      "reason": "Generated W4A16 weights and quality gate pending"
+    },
+    {
+      "id": "e4b-gguf",
+      "state": "pending",
+      "path": "model/gguf/manifest.json",
+      "reason": "Q8_0/Q4_K_M plus required media projector/tokenizer artifacts pending"
+    },
+    {
+      "id": "calibration",
+      "state": "pending",
+      "path": "calibration/index.json",
+      "reason": "Real S5 modality by primitive artifacts pending"
+    },
+    {
+      "id": "image-definition",
+      "state": "pending",
+      "path": "container/image-manifest.json",
+      "reason": "Pinned runnable vLLM+gateway image/export pending; no digest fabricated"
+    },
+    {
+      "id": "vllm-launch",
+      "state": "pending",
+      "path": "bin/start-vllm.sh",
+      "reason": "One-command final runtime and gateway start pending"
+    },
+    {
+      "id": "ollama-launch",
+      "state": "pending",
+      "path": "ollama/Modelfile",
+      "reason": "Pinned Ollama model/readout integration pending"
+    },
+    {
+      "id": "llama-launch",
+      "state": "pending",
+      "path": "bin/start-llama.sh",
+      "reason": "Pinned llama.cpp full legal-logit/media readout integration pending"
+    },
+    {
+      "id": "rollback",
+      "state": "pending",
+      "path": "bin/rollback.sh",
+      "reason": "Coupled model/calibration/config rollback pending"
+    },
+    {
+      "id": "cards-and-evidence",
+      "state": "pending",
+      "path": "docs/release-materials.json",
+      "reason": "Cards/licenses/same200/quantization/real performance reports pending"
+    }
+  ]
+}
