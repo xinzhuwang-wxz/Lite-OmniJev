@@ -1,0 +1,10 @@
+{
+  "status": "rejected",
+  "exit_code": 1,
+  "categories": [
+    "exposure_reconciliation_rejected"
+  ],
+  "gpu_used": false,
+  "duration_seconds": 0.000668354332447052,
+  "cost": null
+}
