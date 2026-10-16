@@ -3,6 +3,7 @@
 更新：2026-10-16。**S3已通过；S4数据/gate工程已通过，S4模型质量未通过。原生goal仍active，产品未交付。**
 
 ## 当前票与下一步
+- 用户2026-10-16约09:18确认剩24h；保守预算至10-17 09:15（Asia/Shanghai），至少03:15起留6h导出/发布包/真实验收与修复；非云平台到期核验、不续租/不自动公开发布。见.scratch/s4/wallclock-budget.md。
 - s0:05 done；s4:01 claimed main-session，规格.scratch/s4/spec.md与iteration-policy.md。S4质量未通过，S5/S6/FINAL未完成。
 - 当前工作候选为首段coverage f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3，artifacts/s4-temporal-coverage-train-001/adapter：video150116（CE0 109，temporal74/97 vs68、motion13/14 vs11、existence29/39 vs30），video NLL .525804→.496081/Brier .351817→.329909，14纠正7退化；yes预测79→100偏移仍需观察。原cross10074（CE0 73，Brier .373116→.350948），old50 audio38（CE0 39）/image40/screenshot50/text49后三者持平。综合支持继续新family后续段，音频一题差异按ADR0022保留观察，不机械否决；仅工作候选，S4未晋级，fullvideo500尚未测，不能继承祖先337/500。CE0/S3回退保留。
 - 上一工作候选/回退CE0 adapter4b8e422f3ca29e863999d2cd713bb9fd3f0a46e5360faa259a3bb8a4a9814bed，artifacts/s4-claim-pair-ce0-train-001/adapter。相同120draw/10步CE训练191.15秒；原cross10073（父coverage72）、补充cross50 43（父41），video150109（父108，temporal68/97、motion11/14、existence30/39），audio39/image40/screenshot50/text49各50均持平。仅工作候选，不是S4晋级。父coverage0deef保留回退，其完整video500为337/500=67.4%；新CE0尚未全500，不能继承父成绩。
