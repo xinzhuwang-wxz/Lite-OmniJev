@@ -1,0 +1,36 @@
+{
+  "status": "completed",
+  "stage_gate": false,
+  "scope": "Fixed temporal DEV50 after fresh-family coverage; screening only",
+  "baseline": {
+    "accuracy": 0.6,
+    "brier": 0.4722867687920772,
+    "count": 50,
+    "coverage_at_error": 0.26,
+    "ece15": 0.2051703289954513,
+    "max_error": 0.05
+  },
+  "parent_metrics": {
+    "accuracy": 0.66,
+    "brier": 0.44748601999097937,
+    "count": 50,
+    "coverage_at_error": 0.12,
+    "ece15": 0.10419439341273157,
+    "max_error": 0.05
+  },
+  "parent_adapter_sha256": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+  "candidate": {
+    "accuracy": 0.68,
+    "brier": 0.42417978427835457,
+    "count": 50,
+    "coverage_at_error": 0.06,
+    "ece15": 0.10113314216591787,
+    "max_error": 0.05
+  },
+  "paired_input_hashes_verified": 50,
+  "before_adapter": "4b8e422f3ca29e863999d2cd713bb9fd3f0a46e5360faa259a3bb8a4a9814bed",
+  "after_adapter": "dfcf2cb2a46692f47086bb01d894f1f2305e947e535722b28448f2f3790166e5",
+  "wrapper_sha256": "de2076ce214cab793a3320eb9a71bc9071749146afc7da9529f93ddc0a285d07",
+  "baseline_receipt_sha256": "108eda8948e3b214fefec1b5afb013e58a54e6841fe33bf4a8970debdbe09b3e",
+  "candidate_receipt_sha256": "27e200127373ae4eb8b4d6a2ed85e7912794eefd2864b320e6e20542cc962248"
+}
