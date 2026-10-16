@@ -16,7 +16,7 @@ import sys
 import time
 import uuid
 from collections import Counter
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager, nullcontext
 from pathlib import Path
 from typing import Any, Literal
@@ -594,6 +594,71 @@ def public_readonly(path: Path) -> None:
         )
 
 
+def snapshot_media(
+    media: dict[str, dict[str, str]],
+    roots: list[Path],
+    inputs: Path,
+    *,
+    public_in_place: bool,
+    remaining_bytes: int,
+    copy_bound: Callable[[Path, str, Path], None],
+) -> tuple[dict[str, str], dict[str, int]]:
+    """Copy only declared private assets, after a unique-byte capacity check."""
+    from scripts.private_gold_job import safe_path
+
+    planned: dict[str, tuple[Path, str, Path | None]] = {}
+    unique: dict[Path, int] = {}
+    for original, entry in media.items():
+        path = Path(original)
+        safe_path(path)
+        require(any(path.is_relative_to(root) for root in roots), "media_plan_escape")
+        digest = entry["sha256"]
+        require(
+            len(digest) == 64 and all(c in "0123456789abcdef" for c in digest),
+            "invalid_media_digest",
+        )
+        info = path.stat()
+        require(stat.S_ISREG(info.st_mode), "regular_media_required")
+        # Hash every declared path even when its digest duplicates another asset.
+        require(sha256_file(path) == digest, "media_changed")
+        public = False
+        if public_in_place:
+            try:
+                public_readonly(path)
+                public = True
+            except ValueError:
+                pass
+        target = None if public else inputs / "media" / (digest + path.suffix.lower())
+        if target is not None:
+            require(target not in unique or unique[target] == info.st_size, "media_size_conflict")
+            unique[target] = info.st_size
+        planned[original] = (path, digest, target)
+    needed = sum(unique.values())
+    capacity = os.statvfs(inputs)
+    available = capacity.f_bavail * capacity.f_frsize
+    require(needed <= remaining_bytes, "snapshot_budget_exceeded")
+    require(needed + 256 * 1024**2 <= available, "private_media_disk_budget_exceeded")
+    copied: set[Path] = set()
+    mapping = {}
+    for original, (path, digest, target) in planned.items():
+        if target is None:
+            mapping[original] = str(path).lstrip("/")
+        else:
+            if target not in copied:
+                copy_bound(path, digest, target)
+                copied.add(target)
+            mapping[original] = (
+                str(target).lstrip("/") if public_in_place else str(target.relative_to(inputs))
+            )
+    return mapping, {
+        "declared_assets": len(media),
+        "private_snapshot_unique_assets": len(unique),
+        "private_snapshot_bytes": needed,
+        "available_bytes_before_copy": available,
+        "public_assets_in_place": sum(target is None for _, _, target in planned.values()),
+    }
+
+
 def execute(
     source: Path,
     expected: str,
@@ -830,28 +895,14 @@ def execute(
             plan["groups"] == GROUP_COUNTS and isinstance(plan["media"], dict),
             "invalid_private_media_plan",
         )
-        roots = [Path(item.media_root) for item in spec.datasets]
-        media_map: dict[str, str] = {}
-        copied: set[str] = set()
-        for original, entry in plan["media"].items():
-            path = Path(original)
-            broker.safe_path(path)
-            require(any(path.is_relative_to(root) for root in roots), "media_plan_escape")
-            digest = entry["sha256"]
-            require(
-                len(digest) == 64 and all(c in "0123456789abcdef" for c in digest),
-                "invalid_media_digest",
-            )
-            if spec.root_traverse_acl:
-                public_readonly(path)
-                require(sha256_file(path) == digest, "media_changed")
-                media_map[original] = original.lstrip("/")
-                continue
-            relative = "media/" + digest + path.suffix.lower()
-            if relative not in copied:
-                copy_bound(path, digest, inputs / relative)
-                copied.add(relative)
-            media_map[original] = relative
+        media_map, media_snapshot = snapshot_media(
+            plan["media"],
+            [Path(item.media_root) for item in spec.datasets],
+            inputs,
+            public_in_place=spec.root_traverse_acl,
+            remaining_bytes=spec.max_snapshot_bytes - consumed,
+            copy_bound=copy_bound,
+        )
         write_private(inputs / "media-map.json", media_map)
         os.chown(inputs / "media-map.json", 0, worker_uid)
         (inputs / "media-map.json").chmod(0o440)
@@ -930,6 +981,7 @@ def execute(
     # The original run, rows, inputs, and worker logs remain root-only after lease revocation.
     result = {
         **receipt,
+        "media_snapshot": media_snapshot,
         "root_traverse_acl": acl_evidence,
         "boundary": "fresh_ordinary_uid_fixed_calibration_job",
         "ordinary_identity_boundary": True,

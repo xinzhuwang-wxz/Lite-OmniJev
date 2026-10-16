@@ -202,3 +202,99 @@ def test_backend_preserves_pre_softmax_values(tmp_path: Path, monkeypatch: Any) 
     _, forward, _ = job.raw_backend(tmp_path, tmp_path)
     actual = forward(SimpleNamespace(inputs={}, answer_token_ids={"A": 0, "B": 1, "U": 2}))
     assert actual == {"A": 8.0, "B": 7.0, "U": 6.0}
+
+
+def test_private_media_snapshot_is_bounded_and_preserves_originals(
+    tmp_path: Path, monkeypatch: Any
+) -> None:
+    import hashlib
+    import shutil
+    from types import SimpleNamespace
+
+    source = tmp_path / "source"
+    source.mkdir(mode=0o700)
+    inputs = tmp_path / "inputs"
+    inputs.mkdir()
+    secret = source / "private.wav"
+    duplicate = source / "duplicate.wav"
+    public = source / "public.wav"
+    for path, payload in [(secret, b"private"), (duplicate, b"private"), (public, b"public")]:
+        path.write_bytes(payload)
+        path.chmod(0o600)
+    media = {
+        str(path): {"sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "type": "audio"}
+        for path in (secret, duplicate, public)
+    }
+
+    def classify(path: Path) -> None:
+        if path != public:
+            raise ValueError("private")
+
+    monkeypatch.setattr(job, "public_readonly", classify)
+    monkeypatch.setattr(
+        job.os, "statvfs", lambda path: SimpleNamespace(f_bavail=1024**3, f_frsize=1)
+    )
+    copied = []
+
+    def copy_bound(path: Path, digest: str, target: Path) -> None:
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
+        target.parent.mkdir(exist_ok=True)
+        shutil.copyfile(path, target)
+        target.chmod(0o440)
+        copied.append(target)
+
+    mapping, summary = job.snapshot_media(
+        media, [source], inputs, public_in_place=True, remaining_bytes=7, copy_bound=copy_bound
+    )
+    assert len(copied) == 1
+    assert summary["private_snapshot_bytes"] == 7
+    assert summary["public_assets_in_place"] == 1
+    assert mapping[str(secret)] == mapping[str(duplicate)]
+    assert Path("/" + mapping[str(secret)]).read_bytes() == b"private"
+    assert Path("/" + mapping[str(public)]) == public
+    assert secret.stat().st_mode & 0o777 == 0o600
+    assert source.stat().st_mode & 0o777 == 0o700
+    assert copied[0].stat().st_mode & 0o777 == 0o440
+    with pytest.raises(ValueError, match="snapshot_budget_exceeded"):
+        job.snapshot_media(
+            media,
+            [source],
+            inputs,
+            public_in_place=True,
+            remaining_bytes=6,
+            copy_bound=lambda *args: pytest.fail("copied early"),
+        )
+    monkeypatch.setattr(job.os, "statvfs", lambda path: SimpleNamespace(f_bavail=1, f_frsize=1))
+    with pytest.raises(ValueError, match="private_media_disk_budget_exceeded"):
+        job.snapshot_media(
+            media,
+            [source],
+            inputs,
+            public_in_place=True,
+            remaining_bytes=100,
+            copy_bound=lambda *args: pytest.fail("copied early"),
+        )
+
+
+def test_snapshot_rejects_undeclared_or_changed_media_before_copy(tmp_path: Path) -> None:
+    path = tmp_path / "asset"
+    path.write_bytes(b"changed")
+    media = {str(path): {"sha256": "a" * 64, "type": "image"}}
+    with pytest.raises(ValueError, match="media_changed"):
+        job.snapshot_media(
+            media,
+            [tmp_path],
+            tmp_path,
+            public_in_place=False,
+            remaining_bytes=100,
+            copy_bound=lambda *args: pytest.fail("copied early"),
+        )
+    with pytest.raises(ValueError, match="media_plan_escape"):
+        job.snapshot_media(
+            media,
+            [tmp_path / "other"],
+            tmp_path,
+            public_in_place=False,
+            remaining_bytes=100,
+            copy_bound=lambda *args: pytest.fail("copied early"),
+        )
