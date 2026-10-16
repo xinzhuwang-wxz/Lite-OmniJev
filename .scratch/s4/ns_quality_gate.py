@@ -19,23 +19,81 @@ from caption_probe import validate_summary  # noqa: E402
 from ns_cascade import END_INDEX, Scene, execute  # noqa: E402
 
 
-def salvage_summary(raw_text_sha256_row: dict) -> dict | None:
-    """Post-hoc recovery of a truncated generation: re-parse is impossible from
-    the stored row (raw text is not saved), so salvage operates on nothing here.
+def salvage_summary(text: str) -> tuple[dict | None, str]:
+    """Drop-only repair of a near-miss generation. Never fabricates fields:
+    duplicate objects, self/unknown entry_order refs, bad collision refs,
+    unknown present_at refs, and any unparseable tail are removed."""
+    stripped = text.strip()
+    start, end = stripped.find("{"), stripped.rfind("}")
+    if start < 0 or end <= start:
+        return None, "no_json"
+    body = stripped[start : end + 1]
+    data = None
+    for candidate in (body, _truncate_to_last_complete(body)):
+        try:
+            data = json.loads(candidate)
+            break
+        except json.JSONDecodeError:
+            continue
+    if not isinstance(data, dict):
+        return None, "unparseable"
+    objects, seen = [], set()
+    for obj in data.get("objects") or []:
+        if not isinstance(obj, dict):
+            continue
+        name = obj.get("name")
+        if not isinstance(name, str) or name in seen:
+            continue
+        if obj.get("first_seen") not in PHASE_WORDS or obj.get("last_seen") not in PHASE_WORDS:
+            continue
+        if not isinstance(obj.get("moving"), bool):
+            continue
+        seen.add(name)
+        objects.append(obj)
+    if not objects:
+        return None, "no_objects"
+    names = seen
+    summary = {
+        "objects": objects,
+        "entry_order": [
+            edge
+            for edge in data.get("entry_order") or []
+            if isinstance(edge, str)
+            and " before " in edge
+            and edge.split(" before ", 1)[0] in names
+            and edge.split(" before ", 1)[1] in names
+            and edge.split(" before ", 1)[0] != edge.split(" before ", 1)[1]
+        ],
+        "collisions": [
+            hit
+            for hit in data.get("collisions") or []
+            if isinstance(hit, dict)
+            and isinstance(hit.get("between"), list)
+            and len(hit["between"]) == 2
+            and all(n in names for n in hit["between"])
+            and hit.get("when") in ("early", "middle", "late")
+        ],
+        "present_at_start": [n for n in data.get("present_at_start") or [] if n in names],
+        "present_at_end": [n for n in data.get("present_at_end") or [] if n in names],
+    }
+    return summary, "salvaged"
 
-    Kept as a placeholder returning the row's own validity; the real salvage
-    runs in salvage_scenes() over the raw log when available."""
 
-
-def salvage_scene_row(row: dict) -> dict | None:
-    summary = row.get("summary")
-    if row.get("summary_valid") and summary is not None:
-        return summary
-    return None
+def _truncate_to_last_complete(body: str) -> str:
+    cut = body.rfind("}")
+    while cut > 0:
+        candidate = body[: cut + 1] + "]}"
+        try:
+            json.loads(candidate)
+            return candidate
+        except json.JSONDecodeError:
+            cut = body.rfind("}", 0, cut)
+    return body
 
 VLM_PHASE_MAP = {"start": 0, "early": 1, "middle": 3, "late": 5, "end": 7}
 KEY_IGNORE = {"metal", "rubber", "object"}
 PREDICATES = ("colors", "shapes", "materials", "enterers", "exiters", "moving", "collisions")
+PHASE_WORDS = ("start", "early", "middle", "late", "end")
 
 
 def object_key(name: str) -> frozenset:
@@ -131,6 +189,7 @@ def main() -> int:
                 d3p[row["id"]] = row
     total = len(vlm)
     valid = 0
+    salvaged_rows = [0]
     matched_truth = matched_vlm = truth_object_total = 0
     buckets = {k: prf_counts() for k in PREDICATES}
     cascade_correct = d3p_correct = resolved = executor_correct = 0
@@ -140,9 +199,17 @@ def main() -> int:
         d3p_correct += int(direct.get("prediction") == gold)
         row = vlm.get(question["id"])
         answer = None
+        summary = None
         if row and row.get("summary_valid") and row.get("summary"):
             valid += 1
             summary = row["summary"]
+        elif row and row.get("raw_text"):
+            salvaged, note = salvage_summary(row["raw_text"])
+            if salvaged is not None:
+                valid += 1
+                salvaged_rows[0] += 1
+                summary = salvaged
+        if summary is not None:
             truth_summary = truth.get(question["id"], {}).get("summary")
             v_sets = sets_from(summary)
             t_sets = sets_from(truth_summary) if truth_summary else None
@@ -170,6 +237,7 @@ def main() -> int:
         "gate": {
             "scenes_seen": len(vlm),
             "valid_rate": round(valid / max(1, total), 3),
+            "salvaged_rows": salvaged_rows[0],
             "object_recall_color_shape_key": round(matched_truth / max(1, truth_object_total), 3),
             "object_precision_color_shape_key": round(matched_truth / max(1, matched_vlm), 3),
             "cascade_accuracy": round(cascade_correct / len(questions), 4),
