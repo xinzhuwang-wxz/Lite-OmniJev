@@ -367,7 +367,7 @@ def test_seven_temperatures_require_actual_file_and_fit_receipt_bindings(
     [
         ({"model_revision": "WRONG_BASE"}, "base_revision_missing_or_mismatched"),
         ({"video_num_frames": 8}, "video_frames_not_proven_16"),
-        ({"image_max_soft_tokens": {"effective": 280}}, "image_budget_not_proven_1120"),
+        ({"image_max_soft_tokens": {"effective": 280}}, "video_budget_independence_not_proven"),
         ({"dtype": "float32"}, "bf16_evidence_missing_or_mismatched"),
         ({"dtype": None, "script_sha256": "unknown"}, "bf16_evidence_missing_or_mismatched"),
     ],
@@ -392,3 +392,61 @@ def test_known_actual_source_proves_bf16_without_fabricated_dtype_field() -> Non
         "script_sha256": "12d387e778a685a8f49ef223f5fa2d26538e3e6a052c7c8e5013677186ad9c68",
     }
     assert job.dev_runtime_categories(report, "video", job.stage.FROZEN_REVISION) == []
+
+
+def test_image_budget_is_not_applicable_to_text_audio_and_video_needs_proof() -> None:
+    base = {
+        "model_revision": job.stage.FROZEN_REVISION,
+        "dtype": "bfloat16",
+        "video_num_frames": 16,
+        "image_max_soft_tokens": {"effective": 280},
+    }
+    assert job.dev_runtime_categories(base, "text", job.stage.FROZEN_REVISION) == []
+    assert job.dev_runtime_categories(base, "audio", job.stage.FROZEN_REVISION) == []
+    assert job.dev_runtime_categories(base, "video", job.stage.FROZEN_REVISION) == [
+        "video_budget_independence_not_proven"
+    ]
+    assert (
+        job.dev_runtime_categories(base, "video", job.stage.FROZEN_REVISION, video_parity=True)
+        == []
+    )
+    assert job.dev_runtime_categories(base, "image", job.stage.FROZEN_REVISION) == [
+        "image_budget_not_proven_1120"
+    ]
+
+
+def test_video_input_proof_is_bound_to_model_data_sources_and_tensors(tmp_path: Path) -> None:
+    original = Path("reports/explore/s5-video-budget-source-input-parity-001.json")
+    proof = json.loads(original.read_text())
+    # Synthetic rebind for this unit test; actual measured report remains immutable.
+    root = Path(job.__file__).resolve().parents[1]
+    proof["candidate"]["source_files"] = {
+        name: job.sha256_file(root / name) for name in proof["candidate"]["source_files"]
+    }
+    path = tmp_path / "proof.json"
+    path.write_text(json.dumps(proof))
+    values = spec_values()
+    for source in values["datasets"]:
+        source["model_files"]["processor_config.json"] = proof["candidate"][
+            "model_processor_config_sha256"
+        ]
+    spec = job.JobSpec.model_validate(values)
+    ref = job.DevelopmentReference(
+        cohort="video",
+        report=job.stage.Artifact(path="/tmp/report", sha256="a" * 64),
+        data_sha256=proof["data_sha256"],
+        video_input_parity=job.stage.Artifact(path=str(path), sha256=job.sha256_file(path)),
+    )
+    wrapper = {"source_archive_sha256": proof["historical_source_archive_sha256"]}
+    assert job.verify_video_input_parity(path, ref, spec.datasets[0], wrapper)
+    assert not job.verify_video_input_parity(
+        path, ref, spec.datasets[0], {"source_archive_sha256": "b" * 64}
+    )
+    proof["candidate"]["branches"]["1120"]["prompt_tokens"] += 1
+    path.write_text(json.dumps(proof))
+    ref = ref.model_copy(
+        update={
+            "video_input_parity": job.stage.Artifact(path=str(path), sha256=job.sha256_file(path))
+        }
+    )
+    assert not job.verify_video_input_parity(path, ref, spec.datasets[0], wrapper)

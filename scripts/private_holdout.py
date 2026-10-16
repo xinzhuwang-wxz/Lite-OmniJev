@@ -37,6 +37,7 @@ class DevelopmentReference(Contract):
     cohort: Cohort
     report: stage.Artifact
     runtime_report: stage.Artifact | None = None
+    video_input_parity: stage.Artifact | None = None
     data_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
@@ -130,6 +131,11 @@ def snapshot_extras(
         (f"dev-runtime-{i}", ref.runtime_report)
         for i, ref in enumerate(spec.development)
         if ref.runtime_report is not None
+    ]
+    refs += [
+        (f"dev-video-parity-{i}", ref.video_input_parity)
+        for i, ref in enumerate(spec.development)
+        if ref.video_input_parity is not None
     ]
     if spec.calibration_receipt is not None:
         refs.append(("calibration-receipt", spec.calibration_receipt))
@@ -302,7 +308,9 @@ def append_readout(
     )
 
 
-def dev_runtime_categories(receipt: dict[str, Any], cohort: str, base_revision: str) -> list[str]:
+def dev_runtime_categories(
+    receipt: dict[str, Any], cohort: str, base_revision: str, *, video_parity: bool = False
+) -> list[str]:
     """Recognize actual report layouts; no inferred default budgets or precision."""
     errors = []
     if receipt.get("model_revision") != base_revision:
@@ -317,11 +325,71 @@ def dev_runtime_categories(receipt: dict[str, Any], cohort: str, base_revision: 
         errors.append("bf16_evidence_missing_or_mismatched")
     budget = receipt.get("image_max_soft_tokens")
     effective = budget.get("effective") if isinstance(budget, dict) else budget
-    if cohort != "text" and effective != 1120:
+    if cohort in ("image", "screenshot", "crossmodal") and effective != 1120:
         errors.append("image_budget_not_proven_1120")
+    if cohort == "video" and effective != 1120 and not video_parity:
+        errors.append("video_budget_independence_not_proven")
     if cohort == "video" and receipt.get("video_num_frames") != 16:
         errors.append("video_frames_not_proven_16")
     return errors
+
+
+def verify_video_input_parity(
+    path: Path, reference: DevelopmentReference, source: stage.Spec, wrapper: dict[str, Any]
+) -> bool:
+    """Bind public-input tensor evidence and preprocessing sources; no GPU parity claim."""
+    assert reference.video_input_parity is not None
+    cal.require(
+        sha256_file(path) == reference.video_input_parity.sha256, "video_parity_receipt_changed"
+    )
+    proof = json.loads(path.read_text())
+    if (
+        proof.get("schema_version") != "video-budget-source-input-parity-v1"
+        or proof.get("status") != "passed"
+        or proof.get("data_sha256") != reference.data_sha256
+        or proof.get("historical_source_archive_sha256") != wrapper.get("source_archive_sha256")
+    ):
+        return False
+    current, historical = proof["candidate"], proof["historical"]
+    if any(
+        item.get("status") != "completed"
+        or item.get("exit_code") != 0
+        or item.get("gpu_used") is not False
+        or item.get("model_weights_loaded") is not False
+        or item.get("private_data_read") is not False
+        or item.get("video_frames") != 16
+        or item.get("media_type") != "video"
+        or item.get("data_sha256") != reference.data_sha256
+        or item.get("image_budget_only_tensor_identity") is not True
+        or item.get("actual_dev_vs_baseline1120_preprocessor_identity") is not True
+        for item in (current, historical)
+    ):
+        return False
+    if (
+        current["public_sample_sha256"] != historical["public_sample_sha256"]
+        or current["media_sha256"] != historical["media_sha256"]
+        or current["video_processor_config_sha256"] != historical["video_processor_config_sha256"]
+        or current["model_processor_config_sha256"]
+        != source.model_files.get("processor_config.json")
+        or historical["model_processor_config_sha256"] != current["model_processor_config_sha256"]
+        or current["branches"]["280"] != current["branches"]["1120"]
+        or historical["branches"]["280"] != historical["branches"]["1120"]
+        or current["branches"]["1120"] != historical["branches"]["1120"]
+        or current["dev280_tensor_manifest"] != historical["dev280_tensor_manifest"]
+        or current["dev280_tensor_manifest"] != current["branches"]["1120"]["tensors"]
+    ):
+        return False
+    root = Path(__file__).resolve().parents[1]
+    required = {
+        "scripts/private_stage_eval.py",
+        "scripts/s0_development_baselines.py",
+        "train/multimodal.py",
+        "train/trainer.py",
+        "scripts/s1_dev_eval.py",
+    }
+    return set(current["source_files"]) == required and all(
+        sha256_file(root / name) == digest for name, digest in current["source_files"].items()
+    )
 
 
 def development_metrics(
@@ -363,7 +431,15 @@ def development_metrics(
                 and runtime.get("metrics") == receipt["metrics"],
                 "dev_runtime_identity_mismatch",
             )
-        statuses[ref.cohort] = dev_runtime_categories(runtime, ref.cohort, first.base_revision)
+        parity = False
+        if ref.video_input_parity is not None:
+            cal.require(ref.cohort == "video", "video_parity_only_for_video")
+            parity = verify_video_input_parity(
+                Path(state["metadata"][f"dev-video-parity-{index}"]), ref, first, receipt
+            )
+        statuses[ref.cohort] = dev_runtime_categories(
+            runtime, ref.cohort, first.base_revision, video_parity=parity
+        )
         if statuses[ref.cohort]:
             continue  # Raw holdout remains valid; unmatched DEV recipe cannot justify a gap pass.
         # Explicit typed subset; never propagate public row/record fields to sealed output.
@@ -738,6 +814,15 @@ def export_receipt(
             f"dev-runtime-{i}": str(output.parent / "inputs" / "metadata" / f"dev-runtime-{i}.json")
             for i, ref in enumerate(spec.development)
             if ref.runtime_report is not None
+        }
+    )
+    metadata.update(
+        {
+            f"dev-video-parity-{i}": str(
+                output.parent / "inputs" / "metadata" / f"dev-video-parity-{i}.json"
+            )
+            for i, ref in enumerate(spec.development)
+            if ref.video_input_parity is not None
         }
     )
     dev, dev_runtime = development_metrics(spec, {"metadata": metadata})

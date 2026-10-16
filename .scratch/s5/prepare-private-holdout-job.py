@@ -29,6 +29,7 @@ def main() -> int:
     )
     parser.add_argument("--calibration-receipt", type=Path)
     parser.add_argument("--development-runtime", action="append", default=[])
+    parser.add_argument("--video-input-parity", type=Path)
     args = parser.parse_args()
     cal.require(
         sha256_file(args.calibration_job) == args.calibration_job_sha256, "calibration_job_changed"
@@ -106,6 +107,9 @@ def main() -> int:
                     "cohort": cohort,
                     "report": artifact(report_path).model_dump(),
                     "data_sha256": report["data_sha256"],
+                    "video_input_parity": artifact(args.video_input_parity).model_dump()
+                    if cohort == "video" and args.video_input_parity
+                    else None,
                     "runtime_report": artifact(Path(runtime_reports[cohort])).model_dump()
                     if cohort in runtime_reports
                     else None,

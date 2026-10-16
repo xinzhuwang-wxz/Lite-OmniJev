@@ -41,12 +41,25 @@ def main() -> int:
     parser.add_argument("--model-view", type=Path)
     parser.add_argument("--worker-uid", type=int, default=64801)
     parser.add_argument("--probe-uid", type=int, default=64802)
+    parser.add_argument("--inventory", type=Path)
+    parser.add_argument("--inventory-sha256")
+    parser.add_argument("--inventory-receipt", type=Path)
+    parser.add_argument("--inventory-receipt-sha256")
     args = parser.parse_args()
+    for name in ("inventory", "inventory_receipt"):
+        path, digest = getattr(args, name), getattr(args, name + "_sha256")
+        cal.require((path is None) == (digest is None), "inventory_path_and_hash_required")
+        if digest is not None:
+            EXPECTED[name] = digest
     start = time.monotonic()
     selected_path = PRIVATE / "selected-gold-manifest-001.json"
     admission_path = ROOT / "reports/s4-gold-data-admission-001.json"
     inventory_path = ROOT / "artifacts/s4-pilot-exposure-028/inventory-manifest.json"
     inventory_receipt_path = ROOT / "reports/s5-calibration-inventory-001.json"
+    if args.inventory is not None:
+        inventory_path = args.inventory
+    if args.inventory_receipt is not None:
+        inventory_receipt_path = args.inventory_receipt
     training_path = ROOT / "reports/s4-program-stratified-training-step0100.json"
     bindings = {
         key: bind(path, EXPECTED[key])
