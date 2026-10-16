@@ -711,7 +711,6 @@ def native_event_bindings(root, prepared, prep, final, runtime, *, text_matched=
     import zipfile
     from collections import Counter
 
-    from scripts.s0_media_dev import source_hash_for_video
     from scripts.s1_text_pools import canonical_sample_sha
 
     prefix = "s4-video-text-matched" if text_matched else "s4-native-event-condition"
@@ -876,22 +875,7 @@ def native_event_bindings(root, prepared, prep, final, runtime, *, text_matched=
         for ident, row in video.items():
             s = Sample.model_validate(row)
             m = byid[ident]
-            q = next(
-                q
-                for q in scenes[int(s.meta.family_id.split(":")[1])]["questions"]
-                if q["question_id"] == int(ident.rsplit("-", 1)[-1])
-            )
-            require(
-                q["question"] == s.questions[0].instruction
-                and q["answer"].casefold() == s.questions[0].target.value
-                and source_hash_for_video(
-                    {"scene_index": int(s.meta.family_id.split(":")[1])},
-                    q,
-                    s.prefix.media[0].sha256,
-                )
-                == s.meta.source_sha256,
-                "native_official_question_source",
-            )
+            q = official_video_question(s, scenes)
             require(
                 m["sample_sha256"] == canonical_sample_sha(s)
                 and m["program_sha256"]
@@ -2531,6 +2515,209 @@ CONTINUOUS_BASE_SHA = "5872a667ef0935436430e22f8c041c85f4e4f2c0c4ffc1e0076e4a9e6
 CONTINUOUS_PARENT_SHA = "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3"
 
 
+MATCHED_CONTINUOUS_PREP_SHA = "2c51e16cb88ab91dfb45dca84a2325b371ad259dce522a01fa50e042090cfa87"
+MATCHED_CONTINUOUS_DATA_SHA = "17cb9a0066639dafd1feb21e3819cc38a367c86e78ce2a2907a5047d6cb437aa"
+MATCHED_CONTINUOUS_CONFIG_SHA = "d8e9e5b0fc8427b32f39165c58486bfd93123fea1a584b5c0f8508efcb389414"
+MATCHED_CONTINUOUS_BASE_SHA = "b70aa762a2d66492b53d5a44a03c1877d9d3fcd2861e7c5ad43c77b84715e659"
+
+
+def official_video_question(sample, scenes):
+    """Existing official question/program/source identity, shared by both paired recipes."""
+    from scripts.s0_media_dev import source_hash_for_video
+
+    index = int(sample.meta.family_id.split(":")[1])
+    question = next(
+        q
+        for q in scenes[index]["questions"]
+        if q["question_id"] == int(sample.id.rsplit("-", 1)[-1])
+    )
+    require(
+        question["question"] == sample.questions[0].instruction
+        and question["answer"].casefold() == sample.questions[0].target.value
+        and source_hash_for_video({"scene_index": index}, question, sample.prefix.media[0].sha256)
+        == sample.meta.source_sha256,
+        "native_official_question_source",
+    )
+    return question
+
+
+def continuous_matched_bindings(root, prepared, prep):
+    """The second frozen profile reuses original gold and matched-pair identity checks."""
+    import random
+    from collections import Counter
+
+    from scripts.s1_text_pools import canonical_sample_sha
+    from train.trainer import data_bytes
+
+    require(
+        prep["pair_count"] == 300
+        and prep["video_rows"] == prep["video_families"] == 600
+        and prep["global_steps"] == 100
+        and prep["invocation_steps_initial"] == 10
+        and prep["actual_draw_pair_offsets"] == [0, 2, 4]
+        and prep["pair_metadata_only"] is True
+        and prep["automatic_full_run_authorized"] is False,
+        "continuous_matched_recipe",
+    )
+    bindings = {}
+
+    def bound(path, expected):
+        require(sha(path) == expected, "continuous_matched_source_sha")
+        bindings[str(path)] = expected
+
+    sources = root.parent / "s4-native-event-cpu-001"
+    bound(sources / "prepare-continuous-matched-pool.py", prep["helper_sha256"])
+    for name, expected in prep["reused_helper_sha256"].items():
+        require(
+            name in {"inspect-temporal-order-contrast", "prepare-claim-pair-pilot"},
+            "matched_reused_helper",
+        )
+        bound(sources / (name + ".py"), expected)
+    official = root.parent / "lite-omnijev/source-audit/clevrer-official/files"
+    for relative, key in [
+        ("questions/train.json", "questions"),
+        ("README.txt", "readme"),
+        ("annotations/train/annotation_train.zip", "annotations"),
+    ]:
+        bound(official / relative, prep["source_sha256"][key])
+    pool = root / "artifacts/s3-pools-video-001/run-a/train.jsonl"
+    bound(pool, prep["source_sha256"]["train"])
+    originals = canonical_rows(pool)
+    rows = canonical_rows(prepared / "train.jsonl")
+    video = {k: v for k, v in rows.items() if v["meta"]["modality"] == ["video"]}
+    require(
+        len(rows) == 1200
+        and len(video) == len({v["meta"]["family_id"] for v in video.values()}) == 600
+        and all(originals.get(k) == v for k, v in video.items()),
+        "continuous_matched_original600",
+    )
+    replay = root / "artifacts/s4-continuous-main-pool-001"
+    bound(replay / "report.json", prep["replay_report_sha256"])
+    require(prep["replay_report_sha256"] == CONTINUOUS_PREP_SHA, "continuous_matched_fixed_replay")
+    rr = json.loads((replay / "report.json").read_bytes())
+    for name in ("train.jsonl", "components.jsonl"):
+        bound(replay / name, rr["output_sha256"][name])
+    replay_rows = canonical_rows(replay / "train.jsonl")
+    require(
+        {k: v for k, v in rows.items() if k not in video}
+        == {k: v for k, v in replay_rows.items() if v["meta"]["modality"] != ["video"]}
+        and sha(prepared / "components.jsonl") == sha(replay / "components.jsonl"),
+        "continuous_matched_replay_canonical",
+    )
+    ledger = [
+        json.loads(line)
+        for line in (prepared / "allocation-ledger.jsonl").read_bytes().splitlines()
+    ]
+    require(
+        len(ledger) == len({entry["item_id"] for entry in ledger}) == 1200, "matched_ledger1200"
+    )
+    for entry in ledger:
+        sample = Sample.model_validate(rows[entry["item_id"]])
+        require(
+            entry["pool"] == "train"
+            and entry["family_id"] == sample.meta.family_id
+            and entry["derived_sample_sha256"] == canonical_sample_sha(sample),
+            "matched_exact_ledger",
+        )
+    scenes = {
+        scene["scene_index"]: scene
+        for scene in json.loads((official / "questions/train.json").read_bytes())
+    }
+    programs = {
+        k: official_video_question(Sample.model_validate(v), scenes)["program"]
+        for k, v in video.items()
+    }
+    metadata = json.loads((prepared / "matched-pair-metadata.json").read_bytes())
+    require(
+        metadata["metadata_only"] is True
+        and len(metadata["rows"]) == 300
+        and metadata["target_source"]
+        == "original official gold only; pairs are metadata, no pairloss",
+        "continuous_matched_metadata300",
+    )
+    pairs = {}
+    for pair in metadata["rows"]:
+        require(pair["metadata_only"] is True and len(pair["members"]) == 2, "matched_pair_size")
+        ids = [m["item_id"] for m in pair["members"]]
+        require(all(k in video and k not in pairs for k in ids), "matched_duplicate_member")
+        matched_pair_binding(
+            *(Sample.model_validate(video[k]) for k in ids), *(programs[k] for k in ids), pair
+        )
+        pairs.update({k: pair for k in ids})
+    require(set(pairs) == set(video), "matched_all600_members")
+    arranged = [
+        Sample.model_validate_json(line)
+        for line in (prepared / "train.jsonl").read_bytes().splitlines()
+    ]
+    order = list(range(1200))
+    random.Random(42).shuffle(order)
+    actual = [arranged[i] for i in order]
+    require(
+        hashlib.sha256(data_bytes(actual)).hexdigest() == prep["draw_order_canonical_sha256"],
+        "matched_order_sha",
+    )
+    mapping = version_mapping(
+        Manifest.model_validate_json((prepared / "inventory-manifest.json").read_bytes())
+    )
+    recipe = json.loads((prepared / "draw-recipe.json").read_bytes())
+    require(recipe["global_steps"] == 100 and len(recipe["draws"]) == 1200, "matched_global_recipe")
+    for index, (sample, draw) in enumerate(zip(actual, recipe["draws"], strict=True)):
+        require(
+            draw["draw"] == index
+            and draw["step"] == index // 12
+            and draw["offset"] == index % 12
+            and draw["item_id"] == sample.id
+            and draw["sample_sha256"] == canonical_sample_sha(sample)
+            and draw["cohort"] == mapping[sample.meta.data_version],
+            "matched_actual_draw_binding",
+        )
+    for step in range(100):
+        block = actual[12 * step : 12 * step + 12]
+        require(
+            Counter(d["cohort"] for d in recipe["draws"][12 * step : 12 * step + 12])
+            == {"video": 6, "crossmodal": 2, "audio": 1, "image": 1, "screenshot": 1, "text": 1},
+            "matched_block_quota",
+        )
+        for offset in (0, 2, 4):
+            left, right = block[offset : offset + 2]
+            require(
+                left.id in pairs and right.id in pairs and pairs[left.id] == pairs[right.id],
+                "matched_actual_pair_adjacency",
+            )
+    return bindings
+
+
+def continuous_profile(matched=False):
+    """Exactly two frozen recipes; an unfrozen matched receipt is never executable."""
+    if matched:
+        pins = {
+            "prep_sha": MATCHED_CONTINUOUS_PREP_SHA,
+            "data_sha": MATCHED_CONTINUOUS_DATA_SHA,
+            "config_sha": MATCHED_CONTINUOUS_CONFIG_SHA,
+        }
+        require(
+            all(
+                isinstance(h, str) and len(h) == 64 and set(h) <= set("0123456789abcdef")
+                for h in pins.values()
+            ),
+            "continuous_matched_profile_not_frozen",
+        )
+        return {
+            **pins,
+            "base_sha": MATCHED_CONTINUOUS_BASE_SHA,
+            "history_key": "continuous_matched_invocations",
+            "name": "s4-continuous-matched-pool",
+        }
+    return {
+        "prep_sha": CONTINUOUS_PREP_SHA,
+        "data_sha": CONTINUOUS_DATA_SHA,
+        "config_sha": CONTINUOUS_CONFIG_SHA,
+        "base_sha": CONTINUOUS_BASE_SHA,
+        "history_key": "continuous_invocations",
+        "name": "s4-continuous-main-pool",
+    }
+
+
 def continuous_interval(final: dict, start: int, end: int) -> dict:
     """Cumulative optimizer steps define one non-overlapping exposure interval."""
     terminal_report(final, allow_paused=True)
@@ -2654,9 +2841,16 @@ def continuous_fixed_identity(prep: dict, config: dict, final: dict) -> None:
 
 
 def prepare_continuous(
-    root: Path, legacy_root: Path, output: Path, historical_index: Path, launch_path: Path
+    root: Path,
+    legacy_root: Path,
+    output: Path,
+    historical_index: Path,
+    launch_path: Path,
+    *,
+    matched_pool: bool = False,
 ) -> dict:
     """One settled invocation over one immutable pool, based on the preceding inventory."""
+    profile = continuous_profile(matched_pool)
     started = time.monotonic()
     require(
         all(p.is_absolute() for p in (root, legacy_root, output, historical_index, launch_path)),
@@ -2691,7 +2885,7 @@ def prepare_continuous(
             "continuous_base_passed",
         )
         start, end = eb["start_step"], eb["end_step"]
-        history = base.get("continuous_invocations", [])
+        history = base.get(profile["history_key"], [])
         if history:
             previous = history[-1]
             require(
@@ -2700,7 +2894,7 @@ def prepare_continuous(
             )
         else:
             require(
-                start == 0 and base_binding["sha256"] == CONTINUOUS_BASE_SHA,
+                start == 0 and base_binding["sha256"] == profile["base_sha"],
                 "continuous_initial013",
             )
         prior_bindings = base["all_bound_input_sha256"]
@@ -2718,7 +2912,7 @@ def prepare_continuous(
         mappings = version_mapping(inventory)
         combined = inventory.model_dump(mode="json", exclude_none=True)
         prep_path = bound("prepared_report")
-        require(sha(prep_path) == CONTINUOUS_PREP_SHA, "continuous_preparation_sha")
+        require(sha(prep_path) == profile["prep_sha"], "continuous_preparation_sha")
         prep = json.loads(prep_path.read_bytes())
         for name, expected in prep["output_sha256"].items():
             require(Path(name).name == name, "continuous_safe_preparation_name")
@@ -2726,7 +2920,7 @@ def prepare_continuous(
             require(sha(path) == expected, "continuous_preparation_output_sha")
             bindings[str(path)] = expected
         config_path = bound("config_file")
-        require(sha(config_path) == CONTINUOUS_CONFIG_SHA, "continuous_global_config_sha")
+        require(sha(config_path) == profile["config_sha"], "continuous_global_config_sha")
         config = json.loads(config_path.read_bytes())
         final_path, snapshot_path = bound("final_report"), bound("runtime_report_snapshot")
         require(
@@ -2756,11 +2950,21 @@ def prepare_continuous(
         )
         # run.json is deliberately observed, never persisted as an immutable history binding.
         mutable_observation = bind(raw_path)
+        observed_runtimes = {str(raw_path): mutable_observation["sha256"]}
+        for key in ("continuous_invocations", "continuous_matched_invocations"):
+            for old_invocation in base.get(key, []):
+                old = old_invocation["runtime_report_observation"]
+                if old["path"] != str(raw_path):
+                    observed_runtimes[old["path"]] = old["sha256"]
+        require(
+            all(sha(Path(p)) == h for p, h in observed_runtimes.items()),
+            "continuous_other_profile_runtime_changed",
+        )
         interval = continuous_interval(final, start, end)
         continuous_fixed_identity(prep, config, final)
         runtime_data = bound("runtime_data")
         require(
-            sha(runtime_data) == final["data_sha256"] == CONTINUOUS_DATA_SHA,
+            sha(runtime_data) == final["data_sha256"] == profile["data_sha"],
             "continuous_runtime_data_sha",
         )
         comparison = equivalent(runtime_data, prep_path.with_name("train.jsonl"))
@@ -2768,6 +2972,8 @@ def prepare_continuous(
             comparison["rows"] == 1200 and all(v in mappings for v in comparison["data_versions"]),
             "continuous_pool_mapping",
         )
+        if matched_pool:
+            bindings.update(continuous_matched_bindings(root, prep_path.parent, prep))
         sources = eb["source_files"]
         if history:
             require(sources == history[-1]["source_files"], "continuous_source_identity_changed")
@@ -2845,7 +3051,7 @@ def prepare_continuous(
                 require(start <= checkpoint["step"] <= end, "continuous_failed_checkpoint_range")
         appended = []
         if end > start:
-            existing = [a for a in combined["samples"] if a["sha256"] == CONTINUOUS_DATA_SHA]
+            existing = [a for a in combined["samples"] if a["sha256"] == profile["data_sha"]]
             if existing:
                 require(
                     len(existing) == 1
@@ -2917,7 +3123,7 @@ def prepare_continuous(
             require(
                 isinstance(data_sha, str) and len(data_sha) == 64, "update_report_without_data_sha"
             )
-            if path != raw_path:
+            if str(path) not in observed_runtimes:
                 require(
                     str(path) not in bindings or bindings[str(path)] == b["sha256"],
                     "mutable_report",
@@ -2943,7 +3149,7 @@ def prepare_continuous(
         require(audit.outcome == "isolated", "full_inventory_rejected")
         require(
             all(sha(Path(p)) == h for p, h in bindings.items())
-            and sha(raw_path) == mutable_observation["sha256"],
+            and all(sha(Path(p)) == h for p, h in observed_runtimes.items()),
             "mutable_report_or_input",
         )
         invocation = {
@@ -2972,7 +3178,8 @@ def prepare_continuous(
             "base_exposure_report": base_binding,
             "base_inventory": bind(base_inventory),
             "historical_index": index_binding,
-            "continuous_invocations": history,
+            profile["history_key"]: history,
+            "continuous_profile": profile["name"],
             "actual_global_draws_seen": end * 12,
             "global_pool_draw_capacity": 1200,
             "pilots": [invocation],
@@ -2993,6 +3200,23 @@ def prepare_continuous(
             "duration_seconds": time.monotonic() - started,
             "cost": None,
         }
+        if matched_pool:
+            for key in (
+                "continuous_invocations",
+                "continuous_actual_global_draws_seen",
+                "native_actual_draws_seen",
+                "specialist_actual_draws_seen",
+                "specialist_storage_samples",
+                "specialist_unique_families",
+                "specialist_new_source_families",
+                "text_matched_actual_draws_seen",
+                "text_matched_pairs",
+            ):
+                if key in base:
+                    report[key] = base[key]
+            report["continuous_matched_actual_global_draws_seen"] = end * 12
+            report["actual_global_draws_seen"] = base["actual_global_draws_seen"]
+            report["continuous_matched_pool_included"] = True
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -3068,16 +3292,24 @@ def main() -> int:
     parser.add_argument("--video-text-matched", action="store_true")
     parser.add_argument("--video-specialist", action="store_true")
     parser.add_argument("--native-event-condition", action="store_true")
+    parser.add_argument("--continuous-matched-pool", action="store_true")
     parser.add_argument("--continuous-main-pool", action="store_true")
     parser.add_argument("--continuous-launch-report", type=Path)
     parser.add_argument("--continuous-base-exposure", type=Path)
     args = parser.parse_args()
     try:
         if args.continuous_base_exposure is not None:
-            require(args.continuous_main_pool, "continuous_base_requires_branch")
-            launch_path = (
-                args.continuous_launch_report
-                or args.root / "reports/s4-continuous-main-pool-launch-001.json"
+            require(
+                args.continuous_main_pool or args.continuous_matched_pool,
+                "continuous_base_requires_branch",
+            )
+            launch_path = args.continuous_launch_report or args.root / "reports" / (
+                (
+                    "s4-continuous-matched-pool"
+                    if args.continuous_matched_pool
+                    else "s4-continuous-main-pool"
+                )
+                + "-launch-001.json"
             )
             launch = json.loads(launch_path.read_bytes())
             require(
@@ -3093,9 +3325,19 @@ def main() -> int:
                 args.historical_index
                 or args.root / "artifacts/s4-gold-inventory-001/historical-training-index.json",
                 args.continuous_launch_report
-                or args.root / "reports/s4-continuous-main-pool-launch-001.json",
+                or args.root
+                / "reports"
+                / (
+                    (
+                        "s4-continuous-matched-pool"
+                        if args.continuous_matched_pool
+                        else "s4-continuous-main-pool"
+                    )
+                    + "-launch-001.json"
+                ),
+                matched_pool=args.continuous_matched_pool,
             )
-            if args.continuous_main_pool
+            if args.continuous_main_pool or args.continuous_matched_pool
             else prepare(
                 args.root,
                 args.legacy_root,
