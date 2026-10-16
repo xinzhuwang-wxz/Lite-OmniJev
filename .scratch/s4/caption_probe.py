@@ -172,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
             inputs = baseline.move_inputs_to_cuda(inputs, torch, torch.bfloat16)
             with torch.inference_mode():
                 generated = model.generate(
-                    **inputs, max_new_tokens=512, do_sample=False
+                    **inputs, max_new_tokens=900, do_sample=False
                 )
             text = processor.decode(
                 generated[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
@@ -186,6 +186,7 @@ def main(argv: list[str] | None = None) -> int:
                         "media_sha256": sample.prefix.media[0].sha256,
                         "prompt_sha256": baseline.sha256_bytes(prompt.encode()),
                         "raw_text_sha256": baseline.sha256_bytes(text.encode()),
+                        "raw_text": text,
                         "summary_valid": summary is not None,
                         "summary": summary,
                     },

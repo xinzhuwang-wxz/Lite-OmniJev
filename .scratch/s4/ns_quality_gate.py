@@ -15,7 +15,23 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from caption_probe import validate_summary  # noqa: E402
 from ns_cascade import END_INDEX, Scene, execute  # noqa: E402
+
+
+def salvage_summary(raw_text_sha256_row: dict) -> dict | None:
+    """Post-hoc recovery of a truncated generation: re-parse is impossible from
+    the stored row (raw text is not saved), so salvage operates on nothing here.
+
+    Kept as a placeholder returning the row's own validity; the real salvage
+    runs in salvage_scenes() over the raw log when available."""
+
+
+def salvage_scene_row(row: dict) -> dict | None:
+    summary = row.get("summary")
+    if row.get("summary_valid") and summary is not None:
+        return summary
+    return None
 
 VLM_PHASE_MAP = {"start": 0, "early": 1, "middle": 3, "late": 5, "end": 7}
 KEY_IGNORE = {"metal", "rubber", "object"}
