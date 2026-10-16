@@ -1,0 +1,38 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "stage_gate": false,
+  "scope": "original fixed heuristic temporal DEV50, single pass",
+  "arm": "control",
+  "training_report_sha256": "0ffb9d779853fdc001e9f9cb9b2bb8c7e85215751f2aa3a7ec084c35772055ca",
+  "adapter_sha256": "a70b7fc6de3e6283bdca3037d32df346e3cb22da6db303359870a9c744764bee",
+  "same_input_rows": 50,
+  "baseline": {
+    "accuracy": 0.6,
+    "brier": 0.4722867687920772,
+    "count": 50,
+    "coverage_at_error": 0.26,
+    "ece15": 0.2051703289954513,
+    "max_error": 0.05
+  },
+  "candidate": {
+    "accuracy": 0.72,
+    "brier": 0.42867056406120946,
+    "count": 50,
+    "coverage_at_error": 0.1,
+    "ece15": 0.17170445314812102,
+    "max_error": 0.05
+  },
+  "parent_adapter_sha256": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+  "parent_metrics": {
+    "accuracy": 0.66,
+    "brier": 0.44748601999097937,
+    "count": 50,
+    "coverage_at_error": 0.12,
+    "ece15": 0.10419439341273157,
+    "max_error": 0.05
+  },
+  "candidate_receipt_sha256": "11bddd472a69d8903e0d394c99043e64f6908caa491a8b13af17ae9f35abcc8f",
+  "baseline_receipt_sha256": "108eda8948e3b214fefec1b5afb013e58a54e6841fe33bf4a8970debdbe09b3e",
+  "cost": null
+}
