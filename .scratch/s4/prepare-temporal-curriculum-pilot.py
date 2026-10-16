@@ -131,6 +131,7 @@ def prepare(
     video_hash_namespace: str = "s4-temporal-curriculum:42:",
     excluded_video_families: frozenset[str] = frozenset(),
     selection_provenance: dict | None = None,
+    data_ready_only: bool = False,
 ) -> dict:
     started = time.monotonic()
     h = helper_module()
@@ -458,6 +459,16 @@ def prepare(
             ),
             "provenance": selection_provenance,
         }
+    if data_ready_only:
+        result.update(
+            status="data_ready_only",
+            data_ready=True,
+            data_ready_for_preflight=False,
+            init_selection="pending_parent_selection",
+            pending_parent_selection=True,
+            init_adapter_role="verified CE0 placeholder; next parent not selected",
+            training_authorized=False,
+        )
     h.write(out / "provenance.json", result)
     h.write(out / "report.json", result)
     return result
