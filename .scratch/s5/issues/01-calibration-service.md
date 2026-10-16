@@ -30,3 +30,5 @@ reports/explore/s5-calibration-job-preparation-001.*、reports/s5-calibration-in
 3) holdout启动:private_gold_job --job holdout-eval --spec <job-001/job.json> --sha256 <hash> --work-root /var/tmp/omnijev-calibration-jobs-001 --report .../s5-holdout-eval-001.json --worker-uid 65401 --probe-uid 65402 --timeout 14400(先核UID free)。
 4) S5聚合:原门(ECE≤.03/coverage@5%≥.65/掉分≤.5pp/置换≤.02/正反≤.05)如实观测,未达按ADR0023单项披露;服务registry按fitted/unfitted 18分区激活,同engine才激活。
 5) GPU排期:holdout优先于创新试点;B1试点240s、B2 caption在S5验证后、01:30硬停前酌情插入,由main现场裁决。
+
+2026-10-16 21:10 holdout媒体预检与修复(全部sha256验证,零失败,原件不动):gui-gold-002 holdout 59张原始名png从quarantine GUI源恢复;clotho-gold-001 holdout 40个原名wav从quarantine clotho-aqa/approved-audio-002恢复(root:root 0600)。holdout行URI布局与校准池不同,prepare-private-holdout-job.py已按文件级media_root补丁(clotho→clotho-gold-001,speech→crossmodal-source-bundle-001,vqa→s4-gold-inventory-001根);七文件全量预检0缺失。新墙钟:用户21:00改口"10-17 06:00前准备好模型即可,性能超榜,方式不限,全权负责"——创新GPU放宽至~03:30硬停,04:30冻结,04:30–06:00导出,06:00–09:00验收(见.scratch/s4/wallclock-budget.md)。
