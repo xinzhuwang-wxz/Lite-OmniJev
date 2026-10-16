@@ -1,0 +1,43 @@
+{
+  "status": "ready_for_readonly_probe",
+  "exit_code": 0,
+  "gpu_used": false,
+  "training_authorized": false,
+  "cost": null,
+  "samples": 12,
+  "pairs": 6,
+  "source_actual_draws": 120,
+  "source_exposed_video_pairs": 30,
+  "source_training_report_sha256": "11e14016bfe5e546fe67bb0b7b1a21dbc5b89a082253ffbb743ee3bbd4e90a05",
+  "source_preparation_sha256": "2c51e16cb88ab91dfb45dca84a2325b371ad259dce522a01fa50e042090cfa87",
+  "source_runtime_data_sha256": "17cb9a0066639dafd1feb21e3819cc38a367c86e78ce2a2907a5047d6cb437aa",
+  "selection": "six whole pairs by fixed hash from actual first120draws; no DEV",
+  "before": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-rank64-initializer-001",
+    "weights_sha256": "62920299c7a1ac33b2a874b586a9d7f3ea3eaa4e38198bc20388642482318fc6",
+    "config_sha256": "8d79bb86dc522bc6da2b3de170dc704e51b60e2d2518582b07e8ffbfcdd6bc0a"
+  },
+  "after": {
+    "path": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-rank64-matched-pilot-train-001/adapter-invocation-step-0010",
+    "weights_sha256": "07c2d4dc397c75b0d030d3aa2822e1dfeac27f3653b633dc42aa92dcb4803bc4",
+    "config_sha256": "6669a4cb3fe40437cc00ec6437dd2134e05ea51172ad1d81a6c190a8def54984"
+  },
+  "asset_hashes": {
+    "README.md": "b21e4f69614ccd77baa2f3797d05311040dee07b989cb9f0d25111aa4b605b2c",
+    "chat_template.jinja": "0a2c8073c878ab1da004bee933a998606537bbb62016310352c7285c3f01c5b5",
+    "config.json": "33b10c02df3c2e8536cf323d29d53262aaa2f4d11dbe19bc729373fbe90295d4",
+    "generation_config.json": "d4226bbe3117d2d253ba4609720ba82c6c4ce4627a9a6ae05387c78983ac03de",
+    "model.safetensors": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503",
+    "processor_config.json": "32bdf45d2ad4cc29a0822ddd157a182de76644f0419a6228d151495256e9813c",
+    "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "tokenizer_config.json": "9f4fec4b1dc6ecddf8f4a92e9caea5971c0e67d81309f3f9066a2bee8c362633"
+  },
+  "helper_sha256": "dca3657634a6975c85cba9337f84ba0df2590bf9c82714c09268aef5063c6256",
+  "output_sha256": {
+    "train.jsonl": "36bb9ee27ccb1aa36dd02f4af28c70f77c04657b988e577840d2e22a32342b19",
+    "allocation-ledger.jsonl": "020747e39d508d3edb333b68a366b774f54982d28180f5c6888f9229e13b8930",
+    "config.json": "bafcfaf201bf86f3d50562822e5110dc65110550b9209b6603963cc75fecac01"
+  },
+  "input_report_sha256": "1f66d578868939c23c242ee487490b7c455d900e6725dac01848a795e11c6ce9",
+  "gpu_probe_status": "pending_root_dispatch"
+}

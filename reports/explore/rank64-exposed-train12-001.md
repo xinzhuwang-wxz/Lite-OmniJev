@@ -1,0 +1,16 @@
+# Actual exposed rank64 TRAIN12 mechanism preparation
+
+CPU preparation completed exit0. The actual training receipt11e14016bfe5e546fe67bb0b7b1a21dbc5b89a082253ffbb743ee3bbd4e90a05 is paused globally but completed its initial0→10invocation, next_draw120. Its actual runtime data.jsonl SHA matches the immutable1200sample matched pool. The helper reconstructs the seed42shuffle, verifies each of the consumed first120IDs against the recipe and identifies exactly30adjacent exposed video pairs. Six whole pairs are selected by fixed member hash from those30, without DEV/predictions. This is a new actual-exposure subset, not the earlier independent30pair pilot TRAIN12.
+
+Original pair/source/gold/ledger canonical bindings and exact nonmedia question/prefix equality are checked by the existing pair validator.12unique TRAIN families/6yes6no; no label/media swaps or new training pool. Input report1f66d578868939c23c242ee487490b7c455d900e6725dac01848a795e11c6ce9; data36bb9ee27ccb1aa36dd02f4af28c70f77c04657b988e577840d2e22a32342b19. The aggregate JSON records ledger/config/source/runtime/adapters/model assets. Raw IDs/question rows remain outside Git.
+
+The new evaluator binds rank64initializer62920299… and the actual step10result07c2d4dc…, independently of old hardcoded f2db/9dea diagnostic phases. Root-only single process loads one frozen base and two named standard PEFT adapters, preparing each official input once. It runs24forwards total under a combined120second signal deadline; no gradients or optimizer. Both arms share all twelve input/media-tensor hashes and actual legal yes/no/U token mappings; equality is explicitly asserted across records. Same-text members may have different video input tensors/shapes. The source model/tokenizer/template assets are SHA-verified against the actual training receipt.
+
+Aggregate outputs: legal+UjointCE, conditional NLL, accuracy, signed gold margin, both-members-correct pair count, Pyesdirection and raw relative logodds direction. Identical input binding does not prove useful visual learning; TRAIN fit does not establish generalization. The actual capacityCEcandidate failed its own DEV50baseline31vs34and is stopped; this read-only diagnostic does not authorize resume, wider evaluation, new data, new loss or promotion. Two tinyguard tests and Ruff check/format passed. No GPU was launched here; prepared tensor/forward evidence awaits root dispatch. Cost null.
+
+```sh
+cd /root/autodl-tmp/s4-claim-pair-code-001
+PYTHONPATH=. /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python /root/autodl-tmp/s4-native-event-cpu-001/evaluate-rank64-exposed-train12.py --phase probe --inputs /root/autodl-tmp/s1-text-lora-001/artifacts/s4-rank64-exposed-train12-input-001 --expected-input-report-sha256 1f66d578868939c23c242ee487490b7c455d900e6725dac01848a795e11c6ce9 --output /root/autodl-tmp/s1-text-lora-001/artifacts/s4-rank64-exposed-train12-probe-001 --execute
+```
+
+The actual training source235ad68may instead be used consistently for the entire combined probe. Both arms use one chosen official preparation implementation. Source/adapter files are read-only; output directories are exclusive and runtime failures preserve receipts/partial audit sidecars. This task does not run the command above.
