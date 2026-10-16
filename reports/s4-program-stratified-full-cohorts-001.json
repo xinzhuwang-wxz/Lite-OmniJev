@@ -1,0 +1,132 @@
+{
+  "status": "public_full_cohorts_measured",
+  "original_s4_gate": "not_passed",
+  "s4_stage_closed": false,
+  "adapter_sha256": "e46550143b28f8798484515f0abe21996fe92ad241625a4cf6da15dc093277fd",
+  "selection": "freeze_for_calibration_and_independent_holdout",
+  "quality_policy": "docs/adr/0023-measured-quality-stage-progression.md",
+  "all_source_training_completed": false,
+  "actual_training_draws": 1200,
+  "actual_original_video_families": 600,
+  "reports": {
+    "video": {
+      "path": "reports/s4-program-stratified-video500-step0100.json",
+      "sha256": "a575b9e69d65d0ce7b2625baf294c18d0a14e45166503c9707175307d37417d6",
+      "metrics": {
+        "count": 500,
+        "accuracy": 0.744,
+        "ece15": 0.07901951433184379,
+        "brier": 0.3678753128289088,
+        "coverage_at_error": 0.06,
+        "max_error": 0.05,
+        "product_accuracy": 0.744,
+        "mean_p_insufficient": 1.8915543289175333e-06,
+        "max_p_insufficient": 5.517848974433957e-05,
+        "predicted_insufficient": 0
+      },
+      "exit_code": 0,
+      "status": "completed"
+    },
+    "image": {
+      "path": "reports/s4-program-stratified-image500-step0100.json",
+      "sha256": "e47c1f55bd76b6673633af477fca3290c009b17788c6b8adefa5b07127523a4d",
+      "metrics": {
+        "count": 500,
+        "accuracy": 0.828,
+        "ece15": 0.1509038982892164,
+        "brier": 0.31584475987536764,
+        "coverage_at_error": 0.682,
+        "max_error": 0.05,
+        "product_accuracy": 0.828,
+        "mean_p_insufficient": 5.750747861238132e-06,
+        "max_p_insufficient": 0.00024177033995288432,
+        "predicted_insufficient": 0
+      },
+      "exit_code": 0,
+      "status": "passed"
+    },
+    "audio": {
+      "path": "reports/s4-program-stratified-audio500-step0100.json",
+      "sha256": "742f747646b7b9331e3401a69c3dd7b1caf04c9a3d8f96e6d30754fab77dfbde",
+      "metrics": {
+        "count": 500,
+        "accuracy": 0.798,
+        "ece15": 0.1295487838608331,
+        "brier": 0.323713672608936,
+        "coverage_at_error": 0.124,
+        "max_error": 0.05,
+        "product_accuracy": 0.798,
+        "mean_p_insufficient": 7.5309927677427514e-06,
+        "max_p_insufficient": 0.00010088652681509854,
+        "predicted_insufficient": 0,
+        "conditional_nll": 0.650168815727795,
+        "joint_legal_plus_u_nll": 0.6501763468318627
+      },
+      "exit_code": 0,
+      "status": "completed"
+    },
+    "screenshot": {
+      "path": "reports/s4-program-stratified-screenshot500-step0100.json",
+      "sha256": "15adc1dac9820846238553a0d5dd3c4dbcc35859dfe891249f466f7bc008890b",
+      "metrics": {
+        "count": 500,
+        "accuracy": 0.97,
+        "ece15": 0.027021078908536278,
+        "brier": 0.05475382361661635,
+        "coverage_at_error": 1.0,
+        "max_error": 0.05,
+        "product_accuracy": 0.97,
+        "mean_p_insufficient": 4.209829270436817e-07,
+        "max_p_insufficient": 9.609958286841101e-05,
+        "predicted_insufficient": 0,
+        "conditional_nll": 0.13205460293149446,
+        "joint_legal_plus_u_nll": 0.132055023923999
+      },
+      "exit_code": 0,
+      "status": "completed"
+    },
+    "text": {
+      "path": "reports/s4-program-stratified-text500-step0100.json",
+      "sha256": "22f5affb19932454bc6e5863ddfa30ae4142765e13bf9669aeeb1964d6692c73",
+      "metrics": {
+        "count": 500,
+        "accuracy": 0.996,
+        "ece15": 0.004503882750343226,
+        "brier": 0.008653342932901027,
+        "coverage_at_error": 1.0,
+        "max_error": 0.05,
+        "product_accuracy": 0.996,
+        "mean_p_insufficient": 2.1525938662509973e-07,
+        "max_p_insufficient": 1.418941204470349e-05,
+        "predicted_insufficient": 0,
+        "conditional_nll": 0.03361277724175618,
+        "joint_legal_plus_u_nll": 0.03361299250154928
+      },
+      "exit_code": 0,
+      "status": "completed"
+    },
+    "crossmodal": {
+      "path": "reports/s4-program-stratified-crossmodal500-step0100.json",
+      "sha256": "545b5b76e962ac70c8acdbfa7eccb0ba002df2175fc514729eeab78d7080726e",
+      "metrics": {
+        "count": 500,
+        "accuracy": 0.71,
+        "ece15": 0.2519597739012124,
+        "brier": 0.5052232829245941,
+        "coverage_at_error": 0.146,
+        "max_error": 0.05,
+        "conditional_nll": 1.236372542326007,
+        "joint_legal_plus_u_nll": 1.2363734527080181
+      },
+      "exit_code": 0,
+      "status": "completed"
+    }
+  },
+  "limitations": [
+    "Original video and image teacher-ratio targets unmet",
+    "Crossmodal confidence requires independent calibration assessment",
+    "No original parent full500 crossmodal retention comparison asserted",
+    "Holdout and external benchmarks pending",
+    "No stage or release acceptance claimed"
+  ]
+}
