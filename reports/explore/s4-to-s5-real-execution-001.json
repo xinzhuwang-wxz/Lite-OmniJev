@@ -1,0 +1,52 @@
+{
+  "status": "cpu_prepared_not_executed",
+  "private_contents_read": false,
+  "gpu_launched": false,
+  "actual_calibration_fitted": false,
+  "stage_acceptance": "not_evaluated",
+  "expected_real_groups": {
+    "text/choice": 3000,
+    "image/choice": 3000,
+    "screenshot/choice": 3000,
+    "audio/choice": 1600,
+    "audio/noul": 1400,
+    "video/noul": 3000,
+    "crossmodal/noul": 3000
+  },
+  "missing_groups": [
+    "text/score",
+    "text/noul",
+    "image/score",
+    "image/noul",
+    "screenshot/score",
+    "screenshot/noul",
+    "audio/score",
+    "video/choice",
+    "video/score",
+    "crossmodal/choice",
+    "crossmodal/score"
+  ],
+  "producer": "scripts/private_calibration.py",
+  "broker": "scripts/private_gold_job.py",
+  "runtime_access": "optional fresh UID traverse-only /root ACL; actual Linux review and probes pending",
+  "private_exports": [
+    "temperature artifacts",
+    "aggregate provenance",
+    "aggregate report"
+  ],
+  "private_retained": [
+    "sample rows",
+    "raw logits",
+    "worker logs"
+  ],
+  "remaining": [
+    "actual frozen checkpoint binding",
+    "final exposure inventory",
+    "Linux isolation/ACL restoration evidence",
+    "real GPU private fit",
+    "partial registry activation",
+    "public crossmodal full500 path",
+    "private holdout measurement"
+  ],
+  "verification": "synthetic CPU contracts; not real data or GPU evidence"
+}

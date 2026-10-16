@@ -477,8 +477,9 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         parser = PrivateParser(description=__doc__)
-        parser.add_argument("--job", choices=["inventory-audit"], required=True)
-        parser.add_argument("--inventory", type=Path, required=True)
+        parser.add_argument("--job", choices=["inventory-audit", "calibration-fit"], required=True)
+        parser.add_argument("--inventory", type=Path)
+        parser.add_argument("--spec", type=Path)
         parser.add_argument("--sha256", required=True)
         parser.add_argument("--work-root", type=Path, required=True)
         parser.add_argument("--report", type=Path, required=True)
@@ -486,6 +487,42 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--probe-uid", type=int, required=True)
         parser.add_argument("--timeout", type=int, default=300, help="audit child seconds only")
         args = parser.parse_args(argv)
+        if args.job == "calibration-fit":
+            if args.spec is None or args.inventory is not None:
+                raise JobRejected("invalid_arguments")
+            from scripts.private_calibration import execute as execute_calibration
+
+            try:
+                receipt = execute_calibration(
+                    args.spec,
+                    args.sha256,
+                    args.work_root,
+                    args.report,
+                    args.worker_uid,
+                    args.probe_uid,
+                    args.timeout,
+                )
+            except Exception:
+                # No private validation messages, rows, paths or worker logs leave the job.
+                safe_path(args.report)
+                parent = args.report.parent.stat()
+                if parent.st_uid == 0 and not parent.st_mode & 0o022:
+                    with args.report.open("x") as handle:
+                        os.chmod(args.report, 0o600)
+                        json.dump(
+                            {
+                                "job": "calibration-fit",
+                                "outcome": "rejected",
+                                "categories": ["job_failed"],
+                                "exit_code": 1,
+                            },
+                            handle,
+                        )
+                raise JobRejected("job_failed") from None
+            print(json.dumps(receipt))
+            return 0
+        if args.inventory is None or args.spec is not None:
+            raise JobRejected("invalid_arguments")
         result = execute(
             args.inventory,
             args.sha256,
