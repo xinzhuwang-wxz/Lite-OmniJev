@@ -19,7 +19,7 @@
 
 ## 范围与边界
 - U/不可答性不作为产品输出(ADR0024);p(U) 为内部量
-- vLLM FP32 服务默认 raw 温度(跨引擎套用需数值验证);网关 bf16 路径 recipe 绑定
+- 引擎边界实测:vLLM 0.31 native 服务已就绪并尝试激活校准温度,被 registry 绑定**按设计正确拒绝**(温度绑定 transformers/bf16 recipe;vLLM 需其引擎自身的校准证据)——S5 出口 4“未经数值验证不跨引擎激活”首次真实验证通过;vLLM 单卡服务当前默认 raw 温度并披露未校准,require_calibrated 拒绝激活
 - Playground 完整浏览器验收、E2B 量化(S6)为 pending,不虚标
 - 教师蒸馏仅用 TRAIN 池(OneJev-27B,Apache-2.0);未用 JEV-27B 权重/Jev API/其标签
 
