@@ -1,0 +1,36 @@
+{
+  "status": "cpu_wrapper_checks_passed",
+  "exit_code": 0,
+  "gpu_launched": false,
+  "training_authorized_by_this_report": false,
+  "stage_gate": false,
+  "tests": {
+    "command": "PYTHONPATH=. /Users/bamboo/Githubs/Lite-OmniJev/.venv/bin/pytest -q tests/test_rank64_pilot_wrappers.py",
+    "passed": 24
+  },
+  "ruff_check": "passed",
+  "ruff_format_check": "passed",
+  "python_compile": "passed",
+  "git_diff_check": "passed",
+  "sha256": {
+    ".scratch/s4/launch-rank64-matched-pilot.py": "9ac9cea6e9a52429cd41041784a84faaf2cf37d8144b16550304c2a9d765560a",
+    ".scratch/s4/evaluate-rank64-matched-dev50.py": "14bd57cf144b9abc5dd6407d1c8992c3209b44089e50ef2822669be28172c9f7",
+    ".scratch/s4/evaluate-rank64-initializer-dev50.py": "1b944ca8eba834c2c3afa48cc331344751db6245d16b0c244126edae31cdf714",
+    "tests/test_rank64_pilot_wrappers.py": "e276b236d8dc993a7812f92f8436ce2fb8ac6a22985cbc104f0270f0cbbabfe4"
+  },
+  "limitations": [
+    "CPU gate fixtures do not establish actual rank64 quality or numerical parity.",
+    "Actual prepared1200 artifacts and derivative config SHA are verified on root remote invocation.",
+    "Root owns GPU baseline, explicit own-baseline approval, and any first10 training."
+  ],
+  "contracts": {
+    "rank": 64,
+    "alpha": 128,
+    "steps_per_invocation": 10,
+    "training_hard_limit_seconds": 360,
+    "evaluation_timeout_seconds": 180,
+    "parity_validated": false,
+    "parent_quality_inherited": false,
+    "post_training_minimum": "own baseline +2/50, >=34/50, Brier strictly improved"
+  }
+}
