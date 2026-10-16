@@ -71,6 +71,8 @@ def main() -> int:
         if args.training_report is not None
         else ROOT / "reports/s4-program-stratified-training-step0100.json"
     )
+    if args.training_report is not None:
+        EXPECTED["training"] = sha256_file(training_path)
     bindings = {
         key: bind(path, EXPECTED[key])
         for key, path in [
