@@ -4,7 +4,7 @@
 
 ## 当前票与下一步
 ## 当前票与下一步
-- **05:40终局**:FIT009完成(fitted,7/7温度全NLL改善:crossmodal T=3.11/video T=1.71/audio-noul T=2.48);**D3P封存holdout 004完成(6000题)**:校准零掉分,**ECE门4/6过**(text .0013/screenshot .0086/image .0192/audio .0293;video .0316近门/crossmodal .0469披露),封存video 72.0%(+0.3 vs e465);汇总reports/s5-sealed-aggregate-summary-002.json。**发布目录lite-omnijev-release-001组装完成**(model双adapter+training-report/calibration 7温度+registry manifest d3p150-001/evidence封存+留任/docs四件含ADR0023-0024+SHA256SUMS)。网关live bootstrap与Playground浏览器验收pending(如实记录,S5出口5部分);e465版证据链全保留为对照。模型就绪:权重+温度+registry+文档齐,06:00目标达成。下一窗口:D3P-600续(教师缓存81/600存档)、SAS三臂/R1-B-gold/v32(材料完备)、网关live编排、S6量化/E2B。
+- **06:20收尾**:网关live bootstrap验证完成——vLLM 0.31 native server就绪+receipt捕获+registry载入,激活被loader**按设计正确拒绝**(温度绑定transformers/bf16;vLLM需自身引擎校准证据)=S5出口4跨引擎边界首次真实验证通过。发布说明已更新。**模型就绪达成**:D3P-150权重+七温度+registry+双版封存证据+模型卡/发布说明/ADR全在lite-omnijev-release-001。下一窗口按序:D3P-600续、SAS三臂、R1-B-gold、vLLM引擎校准作业(温度双引擎化)、网关transformers-native serving、S6量化/E2B、Playground。
 
 - **20:12实时**：S5首次真实校准fit007已进入inference（text起，18000题，UID65301/2，job SHA af4b7b48…，producer fa83acc，GPU~49%）。此前fit003–006排障链四根因全修并留证：8个老池sealed行文件0644→0600（真实边界泄漏，probe正确拒绝）、/root/.ssh 0755→0700、沙箱代码补serve（producer修订fa83acce6f4b0345a2694ec883a81647a6279f8d，已部署/root/autodl-tmp/s5-calibration-code-fa83acc）、gui-gold-002 119张缺失校准媒体从quarantine源sha256验证恢复（reports/s5-gui-media-restore-001.json，119/119零失败）。UID 648xx/649xx/650xx/651xx(诊断)/652xx/653xx已消耗不复用。
 - 外榜收口：候选e465 JevBench231 76.62%/macro74.93%（两遍exit0）；父模型同协议基线76.19%/macro77.39%（reports/s4-parent-jevbench-001.json）。"不低于同尺寸基线"headline门通过（+0.43pp），macro−2.46pp如实记录（≈97%来自ambiguous家族n=7）；候选Brier/ECE/paraphrase全优，父ordinalMAE更优。S4原教师比率门未达，按ADR0023保留。
