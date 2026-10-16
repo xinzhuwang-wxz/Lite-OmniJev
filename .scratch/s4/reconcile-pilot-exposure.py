@@ -2541,7 +2541,7 @@ def official_video_question(sample, scenes):
     return question
 
 
-def continuous_matched_bindings(root, prepared, prep):
+def continuous_matched_bindings(root, prepared, prep, *, program_stratified=False):
     """The second frozen profile reuses original gold and matched-pair identity checks."""
     import random
     from collections import Counter
@@ -2549,16 +2549,25 @@ def continuous_matched_bindings(root, prepared, prep):
     from scripts.s1_text_pools import canonical_sample_sha
     from train.trainer import data_bytes
 
-    require(
-        prep["pair_count"] == 300
-        and prep["video_rows"] == prep["video_families"] == 600
-        and prep["global_steps"] == 100
-        and prep["invocation_steps_initial"] == 10
-        and prep["actual_draw_pair_offsets"] == [0, 2, 4]
-        and prep["pair_metadata_only"] is True
-        and prep["automatic_full_run_authorized"] is False,
-        "continuous_matched_recipe",
-    )
+    if program_stratified:
+        require(
+            prep["video_rows"] == prep["video_families"] == prep["replay_draws"] == 600
+            and prep["global_steps"] == 100
+            and prep["invocation_steps_initial"] == 10
+            and prep["automatic_full_run_authorized"] is False,
+            "program_stratified_recipe",
+        )
+    else:
+        require(
+            prep["pair_count"] == 300
+            and prep["video_rows"] == prep["video_families"] == 600
+            and prep["global_steps"] == 100
+            and prep["invocation_steps_initial"] == 10
+            and prep["actual_draw_pair_offsets"] == [0, 2, 4]
+            and prep["pair_metadata_only"] is True
+            and prep["automatic_full_run_authorized"] is False,
+            "continuous_matched_recipe",
+        )
     bindings = {}
 
     def bound(path, expected):
@@ -2566,7 +2575,15 @@ def continuous_matched_bindings(root, prepared, prep):
         bindings[str(path)] = expected
 
     sources = root.parent / "s4-native-event-cpu-001"
-    bound(sources / "prepare-continuous-matched-pool.py", prep["helper_sha256"])
+    bound(
+        sources
+        / (
+            "prepare-program-stratified-pool.py"
+            if program_stratified
+            else "prepare-continuous-matched-pool.py"
+        ),
+        prep["helper_sha256"],
+    )
     for name, expected in prep["reused_helper_sha256"].items():
         require(
             name in {"inspect-temporal-order-contrast", "prepare-claim-pair-pilot"},
@@ -2591,9 +2608,21 @@ def continuous_matched_bindings(root, prepared, prep):
         and all(originals.get(k) == v for k, v in video.items()),
         "continuous_matched_original600",
     )
-    replay = root / "artifacts/s4-continuous-main-pool-001"
+    replay = (
+        root
+        / "artifacts"
+        / (
+            "s4-continuous-matched-pool-001"
+            if program_stratified
+            else "s4-continuous-main-pool-001"
+        )
+    )
     bound(replay / "report.json", prep["replay_report_sha256"])
-    require(prep["replay_report_sha256"] == CONTINUOUS_PREP_SHA, "continuous_matched_fixed_replay")
+    require(
+        prep["replay_report_sha256"]
+        == (MATCHED_CONTINUOUS_PREP_SHA if program_stratified else CONTINUOUS_PREP_SHA),
+        "continuous_matched_fixed_replay",
+    )
     rr = json.loads((replay / "report.json").read_bytes())
     for name in ("train.jsonl", "components.jsonl"):
         bound(replay / name, rr["output_sha256"][name])
@@ -2627,24 +2656,30 @@ def continuous_matched_bindings(root, prepared, prep):
         k: official_video_question(Sample.model_validate(v), scenes)["program"]
         for k, v in video.items()
     }
-    metadata = json.loads((prepared / "matched-pair-metadata.json").read_bytes())
-    require(
-        metadata["metadata_only"] is True
-        and len(metadata["rows"]) == 300
-        and metadata["target_source"]
-        == "original official gold only; pairs are metadata, no pairloss",
-        "continuous_matched_metadata300",
-    )
-    pairs = {}
-    for pair in metadata["rows"]:
-        require(pair["metadata_only"] is True and len(pair["members"]) == 2, "matched_pair_size")
-        ids = [m["item_id"] for m in pair["members"]]
-        require(all(k in video and k not in pairs for k in ids), "matched_duplicate_member")
-        matched_pair_binding(
-            *(Sample.model_validate(video[k]) for k in ids), *(programs[k] for k in ids), pair
+    if program_stratified:
+        strata = program_strata_binding(prepared, prep, video, programs)
+        bindings.update(program_exclusion_bindings(root, prep, video))
+    else:
+        metadata = json.loads((prepared / "matched-pair-metadata.json").read_bytes())
+        require(
+            metadata["metadata_only"] is True
+            and len(metadata["rows"]) == 300
+            and metadata["target_source"]
+            == "original official gold only; pairs are metadata, no pairloss",
+            "continuous_matched_metadata300",
         )
-        pairs.update({k: pair for k in ids})
-    require(set(pairs) == set(video), "matched_all600_members")
+        pairs = {}
+        for pair in metadata["rows"]:
+            require(
+                pair["metadata_only"] is True and len(pair["members"]) == 2, "matched_pair_size"
+            )
+            ids = [m["item_id"] for m in pair["members"]]
+            require(all(k in video and k not in pairs for k in ids), "matched_duplicate_member")
+            matched_pair_binding(
+                *(Sample.model_validate(video[k]) for k in ids), *(programs[k] for k in ids), pair
+            )
+            pairs.update({k: pair for k in ids})
+        require(set(pairs) == set(video), "matched_all600_members")
     arranged = [
         Sample.model_validate_json(line)
         for line in (prepared / "train.jsonl").read_bytes().splitlines()
@@ -2678,17 +2713,291 @@ def continuous_matched_bindings(root, prepared, prep):
             == {"video": 6, "crossmodal": 2, "audio": 1, "image": 1, "screenshot": 1, "text": 1},
             "matched_block_quota",
         )
-        for offset in (0, 2, 4):
-            left, right = block[offset : offset + 2]
+        if program_stratified:
             require(
-                left.id in pairs and right.id in pairs and pairs[left.id] == pairs[right.id],
-                "matched_actual_pair_adjacency",
+                Counter(strata[s.id] for s in block[:6])
+                == dict(
+                    zip(
+                        PROGRAM_GROUPS, (2, 2, 1, 1) if step % 2 == 0 else (1, 1, 2, 2), strict=True
+                    )
+                ),
+                "program_actual_step_strata",
             )
+            require(
+                Counter(s.questions[0].target.value for s in block[:6]) == {"yes": 3, "no": 3},
+                "program_actual_step_polarity",
+            )
+            require(
+                all(
+                    d.get("program_stratum") == strata[s.id]
+                    and d.get("target") == s.questions[0].target.value
+                    for s, d in zip(
+                        block[:6], recipe["draws"][12 * step : 12 * step + 6], strict=True
+                    )
+                ),
+                "program_actual_draw_metadata",
+            )
+        else:
+            for offset in (0, 2, 4):
+                left, right = block[offset : offset + 2]
+                require(
+                    left.id in pairs and right.id in pairs and pairs[left.id] == pairs[right.id],
+                    "matched_actual_pair_adjacency",
+                )
     return bindings
 
 
-def continuous_profile(matched=False, rank64=False, video_objective=False):
+PROGRAM_GROUPS = ("before_after", "event_motion", "endpoint_motion", "exist")
+
+
+def program_strata_binding(prepared, prep, video, programs):
+    from collections import Counter
+
+    from scripts.s1_text_pools import canonical_sample_sha
+
+    metadata = json.loads((prepared / "program-strata-metadata.json").read_bytes())
+    require(
+        metadata["metadata_only"] is True
+        and len(metadata["rows"]) == 600
+        and metadata["target_source"] == "original official gold only; exclusive program strata",
+        "program_metadata600",
+    )
+    strata = {}
+    counts = Counter()
+    for row in metadata["rows"]:
+        item = row["item_id"]
+        require(item in video and item not in strata, "program_unique_member")
+        sample = Sample.model_validate(video[item])
+        program = programs[item]
+        require(
+            isinstance(program, list) and program and all(isinstance(p, str) for p in program),
+            "program_official_postfix",
+        )
+        group = (
+            "before_after"
+            if "filter_before" in program or "filter_after" in program
+            else "event_motion"
+            if "events" in program and "get_frame" in program
+            else "endpoint_motion"
+            if "get_frame" in program
+            else "exist"
+        )
+        require(group != "exist" or program[-1] == "exist", "program_exist_terminal")
+        gold = sample.questions[0].target.value
+        require(
+            row
+            == {
+                "item_id": item,
+                "family_id": sample.meta.family_id,
+                "program_stratum": group,
+                "official_program_sha256": hashlib.sha256(
+                    json.dumps(program, sort_keys=True).encode()
+                ).hexdigest(),
+                "official_source_sha256": sample.meta.source_sha256,
+                "media_sha256": sample.prefix.media[0].sha256,
+                "sample_sha256": canonical_sample_sha(sample),
+                "original_gold": gold,
+                "has_collision_operator": "filter_collision" in program,
+            },
+            "program_exact_metadata",
+        )
+        strata[item] = group
+        counts[group, gold] += 1
+    require(
+        set(strata) == set(video)
+        and counts == Counter({(g, y): 75 for g in PROGRAM_GROUPS for y in ("yes", "no")}),
+        "program_four_balanced_strata",
+    )
+    require(
+        prep["stratum_counts"] == {g: {"yes": 75, "no": 75} for g in PROGRAM_GROUPS},
+        "program_report_strata",
+    )
+    return strata
+
+
+def program_exclusion_bindings(root, prep, video):
+    """Reconstruct only the explicit source-bound exclusion scope, never global unseen claims."""
+    import random
+
+    bindings = {}
+
+    def bound(path, expected):
+        require(sha(path) == expected, "program_exclusion_input_sha")
+        bindings[str(path)] = expected
+
+    def pool(name, expected):
+        directory = root / "artifacts" / name
+        receipt = json.loads((directory / "report.json").read_bytes())
+        bound(directory / "report.json", expected)
+        bound(directory / "train.jsonl", receipt["output_sha256"]["train.jsonl"])
+        return list(canonical_rows(directory / "train.jsonl").values())
+
+    lineage_path = root / "reports/s4-ce0-video-exposure-001.json"
+    bound(lineage_path, "cb9574e06fc9950198f703ab9107d6d2d42824a5d2399ded2a26a146dd88cbfa")
+    lineage = json.loads(lineage_path.read_bytes())
+    for stage in lineage["stages"]:
+        for key in ("report", "data"):
+            bound(Path(stage[key]), stage[key + "_sha256"])
+    excluded = set(lineage["lineage_unique_video_families"])
+    names = [
+        "s4-temporal-coverage-pilot-001",
+        "s4-train-learnability-001",
+        "s4-native-event-condition-pilot-001",
+        "s4-video-text-matched-pilot-001",
+    ]
+    prior_pins = {
+        names[0]: "1e7f877e04ea311d29ebc1fe1711f31aa2cc91034f8794b666850bcf5f2fff19",
+        names[1]: prep["exclusions"]["learnability_report_sha256"],
+        names[2]: "401fb4248c079c37e25cff1827b9470b3f3105ee8a3182997aee3c4de0fc7696",
+        names[3]: "3e764378147c06816a3f14fe71967f53d83fb50871237e094ceb19587419db93",
+    }
+    for name in names:
+        excluded.update(
+            r["meta"]["family_id"]
+            for r in pool(name, prior_pins[name])
+            if r["meta"]["modality"] == ["video"]
+        )
+    continuous = pool("s4-continuous-main-pool-001", CONTINUOUS_PREP_SHA)
+    order = list(range(1200))
+    random.Random(42).shuffle(order)
+    excluded.update(
+        continuous[i]["meta"]["family_id"]
+        for i in order[:240]
+        if continuous[i]["meta"]["modality"] == ["video"]
+    )
+    for row in prep["exclusions"]["specified_prior_pilots"]:
+        excluded.update(
+            r["meta"]["family_id"]
+            for r in pool(row["artifact"], row["report_sha256"])
+            if r["meta"]["modality"] == ["video"]
+        )
+    require(
+        len(excluded) == prep["exclusions"]["final_union"] == 1430
+        and not excluded.intersection(r["meta"]["family_id"] for r in video.values())
+        and prep["exclusions"]["scope"]
+        == "explicit source-bound pilot-family exclusions; not globally unseen",
+        "program_explicit1430_exclusions",
+    )
+    return bindings
+
+
+def program_training_bindings(root, launch, config, base, history, start, end):
+    """Each invocation needs a fresh root decision inside the same frozen window."""
+    profile = continuous_profile(program_stratified=True)
+    bindings = {}
+
+    def bound(path, expected):
+        require(sha(path) == expected, "program_root_binding_sha")
+        bindings[str(path)] = expected
+
+    original = root / "artifacts/s4-continuous-matched-pool-001/config-ce.json"
+    bound(original, MATCHED_CONTINUOUS_CONFIG_SHA)
+    require(
+        config == {**json.loads(original.read_bytes()), "checkpoint_every": 5},
+        "program_ce_config_delta",
+    )
+    archive = root.parent / "omnijev-video-pair-code-7b75f9f.tar"
+    archive_sha = "49b11d244dc483a59895695468697e05ee4d45ff8b491cad377724137b15d32d"
+    bound(archive, archive_sha)
+    require(
+        launch["source_commit"] == "7b75f9f" and launch["source_archive_sha256"] == archive_sha,
+        "program_runtime_source",
+    )
+    launcher = root.parent / "launch-program-stratified-pool-001.py"
+    bound(launcher, "8ff309225773413e3c2a8b0494c891db77216229b36ee787c125d521bab3a4bc")
+    helper = root.parent / "s4-native-event-cpu-001/prepare-program-stratified-pool.py"
+    bound(helper, "fcd52c264ccabf0cb2120402836089aa988ff298b485dd272487f46aa92c893a")
+    decision_path = root / f"reports/s4-program-stratified-decision-step{start + 10:04d}.json"
+    bound(decision_path, launch["decision_sha256"])
+    if not start:
+        require(
+            sha(decision_path)
+            == "9a8bb1a6641df952cec0c7a55754aaa479d417a4d328874a205a8080ffa11b5a",
+            "program_initial_decision_pin",
+        )
+    decision = json.loads(decision_path.read_bytes())
+    expected = {
+        "decision": "approve_next10",
+        "start_step": start,
+        "end_step": start + 10,
+        "max_total_steps": 40,
+        "invocation_steps": 10,
+        "max_seconds": 240,
+        "prepared_report_sha256": profile["prep_sha"],
+        "initializer_sha256": CONTINUOUS_PARENT_SHA,
+        "strategy_sha256": "43234bfcdc1cadbf80087cdc3fe55c238549000124f0ab35c0439dc9d1f3a657",
+        "automatic_resume": False,
+        "window_start_utc": "2026-10-16T06:06:49Z",
+        "window_deadline_utc": "2026-10-16T06:26:49Z",
+    }
+    require(
+        start in (0, 10)
+        and end <= start + 10
+        and all(decision.get(k) == v for k, v in expected.items()),
+        "program_explicit_bounded_decision",
+    )
+    window = {
+        k: decision[k]
+        for k in (
+            "window_start_utc",
+            "window_deadline_utc",
+            "prepared_report_sha256",
+            "initializer_sha256",
+            "max_total_steps",
+        )
+    }
+    window_path = root / "reports/s4-program-stratified-window-001.json"
+    bound(window_path, sha(window_path))
+    require(
+        json.loads(window_path.read_bytes()) == launch["window"] == window,
+        "program_original_window",
+    )
+    if start:
+        previous_launch = history[-1]["launch_report"]
+        require(
+            decision.get("learning_observed") is True
+            and decision["previous_launch_sha256"] == previous_launch["sha256"]
+            and decision["latest_exposure_report_sha256"]
+            == launch["exposure_binding"]["base_exposure_report"]["sha256"]
+            and decision["latest_exposure_report"]
+            == launch["exposure_binding"]["base_exposure_report"]["path"],
+            "program_fresh_resume_review",
+        )
+        screen_path = root / f"reports/s4-program-stratified-dev50-step{start:04d}.json"
+        bound(screen_path, decision["screening_report_sha256"])
+        screen = json.loads(screen_path.read_bytes())
+        previous = json.loads(Path(history[-1]["runtime_report_snapshot"]["path"]).read_bytes())
+        require(
+            screen["status"] == "completed"
+            and screen["exit_code"] == 0
+            and screen["step"] == start
+            and screen["paired_input_hashes_verified"] == 50
+            and screen["adapter_sha256"] == previous["adapter_sha256"]
+            and screen["candidate"]["count"] == 50
+            and 0.64 <= screen["candidate"]["accuracy"] <= 1
+            and 0 <= screen["candidate"]["brier"] <= 0.46748601999097937,
+            "program_same_step_screen",
+        )
+        require(
+            json.loads(Path(previous_launch["path"]).read_bytes())["window"] == window,
+            "program_resume_window_unchanged",
+        )
+    return bindings
+
+
+def continuous_profile(
+    matched=False, rank64=False, video_objective=False, program_stratified=False
+):
     """Frozen, independent recipes; objective changes cannot enter the CE profiles."""
+    if program_stratified:
+        return {
+            "prep_sha": "ac2f17fc3f5417e93e04d15292763384858f5e3ba1c4de533ca6f5e57d0aaf99",
+            "data_sha": "795f69fe9474523009bd953a0436bc505e85efdd4fb0f5e7c41e4d86c3bb028f",
+            "config_sha": "326b406eb23ce47c4854afe64d535a95ad91be94a68844109329e43872c6aaea",
+            "base_sha": "960a6b661f6414a514fa3274979b3a979669544979632251f52838f1f882edcb",
+            "history_key": "program_stratified_invocations",
+            "name": "s4-program-stratified",
+        }
     if video_objective:
         return {
             "prep_sha": ("371bb26d6d2dce38784c889cb58b2aa5cecc654233c859557959ae79442bd70e"),
@@ -3206,12 +3515,16 @@ def prepare_continuous(
     matched_pool: bool = False,
     rank64_candidate: bool = False,
     video_objective: bool = False,
+    program_stratified: bool = False,
 ) -> dict:
     """One settled invocation over one immutable pool, based on the preceding inventory."""
     require(
-        sum((matched_pool, rank64_candidate, video_objective)) <= 1, "continuous_profile_exclusive"
+        sum((matched_pool, rank64_candidate, video_objective, program_stratified)) <= 1,
+        "continuous_profile_exclusive",
     )
-    profile = continuous_profile(matched_pool, rank64_candidate, video_objective)
+    profile = continuous_profile(
+        matched_pool, rank64_candidate, video_objective, program_stratified
+    )
     derived_candidate = rank64_candidate or video_objective
     matched_pool = matched_pool or derived_candidate
     started = time.monotonic()
@@ -3319,6 +3632,7 @@ def prepare_continuous(
             "continuous_matched_invocations",
             "rank64_invocations",
             "video_pair_objective_invocations",
+            "program_stratified_invocations",
         ):
             for old_invocation in base.get(key, []):
                 old = old_invocation["runtime_report_observation"]
@@ -3351,7 +3665,16 @@ def prepare_continuous(
             comparison["rows"] == 1200 and all(v in mappings for v in comparison["data_versions"]),
             "continuous_pool_mapping",
         )
-        if matched_pool:
+        if program_stratified:
+            bindings.update(
+                continuous_matched_bindings(
+                    root, pool_path.parent, pool_prep, program_stratified=True
+                )
+            )
+            bindings.update(
+                program_training_bindings(root, launch, config, base, history, start, end)
+            )
+        elif matched_pool:
             bindings.update(continuous_matched_bindings(root, pool_path.parent, pool_prep))
         if rank64_candidate:
             require(start == 0 and end <= 10 and not history, "rank64_first_invocation_only")
@@ -3384,6 +3707,7 @@ def prepare_continuous(
             launch.get("selected_init_adapter") == parent
             and (
                 video_objective
+                or program_stratified
                 or launch.get("parent_selection")
                 == "root_selected_f2db_balanced_retention_and_full_video_evidence"
             ),
@@ -3423,6 +3747,15 @@ def prepare_continuous(
             )
         else:
             require(resume is None and not final.get("resumed_from"), "continuous_first_no_resume")
+        if program_stratified and start:
+            previous_raw = json.loads(
+                Path(history[-1]["runtime_report_snapshot"]["path"]).read_bytes()
+            )
+            require(
+                final["losses"][:start] == previous_raw["losses"]
+                and len(previous_raw["losses"]) == start,
+                "program_resume_loss_prefix",
+            )
         checkpoint = None
         adapter = None
         if final["status"] in {"paused", "completed"}:
@@ -3643,6 +3976,34 @@ def prepare_continuous(
             report["video_pair_objective_included"] = True
             report["parity_validated"] = False
             report["parent_quality_inherited"] = False
+        if program_stratified:
+            for key in (
+                "continuous_invocations",
+                "continuous_actual_global_draws_seen",
+                "continuous_matched_invocations",
+                "continuous_matched_actual_global_draws_seen",
+                "rank64_invocations",
+                "rank64_actual_global_draws_seen",
+                "rank64_derivative_identity",
+                "rank64_independent_candidate_included",
+                "video_pair_objective_invocations",
+                "video_pair_objective_actual_global_draws_seen",
+                "video_pair_objective_identity",
+                "video_pair_objective_included",
+                "native_actual_draws_seen",
+                "specialist_actual_draws_seen",
+                "specialist_storage_samples",
+                "specialist_unique_families",
+                "specialist_new_source_families",
+                "text_matched_actual_draws_seen",
+                "text_matched_pairs",
+            ):
+                if key in base:
+                    report[key] = base[key]
+            report["actual_global_draws_seen"] = base["actual_global_draws_seen"]
+            report["program_stratified_actual_global_draws_seen"] = end * 12
+            report["program_stratified_pool_included"] = True
+            report["program_exclusion_scope"] = prep["exclusions"]["scope"]
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -3718,6 +4079,7 @@ def main() -> int:
     parser.add_argument("--video-text-matched", action="store_true")
     parser.add_argument("--video-specialist", action="store_true")
     parser.add_argument("--native-event-condition", action="store_true")
+    parser.add_argument("--program-stratified-pool", action="store_true")
     parser.add_argument("--video-pair-objective", action="store_true")
     parser.add_argument("--rank64-independent-candidate", action="store_true")
     parser.add_argument("--continuous-matched-pool", action="store_true")
@@ -3731,12 +4093,15 @@ def main() -> int:
                 args.continuous_main_pool
                 or args.continuous_matched_pool
                 or args.rank64_independent_candidate
-                or args.video_pair_objective,
+                or args.video_pair_objective
+                or args.program_stratified_pool,
                 "continuous_base_requires_branch",
             )
             launch_path = args.continuous_launch_report or args.root / "reports" / (
                 (
-                    "s4-video-pair-objective"
+                    "s4-program-stratified"
+                    if args.program_stratified_pool
+                    else "s4-video-pair-objective"
                     if args.video_pair_objective
                     else "s4-rank64-matched-pilot"
                     if args.rank64_independent_candidate
@@ -3744,7 +4109,7 @@ def main() -> int:
                     if args.continuous_matched_pool
                     else "s4-continuous-main-pool"
                 )
-                + "-launch-001.json"
+                + ("-launch-step0010.json" if args.program_stratified_pool else "-launch-001.json")
             )
             launch = json.loads(launch_path.read_bytes())
             require(
@@ -3764,7 +4129,9 @@ def main() -> int:
                 / "reports"
                 / (
                     (
-                        "s4-video-pair-objective"
+                        "s4-program-stratified"
+                        if args.program_stratified_pool
+                        else "s4-video-pair-objective"
                         if args.video_pair_objective
                         else "s4-rank64-matched-pilot"
                         if args.rank64_independent_candidate
@@ -3772,16 +4139,22 @@ def main() -> int:
                         if args.continuous_matched_pool
                         else "s4-continuous-main-pool"
                     )
-                    + "-launch-001.json"
+                    + (
+                        "-launch-step0010.json"
+                        if args.program_stratified_pool
+                        else "-launch-001.json"
+                    )
                 ),
                 matched_pool=args.continuous_matched_pool,
                 rank64_candidate=args.rank64_independent_candidate,
                 video_objective=args.video_pair_objective,
+                program_stratified=args.program_stratified_pool,
             )
             if args.continuous_main_pool
             or args.continuous_matched_pool
             or args.rank64_independent_candidate
             or args.video_pair_objective
+            or args.program_stratified_pool
             else prepare(
                 args.root,
                 args.legacy_root,

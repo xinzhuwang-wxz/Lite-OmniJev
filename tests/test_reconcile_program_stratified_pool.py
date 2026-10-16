@@ -1,0 +1,173 @@
+"""Program coverage preserves old histories and resumes one fixed pool cumulatively."""
+
+import hashlib
+import json
+from pathlib import Path
+
+import pytest
+from test_gold_inventory import sample
+from test_reconcile_continuous_main_pool import integration_fixture
+from test_reconcile_crossmodal_retention import module
+
+from data.schema import Sample
+from scripts.s1_text_pools import canonical_sample_sha
+
+
+def test_program_profile_is_separate_ce_rank16_identity():
+    code = module()
+    p = code.continuous_profile(program_stratified=True)
+    assert p["history_key"] == "program_stratified_invocations"
+    assert p["data_sha"] == "795f69fe9474523009bd953a0436bc505e85efdd4fb0f5e7c41e4d86c3bb028f"
+    assert p["base_sha"] == "960a6b661f6414a514fa3274979b3a979669544979632251f52838f1f882edcb"
+    assert p["config_sha"] != code.continuous_profile(True)["config_sha"]
+
+
+def test_program_metadata_uses_official_program_and_unchanged_gold(tmp_path):
+    code = module()
+    programs = {}
+    rows = {}
+    metadata = []
+    examples = [
+        ["events", "filter_before", "exist"],
+        ["events", "get_frame", "exist"],
+        ["get_frame", "exist"],
+        ["exist"],
+    ]
+    for group, program in zip(code.PROGRAM_GROUPS, examples, strict=True):
+        for gold in ("yes", "no"):
+            for n in range(75):
+                item = f"{group}-{gold}-{n}"
+                row = sample(item, "train", "video")
+                row["questions"][0]["target"]["value"] = gold
+                s = Sample.model_validate(row)
+                rows[item] = row
+                programs[item] = program
+                metadata.append(
+                    {
+                        "item_id": item,
+                        "family_id": s.meta.family_id,
+                        "program_stratum": group,
+                        "official_program_sha256": hashlib.sha256(
+                            json.dumps(program, sort_keys=True).encode()
+                        ).hexdigest(),
+                        "official_source_sha256": s.meta.source_sha256,
+                        "media_sha256": s.prefix.media[0].sha256,
+                        "sample_sha256": canonical_sample_sha(s),
+                        "original_gold": gold,
+                        "has_collision_operator": False,
+                    }
+                )
+    path = tmp_path / "program-strata-metadata.json"
+    payload = {
+        "metadata_only": True,
+        "target_source": "original official gold only; exclusive program strata",
+        "rows": metadata,
+    }
+    path.write_text(json.dumps(payload))
+    prep = {"stratum_counts": {g: {"yes": 75, "no": 75} for g in code.PROGRAM_GROUPS}}
+    assert len(code.program_strata_binding(tmp_path, prep, rows, programs)) == 600
+    payload["rows"][0]["program_stratum"] = "exist"
+    path.write_text(json.dumps(payload))
+    with pytest.raises(ValueError, match="program_exact_metadata"):
+        code.program_strata_binding(tmp_path, prep, rows, programs)
+
+
+@pytest.mark.parametrize("bad_prefix", [False, True])
+def test_program_first10_and_resume20_preserve_four_old_histories(
+    tmp_path, monkeypatch, bad_prefix
+):
+    code, root, legacy, index, base, invoke = integration_fixture(tmp_path, monkeypatch)
+    old_raw = root / "old-runtime.json"
+    old_raw.write_text("{}")
+    history_keys = (
+        "continuous_invocations",
+        "continuous_matched_invocations",
+        "rank64_invocations",
+        "video_pair_objective_invocations",
+    )
+    payload = json.loads(base.read_bytes())
+    for key in history_keys:
+        payload[key] = [{"runtime_report_observation": code.bind(old_raw)}]
+    payload.update(
+        actual_global_draws_seen=240,
+        continuous_actual_global_draws_seen=240,
+        continuous_matched_actual_global_draws_seen=240,
+        rank64_actual_global_draws_seen=120,
+        video_pair_objective_actual_global_draws_seen=120,
+    )
+    base.write_text(json.dumps(payload))
+    profile = {
+        **code.continuous_profile(),
+        "base_sha": code.sha(base),
+        "history_key": "program_stratified_invocations",
+        "name": "s4-program-stratified",
+    }
+    monkeypatch.setattr(code, "continuous_profile", lambda *a, **kw: profile)
+    monkeypatch.setattr(code, "continuous_matched_bindings", lambda *a, **kw: {})
+    monkeypatch.setattr(code, "program_training_bindings", lambda *a: {})
+    prep_path = root / "artifacts/prep/report.json"
+    prep = json.loads(prep_path.read_bytes())
+    prep["exclusions"] = {
+        "scope": "explicit source-bound pilot-family exclusions; not globally unseen"
+    }
+    prep_path.write_text(json.dumps(prep))
+    profile["prep_sha"] = code.sha(prep_path)
+
+    def launch(start, end, base_path):
+        path = invoke(start, end, base_path)
+        receipt = json.loads(path.read_bytes())
+        eb = receipt["exposure_binding"]
+        for target in (
+            eb["final_report"]["path"],
+            eb["runtime_report_snapshot"]["path"],
+            eb["runtime_report_path"],
+        ):
+            target = Path(target)
+            raw = json.loads(target.read_bytes())
+            raw["losses"] = [1.0] * end
+            if start and bad_prefix:
+                raw["losses"][0] = 2.0
+            target.write_text(json.dumps(raw))
+
+        for key in ("final_report", "runtime_report_snapshot"):
+            eb[key] = code.bind(Path(eb[key]["path"]))
+        receipt.pop("parent_selection")
+        path.write_text(json.dumps(receipt))
+        return path
+
+    out1 = root / "artifacts/exposure023"
+    first = code.prepare_continuous(
+        root, legacy, out1, index, launch(0, 10, base), program_stratified=True
+    )
+    assert len(first["appended_artifacts"]) == 1
+    assert first["program_stratified_actual_global_draws_seen"] == 120
+    out2 = root / "artifacts/exposure024"
+    if bad_prefix:
+        with pytest.raises(ValueError, match="program_resume_loss_prefix"):
+            code.prepare_continuous(
+                root,
+                legacy,
+                out2,
+                index,
+                launch(10, 20, out1 / "report.json"),
+                program_stratified=True,
+            )
+        return
+    second = code.prepare_continuous(
+        root, legacy, out2, index, launch(10, 20, out1 / "report.json"), program_stratified=True
+    )
+    assert second["program_stratified_actual_global_draws_seen"] == 240
+    assert second["appended_artifacts"] == []
+    assert len(second["program_stratified_invocations"]) == 2
+    for key in history_keys:
+        assert second[key] == payload[key]
+    assert [
+        second[k]
+        for k in (
+            "continuous_actual_global_draws_seen",
+            "continuous_matched_actual_global_draws_seen",
+            "rank64_actual_global_draws_seen",
+            "video_pair_objective_actual_global_draws_seen",
+        )
+    ] == [240, 240, 120, 120]
+    assert second["unknown_update_bearing_inputs"] == 0
