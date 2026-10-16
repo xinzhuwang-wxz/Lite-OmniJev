@@ -61,7 +61,10 @@ def main() -> int:
             args.asset_manifest, args.model_root, MODEL_ID, require_weights=True
         )
         samples = baseline.load_samples(args.data)
-        baseline.validate_samples(samples, cohort="video")
+        # A pinned TRAIN slice, not a dev-500 build: skip the 500-row dev
+        # contract, keep the identity-uniqueness part of it.
+        if len({sample.id for sample in samples}) != len(samples):
+            raise baseline.DevelopmentBaselineError("duplicate sample ids in slice")
         if len(samples) != 150:
             raise SystemExit(f"expected 150 slice rows, found {len(samples)}")
         processor = baseline.default_processor_factory(directory)
