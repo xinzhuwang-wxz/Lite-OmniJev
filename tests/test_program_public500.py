@@ -52,3 +52,23 @@ def test_joint_nll_preserves_u_and_conditional_distribution():
     del records[0]["raw_logits"]["U"]
     with pytest.raises(ValueError, match="legal"):
         module.losses(records, source)
+
+
+def test_text_command_omits_inapplicable_image_budget(tmp_path):
+    command = module.evaluator_command(
+        "text", Path("model"), Path("adapter"), Path("data"), None, tmp_path, 600
+    )
+    assert "--image-max-soft-tokens" not in command
+    assert "--media-root" not in command
+    assert module.image_budget("text") is None
+    assert command[command.index("--passes") + 1] == "1"
+
+
+@pytest.mark.parametrize("cohort", ["image", "audio", "screenshot"])
+def test_media_command_preserves_original_budget(cohort, tmp_path):
+    command = module.evaluator_command(
+        cohort, Path("model"), Path("adapter"), Path("data"), Path("media"), tmp_path, 600
+    )
+    assert command[command.index("--image-max-soft-tokens") + 1] == "1120"
+    assert command[command.index("--media-root") + 1] == "media"
+    assert module.image_budget(cohort) == 1120

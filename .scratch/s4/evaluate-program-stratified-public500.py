@@ -223,7 +223,7 @@ def prepare(cohort, cross_source, execute):
         "source_archive_sha256": ARCHIVE_SHA,
         "source_file_sha256": source_hashes,
         "dtype": "bfloat16",
-        "image_max_soft_tokens": 1120,
+        "image_max_soft_tokens": image_budget(cohort),
         "cost": None,
         "stage_gate": False,
         "selected_ids_sha256": hashlib.sha256(
@@ -235,6 +235,39 @@ def prepare(cohort, cross_source, execute):
         "quality_inheritance": False,
     }
     return receipt, samples, data, media, model, adapter, cross
+
+
+def image_budget(cohort):
+    return None if cohort == "text" else 1120
+
+
+def evaluator_command(cohort, model, adapter, data, media, output, budget_seconds):
+    command = [
+        "timeout",
+        "--signal=INT",
+        "--kill-after=20s",
+        str(budget_seconds),
+        PYTHON,
+        "-m",
+        "scripts.s1_dev_eval",
+        "--model-dir",
+        str(model),
+        "--adapter",
+        str(adapter),
+        "--data",
+        str(data),
+        "--passes",
+        "1",
+        "--output-dir",
+        str(output / "eval"),
+        "--report",
+        str(output / "report.json"),
+    ]
+    if media:
+        command.extend(["--media-root", str(media)])
+    if image_budget(cohort) is not None:
+        command.extend(["--image-max-soft-tokens", str(image_budget(cohort))])
+    return command
 
 
 def main():
@@ -291,31 +324,9 @@ def main():
                 metrics = result["metrics"]
                 receipt["cross_forward_result"] = result
             else:
-                command = [
-                    "timeout",
-                    "--signal=INT",
-                    "--kill-after=20s",
-                    str(a.budget_seconds),
-                    PYTHON,
-                    "-m",
-                    "scripts.s1_dev_eval",
-                    "--model-dir",
-                    str(model),
-                    "--adapter",
-                    str(adapter),
-                    "--data",
-                    str(data),
-                    "--passes",
-                    "1",
-                    "--image-max-soft-tokens",
-                    "1120",
-                    "--output-dir",
-                    str(a.output / "eval"),
-                    "--report",
-                    str(a.output / "report.json"),
-                ]
-                if media:
-                    command.extend(["--media-root", str(media)])
+                command = evaluator_command(
+                    a.cohort, model, adapter, data, media, a.output, a.budget_seconds
+                )
                 receipt["command"] = command
                 with (a.output / "run.log").open("x") as log:
                     process = subprocess.run(
