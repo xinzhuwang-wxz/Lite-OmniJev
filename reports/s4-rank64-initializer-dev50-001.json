@@ -1,0 +1,41 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "stage_gate": false,
+  "training_authorized": false,
+  "parity_validated": false,
+  "parent_quality_inherited": false,
+  "gpu_requested": true,
+  "budget_seconds": 180,
+  "cost_usd": null,
+  "scope": "Independent rank64 initializer own DEV50 baseline; root review required",
+  "policy_sha256": "0cc0d96a2f77edc857dc2904cff78af95d3c1fd5daa56110637bb0d695292ff1",
+  "initializer_sha256": "62920299c7a1ac33b2a874b586a9d7f3ea3eaa4e38198bc20388642482318fc6",
+  "initializer_config_sha256": "8d79bb86dc522bc6da2b3de170dc704e51b60e2d2518582b07e8ffbfcdd6bc0a",
+  "expansion_report_sha256": "05e97013ac5d474866fdf208611bfef618bdfb65f5770c18f2924d21d37b2be7",
+  "controlled_failure_receipt_sha256": "5c7aecf6541122d240668a8bc4ebc0160fe4ceee50e61d66bbd59d4f24a18683",
+  "wrapper_sha256": "1b944ca8eba834c2c3afa48cc331344751db6245d16b0c244126edae31cdf714",
+  "candidate": {
+    "accuracy": 0.68,
+    "brier": 0.44251411362234405,
+    "count": 50,
+    "coverage_at_error": 0.1,
+    "ece15": 0.1090212476990298,
+    "max_error": 0.05
+  },
+  "parent": {
+    "accuracy": 0.66,
+    "brier": 0.44748601999097937,
+    "count": 50,
+    "coverage_at_error": 0.12,
+    "ece15": 0.10419439341273157,
+    "max_error": 0.05
+  },
+  "paired_input_hashes_verified": 50,
+  "shortlist_passed": true,
+  "candidate_receipt_sha256": "e6febc0e5859fe7c8f441f470cfc52555d7652c0abc0c1431e9cb6d52da9b954",
+  "candidate_records_sha256": "d2584a29150a4093a0e6f59354b18646c43301b86b17177c06ab17e1459d2e9a",
+  "parent_receipt_sha256": "e221e02775c3beb4eb26863b60f6bce6ed00fba5cc62ae4823280b119fb8ae56",
+  "next_step": "root review only; no automatic training",
+  "wall_seconds": 70.29653912782669
+}

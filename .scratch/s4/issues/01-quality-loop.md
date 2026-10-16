@@ -49,3 +49,7 @@ S5校准正式验收、S6/E2B正式验收、5b、付费/租卡开关、生产部
 本轮pairedTRAIN12 before7/12→after9/12、CE降16.78%、输入mapping12一致，仅部分拟合非泛化。固定300pairs课程CPU完整审计通过，global100仅上限，首次10step已DEV34vs33/Brier.424982/ECE.080932；019实际78known/unknown0/isolated/fullcheckpoint闭合。root在固定20min窗口12:20–12:40内续step10→20 session46306、保持完整AdamW/RNG，结束接固定DEV50；不每次重置/换data、不盲全100，所有原质量门保持。
 
 本轮固定matched课程step10宽video150111vs父116、step20DEV30vs33，窗口结束不续第三段。曝光020真实35.934秒/80known/unknown0闭合。r64容量创新CPU保前缀/scale通过，但真实GPU初始化12输入概率差.030967超过.001，停止训练前置，准备fresh r16/r64控制诊断；不降低数值/质量门槛。LoopConfig限定16/32及64/128，P0不变，配置支持不等于实验获准启动或模型通过。
+
+独立r64候选决策：受控GPUfresh16/重复16/历史全一致，r64概率差.030967，不能等价替换。按ADR0015改为新容量候选独立自身DEV50 baseline（session98268/180秒），不继承f2db指标、不将失败parity改pass；固定独立研究政策0cc0d96a…，正式S4/S5/S6及pack .001均保持。root已部署b97edc0配置源/archive636aca42…，仍未训练r64。
+
+独立r64自身DEV50真实34/50/Brier.442514，达到研究筛选；rootreview8468c583…仅准first10/360秒。CPUpreflight29.159秒ready、actualderivedconfige0191602…已固定，训练session81664/PID259607/SwanLab nkksm663，终态须自身+2题（36/50）/Brier改善才宽video150，不自动续训。新跨视频条件排序objective仅CPU数学提案/准备，与旧同family pair contract隔离，尚未训练或声称创新收益。
