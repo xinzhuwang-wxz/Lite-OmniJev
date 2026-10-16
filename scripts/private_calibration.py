@@ -1118,7 +1118,7 @@ def _execute(
 
         source_root = Path(__file__).resolve().parents[1]
         code_root = inputs / "code"
-        for directory in ("scripts", "train", "eval", "data"):
+        for directory in ("scripts", "train", "eval", "data", "serve"):
             for path in sorted((source_root / directory).rglob("*.py")):
                 copy_bound(path, sha256_file(path), code_root / path.relative_to(source_root))
         data_paths = []

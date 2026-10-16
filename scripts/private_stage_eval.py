@@ -240,7 +240,7 @@ def code_hash() -> str:
     return sha256_json(
         {
             str(path.relative_to(root)): sha256_file(path)
-            for directory in ("scripts", "train", "eval", "data")
+            for directory in ("scripts", "train", "eval", "data", "serve")
             for path in sorted((root / directory).rglob("*.py"))
         }
     )
