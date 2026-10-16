@@ -1,0 +1,235 @@
+{
+  "report": "s4-frontier-research-002",
+  "date": "2026-10-16",
+  "scope": "round-2 research-only, zero GPU; 7 new dimensions (data/simulator-in-the-loop, retrieval, routing, composition, training dynamics, audio, calibration-as-service)",
+  "ranking_criterion": "novelty x failure-mode fit x expected gain x feasibility; components with solid precedent honestly demoted",
+  "ideas": [
+    {
+      "id": "II-2",
+      "name": "Twin-Track Scripted Synthesis (TSS)",
+      "rank": 1,
+      "dimension": "data construction (simulator + DSP, crossmodal)",
+      "one_liner": "One event script renders synchronized video and audio tracks so every crossmodal AND question has exact compositional ground truth by construction, with counterfactual edits applied to a single modality component at a time (change video only -> answer must flip/stay), for decision-LoRA training.",
+      "novelty": {
+        "claim": "Synthetic AVQA datasets exist (Tsinghua AVQA 2022, templated) but are open-loop dataset construction; single-script dual-track rendering with per-modality counterfactual control and exact compositional truth for decision-token training not found in retrieval.",
+        "nearest_neighbors": [
+          {"name": "AVQA (Tsinghua, ACM MM 2022)", "url": null, "difference": "synthetic templated AVQA but no counterfactual component control, no decision-token training, open-loop"},
+          {"name": "MUSIC-AVQA", "url": "https://arxiv.org/html/2203.14072v2", "difference": "real data, no control over composition truth"},
+          {"name": "AGQA", "url": "https://arxiv.org/abs/2103.16002", "difference": "single-modality video program generation"}
+        ],
+        "search_terms": ["synthetic audio-visual question answering generation simulation SoundSpaces paired audio video training data -> no dual-track counterfactual decision-training hit"]
+      },
+      "failure_modes_hit": ["crossmodal500 71.0% (worst)", "ECE .252 (worst)", "unimodal shortcuts"],
+      "gain_mechanism": "exact AND truth enables 001-I1 factorized targets and II-5 sub-decision supervision; per-modality edits teach which component decides the answer (executable version of 001-I9 equivariance)",
+      "gain_estimate": {"points": "+3 to +6 crossmodal, ECE down", "basis": "modality-bias correction literature scale; main uncertainty is sim-to-real transfer"},
+      "contract": {"status": "compliant", "notes": "data-side; simulator + simple DSP event synthesis, no generative-model dependency or license risk; render/DSP pipeline deps to be listed per AGENTS new-dependency rule"},
+      "pilot": {
+        "cpu_verifiable": "1-2k dual-track samples covering AND composition and counterfactual edits; zero-GPU fallback: build a counterfactual-consistency eval set first and measure current model's component-dependence bias (pure evaluation, no training)",
+        "gpu_budget_min": 45,
+        "design": "SFT with 30% synthetic mix; eval crossmodal dev + real-distribution slices (sim2real check)"
+      },
+      "gates": {
+        "success": "crossmodal dev +2pt or ECE <=0.18 with no text/screenshot regression",
+        "abandon": "zero gain on real-distribution slices (sim2real broken) OR counterfactual eval shows components already correct (problem is not composition)"
+      },
+      "risks": ["synthetic-real domain gap (domain-randomized render params, real data dominates mix)", "audio DSP fidelity (event sounds only, exclude speech)", "CPU render time budget"]
+    },
+    {
+      "id": "II-5",
+      "name": "Sub-Decision Auxiliary Supervision (SAS)",
+      "rank": 2,
+      "dimension": "composition / training-time decomposition",
+      "one_liner": "Programmatically decompose crossmodal AND questions into modality sub-questions and supervise them as auxiliary training tasks for the same decision LoRA; inference remains single-forward single-token, decomposition exists only at training time.",
+      "novelty": {
+        "claim": "All decomposition precedents are inference-time multi-step pipelines (zero-shot VQA decomposition NeurIPS 2023, Successive Prompting, AGQA-Decomp at eval); training-time auxiliary decomposition supervision with single-forward inference and no CoT found no direct precedent (search summary itself flagged the combination as possibly new).",
+        "nearest_neighbors": [
+          {"name": "AGQA-Decomp", "url": null, "difference": "decomposition engine used at evaluation, not as training-time auxiliary supervision"},
+          {"name": "zero-shot VQA decomposition (NeurIPS 2023)", "url": null, "difference": "multi-step inference pipeline"},
+          {"name": "001-I6 MCMD", "url": null, "difference": "modality-subset INPUT distillation, not question decomposition"}
+        ],
+        "search_terms": ["question decomposition auxiliary supervision training single forward no chain-of-thought compositional generalization VLM -> zero direct hit"]
+      },
+      "failure_modes_hit": ["crossmodal 71.0 (composition errors)", "relational cluster indirectly (isomorphic predicate decomposition)"],
+      "gain_mechanism": "multi-task auxiliary targets teach internal factorization that the single-token readout absorbs",
+      "gain_estimate": {"points": "+2 to +4 crossmodal", "basis": "multi-task VQA gains typical 2-4pt"},
+      "contract": {"status": "compliant", "notes": "training-side auxiliary samples only; inference unchanged"},
+      "pilot": {
+        "cpu_verifiable": "sub-question generation from program lattice or II-2 scripts",
+        "gpu_budget_min": 45,
+        "design": "mixed main+auxiliary SFT, auxiliary weight <=0.3 with annealing; eval crossmodal dev"
+      },
+      "gates": {"success": "+2pt or ECE improved >=30%", "abandon": "main task diluted (drop >1pt with no gain)"},
+      "risks": ["gradient competition (weight scheduling)", "sub-question phrasing bias (template randomization)"]
+    },
+    {
+      "id": "II-4",
+      "name": "Program-Key kNN Decision Interpolation (PKI)",
+      "rank": 3,
+      "dimension": "retrieval / readout calibration",
+      "one_liner": "Datastore over TRAIN pool keyed by (question embedding + program-structure encoding + modality/task type) with gold/teacher option distributions as values; at inference interpolate retrieved distributions with the single-token readout, lambda conditioned on (neighbor distance, neighbor agreement, candidate entropy) fit on the calibration split.",
+      "novelty": {
+        "claim": "Components have precedent (kNN-Prompt does neighbor label distributions for zero-shot MCQ; Drozdov conditions lambda on retrieval distance); the combination typed-decision x program-structure keys x calibration-fit lambda with disagreement features not found.",
+        "nearest_neighbors": [
+          {"name": "kNN-Prompt", "url": "https://arxiv.org/abs/2205.13792", "difference": "zero-shot ICL assistance, no typed-decision calibration, no program keys"},
+          {"name": "kNN-LM", "url": "https://openreview.net/pdf?id=HklBjCEKvH", "difference": "LM distribution interpolation over hidden states"},
+          {"name": "Drozdov et al. 2022", "url": "https://aclanthology.org/2022.findings-emnlp.218.pdf", "difference": "distance-conditioned lambda for kNN-LM, not decision calibration"}
+        ],
+        "search_terms": ["kNN-LM retrieval interpolation classification multiple choice calibration nearest neighbor label distribution -> mechanism precedent; typed x program-key x calibrated-lambda combination zero hit"]
+      },
+      "failure_modes_hit": ["ECE .252 (interpolation shrinks overconfidence)", "long-tail questions (neighbor prior)", "oracle complementarity 81.8% suggests external signal usable"],
+      "gain_mechanism": "non-parametric smoothing of the decision distribution with train-pool statistics",
+      "gain_estimate": {"points": "ECE to <=0.15 scale, acc +0.5 to +1.5", "basis": "kNN interpolation literature scale, conservative"},
+      "contract": {"status": "serving-decision-needed", "notes": "adds ANN retrieval dependency at inference (vLLM sidecar, ms-level latency but changes serving shape); training untouched"},
+      "pilot": {
+        "cpu_verifiable": "fully zero-GPU on cached dev logits + TRAIN labels: build index, fit lambda, three arms (none / fixed lambda / conditioned lambda)",
+        "gpu_budget_min": 0,
+        "design": "offline interpolation study"
+      },
+      "gates": {"success": "ECE reduced >=25% with no accuracy drop", "abandon": "gold distribution not in neighbor top-10 (retrieval keys fail)"},
+      "risks": ["low key discrimination on short questions (program-structure key mitigates)", "leakage guard (TRAIN pool only, family isolation preserved)", "serving engineering"]
+    },
+    {
+      "id": "II-1",
+      "name": "Closed-Loop Question Synthesis (CLQS)",
+      "rank": 4,
+      "dimension": "data construction (error-driven, relational)",
+      "one_liner": "Program-grammar question synthesis over TRAIN-family videos and world state, closed-loop on current error clusters (per-predicate generation rate inversely proportional to dev correctness), plus nuisance re-renders (texture/lighting/color domain randomization with label-invariant pairs).",
+      "novelty": {
+        "claim": "AGQA/CLOSURE generation is open-loop, not error-driven, not decision-token; error-cluster-driven closed-loop generation + domain-randomized re-render + decision LoRA not found ('simulator-in-the-loop decision calibration training' retrieval: zero direct hit).",
+        "nearest_neighbors": [
+          {"name": "AGQA / CLOSURE / AGQA2.0", "url": "https://arxiv.org/abs/2103.16002", "difference": "open-loop program generation for benchmarks, no error feedback loop"},
+          {"name": "domain randomization (Tobin 2017 lineage)", "url": null, "difference": "sim2real robotics, not decision QA; concept precedent for nuisance re-render"},
+          {"name": "Puri et al. 2020 synthetic QA", "url": null, "difference": "text QA, open-loop"}
+        ],
+        "search_terms": ["simulator in the loop synthetic training data video question answering counterfactual video generation training 2025 -> fragmented, zero closed-loop decision-calibration hit"]
+      },
+      "failure_modes_hit": ["relational cluster 50 errors (in/out 22, motion 15, start/end 13)", "robustness/U boundary via nuisance pairs"],
+      "gain_mechanism": "error-inverse sampling concentrates training mass on failing predicates; pairs naturally with 001-I1 factorized targets (synthetic data carries predicate truth)",
+      "gain_estimate": {"points": "+3 to +6 relational slices", "basis": "hard-example mining analogues"},
+      "contract": {"status": "compliant", "notes": "generation confined to TRAIN families; variants never cross pools; holdout untouched"},
+      "pilot": {
+        "cpu_verifiable": "generation pipeline + first-round error profile from cached dev diagnostics",
+        "gpu_budget_min": 45,
+        "design": "SFT 2-4k closed-loop-generated samples mixed with 50% original"
+      },
+      "gates": {"success": "relational slice +3pt", "abandon": "closed-loop no better than uniform synthesis (closed-loop value falsified)"},
+      "risks": ["template distribution shift (keep templates near original family)", "synthetic-template overfit (50% original mix)"]
+    },
+    {
+      "id": "II-3",
+      "name": "Twin Cascade with U port (TCU)",
+      "rank": 5,
+      "dimension": "routing (engineering quick win, NOT claimed as paradigm)",
+      "one_liner": "Candidate-first serving; its single-token readout entropy, jointly calibrated against (candidate, base, gold) outcomes on the calibration split (UEC-isomorphic), routes three ways: keep candidate / escalate to frozen base / emit U; escalation only on high-uncertainty tail.",
+      "novelty": {
+        "claim": "Mechanism is NOT new (TRIAGE UEC, UCCI, FrugalGPT lineage); our unique assets are the twin same-weights-minus-adapter structure (no style jump on escalation), U as a first-class routing port, and measured complementarity anchors (ambiguous base 5/7 vs candidate 2/7; oracle 81.8%).",
+        "nearest_neighbors": [
+          {"name": "TRIAGE / UEC", "url": null, "difference": "calibrates SLM entropy by joint SLM-LLM outcomes as deferral signal - nearly isomorphic mechanism"},
+          {"name": "UCCI (2026)", "url": null, "difference": "calibrated uncertainty for cost-optimal cascades"},
+          {"name": "Don't Build a Router (Distill Labs)", "url": null, "difference": "train small model to signal deferral - equivalent to 001-I2"}
+        ],
+        "search_terms": ["LLM router cascade entropy-based deferral calibrated routing small large model 2024 2025 -> rich precedent, honest demotion"]
+      },
+      "failure_modes_hit": ["ambiguous family (base 5/7 vs candidate 2/7 without any training)", "overall accuracy ceiling via 81.8% oracle complementarity"],
+      "gain_mechanism": "routing without learning error approaches oracle complementarity; realistic entropy signal imperfect",
+      "gain_estimate": {"points": "+1 to +2 overall plus ambiguous repair", "basis": "oracle ceiling 81.8% vs current 76.6; partial realizability"},
+      "contract": {"status": "serving-decision-needed", "notes": "second forward on escalation path (single-step/latency contract); zero training"},
+      "pilot": {
+        "cpu_verifiable": "fully zero-GPU: fit routing thresholds on cached candidate/base/gold logits, simulate routed outcomes",
+        "gpu_budget_min": 0,
+        "design": "offline routing simulation with preregistered escalation percentile"
+      },
+      "gates": {"success": "ambiguous >=5/7, overall +1pt, escalation rate <20%", "abandon": "entropy AUC <0.7 on calibration split"},
+      "risks": ["escalation rate runaway (percentile-preregistered thresholds)", "output-style inconsistency concern (both official template, low)"]
+    },
+    {
+      "id": "II-8",
+      "name": "Audio Predicate Synthesis",
+      "rank": 6,
+      "dimension": "data construction (audio)",
+      "one_liner": "Programmatic audio event scenes (count/order/time-window/source-identity/duration-loudness-pitch predicates) with exact truth, targeting Score/Noul audio questions and audio 79.8%; single-track audio version of II-2 and audio data source for 001-I1.",
+      "novelty": {
+        "claim": "AVQA 2022 synthetic templated precedent exists for dataset construction; predicate-programmatic audio + decision-token training not found.",
+        "nearest_neighbors": [
+          {"name": "AVQA (Tsinghua ACM MM 2022)", "url": null, "difference": "templated synthetic questions, no predicate-programmatic counterfactual control"},
+          {"name": "DCASE synthetic-data tradition", "url": null, "difference": "event detection, not decision QA"}
+        ],
+        "search_terms": ["same family as II-2 query; zero decision-training hit"]
+      },
+      "failure_modes_hit": ["audio500 79.8% (second-worst modality)", "predicate structure isomorphic to relational cluster"],
+      "gain_mechanism": "same as II-2",
+      "gain_estimate": {"points": "+2 to +4 audio", "basis": "same as II-2, smaller slice"},
+      "contract": {"status": "compliant", "notes": "DSP-only synthesis; speech excluded by design"},
+      "pilot": {"cpu_verifiable": "generation pipeline", "gpu_budget_min": 30, "design": "SFT mix eval audio dev"},
+      "gates": {"success": "audio +2pt", "abandon": "no gain or timbre-overfit artifacts"},
+      "risks": ["event-sound realism (timbre domain randomization)", "not applicable to speech questions (explicitly excluded)"]
+    },
+    {
+      "id": "II-7",
+      "name": "Typed Temperature Mixture of Experts (T2ME)",
+      "rank": 7,
+      "dimension": "calibration-as-service (C4 extension, NOT claimed as new)",
+      "one_liner": "Per-(decision-type x modality x feature-bucket) temperature experts fit on the calibration split with expert selection on calibration data; optionally stacked with C1 conformal (set size as temperature feedback).",
+      "novelty": {
+        "claim": "No paradigm claim: AdaTS (per-sample temperature, AAAI 2023) and ATS (per-token temperature for LLMs, EMNLP 2024) already cover input-adaptive temperature; only the typed-expert + conformal joint engineering combination is ours.",
+        "nearest_neighbors": [
+          {"name": "AdaTS", "url": "https://arxiv.org/abs/2207.06211", "difference": "per-sample temperature via learned module"},
+          {"name": "ATS (Xie et al., EMNLP 2024)", "url": "https://aclanthology.org/2024.emnlp-main.1007.pdf", "difference": "per-token temperature, PEFT-style implementation"}
+        ],
+        "search_terms": ["input-dependent adaptive temperature scaling calibration LLM per-sample temperature 2024 2025 -> direct precedent found (demoted)"]
+      },
+      "failure_modes_hit": ["ECE .252, especially crossmodal"],
+      "gain_mechanism": "heterogeneity-aware post-hoc scaling",
+      "gain_estimate": {"points": "ECE <=0.18", "basis": "post-hoc calibration typical"},
+      "contract": {"status": "compliant", "notes": "post-hoc, readout-side; serving config change only"},
+      "pilot": {"cpu_verifiable": "fully zero-GPU on cached logits", "gpu_budget_min": 0, "design": "fit typed experts, compare vs global temperature"},
+      "gates": {"success": "ECE <=0.18", "abandon": "<10% better than global temperature"},
+      "risks": ["bucket overfitting (preregister <=12 buckets)"]
+    },
+    {
+      "id": "II-6",
+      "name": "Decision LoRA Soup",
+      "rank": 8,
+      "dimension": "training dynamics (ops quick win, NOT claimed as new)",
+      "one_liner": "Weight-average decision LoRAs from same-config different-seed/data-order runs (same basin, safe) with a logit-space soup arm as control; zero inference cost.",
+      "novelty": {
+        "claim": "Zero novelty: Model Soups / Model Stock / Branch Soup precedent complete; positioned purely as an ops win.",
+        "nearest_neighbors": [
+          {"name": "Model Soups", "url": "https://arxiv.org/abs/2203.05482", "difference": "dense fine-tunes; same-basin requirement"},
+          {"name": "Model Stock (ECCV 2024)", "url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/06044.pdf", "difference": "few-checkpoint smart merging"},
+          {"name": "Branch Soup", "url": "https://www.sciencedirect.com/science/article/pii/S0925231226028043", "difference": "notes LoRA-soup contrast; longer shared trajectory = safer averaging"}
+        ],
+        "search_terms": ["LoRA soup model soup adapter averaging checkpoint averaging failure modes -> precedent-rich; known failure modes: cross-basin degradation, task interference (TIES/DARE line)"]
+      },
+      "failure_modes_hit": ["variance-type errors (weight-space version of sampling variance)"],
+      "gain_mechanism": "basin-internal variance reduction",
+      "gain_estimate": {"points": "+0.5 to +1", "basis": "soup literature, modest"},
+      "contract": {"status": "compliant", "notes": "no contract impact"},
+      "pilot": {"cpu_verifiable": "zero-GPU if multiple checkpoints exist: average weights, re-evaluate cached eval? (re-eval needs GPU inference pass; treat as <=15min GPU or defer to next scheduled eval)", "gpu_budget_min": 15, "design": "uniform soup vs best single vs logit-soup"},
+      "gates": {"success": "+0.5pt with no slice regression", "abandon": "soup underperforms best single (out-of-basin, drop)"},
+      "risks": ["interference across data-subset LoRAs (only soup same-task same-data seeds)"]
+    }
+  ],
+  "recommended_top3": ["II-2", "II-5", "II-4"],
+  "not_recommended": [
+    {"item": "II-6 / II-7 as 'innovation' projects", "reason": "precedent complete (Model Soups; AdaTS/ATS); execute as ops/calibration maintenance only"},
+    {"item": "II-3 framed as paradigm-level novelty", "reason": "TRIAGE/UEC, UCCI, FrugalGPT lineage covers the mechanism; keep as engineering quick win"},
+    {"item": "claiming retrieval/routing mechanism novelty externally", "reason": "kNN-Prompt and cascade-calibration precedents are strong; honesty and review-survivability require component-level attribution"}
+  ],
+  "needs_serving_or_user_decision": [
+    {"idea": "II-4 PKI", "conflict": "inference-side ANN retrieval dependency changes serving shape", "expected_gain": "large ECE improvement", "recommendation": "decide only after zero-GPU pilot passes gates"},
+    {"idea": "II-3 TCU", "conflict": "escalation second forward vs single-step/latency contract", "expected_gain": "+1-2pt + ambiguous repair", "recommendation": "same"},
+    {"idea": "II-2 / II-8", "conflict": "no model-contract conflict; new render/DSP data-pipeline dependencies must be documented (purpose/reuse/license) per AGENTS rule", "expected_gain": "+3-6pt", "recommendation": "submit dependency list with the ticket"}
+  ],
+  "integration_with_001": [
+    "II-2 (data) -> 001-I1 (factorized targets) + II-5 (sub-decision supervision) + 001-I6 (modality mixture distillation): three-front attack on crossmodal",
+    "II-1 (closed-loop synthesis) -> 001-I1 on the relational cluster",
+    "001-I2 (twin-divergence U) and II-3 (twin cascade) share the candidate-x-base divergence cache; build cache once, both become zero-marginal-cost",
+    "001-I3 (PMD test-time marginalization) and II-4 (PKI) share readout post-processing eval scaffolding"
+  ],
+  "evidence_notes": [
+    "Four zero/near-zero-precedent search terms logged in section 7 of the .md report (simulator-in-the-loop closed loop; typed-decision program-key interpolation; dual-track counterfactual AV synthesis; training-time decomposition supervision with single-forward inference).",
+    "Routing, temperature, soup dimensions returned rich precedent and were demoted honestly.",
+    "All external numbers/claims are search-summary second-hand with links; verify originals before external citation. Internal metrics quoted from task brief / coordinator message, not re-measured."
+  ]
+}
