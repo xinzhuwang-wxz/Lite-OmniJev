@@ -22,3 +22,8 @@
 
 ## 复现
 - 训练/评测/校准全部固定种子+代码哈希绑定;入口见 docs/runbooks/(training/sealed-gate/calibration)
+
+## D3P 候选封存实测(6000 题,校准后,2026-10-17)
+- 准确率:text 99.7 / screenshot 97.8 / image 92.6 / audio 88.1 / video 72.0 / crossmodal 79.7(校准零掉分)
+- ECE:text .0013 / screenshot .0086 / image .0192 / audio .0293(四模态过 .03 门),video .0316 / crossmodal .0469(ADR0023 披露)
+- 相对 e465 封存:video +0.3pp 且 ECE .0557→.0316,audio ECE 过门,其余持平

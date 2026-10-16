@@ -10,7 +10,7 @@
 - JevBench231:e465 76.62%(父 76.19%,+0.43pp;macro −2.46pp 披露)
 - video150:D3P 122/150(81.3%);DEV500 留任:text 99.6(0)/screenshot 96.8(−0.2)/image 82.6(−0.2)/audio 79.4(−0.4)
 - 封存 6000 题(e465 版):校准零准确率损失;ECE 校准后 text .0013/screenshot .0117/image .0193 达标,audio .0308/video .0557/crossmodal .0480 未达
-- D3P 版封存数字:【05:30 后填入】
+- D3P 版封存(6000 题,校准后):ECE 门 4/6 过(text .0013/screenshot .0086/image .0192/audio .0293),video .0316(近门)、crossmodal .0469 未达;校准零准确率损失;封存 video 72.0%(+0.3 vs e465 71.7)、image 92.6%(+0.1)、audio/crossmodal −0.3 内
 
 ## 质量局限(ADR0023,不假称达标)
 - 原门"video ≥ 教师 97% 比率(≈91.4%)"未达(74.4%/教师 94.2%)
