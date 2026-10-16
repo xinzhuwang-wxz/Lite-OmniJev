@@ -1,0 +1,71 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": [
+    "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "-m",
+    "scripts.s1_dev_eval",
+    "--model-dir",
+    "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "--adapter",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-ii5v-sas-001/arm2/adapter",
+    "--data",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s3-stable-probe-001/video-dev150.jsonl",
+    "--passes",
+    "2",
+    "--video-frames",
+    "16",
+    "--output-dir",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-ii5v-sas-001/arm2-eval",
+    "--report",
+    "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-ii5v-sas-001/arm2-video150-report.json",
+    "--media-root",
+    "/root/autodl-tmp/s3-media-candidates-001/video/media"
+  ],
+  "model_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "93b76bde14b52025145268598796a11c23c95f0ee38dc883da3bf467e51c5c3f",
+  "adapter_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/s4-ii5v-sas-001/arm2/adapter",
+  "data_sha256": "e9b91fedecf2ccf7dc30e837ac11bcc4b233624d1f6c16812a40b1319c15b080",
+  "samples": 150,
+  "passes": 2,
+  "video_num_frames": 16,
+  "repeat_identical": true,
+  "metrics": {
+    "count": 150,
+    "accuracy": 0.8133333333333334,
+    "ece15": 0.1094261978254818,
+    "brier": 0.3125308495471206,
+    "coverage_at_error": 0.14,
+    "max_error": 0.05,
+    "product_accuracy": 0.8133333333333334,
+    "mean_p_insufficient": 1.9715643625804475e-06,
+    "max_p_insufficient": 4.8695162010744034e-05,
+    "predicted_insufficient": 0
+  },
+  "counterfactual": false,
+  "code_revision": null,
+  "script_sha256": "12d387e778a685a8f49ef223f5fa2d26538e3e6a052c7c8e5013677186ad9c68",
+  "python": "3.11.17",
+  "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+  "device": "NVIDIA H20",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "peft": "0.21.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu_used": true,
+  "quality_gate": "not_run",
+  "cost": null,
+  "sidecar_sha256": "484b105515a2c5886f3162f2b5f24478f3fa3cfae247df8bdbc2008780b8e4eb",
+  "timing": {
+    "started_at": 1792179006.0858593,
+    "finished_at": 1792179230.4648998,
+    "duration_seconds": 224.3790407180786
+  },
+  "image_max_soft_tokens": {
+    "requested": null,
+    "effective": 280
+  }
+}
