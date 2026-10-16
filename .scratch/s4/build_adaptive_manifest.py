@@ -77,6 +77,9 @@ def main() -> int:
     if len(sys.argv) != 4:
         raise SystemExit("usage: build_adaptive_manifest.py MEDIA_ROOT DATA_JSONL OUTPUT")
     media_root, data_path, output = (Path(a) for a in sys.argv[1:])
+    import os
+
+    sys.path.insert(0, os.getcwd())
     rows = [json.loads(l) for l in data_path.read_text().splitlines() if l.strip()]
     manifest = {}
     for index, row in enumerate(rows):
@@ -89,6 +92,7 @@ def main() -> int:
         }
         if (index + 1) % 25 == 0:
             print(json.dumps({"progress": index + 1, "total": len(rows)}), flush=True)
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(manifest, indent=1) + "\n", encoding="utf-8")
     print(json.dumps({"videos": len(manifest), "output": str(output)}))
     return 0

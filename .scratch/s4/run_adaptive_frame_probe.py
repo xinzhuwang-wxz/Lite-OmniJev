@@ -27,6 +27,10 @@ def main() -> int:
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     import hashlib
+    import os
+    import sys
+
+    sys.path.insert(0, os.getcwd())
 
     import torch
     from peft import PeftModel
