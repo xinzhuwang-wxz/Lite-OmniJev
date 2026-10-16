@@ -111,3 +111,35 @@ def test_independent_policy_and_real_failed_probe_cannot_be_relabelled(tmp_path,
         monkeypatch.setattr(code, "RANK64_EVIDENCE_SHA", pins)
     with pytest.raises(ValueError):
         code.rank64_derivative_bindings(root, policy)
+
+
+def test_rank64_profile_uses_derived_config_and_an_independent_history_key():
+    code = module()
+    profile = code.continuous_profile(rank64=True)
+    assert profile["name"] == "s4-rank64-matched-pilot"
+    assert profile["history_key"] == "rank64_invocations"
+    assert (
+        profile["config_sha"] == "e01916029545aea72be7e03dc2cbb9a5b35530c26c4a71711ec1bd4518c6f871"
+    )
+    assert profile["prep_sha"] == code.MATCHED_CONTINUOUS_PREP_SHA
+    assert profile["data_sha"] == code.MATCHED_CONTINUOUS_DATA_SHA
+    assert profile["base_sha"] == "eb7502b939da6339d4944421cfafae297e2251101f88c9327a4466f9226cc81f"
+    assert profile["history_key"] != code.continuous_profile(True)["history_key"]
+
+
+def test_rank64_budget_refuses_old_rank16_or_other_initializer():
+    from test_reconcile_continuous_main_pool import final_report, fixed_config
+
+    code = module()
+    report = final_report(code)
+    prep = {
+        "status": "data_ready_only",
+        "parent_model": None,
+        "training_authorized": False,
+        "inventory_isolation": "isolated",
+    }
+    with pytest.raises(ValueError, match="continuous_frozen_config"):
+        code.continuous_fixed_identity(prep, fixed_config(), report, rank64=True)
+    config = {**fixed_config(), "rank": 64, "alpha": 128}
+    with pytest.raises(ValueError, match="continuous_original_f2db_parent"):
+        code.continuous_fixed_identity(prep, config, report, rank64=True)

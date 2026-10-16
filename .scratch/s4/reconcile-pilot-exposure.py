@@ -2687,8 +2687,17 @@ def continuous_matched_bindings(root, prepared, prep):
     return bindings
 
 
-def continuous_profile(matched=False):
+def continuous_profile(matched=False, rank64=False):
     """Exactly two frozen recipes; an unfrozen matched receipt is never executable."""
+    if rank64:
+        return {
+            "prep_sha": MATCHED_CONTINUOUS_PREP_SHA,
+            "data_sha": MATCHED_CONTINUOUS_DATA_SHA,
+            "config_sha": "e01916029545aea72be7e03dc2cbb9a5b35530c26c4a71711ec1bd4518c6f871",
+            "base_sha": "eb7502b939da6339d4944421cfafae297e2251101f88c9327a4466f9226cc81f",
+            "history_key": "rank64_invocations",
+            "name": "s4-rank64-matched-pilot",
+        }
     if matched:
         pins = {
             "prep_sha": MATCHED_CONTINUOUS_PREP_SHA,
@@ -2819,6 +2828,97 @@ def rank64_derivative_bindings(root: Path, policy_path: Path) -> tuple[dict, dic
     }
 
 
+def rank64_training_bindings(root, launch, config):
+    """Root-reviewed independent first10; never reuse the parent's measured quality."""
+    policy = root / "reports/explore/rank64-independent-candidate-policy-001.md"
+    bindings, identity = rank64_derivative_bindings(root, policy)
+    pins = {
+        "reports/s4-rank64-matched-pilot-cpu-001.json": (
+            "b67d684c05bb038b0fb0232a3bcb4360ca6b0f7e3a8731862de3fd4e30112311"
+        ),
+        "reports/s4-rank64-baseline-review-001.json": (
+            "8468c583b4bcb52f02a7bcce4e3f86782a456e6ac1ca735e559af6a72873a421"
+        ),
+        "reports/s4-rank64-initializer-dev50-001.json": (
+            "f05ae672360c869998120ac1452bff8ad1096e39e98d7a1acf7f533590f8aa51"
+        ),
+    }
+    receipts = []
+    for relative, expected in pins.items():
+        path = root / relative
+        payload, b = read_json(path)
+        require(b["sha256"] == expected, "rank64_root_baseline_binding")
+        bindings[str(path)] = expected
+        receipts.append(payload)
+    cpu, review, baseline = receipts
+    require(
+        cpu["status"] == "cpu_prepared_only"
+        and cpu["exit_code"] == 0
+        and cpu["derived_config_sha256"] == launch["derived_config_sha256"]
+        and cpu["data_sha256"] == MATCHED_CONTINUOUS_DATA_SHA,
+        "rank64_cpu_config_receipt",
+    )
+    require(
+        review["decision"] == "approve_first10"
+        and review["max_steps"] == 10
+        and review["max_seconds"] == 360
+        and review["policy_sha256"] == RANK64_POLICY_SHA
+        and review["initializer_sha256"] == RANK64_WEIGHTS_SHA
+        and review["baseline_report_sha256"]
+        == launch["baseline_report_sha256"]
+        == pins["reports/s4-rank64-initializer-dev50-001.json"]
+        and launch["baseline_review_sha256"] == pins["reports/s4-rank64-baseline-review-001.json"],
+        "rank64_root_first10_review",
+    )
+    require(
+        baseline["status"] == "completed"
+        and baseline["exit_code"] == 0
+        and baseline["gpu_requested"] is True
+        and baseline["paired_input_hashes_verified"] == 50
+        and baseline["initializer_sha256"] == RANK64_WEIGHTS_SHA
+        and baseline["initializer_config_sha256"] == RANK64_CONFIG_SHA
+        and baseline["candidate"]["count"] == 50
+        and 0.64 <= baseline["candidate"]["accuracy"] <= 1
+        and 0 <= baseline["candidate"]["brier"] <= 0.46748601999097937,
+        "rank64_actual_own_baseline",
+    )
+    for receipt in (launch, review, baseline):
+        require(
+            receipt["parity_validated"] is False and receipt["parent_quality_inherited"] is False,
+            "rank64_independent_quality_boundary",
+        )
+    require(
+        launch["source_commit"] == "b97edc0"
+        and launch["source_archive_sha256"] == RANK64_SOURCE_ARCHIVE_SHA,
+        "rank64_runtime_source",
+    )
+    original = root / "artifacts/s4-continuous-matched-pool-001/config-ce.json"
+    require(sha(original) == MATCHED_CONTINUOUS_CONFIG_SHA, "rank64_original_recipe_config")
+    old = json.loads(original.read_bytes())
+    require(config == {**old, "rank": 64, "alpha": 128}, "rank64_capacity_only_config_delta")
+    bindings[str(original)] = MATCHED_CONTINUOUS_CONFIG_SHA
+    launcher = root.parent / "launch-rank64-matched-pilot-001.py"
+    require(
+        sha(launcher) == "9ac9cea6e9a52429cd41041784a84faaf2cf37d8144b16550304c2a9d765560a",
+        "rank64_actual_launcher_source",
+    )
+    bindings[str(launcher)] = sha(launcher)
+    baseline_artifact = root / "artifacts/s4-rank64-initializer-dev50-001/uniform"
+    for name, field in (
+        ("receipt.json", "candidate_receipt_sha256"),
+        ("records.jsonl", "candidate_records_sha256"),
+    ):
+        path = baseline_artifact / name
+        require(sha(path) == baseline[field], "rank64_baseline_artifact_sha")
+        bindings[str(path)] = baseline[field]
+    return bindings, {
+        **identity,
+        "own_baseline": bind(root / "reports/s4-rank64-initializer-dev50-001.json"),
+        "root_first10_review": bind(root / "reports/s4-rank64-baseline-review-001.json"),
+        "actual_authorization_scope": "root reviewed first10 only; no automatic resume",
+    }
+
+
 def continuous_interval(final: dict, start: int, end: int) -> dict:
     """Cumulative optimizer steps define one non-overlapping exposure interval."""
     terminal_report(final, allow_paused=True)
@@ -2892,7 +2992,7 @@ def continuous_checkpoint(
     }
 
 
-def continuous_fixed_identity(prep: dict, config: dict, final: dict) -> None:
+def continuous_fixed_identity(prep: dict, config: dict, final: dict, *, rank64=False) -> None:
     require(
         prep.get("status") == "data_ready_only"
         and prep.get("parent") is None
@@ -2911,7 +3011,7 @@ def continuous_fixed_identity(prep: dict, config: dict, final: dict) -> None:
             config.get("video_num_frames"),
             config.get("image_max_soft_tokens"),
         )
-        == (100, 1200, 12, 42, 16, 32, 16, 1120),
+        == (100, 1200, 12, 42, 64 if rank64 else 16, 128 if rank64 else 32, 16, 1120),
         "continuous_frozen_config",
     )
     require(
@@ -2922,7 +3022,8 @@ def continuous_fixed_identity(prep: dict, config: dict, final: dict) -> None:
     )
     parent = final.get("init_adapter", {})
     require(
-        parent.get("weights_sha256") == CONTINUOUS_PARENT_SHA, "continuous_original_f2db_parent"
+        parent.get("weights_sha256") == (RANK64_WEIGHTS_SHA if rank64 else CONTINUOUS_PARENT_SHA),
+        "continuous_original_f2db_parent",
     )
     actual = dict(final["config"])
     require(actual.pop("init_adapter", None) == parent, "continuous_config_parent")
@@ -2949,9 +3050,11 @@ def prepare_continuous(
     launch_path: Path,
     *,
     matched_pool: bool = False,
+    rank64_candidate: bool = False,
 ) -> dict:
     """One settled invocation over one immutable pool, based on the preceding inventory."""
-    profile = continuous_profile(matched_pool)
+    profile = continuous_profile(matched_pool, rank64_candidate)
+    matched_pool = matched_pool or rank64_candidate
     started = time.monotonic()
     require(
         all(p.is_absolute() for p in (root, legacy_root, output, historical_index, launch_path)),
@@ -3052,7 +3155,11 @@ def prepare_continuous(
         # run.json is deliberately observed, never persisted as an immutable history binding.
         mutable_observation = bind(raw_path)
         observed_runtimes = {str(raw_path): mutable_observation["sha256"]}
-        for key in ("continuous_invocations", "continuous_matched_invocations"):
+        for key in (
+            "continuous_invocations",
+            "continuous_matched_invocations",
+            "rank64_invocations",
+        ):
             for old_invocation in base.get(key, []):
                 old = old_invocation["runtime_report_observation"]
                 if old["path"] != str(raw_path):
@@ -3062,7 +3169,7 @@ def prepare_continuous(
             "continuous_other_profile_runtime_changed",
         )
         interval = continuous_interval(final, start, end)
-        continuous_fixed_identity(prep, config, final)
+        continuous_fixed_identity(prep, config, final, rank64=rank64_candidate)
         runtime_data = bound("runtime_data")
         require(
             sha(runtime_data) == final["data_sha256"] == profile["data_sha"],
@@ -3075,6 +3182,12 @@ def prepare_continuous(
         )
         if matched_pool:
             bindings.update(continuous_matched_bindings(root, prep_path.parent, prep))
+        if rank64_candidate:
+            require(start == 0 and end <= 10 and not history, "rank64_first_invocation_only")
+            derivative_bindings, derivative_identity = rank64_training_bindings(
+                root, launch, config
+            )
+            bindings.update(derivative_bindings)
         sources = eb["source_files"]
         if history:
             require(sources == history[-1]["source_files"], "continuous_source_identity_changed")
@@ -3100,10 +3213,13 @@ def prepare_continuous(
         parent_dir = Path(parent["path"])
         require(
             parent_dir.is_absolute()
-            and sha(parent_dir / "adapter_model.safetensors") == CONTINUOUS_PARENT_SHA,
+            and sha(parent_dir / "adapter_model.safetensors")
+            == (RANK64_WEIGHTS_SHA if rank64_candidate else CONTINUOUS_PARENT_SHA),
             "continuous_parent_weights_sha",
         )
-        bindings[str(parent_dir / "adapter_model.safetensors")] = CONTINUOUS_PARENT_SHA
+        bindings[str(parent_dir / "adapter_model.safetensors")] = (
+            RANK64_WEIGHTS_SHA if rank64_candidate else CONTINUOUS_PARENT_SHA
+        )
         require(
             sha(parent_dir / "adapter_config.json") == parent["config_sha256"],
             "continuous_parent_config_sha",
@@ -3160,6 +3276,8 @@ def prepare_continuous(
                     and existing[0]["exposure"] == "current",
                     "continuous_single_current_pool",
                 )
+                if rank64_candidate:
+                    existing[0]["path"] = str(runtime_data)
             else:
                 artifact = {
                     **bind(runtime_data),
@@ -3318,6 +3436,16 @@ def prepare_continuous(
             report["continuous_matched_actual_global_draws_seen"] = end * 12
             report["actual_global_draws_seen"] = base["actual_global_draws_seen"]
             report["continuous_matched_pool_included"] = True
+        if rank64_candidate:
+            report["continuous_matched_invocations"] = base["continuous_matched_invocations"]
+            report["continuous_matched_actual_global_draws_seen"] = base[
+                "continuous_matched_actual_global_draws_seen"
+            ]
+            report["rank64_actual_global_draws_seen"] = end * 12
+            report["rank64_derivative_identity"] = derivative_identity
+            report["rank64_independent_candidate_included"] = True
+            report["parity_validated"] = False
+            report["parent_quality_inherited"] = False
         write(output / "report.json", report)
         return report
     except Exception as exc:
@@ -3393,6 +3521,7 @@ def main() -> int:
     parser.add_argument("--video-text-matched", action="store_true")
     parser.add_argument("--video-specialist", action="store_true")
     parser.add_argument("--native-event-condition", action="store_true")
+    parser.add_argument("--rank64-independent-candidate", action="store_true")
     parser.add_argument("--continuous-matched-pool", action="store_true")
     parser.add_argument("--continuous-main-pool", action="store_true")
     parser.add_argument("--continuous-launch-report", type=Path)
@@ -3401,12 +3530,16 @@ def main() -> int:
     try:
         if args.continuous_base_exposure is not None:
             require(
-                args.continuous_main_pool or args.continuous_matched_pool,
+                args.continuous_main_pool
+                or args.continuous_matched_pool
+                or args.rank64_independent_candidate,
                 "continuous_base_requires_branch",
             )
             launch_path = args.continuous_launch_report or args.root / "reports" / (
                 (
-                    "s4-continuous-matched-pool"
+                    "s4-rank64-matched-pilot"
+                    if args.rank64_independent_candidate
+                    else "s4-continuous-matched-pool"
                     if args.continuous_matched_pool
                     else "s4-continuous-main-pool"
                 )
@@ -3430,15 +3563,20 @@ def main() -> int:
                 / "reports"
                 / (
                     (
-                        "s4-continuous-matched-pool"
+                        "s4-rank64-matched-pilot"
+                        if args.rank64_independent_candidate
+                        else "s4-continuous-matched-pool"
                         if args.continuous_matched_pool
                         else "s4-continuous-main-pool"
                     )
                     + "-launch-001.json"
                 ),
                 matched_pool=args.continuous_matched_pool,
+                rank64_candidate=args.rank64_independent_candidate,
             )
-            if args.continuous_main_pool or args.continuous_matched_pool
+            if args.continuous_main_pool
+            or args.continuous_matched_pool
+            or args.rank64_independent_candidate
             else prepare(
                 args.root,
                 args.legacy_root,
