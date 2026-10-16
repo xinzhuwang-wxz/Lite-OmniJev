@@ -1,0 +1,429 @@
+{
+  "bindings": {
+    "baseline_records_sha256": "bdb6272f2d77c6a0fc02c95046c868a03be5e7c5a557ee7a70be7864aebc39e5",
+    "baseline_report_sha256": "7d2109fcab1034efb711a89f0cc084fe350e84d9ab80ff6c17d715d5616a0918",
+    "baseline_summary_sha256": "4f28ce6b4ea1dba9a37441b626552fd2bd128172c30e52525b110948257a680f",
+    "candidate_records_sha256": "0c6343a17c581d221b55c198e4e049fc09227b6b0bfa5aa76bc5e7377e6a8b30",
+    "candidate_report_sha256": "ba138054ab761cd1e222ab703face7ab1e82cd990ce7fab1c0659751d6502113",
+    "data_sha256": "e9b91fedecf2ccf7dc30e837ac11bcc4b233624d1f6c16812a40b1319c15b080",
+    "runner_sha256": "f2fa4821d37f46694baa94b573db562ffa3108b0d29953e00a6bcf6dad5e0aff"
+  },
+  "changed_predictions": [
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.6293639875517936,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-02731-5",
+      "nll_delta": 0.6806626522010539,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.3553410237429735,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-01220-5",
+      "nll_delta": -0.37988549304171926,
+      "target": "no"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.31912856464902756,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "existence",
+      "id": "clevrer-train-03423-5",
+      "nll_delta": 0.3221838442609979,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.18098796396707034,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-04868-10",
+      "nll_delta": 0.18165961543832765,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.3268751003102635,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "existence",
+      "id": "clevrer-train-08242-5",
+      "nll_delta": -0.34470259955488913,
+      "target": "no"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.48303810760190535,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-00150-5",
+      "nll_delta": 0.5042719707977312,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.06436679672027745,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-07088-5",
+      "nll_delta": 0.06445185475722681,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.3585141825946915,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-01676-5",
+      "nll_delta": 0.37072802920226877,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.2325257991343217,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-04137-5",
+      "nll_delta": -0.23447577117732976,
+      "target": "no"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.12483749349502493,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-09888-5",
+      "nll_delta": -0.125,
+      "target": "no"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.06047069677474748,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "existence",
+      "id": "clevrer-train-05730-5",
+      "nll_delta": -0.06054814524277319,
+      "target": "no"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.2792928835271756,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-06962-5",
+      "nll_delta": -0.2835220511370622,
+      "target": "no"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.3212599359362267,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "existence",
+      "id": "clevrer-train-02282-5",
+      "nll_delta": -0.32889835704065007,
+      "target": "no"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.3470109231032977,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-06936-5",
+      "nll_delta": -0.35186243569873454,
+      "target": "no"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.6397932747947026,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-07365-5",
+      "nll_delta": 0.7130029556883706,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.6397932747947026,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "existence",
+      "id": "clevrer-train-03788-5",
+      "nll_delta": 0.7130029556883706,
+      "target": "yes"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.06047069677474748,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-08576-5",
+      "nll_delta": -0.06054814524277319,
+      "target": "no"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.2325257991343217,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-09045-10",
+      "nll_delta": -0.23447577117732976,
+      "target": "no"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "no",
+      "brier_delta": 0.3889779755123488,
+      "candidate_correct": false,
+      "candidate_prediction": "yes",
+      "group": "existence",
+      "id": "clevrer-train-05095-5",
+      "nll_delta": 0.3972387416023224,
+      "target": "no"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "no",
+      "brier_delta": 0.19255553307114703,
+      "candidate_correct": false,
+      "candidate_prediction": "yes",
+      "group": "existence",
+      "id": "clevrer-train-08624-5",
+      "nll_delta": 0.19334038456167235,
+      "target": "no"
+    },
+    {
+      "baseline_correct": false,
+      "baseline_prediction": "yes",
+      "brier_delta": -0.18098796396707034,
+      "candidate_correct": true,
+      "candidate_prediction": "no",
+      "group": "existence",
+      "id": "clevrer-train-00388-5",
+      "nll_delta": -0.18165961543832765,
+      "target": "no"
+    },
+    {
+      "baseline_correct": true,
+      "baseline_prediction": "yes",
+      "brier_delta": 0.4225674108271579,
+      "candidate_correct": false,
+      "candidate_prediction": "no",
+      "group": "temporal",
+      "id": "clevrer-train-09819-5",
+      "nll_delta": 0.44372382555495804,
+      "target": "yes"
+    }
+  ],
+  "exit_code": 0,
+  "gpu_used": false,
+  "input_hash_limitation": "historical sidecars did not record input/tensor hashes; family_hash is not an input hash",
+  "paired_input_hashes_verified": null,
+  "probability_loss_definition": "conditional gold NLL and summed multiclass Brier without U; p_U separately",
+  "scope": "public dev paired diagnostic; no causal or quality-gate conclusion",
+  "stage_gate": false,
+  "status": "completed",
+  "summaries": {
+    "all": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 116,
+      "brier": {
+        "baseline": 0.3299093890344988,
+        "candidate": 0.3341014756173223,
+        "delta": 0.0041920865828234954
+      },
+      "candidate_correct": 116,
+      "corrected": 11,
+      "count": 150,
+      "gold_counts": {
+        "no": 68,
+        "yes": 82
+      },
+      "nll": {
+        "baseline": 0.4960813774725218,
+        "candidate": 0.5085834569333592,
+        "delta": 0.012502079460837368
+      },
+      "no_predictions": {
+        "baseline": 50,
+        "candidate": 68
+      },
+      "p_U": {
+        "baseline": 1.412494177091152e-06,
+        "candidate": 1.3629780609330228e-06,
+        "delta": -4.9516116158129115e-08
+      },
+      "probability_loss_improved": 97,
+      "probability_loss_worsened": 43,
+      "regressed": 11,
+      "yes_predictions": {
+        "baseline": 100,
+        "candidate": 82
+      }
+    },
+    "existence": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 29,
+      "brier": {
+        "baseline": 0.3042340724157983,
+        "candidate": 0.3357269362218626,
+        "delta": 0.03149286380606431
+      },
+      "candidate_correct": 29,
+      "corrected": 4,
+      "count": 39,
+      "gold_counts": {
+        "no": 21,
+        "yes": 18
+      },
+      "nll": {
+        "baseline": 0.4608376638543443,
+        "candidate": 0.4877034611247664,
+        "delta": 0.026865797270422098
+      },
+      "no_predictions": {
+        "baseline": 13,
+        "candidate": 17
+      },
+      "p_U": {
+        "baseline": 1.2996203154787611e-06,
+        "candidate": 9.362229093477984e-07,
+        "delta": -3.6339740613096273e-07
+      },
+      "probability_loss_improved": 23,
+      "probability_loss_worsened": 13,
+      "regressed": 4,
+      "yes_predictions": {
+        "baseline": 26,
+        "candidate": 22
+      }
+    },
+    "motion": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 13,
+      "brier": {
+        "baseline": 0.20784898598612128,
+        "candidate": 0.15534868993114867,
+        "delta": -0.05250029605497261
+      },
+      "candidate_correct": 13,
+      "corrected": 0,
+      "count": 14,
+      "gold_counts": {
+        "no": 4,
+        "yes": 10
+      },
+      "nll": {
+        "baseline": 0.3358779234888508,
+        "candidate": 0.26931973717165264,
+        "delta": -0.06655818631719818
+      },
+      "no_predictions": {
+        "baseline": 3,
+        "candidate": 3
+      },
+      "p_U": {
+        "baseline": 7.266603138506342e-07,
+        "candidate": 5.946036000018854e-07,
+        "delta": -1.320567138487488e-07
+      },
+      "probability_loss_improved": 12,
+      "probability_loss_worsened": 2,
+      "regressed": 0,
+      "yes_predictions": {
+        "baseline": 11,
+        "candidate": 11
+      }
+    },
+    "temporal": {
+      "U_predictions": {
+        "baseline": 0,
+        "candidate": 0
+      },
+      "baseline_correct": 74,
+      "brier": {
+        "baseline": 0.35784941986755653,
+        "candidate": 0.3592473110403054,
+        "delta": 0.0013978911727488552
+      },
+      "candidate_correct": 74,
+      "corrected": 7,
+      "count": 97,
+      "gold_counts": {
+        "no": 43,
+        "yes": 54
+      },
+      "nll": {
+        "baseline": 0.533373678368195,
+        "candidate": 0.5515114148013901,
+        "delta": 0.01813773643319505
+      },
+      "no_predictions": {
+        "baseline": 34,
+        "candidate": 48
+      },
+      "p_U": {
+        "baseline": 1.5568627821246622e-06,
+        "candidate": 1.6454594358284836e-06,
+        "delta": 8.85966537038214e-08
+      },
+      "probability_loss_improved": 62,
+      "probability_loss_worsened": 28,
+      "regressed": 7,
+      "yes_predictions": {
+        "baseline": 63,
+        "candidate": 49
+      }
+    }
+  },
+  "wrapper_binding": {
+    "candidate_sha256": "250ef3e3c8a5359e6d7b6aaaeafa6d12b253603669a4b9f8a7a70c52c4b72707",
+    "runner_sha256": "31ea8ce39da690544ee25d31ff0c4db99c71c07cfb12f34efa8836248bf9750b"
+  }
+}
