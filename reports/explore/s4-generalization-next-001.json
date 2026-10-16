@@ -1,0 +1,99 @@
+{
+  "status": "completed",
+  "scope": "read-only source/aggregate evidence analysis; no new pool or training",
+  "recommendation_count": 1,
+  "recommendation": "conditional official-program-stratified CE coverage course after current ranking B resolves",
+  "new_pool_ready": false,
+  "gpu_used": false,
+  "raw_train_read": false,
+  "dev_individual_records_read": false,
+  "calibration_read": false,
+  "holdout_read": false,
+  "new_scripts": false,
+  "sources": [
+    {
+      "path": ".scratch/s4/prepare-continuous-matched-pool.py",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "2fc1edec6a7dd41293e29f261ad6cf1f20db0767e45beec2c22cad6e6ff38bc6"
+    },
+    {
+      "path": ".scratch/s4/prepare-native-event-condition-pilot.py",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "47d4d2cfd2f2edbaf776f67bf361e6da550ac07850d597f2f26ede3843cb8c31"
+    },
+    {
+      "path": "reports/explore/continuous-matched-pool-001.md",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "5bed7fc9735541c8daebd5377c3e6359bbb8ee74c9d365502842a620c9c5f8ce"
+    },
+    {
+      "path": "reports/explore/video-text-matched-pairs-feasibility-001.json",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "9a2cebba48fb52d695b041d7b43d3d96468595dbf237fb40ffd4376a8be5f3da"
+    },
+    {
+      "path": "reports/explore/temporal-observability-001.md",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "122e71ef74b4b355da97a11296725ee1b8dbb78117abb69b17fd88d38d30c9fd"
+    },
+    {
+      "path": "reports/explore/s4-continuous-main-pool-001.md",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "759d67a7da74ba55c29119f7fbe532f6a1486767996b75c0907066dd96457998"
+    },
+    {
+      "path": "reports/s4-continuous-main-pool-dev50-002.json",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "9c4620f8e01859d79eb6d17a56efa9790e0e9bac630a375a54977afa5d1b549b"
+    },
+    {
+      "path": "reports/s4-continuous-main-pool-video150-002.json",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "1e248dfc096ed9f3574d7da4a2a0f59ae04b1ec1278f54927716732869981462"
+    },
+    {
+      "path": "reports/explore/s4-temporal-coverage-full500-diagnostic-001.json",
+      "revision": "83162925c6da7950c463b20f44637f86f96559c1",
+      "sha256": "fcf02679ead51965312035361bdcacbe4c969a5b16d68be41fa7fed1c66f670b"
+    }
+  ],
+  "coverage_fact": "current300pairs filter strict in/out anchor and target grammar; excludes motion and collision target",
+  "proposed_video_strata_counts": [
+    150,
+    150,
+    150,
+    150
+  ],
+  "proposed_replay_draws": 600,
+  "same_parent": "f2dbb83b9dc1761041d6f497e777ddbc32f76ee8e36ad0b09162f15b98d43af3",
+  "rank": 16,
+  "learning_rate": 2e-05,
+  "loss": "unchanged CE",
+  "max_optimizer_steps": 40,
+  "max_training_seconds_per10steps": 240,
+  "total_wall_seconds_including_evaluation": 1200,
+  "automatic_continuation": false,
+  "worst_case_step20_budget_seconds": 900,
+  "step40_guaranteed": false,
+  "new_model_quality_claim": false,
+  "session_evidence": {
+    "rank64_train12": [
+      7,
+      11
+    ],
+    "rank64_dev50": [
+      34,
+      31
+    ],
+    "ranking_B": "training completed ~191s; DEV82257 pending per root"
+  },
+  "validation": {
+    "source_hashes_bound": true,
+    "json_parse": true,
+    "budget_arithmetic": "2*240 + 2*120 + 180 = 900; remaining300 insufficient for next240+120, so stop20 under worst case"
+  },
+  "python": "3.11.14",
+  "exit_code": 0,
+  "cost": null,
+  "design_sha256": "43234bfcdc1cadbf80087cdc3fe55c238549000124f0ab35c0439dc9d1f3a657"
+}
