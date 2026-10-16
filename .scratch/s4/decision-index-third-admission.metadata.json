@@ -596,5 +596,45 @@
     "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
     "bytes": 11358,
     "line_count": 202
+  },
+  {
+    "key": "fixed_scope_followup",
+    "repo": "gorilla-llm/gorilla",
+    "revision": "916260dfc116bf06793a1af79b4ec8195b0453b6",
+    "path": "berkeley-function-call-leaderboard/data/README.md",
+    "url": "https://raw.githubusercontent.com/gorilla-llm/gorilla/916260dfc116bf06793a1af79b4ec8195b0453b6/berkeley-function-call-leaderboard/data/README.md",
+    "sha256": "22234ad32a0bb921809278d01ed65e932b4e611690dfa17d1e0eb6ba74ab4e27",
+    "bytes": 15282,
+    "line_count": 150,
+    "scope_line_numbers": [
+      2,
+      18,
+      81,
+      136
+    ]
+  },
+  {
+    "key": "fixed_scope_followup",
+    "repo": "gorilla-llm/gorilla",
+    "revision": "916260dfc116bf06793a1af79b4ec8195b0453b6",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/gorilla-llm/gorilla/916260dfc116bf06793a1af79b4ec8195b0453b6/README.md",
+    "sha256": "845a1c0c62738268302c3c7aa303633c5d316e023d5b12b18f15cf84e0ead8f7",
+    "bytes": 11774,
+    "line_count": 164,
+    "scope_line_numbers": []
+  },
+  {
+    "key": "fixed_scope_followup",
+    "repo": "suzgunmirac/BIG-Bench-Hard",
+    "revision": "9ee07bd481feebf959a6b59d61ea57bdcf30964d",
+    "path": "bbh/README.md",
+    "url": "https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/9ee07bd481feebf959a6b59d61ea57bdcf30964d/bbh/README.md",
+    "sha256": "2273d9fd5fc2fd175deb939b99ed52e2945b0225dd1f290a836308ca36efec18",
+    "bytes": 4044,
+    "line_count": 75,
+    "scope_line_numbers": [
+      5
+    ]
   }
 ]

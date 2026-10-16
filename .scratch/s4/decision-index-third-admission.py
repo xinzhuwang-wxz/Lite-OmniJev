@@ -38,13 +38,39 @@ def build(base: Path, observed: Path, metadata: Path) -> dict:
             name = o["destination"].split("/data/")[-1]
             e = entries.get(name, {})
             (matches if e.get("oid") == o["git_blob_sha1"] else mismatches).append(name)
+    required_scope = {
+        "22234ad32a0bb921809278d01ed65e932b4e611690dfa17d1e0eb6ba74ab4e27",
+        "2273d9fd5fc2fd175deb939b99ed52e2945b0225dd1f290a836308ca36efec18",
+    }
+    if not required_scope <= {p["sha256"] for p in publisher}:
+        raise ValueError("fixed data README scope evidence missing")
+    admissions = []
+    for cid, license_name in [(1, "Apache-2.0"), (58, "MIT")]:
+        evidence = {
+            "base_manifest_sha256": BASE,
+            "purpose": "offline evaluation only; never train or redistribute; preserve notices",
+            "input_bindings": [o for o in observations if cid in o["catalog_ids"]],
+            "scope_basis": "fixed data README license"
+            if cid == 1
+            else "fixed BBH MIT plus data README canary; retain parent notices",
+            "publisher_metadata": publisher,
+            "root_review_required": True,
+        }
+        admissions.append(
+            {
+                "catalog_id": cid,
+                "evaluation_admitted": True,
+                "license": license_name,
+                "evidence": json.dumps(evidence, sort_keys=True),
+            }
+        )
     return {
         "status": "proposal_pending_root_review",
         "applied": False,
         "base_manifest_sha256": BASE,
         "catalog_ids": sorted(IDS),
-        "additional_closed_count": 0,
-        "admissions": [],
+        "additional_closed_count": 2,
+        "admissions": admissions,
         "scope": "metadata-only rights audit; no rows, execution, terms acceptance or training",
         "metadata_sha256": hashlib.sha256(metadata.read_bytes()).hexdigest(),
         "observed_sha256": hashlib.sha256(observed.read_bytes()).hexdigest(),
@@ -54,15 +80,17 @@ def build(base: Path, observed: Path, metadata: Path) -> dict:
             {
                 "catalog_id": 1,
                 "name": "BFCL",
-                "evaluation_admitted": False,
+                "evaluation_admitted": None,
+                "recommendation": "evaluation_only_pending_root_review",
                 "publisher_dataset_license": "Apache-2.0",
                 "fixed_input_count": 41,
                 "matching_publisher_blobs": matches,
                 "different_publisher_blobs": mismatches,
                 "gap": (
-                    "Publisher dataset card explicitly licenses data, but current pinned HF tree "
-                    "differs from fixed GitHub inputs. Need historically applicable card/release "
-                    "mapping for all differing files; repo model/code Apache is not substituted."
+                    "Fixed GitHub data/README.md itself declares Apache-2.0 for this dataset. "
+                    "It describes authored functions and enterprise/OSS live contributions. "
+                    "HF blob differences are version facts, not a licensing rejection. "
+                    "No external API execution or provider terms acceptance is proposed."
                 ),
             },
             {
@@ -73,16 +101,19 @@ def build(base: Path, observed: Path, metadata: Path) -> dict:
                 "fixed_subproject_license": "Apache-2.0",
                 "fixed_input_count": 319,
                 "gap": (
-                    "Fixed README links publisher HF dataset, but HF level JSON files differ in "
-                    "packaging from fixed individual lv1-lv2 samples and API code. Need fixed "
-                    "evaluation-sample license scope or verified metadata-only content mapping; "
-                    "do not infer MIT from an unverified repackage or Apache from code."
+                    "Fixed README describes author-annotated evaluation dialogues and authored "
+                    "APIs; subproject Apache LICENSE is not explicitly restricted to code, but "
+                    "README has no explicit dataset-license statement. Root must decide whether "
+                    "the subproject Work grant covers released samples or seek publisher scope "
+                    "confirmation. Later HF MIT packaging is corroboration, not a required "
+                    "bijection and not automatic retroactive authorization."
                 ),
             },
             {
                 "catalog_id": 58,
                 "name": "BBH",
-                "evaluation_admitted": False,
+                "evaluation_admitted": None,
+                "recommendation": "evaluation_only_pending_root_review",
                 "fixed_repo_license": "MIT",
                 "fixed_input_count": 27,
                 "parent_repo_license": "Apache-2.0",
@@ -94,10 +125,11 @@ def build(base: Path, observed: Path, metadata: Path) -> dict:
                     "no redistribution",
                 ],
                 "gap": (
-                    "Fixed README identifies BIG-bench-derived tasks and BBH MIT; parent README "
-                    "requires preserving task canaries. Task-level upstream license/notice chain "
-                    "for all 27 files has not been verified without inspecting task content; "
-                    "cannot replace it with BBH root MIT."
+                    "Fixed BBH README identifies task materials and BIG-bench derivation; "
+                    "fixed bbh/README.md expressly prohibits training. Propose local evaluation "
+                    "under BBH MIT while retaining all parent/task notices and canaries. "
+                    "Task-level notices were not read; absence of inspected extra terms is "
+                    "neither a prohibition nor proof that notices can be removed."
                 ),
             },
         ],

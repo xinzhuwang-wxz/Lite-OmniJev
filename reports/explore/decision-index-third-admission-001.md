@@ -1,19 +1,19 @@
-# Decision Index 第三批三项许可核查
+# Decision Index 第三批：固定发布方数据许可
 
-仅 catalog 1 BFCL、3 API-Bank、58 BBH。基准为已批准16项 manifest SHA `e5834b0bb49a4ba19c7cfda5573129c710ec8aed131e43cb781aed6f48d8cf5f`。本轮新增准入建议 **0**；三项均列明确待核缺口。未修改远端 manifest、未读题/答案行、未运行上游/pickle/GPU、未接受条款、未下载数据。远端仅计算现有输入字节 SHA256/git blob SHA1，输出文件元数据。
+仅 catalog 1 BFCL、3 API-Bank、58 BBH。基准为已批准16项 manifest SHA `e5834b0bb49a4ba19c7cfda5573129c710ec8aed131e43cb781aed6f48d8cf5f`。**提案 BFCL、BBH 两项仅本地离线 evaluation；API-Bank交root判断固定subproject Work范围。未应用任何准入。**
 
-| 项 | 新的官方事实 | 固定输入绑定与缺口 |
+本报告修正初查：后来的HF文件不相同不能否定旧Git发布方明确许可；未查看逐任务条款不能推断无许可。关键证据为固定Git数据目录README，而非未来HF双射。未修改远端manifest、未读题/答案行、未运行上游/pickle/GPU、未接受条款、未下载数据。现有输入仅流入hash计算，输出元数据。
+
+| 项 | 固定发布方事实 | 提案及边界 |
 | --- | --- | --- |
-| BFCL | 官方 HF **数据卡**明确 Apache-2.0，区别于原先仅 repo/model LICENSE。 | 数据卡固定 revision `61fc0608cfd831fcfbbaa676ebdfef0ed963eeda` 的树元数据与 recipe GitHub `916260dfc116bf06793a1af79b4ec8195b0453b6` 的41输入：16 blob相同、25不同。需旧发布版本适用的数据许可/映射；不把当前数据卡自动追溯不同文件。 |
-| API-Bank | 固定 README明确公开 code/data，并链接发布者 HF；当前固定 HF card `12e8158b7628c168f07e8f31fbbe3445e99f44cf` 标 MIT。 | GitHub `188835d4f9948563a6b9c8ac50cd0f3ae4021ed6` 子目录 LICENSE为Apache-2.0，固定319输入同时含 API代码与逐对话样本；HF按level重新打包。需明确旧样本许可适用范围或经验证转换映射，不能任选 MIT/Apache填整项。 |
-| BBH | 固定 README明确为 BIG-bench子集，BBH根MIT；官方 BIG-bench README要求保留canary，父repo LICENSE为Apache-2.0。 | BBH固定 `9ee07bd481feebf959a6b59d61ea57bdcf30964d` 的27文件已核 SHA；逐任务底层notice/许可链未核，不将BBH根MIT替代该链。仅evaluation、永不训练、保留canary/署名/原notice、不重分发的边界不变。 |
+| BFCL | `916260dfc116bf06793a1af79b4ec8195b0453b6` 的 **data/README.md第2行直接标Apache-2.0**；正文明确本evaluation dataset、手写函数、企业/OSS贡献live数据和多轮构造来源。SHA `22234ad32a0bb921809278d01ed65e932b4e611690dfa17d1e0eb6ba74ab4e27`。固定树该模块仅module README与data README，无另列LICENSE/NOTICE文件。 | 可提交Apache-2.0 evaluation-only提案，保留license/attribution/change notices，不执行第三方API、不接受provider条款、不训练/重分发。当前HF卡同Apache，16/41 blob相同25不同只作版本事实，非准入阻碍。 |
+| API-Bank | `188835d4f9948563a6b9c8ac50cd0f3ae4021ed6` 的README明确发布code/data、作者标注evaluation dialogues与API工具，并定位lv1-lv2目录；子目录Apache LICENSE没有写仅code。该固定子树仅README/LICENSE，没有另列样本许可。 | 不声称代码许可自动覆盖数据。root需判断整个subproject Work授权是否涵盖其发布的样本，或取得发布方明确scope。后续HF卡MIT是发布方数据授权旁证，但不是自动溯及旧样本的MIT许可，也无需以未来打包双射作为唯一授权路径。fixed README未披露evaluation样本来自另有条款的第三方语料；这不证明第三方权利绝不存在。 |
+| BBH | `9ee07bd481feebf959a6b59d61ea57bdcf30964d` 根MIT，根README明确BBH数据目录和BIG-bench来源；**bbh/README.md第5行明确禁止进入训练语料**。该数据README SHA `2273d9fd5fc2fd175deb939b99ed52e2945b0225dd1f290a836308ca36efec18`。 | 可提交MIT evaluation-only限定提案，保留父源/逐任务原notice、引用和canary，永不训练、不重分发。本轮没读逐任务行，不主张原notice已全部检查，更不移除它们。BIG-bench当前固定父metadata要求保留canary；该父revision不冒称BBH当年的snapshot。 |
 
-这里的待核不是认定禁止评测，而是当前 metadata 证据尚不足填写无条件 `evaluation_admitted=true`。不扩展到其余25项，也不读取BBH任务来补证。
+官方固定元数据：
 
-官方固定元数据入口：
+- [BFCL data README](https://raw.githubusercontent.com/gorilla-llm/gorilla/916260dfc116bf06793a1af79b4ec8195b0453b6/berkeley-function-call-leaderboard/data/README.md)
+- [API-Bank README](https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/188835d4f9948563a6b9c8ac50cd0f3ae4021ed6/api-bank/README.md)；[subproject LICENSE](https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/188835d4f9948563a6b9c8ac50cd0f3ae4021ed6/api-bank/LICENSE)
+- [BBH data README](https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/9ee07bd481feebf959a6b59d61ea57bdcf30964d/bbh/README.md)；[BBH LICENSE](https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/9ee07bd481feebf959a6b59d61ea57bdcf30964d/LICENSE)
 
-- [BFCL dataset card](https://huggingface.co/datasets/gorilla-llm/Berkeley-Function-Calling-Leaderboard/raw/61fc0608cfd831fcfbbaa676ebdfef0ed963eeda/README.md)
-- [API-Bank fixed README](https://raw.githubusercontent.com/AlibabaResearch/DAMO-ConvAI/188835d4f9948563a6b9c8ac50cd0f3ae4021ed6/api-bank/README.md)；[publisher card](https://huggingface.co/datasets/liminghao1630/API-Bank/raw/12e8158b7628c168f07e8f31fbbe3445e99f44cf/README.md)
-- [BBH fixed README](https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/9ee07bd481feebf959a6b59d61ea57bdcf30964d/README.md)
-
-完整 URL/revision/metadata SHA/输入 SHA 与16/25文件清单见同名 JSON。BIG-bench父metadata为本次解析main后固定commit，不冒称与2022 BBH同时快照。脚本输出exclusive-create proposal，不应用准入；CPU公共输出及变更SHA拒绝测试3 passed，ruff通过。基础完整manifest未复制入Git；复现时只读原远端manifest并核上述SHA。
+同名JSON含2个待root review admission objects、全部387固定输入SHA及官方metadata的URL/revision/SHA。脚本exclusive-create proposal，不应用准入；CPU公共输出及输入/base SHA拒绝测试3 passed，ruff通过。基础1530文件manifest未复制Git；复现只读原远端manifest并核基准SHA。

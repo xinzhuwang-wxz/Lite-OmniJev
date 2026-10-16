@@ -32,7 +32,8 @@ def test_real_metadata_proposal_does_not_admit(base: Path) -> None:
         HERE / "decision-index-third-admission.metadata.json",
     )
     assert result["catalog_ids"] == [1, 3, 58]
-    assert result["admissions"] == [] and not result["applied"]
+    assert {a["catalog_id"] for a in result["admissions"]} == {1, 58}
+    assert not result["applied"]
     assert len(result["decisions"][0]["matching_publisher_blobs"]) == 16
     assert len(result["decisions"][0]["different_publisher_blobs"]) == 25
 
