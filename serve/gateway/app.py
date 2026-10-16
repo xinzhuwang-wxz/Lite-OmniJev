@@ -38,6 +38,7 @@ class InputQuestion(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     type: Literal["choice", "score", "noul"]
     instructions: str = Field(min_length=1, max_length=8192)
+    require_calibrated: bool = False
     criteria: dict[str, str] | list[str] | None = None
 
     @model_validator(mode="after")
@@ -322,11 +323,17 @@ def create_app(
     ) -> dict[str, Any]:
         calibration_metadata: dict[str, str] = {"calibration": "unfitted"}
         if calibration_registry is None:
+            if item.require_calibrated:
+                raise HTTPException(503, "Requested calibration group is unfitted")
             readout = read_probabilities(logits, answer_tokens(question))
         else:
             try:
                 readout, calibration_metadata = calibration_registry.read(
-                    prefix.media, question, logits, token_ids
+                    prefix.media,
+                    question,
+                    logits,
+                    token_ids,
+                    require_calibrated=item.require_calibrated,
                 )
             except (ValueError, OSError):
                 raise HTTPException(503, "Calibration deployment binding unavailable") from None

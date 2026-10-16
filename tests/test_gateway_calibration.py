@@ -81,6 +81,8 @@ def bundle(tmp_path, monkeypatch):
         "8014",
         "--logprobs-mode",
         "raw_logprobs",
+        "--dtype",
+        "bfloat16",
         "--enable-lora",
         "--lora-modules",
         f"decision={adapter}",
@@ -88,6 +90,18 @@ def bundle(tmp_path, monkeypatch):
     monkeypatch.setattr(calibration, "_cmdline", lambda pid: tuple(argv))
     server = tmp_path / "server.json"
     server.write_text(json.dumps({"ready": True, "argv": argv, "server_pid": 42}))
+    raw = tmp_path / "raw-receipt.json"
+    raw.write_text(
+        json.dumps(
+            {
+                "runtime_recipe": {
+                    "engine": "vllm",
+                    "dtype": "bfloat16",
+                    "adapter_mode": "native_lora",
+                }
+            }
+        )
+    )
     entries = []
     for cohort, primitive in sorted(calibration.REQUIRED_GROUPS):
         binding = Binding(
@@ -95,7 +109,7 @@ def bundle(tmp_path, monkeypatch):
             adapter_weights_sha256=digest(b"synthetic-adapter"),
             official_template_sha256=digest(b"synthetic-template"),
             answer_token_map_sha256=digest(json.dumps(mapping, sort_keys=True).encode()),
-            raw_logits_receipt_sha256="9" * 64,
+            raw_logits_receipt_sha256=digest(raw.read_bytes()),
             cohort=cohort,
             primitive=primitive,
             seed=42,
@@ -132,6 +146,7 @@ def bundle(tmp_path, monkeypatch):
                 "model_version": "synthetic-model",
                 "calibration_version": "synthetic-calibration",
                 "groups": entries,
+                "runtime_provenance": [{"path": raw.name, "sha256": digest(raw.read_bytes())}],
             }
         )
     )
@@ -276,8 +291,11 @@ class FixtureTokenizer:
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("configured", [False, True])
+@pytest.mark.parametrize("configured", [False, True, "partial"])
 async def test_http_default_and_explicit_registry_temperature(bundle, configured):
+    if configured == "partial":
+        partial(bundle)
+    calibrated = configured is True
     registry = load(bundle)
     settings = Settings(
         upstream_url=bundle["upstream_url"],
@@ -335,12 +353,33 @@ async def test_http_default_and_explicit_registry_temperature(bundle, configured
     assert response.status_code == 200
     answer = response.json()["answers"]["q"]
     expected = read_probabilities(
-        {"A": -1.0, "B": -2.0, "U": -3.0}, ["A", "B"], temperature=2 if configured else 1
+        {"A": -1.0, "B": -2.0, "U": -3.0}, ["A", "B"], temperature=2 if calibrated else 1
     )
     assert answer["p_insufficient"] == pytest.approx(expected.p_insufficient)
     assert answer["probabilities"]["first"] == pytest.approx(expected.probabilities["A"])
-    assert answer["calibration"] == ("scalar_temperature" if configured else "unfitted")
-    assert ("calibration_artifact_sha256" in answer) == configured
+    assert answer["calibration"] == ("scalar_temperature" if calibrated else "unfitted")
+    assert ("calibration_artifact_sha256" in answer) == calibrated
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://fixture"
+        ) as client,
+    ):
+        required = await client.post(
+            "/v1/systemone",
+            json={
+                "state": "synthetic",
+                "questions": {
+                    "q": {
+                        "type": "choice",
+                        "instructions": "synthetic",
+                        "criteria": {"first": "a", "second": "b"},
+                        "require_calibrated": True,
+                    }
+                },
+            },
+        )
+    assert required.status_code == (200 if calibrated else 503)
 
 
 def test_gateway_wrong_model_version_rejected(bundle):
@@ -430,3 +469,121 @@ async def test_stopped_process_returns503_without_upstream_call(bundle, monkeypa
             },
         )
         assert response.status_code == 503
+
+
+def partial(bundle):
+    def change(value):
+        value["schema_version"] = 2
+        value["fitted"] = [{"cohort": "text", "primitive": "noul"}]
+        value["unfitted"] = [
+            {"cohort": c, "primitive": p}
+            for c, p in sorted(calibration.REQUIRED_GROUPS - {("text", "noul")})
+        ]
+        value["groups"] = [
+            e
+            for e in value["groups"]
+            if (e["binding"]["cohort"], e["binding"]["primitive"]) == ("text", "noul")
+        ]
+
+    update_registry(bundle, change)
+
+
+def test_partial_registry_fitted_and_raw_unfitted(bundle):
+    partial(bundle)
+    registry = load(bundle)
+    question = Question(qid="q", type="noul", instruction="Synthetic")
+    logits = {"yes": 2.0, "no": 0.0, "U": -1.0}
+    ids = {t: registry.token_map[t] for t in logits}
+    fitted, metadata = registry.read([], question, logits, ids)
+    assert metadata["calibration"] == "scalar_temperature"
+    raw, metadata = registry.read(
+        [Media(type="image", uri="image.png", sha256="1" * 64)], question, logits, ids
+    )
+    assert raw == read_probabilities(logits, ("yes", "no"))
+    assert raw != fitted
+    assert metadata["calibration"] == "unfitted"
+    with pytest.raises(ValueError, match="explicitly unfitted"):
+        registry.read(
+            [Media(type="image", uri="image.png", sha256="1" * 64)],
+            question,
+            logits,
+            ids,
+            require_calibrated=True,
+        )
+    with pytest.raises(ValueError, match="token mapping"):
+        registry.read([Media(type="image", uri="image.png", sha256="1" * 64)], question, logits, {})
+
+
+@pytest.mark.parametrize("mutation", ["missing", "overlap", "duplicate", "artifact"])
+def test_partial_partition_is_exact(bundle, mutation):
+    partial(bundle)
+
+    def change(value):
+        if mutation == "missing":
+            value["unfitted"].pop()
+        elif mutation == "overlap":
+            value["unfitted"].append(value["fitted"][0])
+        elif mutation == "duplicate":
+            value["unfitted"].append(value["unfitted"][0])
+        else:
+            value["fitted"], value["unfitted"] = value["unfitted"], value["fitted"]
+
+    update_registry(bundle, change)
+    with pytest.raises(ValueError, match="partition"):
+        load(bundle)
+
+
+def test_legacy_runtime_provenance_required(bundle):
+    update_registry(bundle, lambda value: value.pop("runtime_provenance"))
+    with pytest.raises(ValueError, match="runtime provenance required"):
+        load(bundle)
+
+
+def test_producer_transformers_bf16_cannot_transfer_to_vllm(bundle):
+    raw = bundle["path"].parent / "raw-receipt.json"
+    raw.write_text(
+        json.dumps(
+            {
+                "runtime_recipe": {
+                    "engine": "transformers",
+                    "dtype": "bfloat16",
+                    "adapter_mode": "native_lora",
+                }
+            }
+        )
+    )
+    # Rebind all artifact bytes correctly: runtime mismatch remains a separate blocker.
+    value = json.loads(bundle["path"].read_text())
+    for entry in value["groups"]:
+        artifact_path = bundle["path"].parent / entry["path"]
+        artifact = json.loads(artifact_path.read_text())
+        artifact["binding"]["raw_logits_receipt_sha256"] = digest(raw.read_bytes())
+        entry["binding"] = artifact["binding"]
+        artifact_path.write_text(json.dumps(artifact))
+        entry["sha256"] = digest(artifact_path.read_bytes())
+    value["runtime_provenance"][0]["sha256"] = digest(raw.read_bytes())
+    bundle["path"].write_text(json.dumps(value))
+    with pytest.raises(ValueError, match="runtime recipe"):
+        load(bundle)
+
+
+@pytest.mark.parametrize("dtype", [None, "float32"])
+def test_observed_precision_must_match_raw_provenance(bundle, monkeypatch, dtype):
+    server = json.loads(bundle["serving_receipt"].read_text())
+    argv = server["argv"]
+    index = argv.index("--dtype")
+    if dtype is None:
+        del argv[index : index + 2]
+    else:
+        argv[index + 1] = dtype
+    bundle["serving_receipt"].write_text(json.dumps(server))
+    monkeypatch.setattr(calibration, "_cmdline", lambda pid: tuple(argv))
+    with pytest.raises(ValueError, match="runtime recipe"):
+        load(bundle)
+
+
+def test_partial_preserves_artifact_binding_guards(bundle):
+    partial(bundle)
+    update_registry(bundle, lambda value: value["groups"][0].update(sha256="0" * 64))
+    with pytest.raises(ValueError, match="checksum"):
+        load(bundle)

@@ -25,9 +25,9 @@ app = create_app(settings, calibration_registry=registry)
 
 ## Registry与映射契约
 
-JSON字段：`schema_version:1`、`model_version`、`calibration_version`、`groups`。每组为`path`（registry根内相对路径）、`sha256`和完整`train.calibration.Binding`。Binding必须与实际base revision/adapter weights/template/token map一致，其余source receipt/data/seed/code字段必须与对应artifact严格相同。artifact路径逃逸、checksum/身份不符、未知字段、重复组、缺组均拒绝；版本必须与gateway settings一致。
+JSON字段：`schema_version:1`、`model_version`、`calibration_version`、`groups`。每组为`path`（registry根内相对路径）、`sha256`和完整`train.calibration.Binding`。Binding必须与实际base revision/adapter weights/template/token map一致，其余source receipt/data/seed/code字段必须与对应artifact严格相同。artifact路径逃逸、checksum/身份不符、未知字段、重复组均拒绝；schema1仍要求全18组；版本必须与gateway settings一致。
 
-**要求六cohort×三primitive完整18组配置**：text/image/screenshot/audio/video/crossmodal × choice/score/noul。当前Media只有image/audio/video，推断规则是无media→text、单一media种类→该种类、两种以上media→crossmodal；多张image仍image，所有请求都有文本state所以不因此算crossmodal。当前只有15组可路由；screenshot三组虽可配置和校验，仍待可信来源/分类入口，不能让请求自报screenshot绕过，也不改Media schema。18组加载成功不代表screenshot链或S5完成。
+**分组全集仍为六cohort×三primitive共18组**：text/image/screenshot/audio/video/crossmodal × choice/score/noul。当前Media只有image/audio/video，推断规则是无media→text、单一media种类→该种类、两种以上media→crossmodal；多张image仍image，所有请求都有文本state所以不因此算crossmodal。当前只有15组可路由；screenshot三组虽可配置和校验，仍待可信来源/分类入口，不能让请求自报screenshot绕过，也不改Media schema。18组加载成功不代表screenshot链或S5完成。
 
 `answer_token_map_sha256`在此明确采用官方probe的全部33个答案token（A–T、U、0–9、yes/no）到ID字典的`sha256(json.dumps(mapping, sort_keys=True).encode())`。这是部署全局映射；逐题子集mapping hash不能替代它。正式calibration producer需使用同一约定。启动另核实际gateway renderer模板字节和tokenizer编码；请求核实际prepared子集IDs，避免同名字母被错贴概率。
 
@@ -40,3 +40,39 @@ raw backend仍必须返回完整未采样/未截断的legal答案+U。完整原�
 本机受影响真实media fixtures依赖`S0_LOCAL_*`许可媒体/metadata路径；当前未提供，已有测试明确skip，不能称真实processor/媒体/GPU校准已验收。没有读取真实calibration/holdout、拟合、GPU/服务启动、依赖变更或质量门调整。
 
 本片实际：`pytest tests/test_gateway_calibration.py tests/test_gateway.py tests/test_gateway_media.py tests/test_gateway_scheduling.py -q --tb=short`：53 passed、38个既有media fixture skip；新registry/HTTP测试全部执行。`ruff check`、`ruff format --check`及`mypy serve/gateway/app.py serve/gateway/calibration.py`均exit0。初轮默认路径额外读取prepared mapping导致5个既有调度fixture失败，已将该读取严格限制为显式registry模式；上述为修复后fresh结果，未修改原测试掩盖回归。
+
+
+## 部分真实拟合与运行配方（CPU契约）
+
+`schema_version:2` 显式增加 `fitted`、`unfitted`；均为
+`{"cohort":"text","primitive":"choice"}` 对象列表。两者必须无重复、不相交、
+并集恰好为18组，`fitted` 恰好等于 `groups` 中实际artifact集合。
+不为未拟合组生成T、不借其他组。schema1全18组仍可解析，不能省略分组。
+
+未拟合请求默认保留原始legal+U readout，返回 `calibration: unfitted`、registry版本/
+SHA及推断cohort，不返回artifactSHA。每个请求question可显式增加
+`require_calibrated: true`；未加载registry或该组未拟合时HTTP503。
+已拟合组仍返回 `scalar_temperature`。未拟合也核实际PID/文件和答案token mapping；
+校验失败不会降级成raw来隐藏绑定错误。screenshot仍无可信路由输入，不能因其拟合而
+把普通image请求当screenshot。
+
+所有版本实际激活均新增 `runtime_provenance` 列表：每项含registry根内相对
+`path` 与 `sha256`，必须恰好覆盖所有artifact Binding的
+`raw_logits_receipt_sha256`。这些是原始producer receipt字节，禁止事后改写并冒充原绑定。
+receipt须含精确 `runtime_recipe`：
+`{"engine":"vllm","dtype":"bfloat16","adapter_mode":"native_lora"}`。
+loader以实际live argv显式 `--dtype`（bfloat16/float32/float16）及既有native adapter
+解析核验，不接受auto、merged、quantized、未知engine或未声明配方。receipt文件也加入
+每请求变更检测。旧全18manifest的结构兼容不等于允许缺失运行身份继续激活。
+
+**当前真实上线缺口**：现producer使用Transformers `torch.bfloat16`，现有
+`Binding`/`TemperatureArtifact`没有运行engine/dtype字段，raw receipt尚未输出上述
+recipe；不能直接套给vLLM。已有S3 vLLM FP32 merged recipe既跨engine/precision又跨
+adapter组合方式，当前明确拒绝；匹配模型SHA或18分区不能解除该限制。
+需要producer真实输出来源绑定配方，并由对应实际serving recipe产出/验证温度；
+本片不提供跨引擎parity豁免，也不允许通过重写旧receipt来补造身份。
+实际7组拟合并不变成18组/S5通过。没有真实网关/GPU激活验收。
+
+本次受影响CPU验证：64 passed、38项既有许可媒体fixture skipped；Ruff与mypy通过。
+覆盖部分分区、raw回退、require拒绝、legacy全组、source/artifact绑定、
+Transformers→vLLM拒绝以及实际dtype缺失/不匹配。

@@ -27,7 +27,7 @@ from train.calibration import (
     load_temperature,
 )
 from train.checkpoint import file_sha256
-from train.readout import Readout
+from train.readout import Readout, read_probabilities
 from train.trainer import verified_assets, verified_init_adapter
 
 REACHABLE_COHORTS: tuple[Cohort, ...] = ("text", "image", "audio", "video", "crossmodal")
@@ -42,11 +42,24 @@ class RegistryEntry(StrictModel):
     binding: Binding
 
 
+class Group(StrictModel):
+    cohort: Cohort
+    primitive: Primitive
+
+
+class RuntimeProvenance(StrictModel):
+    path: str
+    sha256: Sha256
+
+
 class RegistryManifest(StrictModel):
-    schema_version: Literal[1]
+    schema_version: Literal[1, 2]
     model_version: Annotated[str, Field(min_length=1, max_length=128)]
     calibration_version: Annotated[str, Field(min_length=1, max_length=128)]
     groups: Annotated[list[RegistryEntry], Field(min_length=1)]
+    fitted: list[Group] | None = None
+    unfitted: list[Group] | None = None
+    runtime_provenance: list[RuntimeProvenance] = []
 
 
 def infer_cohort(media: list[Media]) -> Cohort:
@@ -120,14 +133,23 @@ class CalibrationRegistry:
         question: Question,
         logits: dict[str, float],
         token_ids: dict[str, int],
+        *,
+        require_calibrated: bool = False,
     ) -> tuple[Readout, dict[str, str]]:
         self.ensure_current()
         group = (infer_cohort(media), question.type)
-        if group not in self.groups:
-            raise ValueError("missing calibration group")
         expected_tokens = (*answer_tokens(question), "U")
         if token_ids != {token: self.token_map[token] for token in expected_tokens}:
             raise ValueError("runtime answer token mapping differs from deployment")
+        if group not in self.groups:
+            if require_calibrated:
+                raise ValueError("requested calibration group is explicitly unfitted")
+            return read_probabilities(logits, answer_tokens(question)), {
+                "calibration": "unfitted",
+                "calibration_version": self.version,
+                "calibration_registry_sha256": self.sha256,
+                "calibration_cohort": group[0],
+            }
         artifact, digest = self.groups[group]
         result = apply_temperature(
             artifact, artifact.binding, logits, list(answer_tokens(question))
@@ -265,8 +287,57 @@ def load_registry(
         if file_sha256(artifact_path) != entry.sha256:
             raise ValueError("calibration artifact checksum mismatch")
         groups[group] = load_temperature(artifact_path, binding), entry.sha256
-    if not REQUIRED_GROUPS <= groups.keys():
-        raise ValueError("missing configured modality/primitive calibration groups")
+    if manifest.schema_version == 1:
+        if manifest.fitted is not None or manifest.unfitted is not None:
+            raise ValueError("legacy registry cannot declare partial partition")
+        if set(groups) != REQUIRED_GROUPS:
+            raise ValueError("missing configured modality/primitive calibration groups")
+    else:
+        if manifest.fitted is None or manifest.unfitted is None:
+            raise ValueError("explicit fitted/unfitted partition required")
+        fitted = [(g.cohort, g.primitive) for g in manifest.fitted]
+        unfitted = [(g.cohort, g.primitive) for g in manifest.unfitted]
+        if (
+            len(set(fitted)) != len(fitted)
+            or len(set(unfitted)) != len(unfitted)
+            or set(fitted) & set(unfitted)
+            or set(fitted) | set(unfitted) != REQUIRED_GROUPS
+            or set(fitted) != set(groups)
+        ):
+            raise ValueError("fitted/unfitted partition differs from exact eighteen groups")
+    # Artifact Binding predates runtime identity. Bind its raw receipt bytes instead;
+    # never infer engine/precision equivalence from matching weights or token IDs.
+    proven = set()
+    for provenance in manifest.runtime_provenance:
+        relative = Path(provenance.path)
+        raw_path = (path.parent / relative).resolve()
+        if (
+            relative.is_absolute()
+            or ".." in relative.parts
+            or not raw_path.is_relative_to(path.parent.resolve())
+        ):
+            raise ValueError("runtime provenance escapes registry root")
+        initial_stamps[raw_path] = _stamp(raw_path)
+        if file_sha256(raw_path) != provenance.sha256:
+            raise ValueError("runtime provenance checksum mismatch")
+        recipe = json.loads(raw_path.read_bytes()).get("runtime_recipe")
+        dtype = _flag(argv, "--dtype") if "--dtype" in argv else None
+        if recipe != {
+            "engine": "vllm",
+            "dtype": dtype,
+            "adapter_mode": "native_lora",
+        } or dtype not in ("bfloat16", "float32", "float16"):
+            raise ValueError(
+                "calibration runtime recipe is absent or differs from observed "
+                "serving engine/precision/adapter mode"
+            )
+        if provenance.sha256 in proven:
+            raise ValueError("duplicate runtime provenance")
+        proven.add(provenance.sha256)
+    if proven != {artifact.binding.raw_logits_receipt_sha256 for artifact, _ in groups.values()}:
+        raise ValueError(
+            "hash-bound calibration runtime provenance required for every fitted group"
+        )
     registry = CalibrationRegistry(
         manifest.model_version,
         manifest.calibration_version,
