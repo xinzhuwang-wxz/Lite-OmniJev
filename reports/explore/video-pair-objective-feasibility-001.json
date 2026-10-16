@@ -1,0 +1,84 @@
+{
+  "status": "completed",
+  "decision": "one_conditional_pilot_after_rank64_capacity_review",
+  "objectives": 1,
+  "objective": "joint CE + 0.1 conditional opposite-gold cross-video assignment NLL; (sum12CE + 0.1sum3R)/12",
+  "implemented": false,
+  "gpu_used": false,
+  "raw_train_read": false,
+  "calibration_read": false,
+  "holdout_read": false,
+  "sources": [
+    {
+      "path": "train/pair_objective.py",
+      "commit": "8cb4c47b67c45be6bc7cf385adbd1554ba17f3e7",
+      "sha256": "a2e164e98527001e868cb665342fdb510ccaedd7592a186a2d9891f08598b1fa"
+    },
+    {
+      "path": ".scratch/s4/prepare-continuous-matched-pool.py",
+      "commit": "8cb4c47b67c45be6bc7cf385adbd1554ba17f3e7",
+      "sha256": "2fc1edec6a7dd41293e29f261ad6cf1f20db0767e45beec2c22cad6e6ff38bc6"
+    },
+    {
+      "path": "reports/explore/continuous-matched-pool-001.json",
+      "commit": "8cb4c47b67c45be6bc7cf385adbd1554ba17f3e7",
+      "sha256": "2c51e16cb88ab91dfb45dca84a2325b371ad259dce522a01fa50e042090cfa87"
+    },
+    {
+      "path": "reports/explore/video-text-matched-pairs-feasibility-001.json",
+      "commit": "8cb4c47b67c45be6bc7cf385adbd1554ba17f3e7",
+      "sha256": "9a2cebba48fb52d695b041d7b43d3d96468595dbf237fb40ffd4376a8be5f3da"
+    },
+    {
+      "path": "reports/s4-continuous-matched-pool-dev50-001.json",
+      "commit": "8cb4c47b67c45be6bc7cf385adbd1554ba17f3e7",
+      "sha256": "75365e91cf570e8debdb67420b0ab2906520d873b82693b35ff1a3218e904d03"
+    },
+    {
+      "path": "reports/s4-continuous-matched-pool-dev50-002.json",
+      "commit": "8cb4c47b67c45be6bc7cf385adbd1554ba17f3e7",
+      "sha256": "bb41e97f47c2a392fe1cab7a0baaaf7324a1000ffac3976b9886b87b740590a5"
+    },
+    {
+      "path": "reports/s4-continuous-matched-pool-video150-001.json",
+      "commit": "8cb4c47b67c45be6bc7cf385adbd1554ba17f3e7",
+      "sha256": "fc0cae2209bd777fee78a2684a79735f1f54ada2e238ad27ad791c6419d841f5"
+    }
+  ],
+  "session_evidence_unverified_in_this_slice": {
+    "rank64_baseline_correct": 34,
+    "rank64_baseline_count": 50,
+    "rank64_baseline_brier_approx": 0.4425,
+    "rank64_step10": "pending per parent task"
+  },
+  "checks": {
+    "assignment_nll_identity": true,
+    "pair_U_gradient_zero": true,
+    "gradient_residual_from_joint_CE_scalar_multiple": 0.0917074857306892,
+    "cross_member_hessian": -0.14914645207033286,
+    "common_prior_shift_error": 0.0,
+    "both_predict_yes_counterexample": {
+      "d": [
+        8,
+        5
+      ],
+      "pair_loss": 0.04858735157374206,
+      "both_correct": false
+    },
+    "nonindependent_weighting_caveat": "binary member directions can be written as adaptive CE scaling, with cross-member weights"
+  },
+  "inference_contract_changed": false,
+  "new_truth_information": false,
+  "extra_structure": "verified identical question/program with opposite official gold and different TRAIN media/families",
+  "existing_guard_reuse_allowed": false,
+  "max_steps_per_arm": 10,
+  "max_seconds_per_arm": 240,
+  "python": "3.11.14",
+  "torch": "2.14.1",
+  "device": "cpu",
+  "deterministic_fixed_inputs": true,
+  "duration_seconds": 0.14298729109577835,
+  "cost": null,
+  "exit_code": 0,
+  "design_sha256": "681429177c887d11991a4b148a5801ab4e33d2ba4b3fb7b1f84c694c44a20f04"
+}
