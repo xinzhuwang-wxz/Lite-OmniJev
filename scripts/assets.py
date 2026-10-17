@@ -14,6 +14,7 @@ from typing import Any
 
 METADATA = {
     "README.md",
+    ".gitattributes",
     "LICENSE",
     "LICENSE.txt",
     "LICENSE.md",
