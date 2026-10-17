@@ -6,7 +6,7 @@
 
 1. **等 MVBench 两份报告落地**(~22:25-22:30,`reports/s4-public-bench-mvbench-{d3p600,base}-001.json`;screen `pbm-d3p`/`pbm-base`)。**MMAU 已出**:基座 65.9%、D3P-600 60.6%(均两遍一致,学生协议);教师 Jev-Omni-12B 62.0 为教师协议口径,严格判定须同协议重测。
 2. **分数齐后填 ADR0025 差距表**,关键议题已浮出:D3P-600(视频 LoRA)在 MMAU 音频上 −5.3 vs 基座,发布形态需考虑按模态路由 adapter(内部管线自由,ADR0024 修订二)或重校准;ECE 未套发布校准,勿直接比较。
-3. 同协议对照矩阵:四对照(OneJev-4B、Valen-2B、Jev-Omni-12B、OneJev-27B)需在本学生协议下重跑;盒上缺 Valen-2B 权重(先确认 repo/revision 再下载)。之后:Decision Index 27 子集打分(输入已 staged)、JevBench 对照补测。
+3. 同协议对照矩阵(需要时再烧卡,勿盲目排队):OneJev-4B/27B(**qwen3_5 系**)与 Valen(**Qwen3.5 系**)需先给 s1_dev_eval 加多模型族模板/processor 支持;Jev-Omni(gemma4_unified)可直接跑——夜间链已排:当前两屏退出后自动跑教师同协议 MMAU+MVBench(`chain-teacher-student-protocol.sh`,log `rl-logs/teacher-student-protocol.log`)。Valen-2B 权重下载被盒上外网不可达阻塞(repo `Valen-Team/Valen-Preview-0923@30096aaa`,网络恢复后重下)。之后:Decision Index 27 子集打分(输入已 staged)、JevBench 对照补测。
 4. 提升路线按差距表+宏观规划定(`reports/explore/s4-sota-macro-plan-001.md`)。
 
 ## 现役资产(已核验)
