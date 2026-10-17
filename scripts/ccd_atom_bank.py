@@ -38,9 +38,9 @@ COUNT_OPTIONS = tuple(str(i) for i in range(7))
 STATE = "Answer the question about the attached image."
 TARGET_SOURCE = "clevrer_annotation"
 DATA_VERSION = "ccd-atoms-v1"
-# Column/row orientation in the image is assumed from CLEVRER's fixed camera; answers are
-# defined by world x/y bins, so the labels are names for consistent bins.
-AXES = {"column": (0, "column", "leftmost", "rightmost"), "row": (1, "row", "nearest", "farthest")}
+# Checked on video_00131 frame 0: world y grows left→right in the image and world x grows
+# far→near, so columns bin y and rows bin x (smallest x = farthest).
+AXES = {"column": (1, "column", "leftmost", "rightmost"), "row": (0, "row", "farthest", "nearest")}
 
 Extractor = Callable[[Path, int, Path], None]
 Description = tuple[str, str, str]

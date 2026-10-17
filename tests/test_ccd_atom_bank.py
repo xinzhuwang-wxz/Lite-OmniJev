@@ -138,7 +138,7 @@ def test_atoms_follow_annotation_truth_and_contract(tmp_path: Path) -> None:
     assert rows127 == {"Which row of the floor is the red metal cube in?": "B"}
     raw = {(a["kind"], a["frame"], a["object_id"]): a["answer_raw"] for a in atoms}
     assert raw[("column", 0, 1)] == "column 1 (leftmost)"
-    assert raw[("row", 0, 0)] == "row 2 (farthest)"
+    assert raw[("row", 0, 0)] == "row 2 (nearest)"
 
     assert receipt["frames"] == [0, 127] and receipt["videos"] == [7]
     counted = receipt["counts_by_kind_and_answer"]
