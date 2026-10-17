@@ -14,7 +14,7 @@
 4. **口径修订**:ADR0026(自建榜废除,只用四公开榜)、ADR0027(对照引用公开数,不为对照烧卡;我方只测自己)
 5. **创新实验(CCCD-for-decisions)按预注册门证伪**:探针全榜 74.03 < 直答 76.62,弱族 40.2% << 门 80%;**oracle 路由上界 80.5% < 门 84%**,数学封死修订。机制:同模型分解带同样盲区(与 CLEVRER RL 线同构)。代码已并入 main(scripts/ccd_decisions_probe.py),证据 `s4-ccd-dec-probe-001`。
 6. **MMAU 回归解剖**(-5.3):位置先验漂移为主(榜偏 A,基座吃偏置 .777 vs 候选 .562)+ 2-3pt 真实排序退化;U 通道塌缩(pU→e-6,发布校准层覆盖,模型卡须披露);音频路由→基座为最优发布形态。证据 `s4-mmau-regression-001`。
-7. **Bet B 规模化蒸馏已发射**(用户批准):`joint-train-v3.jsonl` 16,177 全 gold 决策样本(text 10,750 + image 4,167 + screenshot 1,260),init=D3P-600,rank64/α128,1800 步/accum 10/lr 1e-4,checkpoint 每 100;**预注册门:终点自动跑 JevBench ≥86;约束 MMAU ≥63.10 不回退**。用户令:时刻监控,基本收敛即停。
+7. **Bet B 规模化蒸馏已发射**(用户批准):`joint-train-v3.jsonl` 16,177 全 gold 决策样本(text 10,750 + image 4,167 + screenshot 1,260),init=D3P-600,rank16/α32(冻结训练器 schema 字面钉死 16/32,rank64 不可用),1800 步/accum 10/lr 1e-4(v2 已验证超参),checkpoint 每 100;**预注册门:终点自动跑 JevBench ≥86;约束 MMAU ≥63.10 不回退**。用户令:时刻监控,基本收敛即停。
 
 ## 二、在跑(接手时先查)
 
