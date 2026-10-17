@@ -1,11 +1,12 @@
-"""qwen3_5 comparator family: OneJev-4B/27B audio path for comparator_eval.
+"""qwen3_5 comparator family (Qwen3-VL): OneJev-4B/27B video path.
 
-SMOKE-GATED: the exact processor/model classes are validated by a --limit
-smoke on the box (transformers 5.17) before any scored run. The audio path
-follows the Qwen-Omni processor convention: chat template over a user turn
-holding one audio clip plus the canonical decision payload text, then the
-processor produces the forward inputs. Video raises until its path is
-written and smoke-validated.
+SMOKE-GATED: validated by a --limit smoke on the box before scored runs.
+These checkpoints are vision-language only (Qwen3VLProcessor; the chat
+template accepts image/text/video and has no audio branch), so MMAU is
+structurally unrunnable for them and MVBench is their native board. The
+canonical 16-frame@4fps mp4 is passed as a video path with fps=4 so the
+processor samples exactly the 16 canonical frames. Audio raises: those
+comparators cannot consume the audio board.
 """
 
 from __future__ import annotations
@@ -81,32 +82,36 @@ class Qwen35OmniAdapter:
     ) -> PreparedRow:
         media = sample.prefix.media
         if not media:
-            raise DevEvalError(f"{sample.id}: qwen3_5_omni family handles media samples only")
-        if media[0].type == "video":
-            raise DevEvalError(f"{sample.id}: qwen3_5_omni video path not smoke-validated yet")
-        if media[0].type != "audio":
-            raise DevEvalError(f"{sample.id}: unsupported media type {media[0].type!r}")
+            raise DevEvalError(f"{sample.id}: qwen3_5 family handles media samples only")
+        if media[0].type != "video":
+            raise DevEvalError(
+                f"{sample.id}: qwen3_5 checkpoints have no audio/image tower; "
+                f"{media[0].type} samples are structurally unrunnable"
+            )
         path = _resolve_media(media_root, media[0].uri, media[0].sha256)
-
-        soundfile = importlib.import_module("soundfile")
-        audio, sample_rate = soundfile.read(path, dtype="float32", always_2d=False)
 
         processor = loaded.processor
         conversation = [
             {
                 "role": "user",
                 "content": [
-                    {"type": "audio", "audio": path.name},
+                    {"type": "video", "video": str(path)},
                     {"type": "text", "text": _payload_text(sample)},
                 ],
             }
         ]
         try:
             rendered = processor.apply_chat_template(
-                conversation, add_generation_prompt=True, tokenize=False
+                conversation,
+                add_generation_prompt=True,
+                tokenize=False,
+                enable_thinking=False,
             )
             inputs = processor(
-                text=[rendered], audio=[audio], sampling_rate=sample_rate, return_tensors="pt"
+                text=[rendered],
+                videos=[[str(path)]],
+                fps=4.0,
+                return_tensors="pt",
             )
         except Exception as exc:  # noqa: BLE001 - processor API varies across versions
             raise DevEvalError(
@@ -121,4 +126,5 @@ class Qwen35OmniAdapter:
             input_ids=input_ids,
             prompt_text=rendered,
             forward_kwargs=forward_kwargs,
+            boundary_tail="<|im_start|>assistant\n<think>\n\n</think>\n\n",
         )

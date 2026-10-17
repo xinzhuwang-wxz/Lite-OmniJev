@@ -52,6 +52,7 @@ class PreparedRow:
     input_ids: list[int]
     prompt_text: str
     forward_kwargs: dict[str, Any]
+    boundary_tail: str | None = None
 
 
 @dataclass(frozen=True)
@@ -87,16 +88,31 @@ def load_samples(path: Path) -> list[Sample]:
 
 
 def letter_mapping(
-    tokenizer: Any, sample: Sample, input_ids: list[int], prompt_text: str
+    tokenizer: Any,
+    sample: Sample,
+    input_ids: list[int],
+    prompt_text: str,
+    boundary_tail: str | None = None,
 ) -> dict[str, int]:
-    """s1_dev_eval boundary check: prompt+letter encodes to prompt+single token."""
+    """s1_dev_eval boundary check: prompt+letter encodes to prompt+single token.
+
+    Families whose processor expands media placeholder tokens mid-prompt (vision
+    pads) pass boundary_tail: the literal generation-position suffix; the check
+    then requires input_ids to end with that tail and each letter to continue it
+    as one token, which pins the same generation boundary.
+    """
+    tail_ids = tokenizer.encode(boundary_tail, add_special_tokens=False) if boundary_tail else None
+    if tail_ids is not None and input_ids[-len(tail_ids) :] != tail_ids:
+        raise DevEvalError(f"{sample.id}: rendered tail does not match boundary_tail")
+    prefix = boundary_tail if boundary_tail is not None else prompt_text
     mapping: dict[str, int] = {}
     for token in (*answer_tokens(sample.questions[0]), "U"):
         encoded = tokenizer.encode(token, add_special_tokens=False)
         if len(encoded) != 1:
             raise DevEvalError(f"{sample.id}: answer token {token!r} is not a single token")
-        continuation = tokenizer.encode(prompt_text + token, add_special_tokens=False)
-        if continuation != [*input_ids, *encoded]:
+        continuation = tokenizer.encode(prefix + token, add_special_tokens=False)
+        expected = [*tail_ids, *encoded] if tail_ids is not None else [*input_ids, *encoded]
+        if continuation != expected:
             raise DevEvalError(f"{sample.id}: answer token boundary broken for {token!r}")
         mapping[token] = encoded[0]
     return mapping
@@ -163,7 +179,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 loaded, sample, args.media_root.resolve(), max_length=args.max_length
             )
             mapping = letter_mapping(
-                loaded.tokenizer, sample, prepared.input_ids, prepared.prompt_text
+                loaded.tokenizer,
+                sample,
+                prepared.input_ids,
+                prepared.prompt_text,
+                prepared.boundary_tail,
             )
             logits = score_row(
                 loaded.model,
