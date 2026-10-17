@@ -10,6 +10,7 @@
 - **SOTA 口径(用户 19:10 定)**:产品相关榜单超过所有条目(含教师),不只同尺寸。旗舰范式 CCD 见 `reports/explore/s4-ccd-paradigm-001.md`(校准原子 × 精确组合 × 回蒸馏直答 × 共享前缀)。
 - **四类题评测**:`scripts/clevrer_fourtype_eval.py`;盒上 `artifacts/clevrer-fourtype-dev2-001/`(debug 300 视频可看;judge 900 视频只看汇总;均为未进任何池的 train 视频)。CLEVRER validation=封存来源,只经私有聚合作业读(已解压至 /root/autodl-tmp/clevrer-val-001)。
 - 盒上排队:`q4type`(采样结束后 D3P-600 跑 debug40 四类题基线)、`autogate`(RL 级联终判)。原子真值:`/root/autodl-tmp/clevrer-train-ann-001`(逐帧 in-view/位置/速度/碰撞)。
+- **20:20 榜单口径纠偏(按原方案 §1.1)**:SOTA 判定榜 = Decision Index(含视觉)、JevBench、MMAU、MVBench 决策子集 + 我们公开的多模态决策评测集;另需可靠性(置换/正反问/ECE/覆盖率)与成本;对照 OneJev-4B、Valen-2B,上限 Jev-Omni-12B、OneJev-27B(用户:全部超过)。CLEVRER 不在榜单内,降为视频训练/评测源与 CCD 方法试验场。现状:教师 MMAU test-mini 62.0%、MVBench 九任务 54.22%(S0 实测);**我方在 MMAU/MVBench 公开协议未测**,Decision Index 未打分,JevBench D3P 76.62。下一步:fable 建同题学生样本(`scripts/public_bench_samples.py`)→ GPU 实测 D3P/基座 → 分榜差距表定攻坚。
 - **20:10 判定**:RL 级联 118<123 停 RL 线;仲裁弃;PTR 零训练未过门(121–124)。CCD 执行器+物理真值世界 D100/E100/P97/C97(`s4-ccd-oracle-001.md`);敏感度:位置 σ≤.05 为硬要求 → 几何走确定性 CV(fable 写 `eval/ccd_geometry.py`),VLM 只做语义原子。盒上 GPU:q4type 运行中 → qg1。
 - 副手 SOTA冲刺1 在写 `reports/explore/s4-leaderboard-sota-map-001.md`(榜单与榜首数字表)。
 
