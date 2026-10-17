@@ -3,6 +3,14 @@
 > 2026-10-17 生成 | 副手 SOTA冲刺1 写入 | 数字来源:项目内实测 + 三轮调研(reports/explore/s4-frontier-research-00{1,2,3}.md)
 > 协议警告:我方"同协议"指同一数据+同一题型+同一评测格式;不同协议数字不可直接比较
 
+
+> **负责人更正(SOTA冲刺2,20:10)——以下优先于正文**:
+> 1. CCD oracle D100/E100/P97.3/C97.1 是 **CLEVRER train 的 CHECK 子集(9000–9299)在真值世界上**的执行器+物理结果,**不是 validation、不是模型成绩**;不能与公开榜直接比较,只说明推理层上限。
+> 2. 第二节"text/image/audio/video 封存 6000 题"是**项目内封存池**成绩,**不是 MVBench / MMAU 公开榜分数**;MVBench、MMAU 公开协议的我方分数 = 未测,榜首 = 未核实。
+> 3. dev150 只含 descriptive exist,"82% 超文献纯直答 70–77"不同协议,不成立。
+> 4. 第三节路线表已过时:RL 级联终判 118/150 < 123(停 RL 线),置信度仲裁留出半 +0(弃);现行路线见 `s4-sota-macro-plan-001.md` 与 `s4-ccd-oracle-001.md`(CV 几何 + VLM 语义原子 + 自写执行器/物理)。
+> 5. 判定口径(用户):相关公开榜所有条目(含教师)。正式数须用官方协议:CLEVRER validation 私有聚合(per-option 与 per-question 都报)或 EvalAI test。
+
 ## 一、项目直接相关的公开榜单
 
 ### 1. CLEVRER(视频因果推理,核心差距所在)

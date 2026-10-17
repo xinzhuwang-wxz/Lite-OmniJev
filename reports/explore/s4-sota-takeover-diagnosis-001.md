@@ -34,3 +34,8 @@
 - 为确认四类题格式,两条检查命令打印了 CLEVRER **validation** 的少量题目原文(video 10000 第 0/1/3/4/11/13/14 题、video 10001 第 3 题)及 descriptive 答案的全局频次。validation 是 S4/S5 现成 gold 封存池来源(scripts/clevrer_gold_pools.py)。
 - 处置:video 10000、10001 两个 family 从今后任何判定集中排除;validation 只经私有聚合作业读取(只回汇总);调试改用未进训练池的 CLEVRER train 视频(train.json 同样含四类题)。
 - 未查看封存池已选样本清单或其预测;已出具的 S5 封存汇总不受影响(不同时间产出,无回写)。
+
+## RL 级联终判(20:04 CST,完整 150)
+- 级联 118/150 < D3P 123 → 按 `s4-contingency-tree-001.md` 停 RL 形式化器线。谓词 F1(RL 场景):enterers .649、exiters 0、moving .789、collisions .377(旧 .642/.091/.494/.263)。
+- 分支 A 置信度仲裁:拟合半 58→62,留出半 65→65(覆盖全部 60);门 +3 未过,弃。并集上界 138。
+- 产物:盒 `s4-ns-cascade-002/final/{gate.json,merged-rl-150.jsonl,k3-rl-150.jsonl}`。
