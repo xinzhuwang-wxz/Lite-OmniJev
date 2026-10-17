@@ -40,6 +40,8 @@
 - 私有作业前清 /var/tmp overlay 媒体快照(30G 限制)。
 - SSH 别名 `seeta`;凭据不入仓;Python env `/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python`(pyarrow/PIL/pydantic/torch 全)。
 
-## 待我决策
+## 待办与阻塞(夜景)
 
-- (无新增;租卡/开关卡、HF 上传 token、范围变更照旧须用户。)
+- **教师同协议链已撤**:Jev-Omni 直接过 s1_dev_eval 会**静默随机初始化** vision/audio tower(checkpoint 键名 embed_audio/embed_vision 为 gemma-3n 风格,与其声明的 gemma4_unified 架构不匹配;已发现并杀掉,无效产物在 `attic-superseded-2026-10-17/jev-omni-invalid-mmau/`)。修复路径:对照 S0 教师评测当时的加载代码(它成功跑出 62.0/54.22,加载方式已验证),做键名映射或用其原始类;修好后先 --limit 冒烟核对权重加载零 MISSING 再全量。**在同协议教师数出来前,教师 62.0/54.22 仍是教师协议口径,不可直接判定。**
+- Valen-2B 下载:盒上外网不可达,恢复后重下(repo/revision 已钉)。
+- 已知债务票:issues/01(clevrer_fourtype_eval mypy)。
