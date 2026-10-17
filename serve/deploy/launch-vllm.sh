@@ -64,7 +64,9 @@ fi
 export NVIDIA_TF32_OVERRIDE=0 TRITON_F32_DEFAULT=ieee
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export PATH="$SERVE_ENV/bin:$PATH" # FlashInfer JIT needs the env's ninja
-exec "$SERVE_ENV/bin/vllm" serve "$VIEW" \
+# The console script's shebang may point at another env (hardlinked clones);
+# invoke through this env's interpreter explicitly.
+exec "$SERVE_ENV/bin/python" "$SERVE_ENV/bin/vllm" serve "$VIEW" \
   --hf-config-path "$CONFIG_DIR" \
   --served-model-name "$SERVED_NAME" \
   --host "$HOST" --port "$PORT" \
@@ -73,4 +75,5 @@ exec "$SERVE_ENV/bin/vllm" serve "$VIEW" \
   --kv-cache-memory-bytes "$KV_BYTES" \
   --gpu-memory-utilization 0.75 --seed 42 \
   --enforce-eager --generation-config vllm \
+  --no-enable-prefix-caching \
   --logprobs-mode raw_logprobs --max-logprobs 32
