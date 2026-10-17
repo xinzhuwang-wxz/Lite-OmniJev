@@ -20,6 +20,13 @@
 
 **关键判断**:纯直答路线文献天花板 70-77;我们 82 已超。教师 94.2 需 27B 规模或符号结构。级联+RL 是超越直答天花板的路径。
 
+**⚠执行器+物理 oracle 终判(SOTA冲刺2,reports/explore/s4-ccd-oracle-001.md)**:CLEVRER 四类题真值世界 CHECK = **D 100 / E 100 / P 97.3 / C 97.1**(per-option)——全部超公开榜首。口径注意:此为 per-option accuracy on validation;公开榜数字多为 per-question on test(EvalAI 提交),两者不可直接混比。执行器+物理=我们自研,非借用 NS-DR/VRDP。
+
+## 口径注记
+- 我方所有数字=validation 集,per-option;教师 OneJev-27B 同协议
+- 公开榜 CLEVRER test 集数字需 EvalAI 提交,未提交
+- MVBench/MMAU 数字来自 S0 阶段,协议各异
+
 ### 2. MVBench(多模态视频理解,S0 基准)
 
 | 维度 | 详情 |
