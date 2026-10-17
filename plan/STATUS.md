@@ -2,6 +2,12 @@
 
 更新:2026-10-17 19:20。**交付候选 D3P-600 已封存验证(完整);SOTA 冲刺进行中:RL 形式化器训练完成(F1 三连涨),级联判定场景生成待一条命令续跑(连接抖动中断,重启命令已备)。原生 goal 仍 active,SOTA 判定数 = 级联实测 vs 教师 94.2。**
 
+## ⚡ 19:40 更新(SOTA冲刺2 接管,SOTA冲刺1 副手监控)
+
+- **勿再运行 launch-rest*.sh / launch-staggered.sh**(后者会 rm 正在写的分片)。三分片在跑,数据经 /proc fd 抢救到 `s4-ns-cascade-002/rescue/`;`autogate` screen 采样结束即自动出 `s4-ns-cascade-002/final/gate.json`。
+- 诊断与同题锚点见 `reports/explore/s4-sota-takeover-diagnosis-001.md`:教师 141/OneJev-4B 133/D3P 123;差距 15/18 在 enter 题族 → PTR 逐帧存在时间线探针进行中(`artifacts/s4-ptr-probe-001/`)。
+- 下方旧接续点的 launch-rest2 命令已作废。
+
 ## ⚡ 当前接续点(新 session 第一动作)
 
 盒子开机后(SSH: `ssh -p 48926 root@region-42.seetacloud.com`,密钥已装 `~/.ssh/id_ed25519`,详见 ~/.ssh/config 的 seeta 别名):
