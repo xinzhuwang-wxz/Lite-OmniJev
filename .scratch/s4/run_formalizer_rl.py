@@ -29,6 +29,9 @@ LR = 1e-5
 BATCH_VIDEOS = 8
 CHECKPOINT_EVERY = 20
 MAX_LENGTH_TOKENS = 4096
+MAX_NEW_TOKENS = 512  # scene JSONs run 200-400 tokens; 512 is the hard cap
+NUM_FRAMES = 16  # must match training and the quality gate
+LOGPROB_CHUNK = 256  # chunked teacher-forcing forward to bound activation memory
 
 
 def batch_loss(
@@ -135,6 +138,7 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--media-root", type=Path, required=True)
     parser.add_argument("--max-videos", type=int, default=60)
+    parser.add_argument("--group-size", type=int, default=4, help="GRPO samples per video; drop to 2 if OOM persists")
     parser.add_argument("--self-test", action="store_true")
     args, _unknown = parser.parse_known_args()
     if args.self_test:
@@ -143,8 +147,19 @@ def main() -> int:
     return 0
 
 
+def _decode_video(media_root: Path, media: dict):
+    """Explicit 16-frame decode via the proven loader — never hand a raw path
+    to the processor (uncapped decode was the OOM root cause)."""
+    from train.multimodal import file_hash, load_media, resolve_media
+
+    path = resolve_media(media_root, media["uri"], media["sha256"], max_bytes=256 * 1024 * 1024)
+    if file_hash(path) != media["sha256"]:
+        raise SystemExit("media sha mismatch during decode")
+    decoded = load_media(path, "video", num_frames=NUM_FRAMES, max_seconds=60)
+    return decoded["frames"], decoded["metadata"]
+
+
 def _gpu_loop(args) -> None:  # pragma: no cover - card required
-    import hashlib
     import time
 
     import torch
@@ -152,7 +167,6 @@ def _gpu_loop(args) -> None:  # pragma: no cover - card required
     from transformers import AutoModelForImageTextToText
 
     from scripts import s0_development_baselines as baseline
-    from train.multimodal import resolve_media
 
     sys.path.insert(0, "/root/autodl-tmp/s5-calibration-code-fa83acc")
     from caption_probe import PERCEPTION_PROMPT  # noqa: E402
@@ -178,28 +192,36 @@ def _gpu_loop(args) -> None:  # pragma: no cover - card required
     started = time.time()
     with log.open("w", encoding="utf-8") as stream:
         for index, record in enumerate(train):
-            video = resolve_media(args.media_root, record["media"]["uri"], record["media"]["sha256"], max_bytes=256 * 1024 * 1024)
+            frames, metadata = _decode_video(args.media_root, record["media"])
             messages = [{"role": "user", "content": [{"type": "video"}, {"type": "text", "text": PERCEPTION_PROMPT}]}]
             prompt = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
-            kwargs = {"text": [prompt], "videos": [video], "return_tensors": "pt", "do_sample_frames": False}
-            inputs = processor(**kwargs)
+            inputs = processor(
+                text=[prompt], videos=[frames], video_metadata=[metadata],
+                return_tensors="pt", do_sample_frames=False,
+            )
             inputs = {k: v.to("cuda") for k, v in inputs.items()}
-            generations, sample_logprobs, base_logprobs = [], [], []
-            for _ in range(G_SAMPLES):
+            generations = []
+            for _ in range(args.group_size):
                 with torch.no_grad():
-                    out = model.generate(**inputs, max_new_tokens=900, do_sample=True, temperature=TEMPERATURE, top_p=0.95, return_dict_in_generate=True, output_scores=True)
-                text = processor.decode(out.sequences[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
+                    out = model.generate(
+                        **inputs, max_new_tokens=MAX_NEW_TOKENS, do_sample=True,
+                        temperature=TEMPERATURE, top_p=0.95,
+                    )
+                text = processor.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
                 generations.append({"raw_text": text})
+                del out
+                torch.cuda.empty_cache()
             outcome = process_video(generations, record)
-            # token-level logprob collection under grad for the best sample
-            # (single-sample REINFORCE per group member; see evidence for the
-            # estimator note) and the SFT pass on the truth scene.
             loss_info = _policy_step(model, optimizer, inputs, generations, outcome, record, processor)
+            del inputs, frames
+            torch.cuda.empty_cache()
+            peak = torch.cuda.max_memory_allocated() / (1024 ** 3)
             entry = {
                 "video": record["video_id"],
                 "rewards": [r["reward"] for r in outcome["rewards"]],
                 "advantages": [round(a, 4) for a in outcome["advantages"]],
                 "loss": loss_info,
+                "peak_gb": round(peak, 2),
                 "elapsed": round(time.time() - started, 1),
             }
             stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
@@ -227,54 +249,75 @@ def _gpu_loop(args) -> None:  # pragma: no cover - card required
     model.save_pretrained(args.output_dir / "final")
 
 
+def _token_logprob_chunked(model, inputs, token_ids, *, no_grad: bool = False):
+    """Chunked teacher-forcing logprob; bounds activation memory to 256-token
+    windows instead of one full-sequence forward."""
+    import torch
+
+    prefix_len = inputs["input_ids"].shape[1]
+    total = torch.zeros((), device="cuda")
+    ctx = torch.no_grad() if no_grad else torch.enable_grad()
+    with ctx:
+        for start in range(0, token_ids.shape[1], LOGPROB_CHUNK):
+            chunk = token_ids[:, start : start + LOGPROB_CHUNK]
+            window_ids = torch.cat(
+                [inputs["input_ids"], token_ids[:, :start], chunk], dim=1
+            )
+            outputs = model(input_ids=window_ids, use_cache=False)
+            # logits predicting the chunk tokens sit at positions
+            # prefix_len+start-1 .. prefix_len+start+len(chunk)-2
+            logits = outputs.logits[0, prefix_len + start - 1 : prefix_len + start + chunk.shape[1] - 1].float()
+            logprobs = torch.log_softmax(logits, dim=-1)
+            total = total + logprobs.gather(1, chunk[0].unsqueeze(1)).sum()
+            del outputs, logits, logprobs
+        if not no_grad:
+            pass
+    return total
+
+
 def _policy_step(model, optimizer, inputs, generations, outcome, record, processor):  # pragma: no cover
     import torch
 
-    import caption_probe  # noqa: F401
-
     losses = []
     for generation, advantage in zip(generations, outcome["advantages"], strict=True):
-        if advantage == 0.0:
+        if abs(advantage) < 1e-6:
             continue
         token_ids = processor.tokenizer(
             generation["raw_text"], add_special_tokens=False, return_tensors="pt"
         ).input_ids.to("cuda")
-        full = torch.cat([inputs["input_ids"], token_ids], dim=1)
-        outputs = model(input_ids=full, use_cache=False)
-        logits = outputs.logits[0, inputs["input_ids"].shape[1] - 1 : -1].float()
-        logprobs = torch.log_softmax(logits, dim=-1)
-        token_logprob = logprobs.gather(1, token_ids[0].unsqueeze(1)).sum()
-        losses.append(-advantage * token_logprob / G_SAMPLES)
+        if token_ids.shape[1] == 0:
+            continue
+        token_logprob = _token_logprob_chunked(model, inputs, token_ids)
+        losses.append(-advantage * token_logprob / max(1, token_ids.shape[1]))
     sft_target = json.dumps(record["truth_scene"], ensure_ascii=False)
     sft_ids = processor.tokenizer(sft_target, add_special_tokens=False, return_tensors="pt").input_ids.to("cuda")
-    full = torch.cat([inputs["input_ids"], sft_ids], dim=1)
-    outputs = model(input_ids=full, use_cache=False)
-    logits = outputs.logits[0, inputs["input_ids"].shape[1] - 1 : -1].float()
-    sft_logprob = torch.log_softmax(logits, -1).gather(1, sft_ids[0].unsqueeze(1)).sum()
+    sft_logprob = _token_logprob_chunked(model, inputs, sft_ids)
     loss = torch.stack(losses).sum() if losses else torch.zeros((), device="cuda")
-    loss = loss - LAMBDA_SFT * sft_logprob / sft_ids.shape[1]
+    loss = loss - LAMBDA_SFT * sft_logprob / max(1, sft_ids.shape[1])
     optimizer.zero_grad()
     loss.backward()
     torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], 1.0)
     optimizer.step()
+    torch.cuda.empty_cache()
     return {"loss": round(float(loss.item()), 4)}
 
 
 def _greedy_scene(model, processor, media_root, record):  # pragma: no cover
     import torch
 
-    from train.multimodal import resolve_media
-
     import caption_probe
 
-    video = resolve_media(media_root, record["media"]["uri"], record["media"]["sha256"], max_bytes=256 * 1024 * 1024)
+    frames, metadata = _decode_video(media_root, record["media"])
     messages = [{"role": "user", "content": [{"type": "video"}, {"type": "text", "text": caption_probe.PERCEPTION_PROMPT}]}]
     prompt = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
-    inputs = processor(**{"text": [prompt], "videos": [video], "return_tensors": "pt", "do_sample_frames": False})
+    inputs = processor(text=[prompt], videos=[frames], video_metadata=[metadata],
+                       return_tensors="pt", do_sample_frames=False)
     inputs = {k: v.to("cuda") for k, v in inputs.items()}
     with torch.no_grad():
-        out = model.generate(**inputs, max_new_tokens=900, do_sample=False)
+        out = model.generate(**inputs, max_new_tokens=MAX_NEW_TOKENS, do_sample=False)
     text = processor.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
+    del out, inputs, frames
+    torch.cuda.empty_cache()
     return {"raw_text": text}
 
 
