@@ -9,9 +9,11 @@ these samples stays row-aligned with the teacher two-pass evidence:
 Media protocol, recorded honestly for score interpretation:
 - MMAU: audio bytes are embedded in the source parquet and are written out verbatim;
   the Sample ``sha256`` is the loader's ``media_bytes_sha256``. Rare clips over the
-  student loader's hard 30 s audio limit are stream-copy trimmed to 29.999 s and
-  listed under ``trimmed_rows_over_30s`` in ``build-summary.json`` (their Media sha
-  covers the trimmed file; parquet provenance stays in ``meta.source_sha256``).
+  student loader's hard 30 s audio limit are sample-exact wave-trimmed to 29.999 s,
+  and the 46 embedded-mp3 rows are decoded to pcm_s16le wav at the native rate
+  (``trimmed_rows_over_30s`` / ``transcoded_rows_nonriff`` in ``build-summary.json``;
+  their Media sha covers the transformed file; parquet provenance stays in
+  ``meta.source_sha256``).
 - MVBench: the original videos (Charades/FunQA/Perception/STA) are not staged on this
   box. The teacher protocol froze exactly 16 canonical PNG frames per row
   (``artifacts/public-video-protocol-freeze-001``). ``scripts/s1_dev_eval`` requires a
@@ -28,9 +30,9 @@ GPU evaluation commands (main session launches these; this ticket stays CPU-only
     python -m scripts.s1_dev_eval \\
       --model-dir <E4B base model dir> \\
       --adapter <D3P-600 run adapter dir> \\
-      --data /root/autodl-tmp/s1-text-lora-001/artifacts/public-bench-samples-001/mmau-test-mini-samples-v1.jsonl \\
-      --passes 1 --video-frames 16 \\
-      --media-root /root/autodl-tmp/s1-text-lora-001/artifacts/public-bench-samples-001/media \\
+      --data artifacts/public-bench-samples-001/mmau-test-mini-samples-v1.jsonl \\
+      --passes 2 --video-frames 16 \\
+      --media-root artifacts/public-bench-samples-001/media \\
       --output-dir /root/autodl-tmp/s1-text-lora-001/artifacts/public-bench-eval-001/mmau \\
       --report /root/autodl-tmp/s1-text-lora-001/reports/s4-public-bench-mmau-001.json
 
@@ -57,10 +59,12 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any, Literal
 
 from data.schema import HardTarget, Media, Metadata, Prefix, Question, Sample
 from eval.teacher_benchmarks import (
     MMAU_EXPECTED_ROWS,
+    BenchmarkExample,
     MVBench_EXPECTED_ROWS,
     file_sha256,
     load_mmau_examples,
@@ -119,7 +123,7 @@ def _run(command: list[str]) -> None:
         )
 
 
-def _ffprobe_json(path: Path) -> dict:
+def _ffprobe_json(path: Path) -> dict[str, Any]:
     result = subprocess.run(
         [
             "ffprobe",
@@ -136,7 +140,8 @@ def _ffprobe_json(path: Path) -> dict:
         stdin=subprocess.DEVNULL,
         timeout=60,
     )
-    return json.loads(result.stdout)
+    loaded: dict[str, Any] = json.loads(result.stdout)
+    return loaded
 
 
 def _probe_duration(path: Path) -> float:
@@ -170,11 +175,11 @@ def _sample_for(
     sample_id: str,
     family_id: str,
     state: str,
-    media_type: str,
+    media_type: Literal["audio", "video"],
     uri: str,
     media_sha256: str,
     instruction: str,
-    question_type: str,
+    question_type: Literal["choice", "score", "noul"],
     options: list[str] | None,
     target_value: str,
     target_source: str,
@@ -193,14 +198,14 @@ def _sample_for(
         questions=[
             Question(
                 qid="q0",
-                type=question_type,  # type: ignore[arg-type]
+                type=question_type,
                 instruction=instruction,
                 options=options,
                 target=HardTarget(kind="hard", value=target_value, source=target_source),
             )
         ],
         meta=Metadata(
-            modality=[media_type],  # type: ignore[list-item]
+            modality=[media_type],
             source_dataset=source_dataset,
             source_revision=source_revision,
             source_sha256=source_sha256,
@@ -215,27 +220,52 @@ def _sample_for(
 
 def build_mmau_samples(
     *, parquet: Path, config_path: Path, output_root: Path, workers: int = 8
-) -> dict:
+) -> dict[str, Any]:
     config = json.loads(Path(config_path).read_text())
     mmau_config = config["mmau"]
     examples = load_mmau_examples(Path(parquet), mmau_config["file"])
     if len(examples) != MMAU_EXPECTED_ROWS:
-        raise ValueError(f"mmau loader returned {len(examples)} rows, expected {MMAU_EXPECTED_ROWS}")
+        raise ValueError(
+            f"mmau loader returned {len(examples)} rows, expected {MMAU_EXPECTED_ROWS}"
+        )
 
     media_dir = output_root / "media" / "mmau"
     media_dir.mkdir(parents=True, exist_ok=True)
 
+    transcoded_rows: list[str] = []
+
     def stage(example_index: int) -> tuple[int, str, float, bool, str]:
         example = examples[example_index]
         media_path = media_dir / f"{example.report_id}.wav"
+        transcoded = False
         if not media_path.exists() or _file_sha256(media_path) != example.media_bytes_sha256:
             assert example.media_bytes is not None
             if not example.media_bytes.startswith(b"RIFF"):
-                raise ValueError(
-                    f"mmau {example.row_id}: embedded audio is not RIFF/WAV; "
-                    "container mapping unknown, stopping"
+                # rare non-RIFF embeddings (mp3): decode to pcm_s16le wav at the native
+                # rate; Media sha covers the transcoded file, parquet provenance stays
+                # in meta.source_sha256 (same convention as trimmed rows)
+                source = media_path.with_suffix(".src.bin")
+                source.write_bytes(example.media_bytes)
+                _run(
+                    [
+                        "ffmpeg",
+                        "-nostdin",
+                        "-v",
+                        "error",
+                        "-y",
+                        "-i",
+                        str(source),
+                        "-vn",
+                        "-acodec",
+                        "pcm_s16le",
+                        str(media_path),
+                    ]
                 )
-            media_path.write_bytes(example.media_bytes)
+                source.unlink()
+                transcoded = True
+                transcoded_rows.append(example.row_id)
+            else:
+                media_path.write_bytes(example.media_bytes)
         duration = _probe_duration(media_path)
         trimmed = False
         if duration > MMAU_AUDIO_MAX_SECONDS:
@@ -252,7 +282,7 @@ def build_mmau_samples(
         if duration <= 0:
             raise ValueError(f"mmau {example.row_id}: empty audio")
         disk_sha256 = _file_sha256(media_path)
-        if not trimmed and disk_sha256 != example.media_bytes_sha256:
+        if not trimmed and not transcoded and disk_sha256 != example.media_bytes_sha256:
             raise ValueError(f"mmau {example.row_id}: staged audio sha mismatch")
         return example_index, example.row_id, duration, trimmed, disk_sha256
 
@@ -268,7 +298,7 @@ def build_mmau_samples(
     for example_index, example in enumerate(examples):
         lowered = tuple(option.lower() for option in example.options)
         if lowered == ("yes", "no"):
-            question_type = "noul"
+            question_type: Literal["choice", "score", "noul"] = "noul"
             options = None
             target_value = example.options[example.label_index].lower()
             state = NOUL_STATE_AUDIO
@@ -320,6 +350,7 @@ def build_mmau_samples(
         "source_parquet_sha256": examples[0].source_sha256,
         "max_audio_duration_seconds": round(max(durations.values()), 3),
         "trimmed_rows_over_30s": trimmed_ids,
+        "transcoded_rows_nonriff": sorted(transcoded_rows),
         "license": MMAU_LICENSE,
     }
 
@@ -335,15 +366,15 @@ def _stage_row_frames(
 
 
 def _assemble_row_video(
-    example: object, cache_root: Path, target_path: Path, work_dir: Path
+    example: BenchmarkExample, cache_root: Path, target_path: Path, work_dir: Path
 ) -> None:
     """Losslessly pack a row's 16 canonical PNGs into the mp4 that s1_dev_eval loads."""
-    frames = example.video_frames  # type: ignore[attr-defined]
+    frames = example.video_frames
     if len(frames) != VIDEO_FRAMES_PER_ROW:
-        raise ValueError(f"mvbench {example.row_id}: expected 16 canonical frames")  # type: ignore[attr-defined]
+        raise ValueError(f"mvbench {example.row_id}: expected 16 canonical frames")
     paths = [cache_root / frame.png for frame in frames]
     expected = [frame.png_sha256 for frame in frames]
-    tmp_path = work_dir / f"{example.report_id}.mp4"  # type: ignore[attr-defined]
+    tmp_path = work_dir / f"{example.report_id}.mp4"
     with tempfile.TemporaryDirectory(prefix="mvbench-mp4-", dir=work_dir) as tmp:
         frame_dir = Path(tmp) / "frames"
         _stage_row_frames(paths, expected, frame_dir)
@@ -380,7 +411,7 @@ def _assemble_row_video(
     os.replace(tmp_path, target_path)
 
 
-def _verify_row_container(example: object, path: Path) -> None:
+def _verify_row_container(example: BenchmarkExample, path: Path) -> None:
     """ffprobe + RGB24 roundtrip: the decoded frames must be the canonical frames."""
     probed = _ffprobe_json(path)
     duration = float(probed["format"]["duration"])
@@ -395,10 +426,10 @@ def _verify_row_container(example: object, path: Path) -> None:
     if stream["avg_frame_rate"] != f"{VIDEO_FPS}/1":
         raise ValueError(f"mvbench {example.row_id}: avg_frame_rate={stream['avg_frame_rate']}")
     width, height = int(stream["width"]), int(stream["height"])
-    if (width, height) != (example.width, example.height):  # type: ignore[attr-defined]
+    if (width, height) != (example.width, example.height):
         raise ValueError(
             f"mvbench {example.row_id}: container {width}x{height} != manifest "
-            f"{example.width}x{example.height}"  # type: ignore[attr-defined]
+            f"{example.width}x{example.height}"
         )
     result = subprocess.run(
         [
@@ -424,7 +455,7 @@ def _verify_row_container(example: object, path: Path) -> None:
         raise RuntimeError(f"mvbench {example.row_id}: roundtrip decode failed")
     payload = result.stdout
     frame_bytes = width * height * 3
-    expected = [frame.rgb24_sha256 for frame in example.video_frames]  # type: ignore[attr-defined]
+    expected = [frame.rgb24_sha256 for frame in example.video_frames]
     if len(payload) != frame_bytes * len(expected):
         raise ValueError(
             f"mvbench {example.row_id}: roundtrip returned {len(payload)} bytes, "
@@ -448,7 +479,7 @@ def build_mvbench_samples(
     cache_root: Path,
     output_root: Path,
     workers: int = 6,
-) -> dict:
+) -> dict[str, Any]:
     examples = load_mvbench_examples(
         frame_manifest=Path(frame_manifest),
         metadata_dir=Path(metadata_dir),
@@ -563,10 +594,17 @@ print("VERIFY-OK " + json.dumps(summary, sort_keys=True))
 
 def verify_samples(
     *, eval_tree: Path, mmau_jsonl: Path, mvbench_jsonl: Path, media_root: Path
-) -> dict:
+) -> dict[str, Any]:
     """Load both jsonl with the frozen S5 eval tree's own loader and re-verify media."""
     result = subprocess.run(
-        [sys.executable, "-c", VERIFY_SNIPPET, str(media_root), str(mmau_jsonl), str(mvbench_jsonl)],
+        [
+            sys.executable,
+            "-c",
+            VERIFY_SNIPPET,
+            str(media_root),
+            str(mmau_jsonl),
+            str(mvbench_jsonl),
+        ],
         cwd=str(eval_tree),
         capture_output=True,
         text=True,
@@ -577,14 +615,13 @@ def verify_samples(
         )
     payload = result.stdout.strip().splitlines()[-1]
     print(payload)
-    return json.loads(payload.removeprefix("VERIFY-OK "))
+    summary: dict[str, Any] = json.loads(payload.removeprefix("VERIFY-OK "))
+    return summary
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument(
-        "command", choices=["build-mmau", "build-mvbench", "build-all", "verify"]
-    )
+    parser.add_argument("command", choices=["build-mmau", "build-mvbench", "build-all", "verify"])
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--parquet", type=Path, default=DEFAULT_MMAU_PARQUET)
     parser.add_argument("--frame-manifest", type=Path, default=DEFAULT_FRAME_MANIFEST)
@@ -597,7 +634,7 @@ def main(argv: list[str] | None = None) -> int:
     started = datetime.now(UTC)
     output_root: Path = args.output_root
     output_root.mkdir(parents=True, exist_ok=True)
-    summary: dict = {"started_utc": started.isoformat(), "command": args.command}
+    summary: dict[str, Any] = {"started_utc": started.isoformat(), "command": args.command}
     if args.command in ("build-mmau", "build-all"):
         summary["mmau"] = build_mmau_samples(
             parquet=args.parquet, config_path=args.config, output_root=output_root
