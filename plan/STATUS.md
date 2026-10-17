@@ -1,53 +1,28 @@
 # STATUS
 
-更新:2026-10-18 01:5x。**负责人:交付链冲刺(主会话,用户全权)。模型定版不再训练;主线=③产品化→④量化→⑤HF发布→⑥性能→⑦终局验收。Decision Index 公共子集本窗口测(用户确认)。**
+更新:2026-10-18 07:3x(CST)。**负责人:交付链冲刺(主会话,用户全权)。③已收口,④⑤⑥并行推进,⑦待 ④⑤ 完。**
 
 ## ⚡ 接续点(第一动作)
 
-1. **③ serving 复验进行中**(盒 screen):fp32 平面键 merged 工件物化(`s6-flat`,log
-   `/root/autodl-tmp/s6-release-serving-001/logs/flat-005.log`,末行 FLAT_EXIT:0 即成)→ vLLM
-   0.26 serve(SERVED_NAME=lite-omnijev-e4b-d3p600,FP32 已准入配方)→ `run-compare-vllm.sh`
-   parity(<1e-3,reference 已就绪 `s6-serving-hf-reference-d3p600-001.json`,reference-ready
-   100 行两遍精确可重复)→ 网关 → `s0_gateway_parity compare-gateway` → Mac 浏览器
-   `browser_s0_cpu --base-url`(SSH 隧道)。发射命令全在 `serve/deploy/launch-vllm.sh`。
-2. **④ 量化并行**:llama.cpp 编译中(盒 `s6-llamacpp`,build.log 末行 LLAMACPP_BUILD_EXIT)。
-   榜口径已收口(ADR0028):主表=JevBench+MMAU(路由形态)+Decision Index 公共子集,MVBench 参照。
-3. flat 工件验收后:release-002 入 `model/merged-fp32-flat/`(或按 SHA256SUMS 重排),填 ⑥ 数据,
-   开 ④ 转换,Decision Index 打分(官方 runner=apolinario/decision-index@f8552a1,http 引擎直打
-   `/v1/systemone`,数据在 quarantine/decision-index-public0.3,27/44 已准入)。
-
-## 定版与 serving 形态(本轮实测,证据在盒 s6-release-serving-001/artifacts)
-
-- **模型定版 = release-002 / D3P-600(767be09b)**,用户确认不再训练,Bet B 暂停不续。
-- **发现①**:bf16 merge 舍入 1.46e-2,构造性过不了 <1e-3 parity 门;fp32 重合并 1.53e-05。
-- **发现②**:HF 把 Gemma4 KV 共享层(24–41,k_norm/k_proj/v_proj)按共享存储折叠成 2076 键
-  compact 布局,vLLM 0.26 按平面 2130 键拒载;共享规则=同注意力型最后一个非共享层(滑窗→22,全→23),
-  两引擎实现一致;平面文件里这些名字是死重。
-- **发现③**:vLLM 0.26 LoRA 内核只支持 fp16/bf16——native fp32 LoRA 不可行。
-- **serving 身份 = merged-fp32 + 平面键物化**(共享层死名用运行时真源层值填充,两引擎一致);
-  merged/merged-fp32(compact)保留用于 HF 分发/量化,模型卡如实标注。资产:
-  `model/merged-fp32/`(31.76G,sha 86676e1e…)、`s6-release-serving-001/merged-fp32-flat/`(物化中)。
-- hf-reference 已过:基座+767be09b adapter,fp32,100 案例两遍精确可重复(230s)。
-
-## 现役资产(已核验)
-
-- 盒工作树 `/root/autodl-tmp/s6-release-serving-001/repo`(= main 367e008,git archive 同步);
-  serve env `envs/serve`(硬链接克隆+av/soundfile,清华镜像;PyPI 直连龟速)。
-- 部署脚本入仓 `serve/deploy/`(launch-vllm.sh / launch-gateway.sh / make_parity_records.py / README)。
-- release-002 增 `model/merged-fp32/`;report `s6-merged-fp32-report.json`。
-- HF:git@hf.co:Chinzhu/Lite-OmniJev,SSH 认证已通(Chinzhu);git-xet 未装,上传前补。
-- GitHub:xinzhuwang-wxz/Lite-OmniJev,简介+demo+榜单引流;**LICENSE 由 Apache-2.0 改 CC-BY-NC-SA-4.0(用户明确)**。
-
-## 证伪/勿重试(累计)
-
-- 前清单 9 条 + RL 级联 + G1 原子门 + PTR 门不变。
-- **新增**:bf16 merged 直接 serving(舍入 1.46e-2);compact 键工件喂 vLLM 0.26(拒载);
-  vLLM fp32+LoRA(内核断言)。全部有 log/repro。
+1. **⑤ HF 推送进行中**:盒 `/root/autodl-tmp/s6-hf-repo`(main=7e268da:README+LICENSE(CC-BY-NC-SA-4.0)+merged-fp32 31.8G+adapter+GGUF f16/q8/q4+gateway 回执)→ `git@hf.co:Chinzhu/Lite-OmniJev`,LFS 52G 上传中(screen s6-hpush;完成=远端 main 到 7e268da)。盒上 HF 专用密钥 `/root/.ssh/hf_chinzhu_ed25519`(用户已加 HF settings)。
+2. **Decision Index**:rebuild-008 跑到 ToolRet 归一化(env=/root/autodl-tmp/s6-index-work/env;workroot 符号链接拼装 quarantine 树;全量检出 20/20 后重启)。出套件后用官方 http 引擎直打网关 `/v1/systemone`(网关仍在 8000 端口跑着,勿关 vLLM)。
+3. **④ 一致性**:GGUF f16 文本 20/20 选答一致(`artifacts/s6-gguf-text-consistency-f16-001.json`);llama-server(f16,8021 端口)在跑;多模态 projector(mtmd/gemma4uv)与 Q4/Q8 全量一致性待做。GitHub 侧已换 LICENSE+README(本地 56bf521,未推远端——推 GitHub 需要用户凭据或明示)。
 
 ## 已闭(勿重跑)
 
-- MVBench/MMAU/JevBench 实测与差距表(reports/s4-gap-table-001.md);对照公开数抓取;CCD-for-decisions。
+- **③ 产品化全过**:serving parity(两遍精确 0.0,vs HF 5.75e-6)、网关 parity(conditional Δ=0.0)、真实浏览器 live 验收;入包(gateway/+receipts/merged-fp32-flat,SHA256SUMS 47 文件全验 exit 0)。票 issues/02 终态。
+- serving 形态=merged-fp32-flat;GGUF 转换(llama.cpp 0.7.0-dev)三档已产出。
+
+## 现役资产
+
+- 盒:s6-release-serving-001(repo=main、envs/serve、artifacts=全部回执)、s6-quant(llama.cpp+GGUF 三档)、s6-index-work(env+workroot)、s6-hf-repo、s6-hf-staging;vLLM(8001)+网关(8000)+llama-server(8021)在跑。
+- 本地:main=56bf521;reports/ 已收 ③ 全部回执;s6-perf-report-002。
+
+## 证伪/勿重试(新增)
+
+- vLLM 0.26 默认开前缀缓存(破坏两遍精确性);console-script shebang 指旧 env(hardlink 克隆必踩);bf16 merged/compact 键/fp32+LoRA 三种 serving 形态不可行(见票 02);`pkill -f` 自匹配。
 
 ## 待我决策
 
-- 暂无阻塞项;⑤ 上传前给一次模型卡终稿确认;量化掉分若超 1pp 门槛,报告后待裁决。
+- GitHub 推送(56bf521)未执行——远端是 https,需要凭据或用户自己推;HF 推送用盒上密钥已完成认证。
+- GPU 用完关卡时点:Decision Index 打分 + ④ 多模态验收完成后通知(预计还需数小时卡时)。
