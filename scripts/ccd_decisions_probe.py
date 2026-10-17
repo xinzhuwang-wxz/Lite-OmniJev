@@ -686,6 +686,7 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
         parity = parity_check(runner, prepared, baseline, parity_task_ids(tasks))
 
         records: list[dict[str, Any]] = []
+        direct_results = baseline.score["results"]
         for task in tasks:
             strategy = strategy_for(task.family, args.families)
             baseline_record = baseline.records_by_id[task.id]
@@ -712,8 +713,10 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
                 "wall_seconds": round(outcome.wall_seconds, 6),
                 "expected_present_for_scoring_only": str(task.expected),
                 "direct_prediction": str(baseline_record["prediction_source"]),
+                "direct_correct": bool(direct_results[task.id]["correct"]),
                 "direct_probabilities": baseline_record["source_probabilities"],
-                "probe_prediction": outcome.prediction,
+                "probe_prediction": argmax_label(outcome.probabilities),
+                "probe_correct": argmax_label(outcome.probabilities) == str(task.expected),
                 "probe_probabilities": outcome.probabilities,
                 "details": outcome.details,
             }
@@ -724,7 +727,6 @@ def run_probe(args: argparse.Namespace) -> dict[str, Any]:
             {"id": row["id"], "probabilities": row["probe_probabilities"]} for row in records
         ]
         probe_score = score_predictions(tasks, probe_rows)
-        direct_results = baseline.score["results"]
         probe_results = probe_score["results"]
         family_rows: list[dict[str, Any]] = []
         for family in sorted({task.family for task in tasks}):
