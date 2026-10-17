@@ -1,0 +1,90 @@
+{
+  "gate": {
+    "scenes_seen": 150,
+    "valid_rate": 1.0,
+    "salvaged_rows": 78,
+    "object_recall_color_shape_key": 0.943,
+    "object_precision_color_shape_key": 0.947,
+    "cascade_accuracy": 0.76,
+    "cascade_correct": 114,
+    "d3p_direct": 123,
+    "gate_pass": {
+      "valid_ge_80": true,
+      "recall_ge_70": true
+    }
+  },
+  "executor": {
+    "resolved": 120,
+    "correct": 88
+  },
+  "predicate_diagnostics": {
+    "colors": {
+      "precision": 0.967,
+      "recall": 0.97,
+      "f1": 0.968,
+      "tp": 583,
+      "fp": 20,
+      "fn": 18
+    },
+    "shapes": {
+      "precision": 0.995,
+      "recall": 0.987,
+      "f1": 0.991,
+      "tp": 392,
+      "fp": 2,
+      "fn": 5
+    },
+    "materials": {
+      "precision": 0.991,
+      "recall": 0.739,
+      "f1": 0.847,
+      "tp": 218,
+      "fp": 2,
+      "fn": 77
+    },
+    "enterers": {
+      "precision": 0.5,
+      "recall": 0.897,
+      "f1": 0.642,
+      "tp": 157,
+      "fp": 157,
+      "fn": 18
+    },
+    "exiters": {
+      "precision": 0.054,
+      "recall": 0.3,
+      "f1": 0.091,
+      "tp": 3,
+      "fp": 53,
+      "fn": 7
+    },
+    "moving": {
+      "precision": 0.801,
+      "recall": 0.357,
+      "f1": 0.494,
+      "tp": 201,
+      "fp": 50,
+      "fn": 362
+    },
+    "collisions": {
+      "precision": 0.449,
+      "recall": 0.186,
+      "f1": 0.263,
+      "tp": 66,
+      "fp": 81,
+      "fn": 288
+    }
+  },
+  "rl_formalizer_targets": [
+    "collisions",
+    "exiters",
+    "moving"
+  ],
+  "vlm_phase_map_5to8": {
+    "start": 0,
+    "early": 1,
+    "middle": 3,
+    "late": 5,
+    "end": 7
+  }
+}

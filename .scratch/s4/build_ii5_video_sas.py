@@ -195,11 +195,12 @@ def facet_rows(scene: int, pool_row: dict, parsed: dict, out_prefix: str):
 
 
 def main() -> int:
-    if len(sys.argv) != 4:
+    if len(sys.argv) not in (4, 5):
         raise SystemExit(
-            "usage: build_ii5_video_sas.py ANNOTATION_ZIP TRAIN_JSONL OUT_DIR"
+            "usage: build_ii5_video_sas.py ANNOTATION_ZIP TRAIN_JSONL OUT_DIR [FULL_FACET_TARGET]"
         )
-    annotations_path, train_path, out_dir = (Path(a) for a in sys.argv[1:])
+    full_target = int(sys.argv[4]) if len(sys.argv) == 5 else None
+    annotations_path, train_path, out_dir = (Path(a) for a in sys.argv[1:4])
     if b1.sha256_file(annotations_path) != b1.ANNOTATIONS_SHA:
         raise SystemExit("annotation sha mismatch")
     if b1.sha256_file(train_path) != b1.TRAIN_SHA:
@@ -219,7 +220,9 @@ def main() -> int:
     with zipfile.ZipFile(annotations_path) as archive:
         names = set(archive.namelist())
         for scene in ranked_families:
-            if len(mains) >= TARGET_MAINS:
+            if len(mains) >= (TARGET_MAINS if full_target is None else 10**9):
+                break
+            if full_target is not None and len(bank) >= full_target:
                 break
             raw = json.loads(archive.read(b1.annotation_member(scene, names)))
             parsed = b1.scene_truth(raw)
@@ -233,20 +236,15 @@ def main() -> int:
             video_facets = facet_rows(
                 scene, row, parsed, out_prefix=f"ii5v-facet-{scene}"
             )
-            if video_facets:
+            if full_target is not None:
+                bank.extend(video_facets)
+            elif video_facets:
                 pick = sorted(
                     video_facets,
                     key=lambda r: hashlib.sha256(("ii5v:pick:" + r["id"]).encode()).hexdigest(),
                 )[0]
                 bank.append(pick)
     facets = bank
-    mixed = mains + facets
-    arm3_facets = [
-        r
-        for r in facets
-        if int(hashlib.sha256(r["id"].encode()).hexdigest(), 16) % 10 < 3
-    ]
-    arm3 = [*mains, *arm3_facets]
     out_dir.mkdir(parents=True, exist_ok=True)
 
     def dump(name, rows):
@@ -260,6 +258,35 @@ def main() -> int:
         import hashlib as h
 
         return h.sha256((out_dir / name).read_bytes()).hexdigest()
+
+    if full_target is not None:
+        if len(facets) < full_target:
+            raise SystemExit(f"full facet target unreachable: {len(facets)} < {full_target}")
+        shas = {
+            "facets": dump("ii5v-full-facets.jsonl", facets),
+            "mains": dump("ii5v-full-mains.jsonl", mains),
+            "mixed": dump("ii5v-full-mixed.jsonl", [*mains, *facets]),
+        }
+        print(
+            json.dumps(
+                {
+                    "mode": "full",
+                    "families": len(mains),
+                    "facets": len(facets),
+                    "mixed_rows": len(mains) + len(facets),
+                    "sha": shas,
+                },
+                indent=2,
+            )
+        )
+        return 0
+    mixed = mains + facets
+    arm3_facets = [
+        r
+        for r in facets
+        if int(hashlib.sha256(r["id"].encode()).hexdigest(), 16) % 10 < 3
+    ]
+    arm3 = [*mains, *arm3_facets]
 
     summary = {
         "mains": len(mains),
