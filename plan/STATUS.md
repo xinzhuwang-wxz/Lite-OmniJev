@@ -4,11 +4,10 @@
 
 ## ⚡ 接续点(第一动作)
 
-1. **等 `pbs-build` screen 跑完 build-all+verify**(log `/root/autodl-tmp/rl-logs/pbs-build.log`,末行须 `VERIFY-OK`):产出 `artifacts/public-bench-samples-001/{mmau-test-mini-samples-v1,mvbench-public-9task-samples-v1}.jsonl` + `media/{mmau,mvbench}/`。
-2. **verify 通过后立即发射 4 个 GPU 评测**(脚本 `/root/autodl-tmp/launch-public-bench-eval-001.sh`,`screen -dmS pbm-d3p … d3p` / `screen -dmS pbm-base … base`;协议 `--passes 2 --video-frames 16`,与教师两遍一致口径对齐,教师判定数 MMAU 620/1000=62.0%、MVBench 976/1800=54.22%;报告 `reports/s4-public-bench-{mmau,mvbench}-{d3p600,base}-001.json`)。速率锚点:0.96s/行,MVBench 每模型约 58 min。
-3. **release-002 拼装**:`adapter-d3p600`(sha 767be09b)+ `s5-calibration-fit-011.artifacts`(同 sha 绑定)+ `s5-holdout-eval-008.json` 证据;registry-manifest 按 001 schema 镜像重生成,serving-receipt 标注网关复验 pending。
-4. 分数落地后填 ADR0025 附录表(对照 Jev-Omni-12B 62.0 / 54.22,同题同协议),出差距表定提升路线(宏观规划 `reports/explore/s4-sota-macro-plan-001.md`)。
-5. 之后:Decision Index 27 子集打分、JevBench 对照补测。
+1. **读 4 个评测报告**(`reports/s4-public-bench-{mmau,mvbench}-{d3p600,base}-001.json`;screen `pbm-d3p`/`pbm-base`,21:13 发射,MMAU 先出、MVBench 各约 58 min;log `/root/autodl-tmp/rl-logs/public-bench-eval.log`)。协议 `--passes 2 --video-frames 16`,教师判定数 MMAU 620/1000=62.0%、MVBench 976/1800=54.22%(`reports/teacher-benchmark-two-pass-complete-001.json`)。
+2. **分数落地后填 ADR0025 附录表**(四对照:Jev-Omni-12B 已有同题数,OneJev-4B/Valen-2B/OneJev-27B 未同协议实测),出差距表定提升路线(宏观规划 `reports/explore/s4-sota-macro-plan-001.md`);同时补 release-002 的模型卡/release-notes(样品已拼装,见"现役资产")。
+3. 之后:Decision Index 27 子集打分、JevBench 对照补测。
+4. 样本管线已完成并 VERIFY-OK(build-summary.json 有 trimmed/transcoded 披露;过时中间产物在 `public-bench-samples-001/attic-intermediate-2026-10-17/`)。
 
 ## 现役资产(已核验)
 
