@@ -84,14 +84,14 @@ def main() -> int:
             adapter_dir=args.adapter_dir,
         )
         record = {
-            **build_provenance(
-                paths, dtype=args.dtype, image_max_soft_tokens=args.image_max_soft_tokens
-            ),
             "operator_attested": True,
             "raw_logprobs_confirmed": True,
             "logprobs_mode": "raw_logprobs",
             "launch_command": args.launch_command,
             "served_model": args.served_model,
+            "provenance": build_provenance(
+                paths, dtype=args.dtype, image_max_soft_tokens=args.image_max_soft_tokens
+            ),
         }
     else:
         missing = [
