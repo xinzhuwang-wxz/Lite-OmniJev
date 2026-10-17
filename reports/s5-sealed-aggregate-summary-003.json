@@ -1,0 +1,81 @@
+{
+ "schema_version": "s5-sealed-aggregate-summary-v1",
+ "candidate": "d3p600-001 (adapter 767be09b)",
+ "source": "reports/s5-holdout-eval-008.json",
+ "note": "D3P-600候选封存汇总(6000题);零掉分门与ECE门如实观测",
+ "ece_gate": {
+  "text": "PASS",
+  "screenshot": "PASS",
+  "image": "PASS",
+  "audio": "MISS",
+  "video": "MISS",
+  "crossmodal": "MISS"
+ },
+ "cohorts": [
+  {
+   "cohort": "text",
+   "acc_raw": 0.997,
+   "acc_cal": 0.997,
+   "ece_raw": 0.0028689524238830377,
+   "ece_cal": 0.0013584647652296845,
+   "brier_cal": 0.006187181024644833,
+   "nll_cal": 0.01847321272861866,
+   "cov_cal": 1.0
+  },
+  {
+   "cohort": "screenshot",
+   "acc_raw": 0.978,
+   "acc_cal": 0.978,
+   "ece_raw": 0.016154358965003793,
+   "ece_cal": 0.010805027234657635,
+   "brier_cal": 0.03310851796841107,
+   "nll_cal": 0.06118913473296799,
+   "cov_cal": 1.0
+  },
+  {
+   "cohort": "image",
+   "acc_raw": 0.927,
+   "acc_cal": 0.927,
+   "ece_raw": 0.05874577550807946,
+   "ece_cal": 0.020159226840430134,
+   "brier_cal": 0.11226610988358096,
+   "nll_cal": 0.20131735494484854,
+   "cov_cal": 0.95
+  },
+  {
+   "cohort": "audio",
+   "acc_raw": 0.884,
+   "acc_cal": 0.884,
+   "ece_raw": 0.08358016164386747,
+   "ece_cal": 0.030996539104627206,
+   "brier_cal": 0.14965284421973352,
+   "nll_cal": 0.23035724902557683,
+   "cov_cal": 0.842
+  },
+  {
+   "cohort": "video",
+   "acc_raw": 0.726,
+   "acc_cal": 0.726,
+   "ece_raw": 0.13819962341275777,
+   "ece_cal": 0.032120062168664344,
+   "brier_cal": 0.35276741671771505,
+   "nll_cal": 0.5235395980601539,
+   "cov_cal": 0.161
+  },
+  {
+   "cohort": "crossmodal",
+   "acc_raw": 0.799,
+   "acc_cal": 0.799,
+   "ece_raw": 0.1787285687023141,
+   "ece_cal": 0.05284375859965527,
+   "brier_cal": 0.2935615034106946,
+   "nll_cal": 0.47142933876268533,
+   "cov_cal": 0.181
+  }
+ ],
+ "runtime_recipe": {
+  "adapter_mode": "native_lora",
+  "dtype": "bfloat16",
+  "engine": "transformers"
+ }
+}

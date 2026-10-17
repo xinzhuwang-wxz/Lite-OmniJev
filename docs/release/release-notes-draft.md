@@ -1,7 +1,7 @@
 # Lite-OmniJev E4B 发布说明(2026-10-17 候选版)
 
 ## 交付物
-- model/adapter-d3p150:D3P 教师蒸馏决策 LoRA(视频 +4pp over 起点,video150 122/150 两遍一致)
+- model/adapter-d3p600(主候选):D3P 教师蒸馏 600 题(video500 75.6%,+6 全集保持;封存 video 72.6%)+ SAS 结构监督证据链;adapter-d3p150 为对照
 - model/adapter-e465-baseline:对照起点 LoRA(JevBench 76.62% ≥ 冻结基座 76.19%)
 - calibration/:七组温度 + registry manifest(7 fitted/11 unfitted,bf16/transformers/native_lora recipe)
 - evidence/:封存 holdout、留任、门评估全记录
