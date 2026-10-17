@@ -18,25 +18,30 @@ class ChatTokenizer(Protocol):
     def encode(self, text: str, *, add_special_tokens: bool = False) -> list[int]: ...
 
 
-def render_payload(prefix: Prefix, question: Question) -> str:
-    if prefix.media:
-        raise ValueError(
-            "media requires an official multimodal processor; text-only helper refuses it"
-        )
+def payload_dict(prefix: Prefix, question: Question) -> dict[str, Any]:
+    """The canonical decision payload; single source for every harness."""
     tokens = answer_tokens(question)
     labels = (
         question.options
         if question.type == "choice"
         else question.score_descriptions or list(tokens)
     )
+    return {
+        "state": prefix.state,
+        "question": question.instruction,
+        "answers": dict(zip(tokens, labels or [], strict=True)),
+        "U": "Insufficient evidence to decide",
+        "response": "Return exactly one answer token, or U if evidence is insufficient.",
+    }
+
+
+def render_payload(prefix: Prefix, question: Question) -> str:
+    if prefix.media:
+        raise ValueError(
+            "media requires an official multimodal processor; text-only helper refuses it"
+        )
     return json.dumps(
-        {
-            "state": prefix.state,
-            "question": question.instruction,
-            "answers": dict(zip(tokens, labels or [], strict=True)),
-            "U": "Insufficient evidence to decide",
-            "response": "Return exactly one answer token, or U if evidence is insufficient.",
-        },
+        payload_dict(prefix, question),
         ensure_ascii=False,
         sort_keys=False,
         separators=(",", ":"),
