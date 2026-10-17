@@ -7,7 +7,7 @@
 1. **等 MVBench 两份报告落地**(~22:25-22:30,`reports/s4-public-bench-mvbench-{d3p600,base}-001.json`;screen `pbm-d3p`/`pbm-base`)。**MMAU 已出**:基座 65.9%、D3P-600 60.6%(均两遍一致,学生协议);教师 Jev-Omni-12B 62.0 为教师协议口径,严格判定须同协议重测。
 2. **分数齐后填 ADR0025 差距表**,关键议题已浮出:D3P-600(视频 LoRA)在 MMAU 音频上 −5.3 vs 基座,发布形态需考虑按模态路由 adapter(内部管线自由,ADR0024 修订二)或重校准;ECE 未套发布校准,勿直接比较。
 3. 同协议对照矩阵:harness 已实现(`scripts/comparator_eval.py` + `comparator_families/qwen3_5_omni.py`,commit b1aca6d,6 测试全绿;规格 `.scratch/s4/comparator-matrix-spec.md`)。**验收门:Jev-Omni 交叉验证**(夜间链 s1_dev_eval 教师数 vs 本器,差 >1 分即 bug)→ qwen3_5 音频路径 GPU 冒烟(--limit 10)→ --smoked 全跑。Valen 权重下载被盒上断网阻塞(repo `Valen-Team/Valen-Preview-0923@30096aaa`)。MVBench 对照约 8h/模型,烧卡前须用户定。之后:Decision Index 27 子集打分(输入已 staged)、JevBench 对照补测。
-4. 提升路线按差距表+宏观规划定(`reports/explore/s4-sota-macro-plan-001.md`)。
+4. **探索队列(宏观规划 × 今晚证据的对账结果)**:①23:15 MVBench = 最大分叉(D3P≥基座 → 发布形态=模态路由+攻可靠性;D3P<基座 → 下一个训练目标改为榜单形态通用视频决策数据,不加码 CLEVRER);②Decision Index 27 子集打分(唯一未测榜,输入已 staged);③同协议对照矩阵(harness 就绪,烧卡待用户);④剩余预算进 CLEVRER 线(原子训练 ~3 GPU h 门 AUC≥.97,或 D3P-1500 ~25 GPU h,二选一,预注册门不到即停)。
 
 ## 现役资产(已核验)
 
