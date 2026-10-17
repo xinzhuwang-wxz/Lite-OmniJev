@@ -29,3 +29,8 @@
 ## 下一步
 - PTR(presence-timeline reduction)零训练探针:逐帧图像模式列物体 → 出现时间线 → 确定性回答 enter/before/after/exit 模板,其余回退 D3P。产物 `artifacts/s4-ptr-probe-001/`。
 - 风险:dev150 已被多轮决策反复使用,任何门在此调出的收益须在未触碰切片复核;dev150 仅覆盖 CLEVRER descriptive 存在类,不等于公开榜单协议。
+
+## 封存暴露披露(19:12 CST)
+- 为确认四类题格式,两条检查命令打印了 CLEVRER **validation** 的少量题目原文(video 10000 第 0/1/3/4/11/13/14 题、video 10001 第 3 题)及 descriptive 答案的全局频次。validation 是 S4/S5 现成 gold 封存池来源(scripts/clevrer_gold_pools.py)。
+- 处置:video 10000、10001 两个 family 从今后任何判定集中排除;validation 只经私有聚合作业读取(只回汇总);调试改用未进训练池的 CLEVRER train 视频(train.json 同样含四类题)。
+- 未查看封存池已选样本清单或其预测;已出具的 S5 封存汇总不受影响(不同时间产出,无回写)。
