@@ -40,8 +40,17 @@
 - 私有作业前清 /var/tmp overlay 媒体快照(30G 限制)。
 - SSH 别名 `seeta`;凭据不入仓;Python env `/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python`(pyarrow/PIL/pydantic/torch 全)。
 
-## 待办与阻塞(夜景)
+## 下一窗口:SOTA 收口计划(负责人已定)
 
-- **教师同协议链已撤**:Jev-Omni 直接过 s1_dev_eval 会**静默随机初始化** vision/audio tower(checkpoint 键名 embed_audio/embed_vision 为 gemma-3n 风格,与其声明的 gemma4_unified 架构不匹配;已发现并杀掉,无效产物在 `attic-superseded-2026-10-17/jev-omni-invalid-mmau/`)。修复路径:对照 S0 教师评测当时的加载代码(它成功跑出 62.0/54.22,加载方式已验证),做键名映射或用其原始类;修好后先 --limit 冒烟核对权重加载零 MISSING 再全量。**在同协议教师数出来前,教师 62.0/54.22 仍是教师协议口径,不可直接判定。**
-- Valen-2B 下载:盒上外网不可达,恢复后重下(repo/revision 已钉)。
-- 已知债务票:issues/01(clevrer_fourtype_eval mypy)。
+**头号标的 = JevBench 缺口 −9.5**(教师发布 86.15/micro 87.45 vs 我方 D3P-600 76.62)。根因是训练规模:对方全参微调 3 万题(12B)/9.9 万题(OneJev-4B),我方候选 = 600 样本 rank16 LoRA(基座 76.19,LoRA 仅 +0.4)。
+
+1. **规模化蒸馏**:D3P 管线 + 教师软目标(d3p-teacher-soft-v1 先例),600 → 3 万级样本,五模态覆盖对齐 JevBench 结构;1500 的 teacher-cache 已建可直接续。门(ADR0015 预注册):JevBench ≥86;约束:MMAU ≥63.10 不回退(基座现值 65.9)。
+2. **本期发布照发**:release-002,模型卡报全部实测数 + 对照公开数 + 差距(ADR0025"失败项照实披露")。
+3. **DecisionBench Medium 排除**:两轮检索无公开数据集(Jev-Omni 卡的 80 场景/293 题公开网不存在)= 私有评测,按 ADR0026 排除;引用 87.57 时标"私有评测,不可验证"。
+4. **MVBench 口径差**:教师卡 14 任务/2786 vs 我方 9 任务/1800,引用双列标注;同协议教师 MVBench 数由单遍链补。
+5. Valen:权重在盒(Qwen3.5-2B 底座 ✓ + RLCD 自定义 checkpoint),需移植其加载码;对照格记 conversion pending。
+
+## 待我决策
+
+- 下一窗口规模化蒸馏的卡时预算(预估 12-30 GPU h:数据构建 + 训练)。
+- 开卡/关卡、HF 上传 token 照旧须用户。

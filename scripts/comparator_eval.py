@@ -193,8 +193,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 device=args.device,
             )
             readout = read_probabilities(logits, list(tokens_by_sample[sample.id]), temperature=1.0)
-        except DevEvalError:
-            rows.append({"id": sample.id, "error": "protocol_violation"})
+        except (DevEvalError, RuntimeError, ValueError) as exc:
+            # per-row containment: one over-length prompt or an OOM must not
+            # kill the run; the row is recorded and the run continues
+            rows.append({"id": sample.id, "error": type(exc).__name__, "detail": str(exc)[:200]})
             continue
         tokens = tokens_by_sample[sample.id]
         probabilities.append([readout.probabilities[token] for token in tokens])
