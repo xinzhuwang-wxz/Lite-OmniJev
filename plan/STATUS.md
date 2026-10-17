@@ -1,33 +1,27 @@
 # STATUS
 
-更新:2026-10-17 19:20。**交付候选 D3P-600 已封存验证(完整);SOTA 冲刺进行中:RL 形式化器训练完成(F1 三连涨),级联判定场景生成待一条命令续跑(连接抖动中断,重启命令已备)。原生 goal 仍 active,SOTA 判定数 = 级联实测 vs 教师 94.2。**
+更新:2026-10-17 20:25。**负责人交接:SOTA冲刺2(额度将尽)→ SOTA冲刺1 接任负责人。交付候选仍为 D3P-600(封存校准完成)。SOTA 口径已锁定 ADR0025;GPU 当前空闲,盒上无运行作业。**
 
-## ⚡ 19:40 更新(SOTA冲刺2 接管,SOTA冲刺1 副手监控)
+## ⚡ 接续点(新负责人第一动作)
 
-- **勿再运行 launch-rest*.sh / launch-staggered.sh**(后者会 rm 正在写的分片)。三分片在跑,数据经 /proc fd 抢救到 `s4-ns-cascade-002/rescue/`;`autogate` screen 采样结束即自动出 `s4-ns-cascade-002/final/gate.json`。
-- 诊断与同题锚点见 `reports/explore/s4-sota-takeover-diagnosis-001.md`:教师 141/OneJev-4B 133/D3P 123;差距 15/18 在 enter 题族 → PTR 逐帧存在时间线探针进行中(`artifacts/s4-ptr-probe-001/`)。
-- 下方旧接续点的 launch-rest2 命令已作废。
-- **SOTA 口径(用户 19:10 定)**:产品相关榜单超过所有条目(含教师),不只同尺寸。旗舰范式 CCD 见 `reports/explore/s4-ccd-paradigm-001.md`(校准原子 × 精确组合 × 回蒸馏直答 × 共享前缀)。
-- **四类题评测**:`scripts/clevrer_fourtype_eval.py`;盒上 `artifacts/clevrer-fourtype-dev2-001/`(debug 300 视频可看;judge 900 视频只看汇总;均为未进任何池的 train 视频)。CLEVRER validation=封存来源,只经私有聚合作业读(已解压至 /root/autodl-tmp/clevrer-val-001)。
-- 盒上排队:`q4type`(采样结束后 D3P-600 跑 debug40 四类题基线)、`autogate`(RL 级联终判)。原子真值:`/root/autodl-tmp/clevrer-train-ann-001`(逐帧 in-view/位置/速度/碰撞)。
-- **20:20 榜单口径纠偏(按原方案 §1.1)**:SOTA 判定榜 = Decision Index(含视觉)、JevBench、MMAU、MVBench 决策子集 + 我们公开的多模态决策评测集;另需可靠性(置换/正反问/ECE/覆盖率)与成本;对照 OneJev-4B、Valen-2B,上限 Jev-Omni-12B、OneJev-27B(用户:全部超过)。CLEVRER 不在榜单内,降为视频训练/评测源与 CCD 方法试验场。现状:教师 MMAU test-mini 62.0%、MVBench 九任务 54.22%(S0 实测);**我方在 MMAU/MVBench 公开协议未测**,Decision Index 未打分,JevBench D3P 76.62。下一步:fable 建同题学生样本(`scripts/public_bench_samples.py`)→ GPU 实测 D3P/基座 → 分榜差距表定攻坚。
-- **20:10 判定**:RL 级联 118<123 停 RL 线;仲裁弃;PTR 零训练未过门(121–124)。CCD 执行器+物理真值世界 D100/E100/P97/C97(`s4-ccd-oracle-001.md`);敏感度:位置 σ≤.05 为硬要求 → 几何走确定性 CV(fable 写 `eval/ccd_geometry.py`),VLM 只做语义原子。盒上 GPU:q4type 运行中 → qg1。
-- 副手 SOTA冲刺1 在写 `reports/explore/s4-leaderboard-sota-map-001.md`(榜单与榜首数字表)。
+1. **口径**:只按 `docs/adr/0025-sota-benchmark-set.md` 判定 SOTA——Decision Index(含视觉)、JevBench 231、MMAU test-mini 1000、MVBench 九任务 1800(决策子集)、我们公开的多模态决策评测集;准确率+可靠性+成本;须超过 OneJev-4B、Valen-2B、Jev-Omni-12B、OneJev-27B(同协议同题我方实测)。CLEVRER/封存池/dev 切片不得称 SOTA。
+2. **第一优先(GPU)**:在 MMAU test-mini 与 MVBench 九任务上实测 D3P-600 与基座,教师同题已知 62.0% / 54.22%。需要先写"教师同题 → 学生样本"转换器(建议 `scripts/public_bench_samples.py`:复用 `scripts/s0_teacher_eval.py` 的选行逻辑,断言输入 manifest 哈希一致;再用盒上 `s5-calibration-code-fa83acc` 的 `scripts.s1_dev_eval` 打分)。该 fable 任务已在 20:22 停止,无产出。
+3. **第二优先**:Decision Index 27 个已准入子集打分(`scripts/decision_index_offline.py` 只准备输入;打分协议按官方 decision-index 代码),JevBench 对照模型补测。
+4. 出分榜差距表后再定攻坚方向;创新方法库见下。
 
-## ⚡ 当前接续点(新 session 第一动作)
+## 本窗口(SOTA冲刺2)结论,全部留证于 reports/explore/
 
-盒子开机后(SSH: `ssh -p 48926 root@region-42.seetacloud.com`,密钥已装 `~/.ssh/id_ed25519`,详见 ~/.ssh/config 的 seeta 别名):
+- RL 形式化器级联终判 118/150 < D3P 123 → RL 线停;置信度仲裁留出半 +0 → 弃(`s4-sota-takeover-diagnosis-001.md`)。
+- PTR 零训练逐帧列物体 121–124 vs 123,门未过(`s4-ptr-probe-001.md`);G1 原子门 presence AUC .949 < .97(`s4-ccd-oracle-001.md`)。
+- CCD 自写 CLEVRER 执行器+物理(eval/ccd_*.py):真值世界 D100/E100/P97/C97;敏感度:位置误差 σ≤.05 才可用 → 精确几何须确定性 CV;CV 几何模块未完成,WIP 在分支 `worktree-agent-a35be9dbe956d68a1`(941320c,未验证)与盒 `/root/autodl-tmp/ccd-geometry-work`。
+- D3P-600 在 CLEVRER 四类题(dev2 debug40)直答:D 54.3 / E 57.5 / P 58.3 / C 49.0(per-option),说明直答对非 exist 题型接近随机。
+- 创新方法库(可迁移到判定榜):CCD 校准原子组合、贝叶斯决策引擎 BDE、主动感知(`s4-ccd-paradigm-001.md`);决策树 `s4-contingency-tree-001.md`;接手总览 `s4-sota-macro-plan-001.md`(其中 CLEVRER 为主战场的表述已被 ADR0025 取代)。
+- 封存纪律:曾误打印 CLEVRER validation 少量题(已披露并排除 video 10000/10001);validation 只经私有聚合作业读。
 
-```bash
-bash /root/autodl-tmp/launch-rest2.sh   # 已在盒上,启动剩余 109 场景生成(~2h)
-```
+## 盒上资产(SSH 别名 seeta,凭据不入仓)
 
-完成后:
-```bash
-cd /root/autodl-tmp/s1-text-lora-001/.scratch/s4 && PYTHONPATH=/root/autodl-tmp/s1-text-lora-001:/root/autodl-tmp/s1-text-lora-001/.scratch/s4 /root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python ns_quality_gate.py /root/autodl-tmp/s1-text-lora-001/artifacts/s4-ns-cascade-002/dev150-questions.jsonl <merged-scenes> /root/autodl-tmp/s1-text-lora-001/artifacts/s4-ns-cascade-002/oracle-scenes-v4.jsonl /root/autodl-tmp/s1-text-lora-001/artifacts/s6-d3p-student-600-001/eval1/records.jsonl
-```
-
-**SOTA 判定**:级联实测(cascade_accuracy)vs 教师 94.2%。≥94.2 → SOTA 达成,转部署/HF;<94.2 → RL-80 加训或换方向(按数字共同定)。
+- 四类题评测集 `artifacts/clevrer-fourtype-dev2-001/`;原子集 `artifacts/ccd-atoms-dev-001/`;RL 终判 `artifacts/s4-ns-cascade-002/final/`;PTR `artifacts/s4-ptr-probe-001/`;训练注释 `/root/autodl-tmp/clevrer-train-ann-001`;validation 解压 `/root/autodl-tmp/clevrer-val-001`(仅私有聚合)。
+- 启动脚本禁止 `rm` 输出;长作业用 `screen -dmS`;`timeout` 按实测速率设。
 
 ## 高效开发精神(本窗口收敛的实践,传承)
 
