@@ -1,12 +1,20 @@
-# release serving 部署配方(release-002 实测通过形态)
+# release serving 部署配方(release-002 实测形态)
 
-目标:把 lite-omnijev-release-002(merged 权重)按 S0 固定协议提供 `/v1/systemone` 决策服务。
+目标:把 lite-omnijev-release-002(D3P-600 767be09b)按 S0 固定协议提供 `/v1/systemone` 决策服务。
 两个进程、两个环境,不要混用(依据 `docs/runbooks/service-environment.md`):
 
-1. **vLLM 0.26.0 后端**(serving 固定栈,transformers 5.13.0):serve `model/merged/`,
-   `--logprobs-mode raw_logprobs`,供网关取原始答案 logprobs。数值配方 = S0 已准入参考
-   (float32 + TF32 off + Triton IEEE + eager + 禁前缀缓存;`reports/s0-full100-gpu-acceptance-001`);
-   BF16 serving 已实测不过 <1e-3 parity 门,质量证据 pending。
+1. **vLLM 0.26.0 后端**(serving 固定栈,transformers 5.13.0):**官方基座平面布局 + decision
+   LoRA(native)**,`--logprobs-mode raw_logprobs`,供网关取原始答案 logprobs。数值配方 =
+   S0 已准入参考(float32 + TF32 off + Triton IEEE + eager + 禁前缀缓存;
+   `reports/s0-full100-gpu-acceptance-001`)。
+
+   **为何不用 merged 权重 serving(2026-10-18 实测)**:HF `save_pretrained` 把 layers 24–41 的
+   k_norm/k_proj/v_proj 当共享存储折叠(2076 键,基座平面布局 2130 键),vLLM 0.26 按平面名逐层
+   加载,拒载 compact 工件(`Following weights were not initialized from checkpoint`);
+   且 bf16 合并舍入实测 1.46e-2,构造上过不了 <1e-3 parity 预算
+   (`s6-merge-rounding-probe-004.json`/`s6-fp32merge-probe-001.json`)。native LoRA 同时是
+   校准 Binding 合同唯一接受的 adapter_mode。merged/merged-fp32 工件保留用于 HF 分发与
+   量化(HF 侧加载语义等价,探针 1.53e-05),不用于 vLLM serving。
 2. **网关**(FastAPI,canonical-chat):输入准备用**官方基座 snapshot 的 metadata**
    (tokenizer/processor/chat template 与训练评测同一冻结版本;merged 目录不含 metadata)。
    权重身份由 vLLM 启动记录核验,`LITE_MODEL_VERSION` 记 adapter SHA 短码 `767be09b0919235d`。

@@ -46,8 +46,14 @@ release-002 从"权重+证据包"推进到"可服务、可浏览器验收的产�
 - **发现①(权重工件)**:现 release `model/merged`(bf16 merge_and_unload)相对
   fp32(base+adapter) 前向偏差 **1.46e-2**(6 案例探针,`s6-merge-rounding-probe-004.json`),
   构造上过不了 <1e-3 parity 预算;fp32 内存合并偏差 **1.53e-05**(`s6-fp32merge-probe-001.json`)。
-  处置:重建 `model/merged-fp32/`(31.76G,`finalize_merged_fp32.py`,box scratch)作为 serving
-  身份;bf16 merged 保留但标注 parity 失败、serving 须用 merged-fp32。
+  处置:重建 `model/merged-fp32/`(31.76G,`finalize_merged_fp32.py`,box scratch)。
+  **后续升级(发现④)**:merged 工件(含 fp32 重合并)是 HF 共享存储 compact 布局
+  (2076 键;layers 24–41 的 k_norm/k_proj/v_proj 被折叠,其中 36 个 k/v 张量在基座平面
+  文件中独值),vLLM 0.26 按平面名加载拒载;HF 侧语义等价(探针 1.53e-05)。**serving
+  身份改为官方基座平面布局 + d3p600 native LoRA**(`--enable-lora --lora-modules
+  decision=<adapter>`,P0 配方):S0 已证基座平面文件可服务、adapter 目标不含 24–41
+  k/v(无共享歧义)、且 native_lora 是校准合同唯一接受的 adapter_mode。merged 工件保留
+  用于 HF 分发/量化,如实标注。
 - **发现②(存量回归)**:`scripts/assets.py` METADATA 白名单缺 `.gitattributes`,而
   configs/project-model-assets.json 的 ee0ef60 文件列表含它 → 该 manifest 路径下
   verified_assets 必炸。已修(白名单补名),tests/test_assets.py 22/22。

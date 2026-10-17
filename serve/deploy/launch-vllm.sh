@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
 # lite-omnijev-release-002 merged weights on the pinned vLLM serving stack.
 #
-# Default recipe = the admitted S0 numerical-reference configuration
+# MODEL_DIR must be the FLAT-KEY merged artifact (base checkpoint key layout,
+# 2130 keys). The plain merge_and_unload save is a compact tied-storage layout
+# (2076 keys; text layers 24-41 k/v collapsed) that vLLM 0.26 refuses to load,
+# and the bf16 merge additionally failed the <1e-3 parity budget (1.46e-2
+# rounding; probes s6-merge-rounding-probe-004 / s6-fp32merge-probe-001).
+# Native fp32 LoRA serving is not an alternative: vLLM 0.26 LoRA kernels
+# assert fp16/bf16 only.
+#
+# Numerical recipe = the admitted S0 reference
 # (reports/s0-full100-gpu-acceptance-001): float32, TF32 off, Triton IEEE,
-# eager, prefix caching disabled, single sequence. BF16 serving parity was
-# measured failing the <1e-3 gate on H20 and remains pending separate evidence.
+# eager, prefix caching disabled, single sequence.
 #
 # SERVE_ENV: python env with vllm==0.26.0 / transformers==5.13.0 (infra/serve lock).
-# MERGED_DIR: <release-002>/model/merged (identity recorded in MERGED_FROM.json).
-# BASE_DIR: official base snapshot; provides tokenizer metadata (merged dir has
-#   none) and the source config for the FP32 config copy.
+# MODEL_DIR: flat-key merged weights directory (config.json + model.safetensors).
+# BASE_DIR: official base snapshot; provides tokenizer/processor metadata.
 set -euo pipefail
 : "${SERVE_ENV:?set SERVE_ENV to the pinned serving env}"
-: "${MERGED_DIR:?set MERGED_DIR to the release merged-weights directory}"
+: "${MODEL_DIR:?set MODEL_DIR to the flat-key merged weights directory}"
 : "${BASE_DIR:?set BASE_DIR to the official base metadata snapshot}"
 DTYPE="${DTYPE:-float32}"
 HOST="${HOST:-127.0.0.1}"
@@ -21,24 +27,26 @@ MODEL_LEN="${MODEL_LEN:-8192}"
 SERVED_NAME="${SERVED_NAME:-lite-omnijev-e4b-d3p600}"
 KV_BYTES="${KV_BYTES:-4294967296}"
 
-# The dtype copy is a derived serving artifact; keep it OUT of the release dir.
-CONFIG_COPY="${CONFIG_COPY:-$PWD/config-fp32-copy.json}"
-
-# Serving view: the merged dir carries weights only; vLLM needs the official
-# metadata (tokenizer/processor/chat template) beside them. Hardlink the
-# weights (same inodes -> same identity, no extra disk) and copy base metadata.
+# Serving view: hardlink the weights (same inodes -> same identity, no extra
+# disk), keep the merged config, and copy the official metadata from the base
+# snapshot (the merged dir carries weights only).
 VIEW="${VIEW:-$PWD/serving-view}"
 if [ ! -f "$VIEW/config.json" ]; then
   rm -rf "$VIEW"
   mkdir -p "$VIEW"
-  cp "$MERGED_DIR"/config.json "$MERGED_DIR"/generation_config.json "$VIEW/" 2>/dev/null || true
-  ln "$MERGED_DIR"/model*.safetensors* "$VIEW/" 2>/dev/null || true
+  cp "$MODEL_DIR"/config.json "$MODEL_DIR"/generation_config.json "$VIEW/" 2>/dev/null || true
+  ln "$MODEL_DIR"/model*.safetensors* "$VIEW/" 2>/dev/null || true
   find "$BASE_DIR" -maxdepth 1 -type f ! -name "*.safetensors*" ! -name "config.json" \
     -exec cp {} "$VIEW/" \;
 fi
 
+# The dtype copy is a derived serving artifact; keep it OUT of the asset dirs.
+# vLLM --hf-config-path expects a DIRECTORY containing config.json.
+CONFIG_DIR="${CONFIG_DIR:-$PWD/config-fp32-dir}"
+CONFIG_COPY="$CONFIG_DIR/config.json"
 if [ ! -f "$CONFIG_COPY" ]; then
-  python3 - "$BASE_DIR/config.json" "$CONFIG_COPY" <<'PY'
+  mkdir -p "$CONFIG_DIR"
+  "$SERVE_ENV/bin/python" - "$BASE_DIR/config.json" "$CONFIG_COPY" <<'PY'
 import json, sys
 source, target = sys.argv[1], sys.argv[2]
 config = json.load(open(source))
@@ -57,8 +65,7 @@ export NVIDIA_TF32_OVERRIDE=0 TRITON_F32_DEFAULT=ieee
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export PATH="$SERVE_ENV/bin:$PATH" # FlashInfer JIT needs the env's ninja
 exec "$SERVE_ENV/bin/vllm" serve "$VIEW" \
-  --hf-config-path "$CONFIG_COPY" \
-  --tokenizer "$BASE_DIR" \
+  --hf-config-path "$CONFIG_DIR" \
   --served-model-name "$SERVED_NAME" \
   --host "$HOST" --port "$PORT" \
   --dtype "$DTYPE" --tensor-parallel-size 1 \
