@@ -87,3 +87,5 @@ r64 first10实际188.714秒结束，DEV31/50vsown34、Brier略降/ECE变差，�
 2026-10-17 12:50 规模化方向定案(反方向负结果入档):SAS-full(全族3215行/90步)=116/150,低于全部父代——固定小步预算下横向铺开必稀释(COMBOFULL 118同证);**纵深胜横向**:最优配方=单family纵深(arm2 122)+教师分布(D3P-600 123)。迭代收敛:D3P-600为集中候选(FIT011重校准中),下一窗口唯一未试叠加=顺序课程(先SAS后D3P,目标接力不混合)。证据reports/s4-ii5v-full-video150-report.json。
 
 2026-10-17 14:25 级联质量门裁决(v4 150/150,commit 0d244c0):valid 100%(78行丢弃式补救)、对象recall 94.3%/precision 94.7%——**静态感知近完美(colors .968/shapes .991/materials .847),时间/事件类是全部缺口**(exiters F1 .091/collisions .263/moving recall .357/enterers precision .50);级联实测114<123直答,选择性级联120亦不及→**级联不部署,全回退D3P-600直答为当前最佳**。RL形式化器立项依据齐备:奖励=executor覆盖+答对(穿离散执行器无闭式,合法RL),精确目标=四个事件谓词F1,预注册门建议=七谓词F1各+.2且级联≥124。证据reports/explore/s4-ns-quality-gate-001.json。FIT011(screenshot段)~15:30出D3P-600温度。
+
+2026-10-17 19:00 HF包调整(用户指示):TRAINING.md范式叙事**等最终模型出炉后从第一性原理回顾实际路径再写**(不预设),README训练段同口径留白;EVALUATIONS/DATA_CARD/许可等实证件照常。一日计划H8-9增"范式叙事回顾撰写"步骤。

@@ -1,3 +1,5 @@
+> ⏳ **DEFERRED**:本文件为占位草稿。范式叙事待最终模型出炉后,从第一性原理回顾实际达成路径再撰写(用户指示)——不预设叙事,按实证收敛的真实轨迹组织。此文件将在终版模型确认后重写。
+
 # Training: amortized symbolic execution with teacher-distribution distillation
 
 Our training recipe compiles two *structured* supervision signals into a direct-answer adapter. Both are unusual for LoRA releases; both are measured (see [EVALUATIONS](./EVALUATIONS.md)).
