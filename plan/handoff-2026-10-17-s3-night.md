@@ -56,7 +56,11 @@
 - release-002 的 gateway/ 为空,serving 复验 pending
 - U 通道塌缩:候选在音频输入上 pU≈0,发布校准层覆盖封存池,公开输入上的 p(U) 可信度未验
 
-## 七、下一窗口队列
+## 七、定版(18 日凌晨最终态)
+
+用户决策:Bet B(joint-v3)于 step-0800/1800 叫停(卡时),checkpoint 留盒可续;**本期定版 = D3P-600(767be09b)**。release-002 终态:adapter + merged 权重(finalize_merged.py 产出)+ 绑定校准 + 封存证据 + 模型卡草稿(全实测数字)+ SHA256SUMS。四公开榜最终数见 `reports/s4-gap-table-001.md`;性能初版 `reports/s4-perf-report-001.md`。
+
+## 八、下一窗口队列
 
 1. joint-v3 收敛监控 + JevBench 验门 → 过 86 则换候选重拼 release-003 + 模型卡
 2. MVBench 差距形态 → 决定主动感知探针是否值得(CLEVRER 上已证伪,榜未验)

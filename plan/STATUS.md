@@ -52,7 +52,7 @@
 
 **头号标的 = JevBench 缺口 −9.5**(教师发布 86.15/micro 87.45 vs 我方 D3P-600 76.62)。根因是训练规模:对方全参微调 3 万题(12B)/9.9 万题(OneJev-4B),我方候选 = 600 样本 rank16 LoRA(基座 76.19,LoRA 仅 +0.4)。
 
-1. **先创新后规模化(用户令)**:JevBench 错题解剖(e465 记录)显示差距**集中在 long_policy 52.6%/ambiguous 28.6%/multi_hop/judge_hard,简单族 100% 全对**——与 CLEVRER enter 族同构。**CCD-for-decisions 已按门证伪**(弱族 40.2%/全榜 74.03%,双双低于门与直答基线;oracle 路由上界 80.5% 封死修订)→ **主注唯一 = 规模化蒸馏**:D3P 管线 + teacher-soft(600→3 万,1500 的 teacher-cache 已建),门 JevBench ≥86,约束 MMAU ≥63.10,预算 12-30 GPU h 待用户批。
+1. **先创新后规模化(用户令)**:JevBench 错题解剖(e465 记录)显示差距**集中在 long_policy 52.6%/ambiguous 28.6%/multi_hop/judge_hard,简单族 100% 全对**——与 CLEVRER enter 族同构。**CCD-for-decisions 已按门证伪**;**规模化蒸馏(Bet B)于 18 日 01:5x 由用户叫停**:joint-v3 训练至 step-0800/1800(16,177 gold 样本,rank16/α32,预检过、无异常),checkpoint 100-800 留盒可续。**本期定版 = D3P-600(767be09b)**,release-002 已含 merged 权重与模型卡。下窗口如重启 Bet B:直接续 checkpoint 或重发 `/root/autodl-tmp/launch-s2joint-v3.sh`(report 已存在会 SKIP——需先注释 jevbench 段或清 run 目录),门 JevBench ≥86,约束 MMAU ≥63.10。
 2. **本期发布照发**:release-002,模型卡报全部实测数 + 对照公开数 + 差距(ADR0025"失败项照实披露")。
 3. **DecisionBench Medium 排除**:两轮检索无公开数据集(Jev-Omni 卡的 80 场景/293 题公开网不存在)= 私有评测,按 ADR0026 排除;引用 87.57 时标"私有评测,不可验证"。
 4. **MVBench 口径差**:教师卡 14 任务/2786 vs 我方 9 任务/1800,引用双列标注;同协议教师 MVBench 数由单遍链补。
