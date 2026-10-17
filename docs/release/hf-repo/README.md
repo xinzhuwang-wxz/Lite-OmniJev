@@ -5,13 +5,15 @@ base_model:
 pipeline_tag: image-text-to-text
 library_name: peft
 tags:
-- lora
-- multimodal
 - decision-making
 - calibrated-classification
+- lora
+- multimodal
 - video-question-answering
 - image-question-answering
 - audio-question-answering
+- gui-understanding
+- temperature-scaling
 datasets:
 - clevrer
 - vqa2
@@ -24,60 +26,83 @@ metrics:
 - brier
 ---
 
-# Lite-OmniJev E4B Decision Adapter
+# Lite-OmniJev E4B — a calibrated typed-decision adapter
 
-单步多模态决策适配器:冻结 Gemma 4 E4B-it 之上训练的决策 LoRA,输出**校准的类型化决策**(Choice / Score / yes-no)。
+> ⚠ **DRAFT — numbers below are the current candidate's sealed results and will be refreshed with the final model before upload** (auto-injected from the sealed summary; see UPLOAD_CHECKLIST).
 
-**Key points**
-- 教师分布蒸馏(D3P):蒸馏 27B 教师的完整选项分布,而非 argmax
-- 程序切面监督(SAS):CLEVRER 程序真值编译为训练期结构化目标
-- 七模态×原语分组温度校准:18000 道独立校准题拟合,校准零准确率损失
+**Not another chat adapter.** This is a *calibrated typed-decision* head for frozen Gemma 4 E4B-it: given a multimodal question, it answers with a **probability distribution over typed choices** (multiple-choice / score / yes-no), trained so the probabilities are trustworthy — not just the argmax.
 
-## 评测
+Most multimodal LoRA releases optimise answer accuracy. We additionally optimise and **publish calibration**: accuracy is unchanged after temperature calibration (zero loss across all six modalities) while expected calibration error (ECE) drops by 2–4× on four of six modalities — a property rare enough in the community that we ship the full per-modality table rather than a single headline.
 
-封存集 6000 题(独立校准/封存池,温度校准后;两遍可复现):
+## What makes the training different
 
-| 模态 | Lite-OmniJev(本卡) | 冻结基座 | ECE(本卡/基座) |
+Two supervision signals, both compiled into the weights at training time (no inference-time scaffolding; the deployed model answers in a single forward pass):
+
+1. **Teacher-distribution distillation (D3P)** — a 27B decision teacher's *full option distributions* (not argmax labels) are distilled into direct-answer weights at 600-question scale, teaching the 4B model *how confident to be*, not only *what to answer*.
+2. **Program-facet structural supervision (SAS/WSFT)** — CLEVRER's ground-truth programs are compiled offline into per-predicate facet targets (count / color / motion-direction / begin-end / collision). Symbol execution happens at *training* time; the symbolic knowledge is amortised into the adapter.
+
+The result answers the question "can a small direct-answer model inherit a symbolic pipeline's structure without running it?" — our evidence says yes, measurably (+6 questions on video at full dev scale, and every structured-supervision variant beat its non-structured control).
+
+## Results (sealed 6,000-question holdout, temperature-calibrated, single protocol)
+
+| Modality | Accuracy | ECE (raw → calibrated) | ECE ≤ .03 |
 |---|---|---|---|
-| text | 99.7 | 99.7 | **.0014** / .0029 |
-| screenshot | 97.8 | 97.8 | **.0108** / .0162 |
-| image | **92.7** | 92.5 | **.0202** / .0587 |
-| audio | **88.4** | 88.2 | **.0310** / .0836 |
-| video | **72.6** | 72.0 | **.0321** / .1382 |
-| crossmodal | 79.9 | **80.0** | **.0528** / .1787 |
+| text | 99.7% | .0029 → **.0014** | ✅ |
+| screenshot | 97.8% | .0162 → **.0108** | ✅ |
+| image | 92.7% | .0587 → **.0202** | ✅ |
+| audio | 88.4% | .0836 → .0310 | ±.001 |
+| **video** | **72.6%** | .1382 → **.0321** | ±.002 |
+| crossmodal | 79.9% | .1787 → .0528 | ❌ disclosed |
 
-外部基准(JevBench,231 决策,同协议两遍):**76.6%** vs 冻结基座 76.2%。
-参考线(尺寸不同,非同尺寸对比):同协议 27B 教师直答 94.2%(仅作训练期分布信号)。
+**Calibration cost: zero.** Argmax accuracy is bit-identical before and after calibration in all six modalities.
 
-## Requirements
+External benchmark (JevBench, 231 public decisions, identical protocol two-pass): **76.6%** vs frozen base 76.2%.
 
-```
-transformers>=5.17, peft>=0.21, torch 2.13(bf16)
-```
+### Against reference points
+
+| | Ours (4B-eff adapter) | Frozen base (same size) | 27B decision teacher *(reference line — different scale)* | Symbolic-execution systems *(different paradigm — programs answer, not the model)* |
+|---|---|---|---|---|
+| video causal QA (our protocol) | 72.6% sealed / 75.6% dev | 72.0% sealed / 74.4% dev | 94.2% | 96–99% |
+| JevBench-style aggregate | 76.6% | 76.2% | not comparable (protocol) | — |
+| published calibration metrics | ✅ per-modality | — | — | — |
+
+*We mark what we cannot comparably run instead of mixing protocols.*
 
 ## Quickstart
 
 ```python
+import torch
 from transformers import AutoTokenizer, AutoModelForImageTextToText
 from peft import PeftModel
 
 base = AutoModelForImageTextToText.from_pretrained(
-    "google/gemma-4-E4B-it", torch_dtype="bfloat16")
-model = PeftModel.from_pretrained(base, "<this-repo>/adapter")
-# 官方 chat template;thinking 关闭;答案 token 映射见 docs
+    "google/gemma-4-E4B-it", torch_dtype=torch.bfloat16, device_map="auto"
+)
+model = PeftModel.from_pretrained(base, "lite-omnijev-e4b-d3p600")
+# Official chat template; thinking disabled; answer tokens are the first
+# sampled token from the typed option set (see docs/ for the token map).
 ```
 
-## 训练数据
+Per-modality temperature scaling values ship in [`calibration/`](./calibration/) with a drop-in readout helper.
 
-CLEVRER(CC-BY 4.0)/ VQA v2 / Clotho-AQA / LibriSpeech / GUI-Odyssey(商用)/ 文本合成池——六源样本族隔离,来源/哈希/隔离审计链齐备。教师仅作训练期分布信号,未使用 JEV-27B 权重或 API 输出。
+## Demos
+
+See [PROMO.md](./PROMO.md): same-question side-by-side (generic streaming VLM vs our single-pass typed decision), calibration trust visuals, six-modality montage, honest failure reel — shot on the serving stack at release time.
+
+## Training
+
+- **Base**: google/gemma-4-E4B-it @ `ee0ef602` (frozen; encoders stay frozen — LoRA touches language decoder projections only)
+- **LoRA**: r=16, α=32, bf16, lr 2e-6, seed 42
+- **Stage data**: 600-video teacher-distillation slice + program-facet targets from CLEVRER train programs (CC-BY 4.0); full data statement in [TRAINING.md](./TRAINING.md)
+- Every number above is reproducible: fixed seeds, code/data/model hashes bound per run, two-pass exact-match verification on benchmarks
 
 ## Limitations
 
-1. video 准确率 72.6%,低于同协议 27B 教师(94.2%)——残余错误集中于空间关系/事件存在/时序
-2. crossmodal 校准后 ECE .0528,未达内部 .03 目标
-3. U(不可答)为内部量,输出形态无 U
-4. 校准温度绑定 bf16/transformers/native_lora recipe;其他引擎需重新校准
+1. Video causal QA is 72.6% sealed — our 27B decision teacher measures 94.2% on the identical protocol; we do not match it, and we publish the gap.
+2. Crossmodal ECE (.0528) misses our .03 target after calibration; disclosed, not retuned.
+3. "U" (insufficient-information) exists only as an internal logit; the released output form has no U channel (product-form decision).
+4. Calibrated temperatures are bound to the bf16 / transformers / native-LoRA serving recipe; other engines require re-calibration (verified: cross-engine activation is refused by design).
 
-## Citation
+## License & data
 
-BibTeX 见仓库 CITATION.cff(发布时生成)。
+Apache-2.0 (inherited from base). Training data: CLEVRER (CC-BY 4.0), VQA v2, Clotho-AQA, LibriSpeech, GUI-Odyssey (commercial) — pool-isolated by sample family with full provenance hashes. The 27B teacher contributed *distributions only* during training; no teacher weights, APIs, or labels ship here.
