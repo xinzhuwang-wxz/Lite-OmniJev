@@ -1,0 +1,2340 @@
+{
+  "schema": "lite-omnijev.s0_gateway_parity.report.v1",
+  "action": "compare-gateway",
+  "started_at": "2026-10-17T18:18:03+00:00",
+  "finished_at": "2026-10-17T18:19:51+00:00",
+  "elapsed_seconds": 107.588343,
+  "environment": {
+    "python": "3.11.17",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.35",
+    "executable": "/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python",
+    "pid": 465847,
+    "cwd": "/root/autodl-tmp/s6-release-serving-001/repo",
+    "packages": {
+      "httpx": "0.28.1",
+      "pydantic": "2.14.1",
+      "fastapi": "0.136.3",
+      "starlette": "1.8.0",
+      "torch": "2.13.0",
+      "transformers": "5.17.0"
+    }
+  },
+  "source": {
+    "repo_root": "/root/autodl-tmp/s6-release-serving-001/repo",
+    "git": {
+      "commit": "a62a3cabb2dff4c4324dde6b941da0062bbf519c",
+      "branch": "main",
+      "dirty": "M scripts/assets.py\n?? serve/deploy/"
+    },
+    "code_hashes": {
+      "scripts/s0_gateway_parity.py": "82194a98cd5de7d800deda5bd2f0ec6a00c0488d67d42719ddbeb680a43b142c",
+      "scripts/s0_parity.py": "747a87c301e478d4c29220e05c8bb32be03334e06cd16280329f9b35d8a1796a",
+      "scripts/s0_prepare.py": "9685b411726e6cb01b0bde97390f2e0aad6d0012bd64fe2612f5172f671538db",
+      "serve/gateway/app.py": "59c5f6e4d7b1e0f5bbc1f7435964f9100f1761835b18c0ca2a9caa57a97ce947",
+      "serve/vllm_chat.py": "a580bd2f003ae894f78007cf73df18bc7f3483c32b225c59022ab2150b99caaa",
+      "data/schema.py": "35a9758e97a53c7d01e93865a5f3d992e96b74f6e59643ded0b0aa447b4716f6",
+      "train/multimodal.py": "327c78103d16b571a7fd81b7d43c0a3f1be42dfef5cb03cede4faa71201e1b10",
+      "train/readout.py": "fce1d13a6a1d024c0abc3b10926d3637a8c3a5ee3497a0d39da1f4d5e46a225b"
+    }
+  },
+  "seed": 42,
+  "cost": {
+    "new_paid_resources": 0,
+    "gpu_started_by_this_cli": false
+  },
+  "release_or_stage_acceptance": false,
+  "status": "passed",
+  "exit_code": 0,
+  "gateway": {
+    "operator_attested": true,
+    "remote_attestation": false,
+    "model_version": "767be09b0919235d",
+    "gateway_launch_command_sha256": "f56484cdac266572d93b01ce90dd663a8c16221904736e64c74e5b45e1ca410d",
+    "upstream_server_record_sha256": "cd2552cb3fc956df0e93c83712e359b87680d69749f41b6c94bd71111d1e515d",
+    "s0_hf_vllm_report_sha256": "6607308ba94385f0eaab4d16b44381b2c49434bce912a633e07647525729a463",
+    "record_sha256": "0fa5e00946aa84cc08a19a38d72e25d782f47e940c1b2c32320faf3c81ac6a38"
+  },
+  "manifest": {
+    "path": "/root/autodl-tmp/s6-release-serving-001/repo/tests/fixtures/s0-prepare-public-001/manifest.json",
+    "sha256": "3e5d8efe0b7b6e97acc13e2800388b1769085da0232063e578907f186199ded7",
+    "cases": 100,
+    "case_fingerprints_sha256": "de44d4db1761063a32fdd006f70b5a063a954d243af297fc75e3fe81b547e78b",
+    "source_families_sha256": "f58ab521cc806399fd00b8a5e727229c75fe2a9476c4fcd0d85ac6fa34ea5a94"
+  },
+  "health": {
+    "status": "ok",
+    "mode": "canonical-chat",
+    "inference_configured": true,
+    "model_version": "767be09b0919235d",
+    "model_quality_verified": false
+  },
+  "second_health": {
+    "status": "ok",
+    "mode": "canonical-chat",
+    "inference_configured": true,
+    "model_version": "767be09b0919235d",
+    "model_quality_verified": false
+  },
+  "hf_vllm_report": {
+    "sha256": "6607308ba94385f0eaab4d16b44381b2c49434bce912a633e07647525729a463",
+    "status": "passed",
+    "parity": {
+      "label": "hf_reference_vs_vllm",
+      "passed": true,
+      "status": "passed",
+      "exit_code": 0,
+      "samples": 100,
+      "threshold_exclusive": 0.001,
+      "max_differences": {
+        "raw_probabilities": 5.752182391516314e-06,
+        "joint": 5.667333169867561e-06,
+        "conditional": 5.667347771298736e-06,
+        "p_U": 3.6278018427721636e-10
+      },
+      "exact_rerun_required": false,
+      "rows_identical": false,
+      "release_or_stage_acceptance": false,
+      "scope": "Numerical only; source/model/runtime/GPU provenance required separately"
+    }
+  },
+  "repeatability": {
+    "status": "passed",
+    "passed": true
+  },
+  "comparison": {
+    "status": "passed",
+    "passed": true,
+    "threshold_exclusive": 0.001,
+    "max_differences": {
+      "conditional": 0.0,
+      "p_insufficient": 0.0
+    },
+    "samples": 100,
+    "details_sha256": "467b6bdad376383a7f86d5cd403c205d0e91c69695a7d85ced4a4fc74238b8ad",
+    "details": [
+      {
+        "case_id_sha256": "b966cd9cb5527f8dcf854e73cb3fba0b003aab79cc3e29b824d659d1610e44b3",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 65,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 65,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "8312d138ca05ffe7fc7a8f742931fe3c989dafdace8988eb1cbe0f2905246873",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 65,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 65,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a281d8f86a8106a79351f04ca857fec9577352c517770304c2af5ad719f45280",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 65,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 65,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "920a4d9ecdf01807c2b241559aa879fddb32d5e8f14ab45c37b1155903f3fc81",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 65,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 65,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "337d13b8d2d84856300973c169eedacf4cbcef5a33f88f0da94e780d748354d6",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 65,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 65,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "7aed9acf4e24fac844c7159bd47d3533640d6e74a211e295e8bb01c2004ec23f",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 65,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 65,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "63a1f5894f9507c8f86b0ef40957db6e0e2944264caeac82b5ceac5adcec0229",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 65,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 65,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "137feccfbdbe104f404a2072d7afd13a3e6aaac5f393c2ddbfb3dff706fbce7e",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 66,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 66,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "6947833827d8083c4a7b6b2284247749116c4594108d128524fa4fd98a904227",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 68,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 68,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "cfa63f8ae305aa50eeeccb45d43c8cc4f2f7a315d31485ce4a19be273bf9a173",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 68,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 68,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a5976375c97709adfc0222cafed6e4cc3b60daa6b6d9d9a78b835ac9ba90d4b7",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a3da0556e43b90ce1661443702ab73106977b9a7c8f1e264f051ef59be621b31",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "f9431b3631fd2937328a67b958b4f36ea9b5b2379e3b024fb100ffc83dee024b",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "6f3c0e3fa1fec9950a5726586b7a6d05b6b67015ae830d5e1410336d51d1bba8",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "dd0942dfec6eb3c06e03006ed5eb541df97b10d55d1765160c41acfb0e74e215",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "122a6bed1ad96c273091bbbc89afa17538d3d0083939dfecc709cf15c577728f",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "70105ab818587a76cf13c8842146cf15e9a9ef9124e2d31b7cd2e576a92cf80f",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "7282d1a1ad87fcfb67214028e5eaca2f75318d0b2eeec477f779802b8f1c64f0",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "77f42829e4d0db2b886a8cdd0a2a5ea4d011eed658945caf946f4870faafe20e",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "f5f30f7cd9be967f75854cc345ac9231e432b7ee2aaa6093774517c5599502bf",
+        "category": "text",
+        "primitive": "choice",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "A",
+            "B"
+          ],
+          "choice": "A"
+        },
+        "usage": {
+          "input_tokens": 70,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 70,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "e64c1c89eb2249d494b6546cb86b53990936dc4fbea9b471040ea7692795370e",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0003477071335796132
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "ce82cd5aaef20c79df4fa2463489c39ef7b78a12d52f3e4963f64111b76c9601",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9995558595522619
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "d0acf7799d3d4cf603e6c0e8b9432536682ead5c4b3556723eac61ae33e4e462",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0005311413480786853
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "5bec0069bf92412885c69fe0237dbd2f9a69dc8ec975dff0ee42613e4bb6dc1a",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0026217099113357172
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "7520104328b8710554c7d26b047f147cebd0a9aa45edcad821d66a043c5fccce",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9996392862106088
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "06f6139bd58e77ea1ca8cedf96ac46b3e492a005f3865596ef7f2a2c78065132",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0003604174972893981
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "2ca375246cf746fd25432a9983021d676756aabcceda7d9ce138bb4ef31c1843",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0029500376449293976
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "5d836f1fb1d149de88a80a0d61bc66aaaf6e1140f1e88298fa5bad32ddceebde",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0006040720953840807
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "222d4944683e3b3be7d4d813636e52c9a83b1daaaf8ce4d6fbda3bc1d4db54c9",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9991603586119078
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "b34c3f75b794d49be30c60c878ef1ae6781e6828863b86790bf6a4f3d898e621",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.002289919253203203
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "d31b70135ffbe9d50d43c4df03b1c9baa25bd887d7e1b03755df769fe3beafc6",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.00047503469737586457
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "f12c643ebb62c2958eb5f1ef1fc0a1a094fa388058eaa869c3cd6abf9473e0a7",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0031156110091827074
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "2ae4176ac1c5df79a54326c8f65dcc84b251810f471017ba04b92a5d901904b1",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0008435098519154236
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "e61449b0a4a5dccbb8b617649c9f1ff565bfb243ca10783d15867b72f4420e31",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9992942966887163
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "62822abbd96e940a60f903433b82e2c1cfefa2172554060d2bcb7f8ecccb511b",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.0030094373809701185
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "b7a0fed510fe209bad9f1648f147d128fe3c64d0abda12341865be9c5620706c",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.00034308993632533203
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "b0aace990ccf3b88494fd5418e0eda49e84b890b92552e1214c71f621a97501b",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9995111690747334
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "54a44bae36702c0c27f55166ca59dbc400c4f63e6a1d8c04da644c076048d6c8",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.00046908508447955904
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "c0d1ccb89f1ab6be096d0cca9f45f3dc34e3034b58656a0adda9ab012a7b4b01",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9993551896313432
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "04ee0bdf179bc5b7eb73553835f0694338faba318792bf7a030d74595ce962a1",
+        "category": "image",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9996563548724909
+        },
+        "usage": {
+          "input_tokens": 339,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 339,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a90549b03a6bdadcd9cf5954adc8ebf1b69510fbd3db7886dd69149c44e0b2a5",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.04093749808927427
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "2c219c6f8e471977dd93b349fd9a6a0e00edb142ffd28fed0c2aae352b617825",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.31135078263282395
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a3f1f5153e6b01a38e0b55f7ccccbaf9e508e4330f397a5acdcaa20d85931535",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.8185966300885942
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "88ea4d7dacc1feda0eb53fe40a580712c5a673c6a650407304e9f3145ee29052",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.35492636431214375
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "7a179338019dbcf654d5416c8ae980fcd3492827be83106f03ce5e8ec7a9bd2c",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.6006299502431518
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "9b9a65c613021d32478fe94a4df03696bb3f5042214be00f5230d0f0318e4807",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.10159779943267756
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "29384d525c6b69adf8fbfcf330d1e57e9fc6f650344fcb70c724f50db1c09299",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.05833337070087456
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "0b968e2f9ab16e90346f363ddc9f91c72c901d3c92d8bbb0f6f1faeec6d7eb8c",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.01633506973039574
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "06a4fcbd4700828e7fa7f6c516fbc66f465b9113f83d633d9671a1e75997dbdf",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.007326936415523646
+        },
+        "usage": {
+          "input_tokens": 346,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 346,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "8f01c3d7439311780752ebf92f163a0247b8ea47d9dc393c2331303870eadaf1",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.02519715400630597
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "1c253c8aa84c801e0e7772a930335df8621a4deef745c61a2ef2a90176c7a94a",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.012064390928787512
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "13bc726415a5f46881e20f220c6225684a411e92eb98186a3b301d5408d2c364",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.011576194458811442
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "eceb79d94741afd400249c2b1b5756a1e2bc4426b766df7f00a4696d2a16efb1",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.006038126076474755
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "8dd50c2ea7e49e388ac75790da6c6f47faeec47aca7ed2b2f206d923343d0cec",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.009900718953091626
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a04443c52a85427b895f45392546422ac16ddebbd8f32d95c51a3a11cc9391c4",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.013657141097492467
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "66dc938a283e3a0986ef3e9be2886a21dc9f21a2c9eeccf8f4174247f2e97897",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.014679951968345747
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "e89416083fdfc0d88f141816f364ad039837bcc99d04e85fd6d05668759b171a",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.004871677749881867
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "0292a173217518f54a729c2e60b961a245179f0e208d9ca70d9f5da00a229f52",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.006626807647481031
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "3eda1ce3b78ae212befd422703189553d603f4ae709e3e7c82212dc9b4866d55",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.005487865604463778
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "7153c70df113b6902a1fc0c4bdf309c90bad5bcb6f5ed8205a5f43ff9b3a82e1",
+        "category": "screenshot",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.010017070855220453
+        },
+        "usage": {
+          "input_tokens": 347,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 347,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "765795dd135756a047c70540117aa7407c69d5a31d3b7d9985690973e8b18839",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9962565305934965
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "231dfd12eda869c59d66cce34a6fe1735545549104c48ace84acdfc0ef1c9ef2",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9987043912223856
+        },
+        "usage": {
+          "input_tokens": 501,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 501,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "0f993f34a650cccb3a8867eff56f05a3e73b46049563c7847d8c4683489e463f",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.979588052429851
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "4b73360352aacbe980153264046297eee0e27a464eb04776115fc211558d6d0e",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9981491199490266
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "3cde0a8ecb3b6278e8e5d59926ffe82a7669f50792c1910b9ad8099c9a1f2607",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9986995892397177
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a7f9e55d9fb1cb4b7086ac9fb9136f48757f6872eddcf4c8a3b0de49873a00be",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9985681238589537
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "c942253f46f186ec261354d20d7c3830e61511528bc186ba879791f6b4f20c8c",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9555646780439795
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "369de4c04b7a5e4a6d5b13a4a630e8afa0343646f38a27f772e765c1b202070a",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.04456703299135394
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "02dbe69c03ccb66ca4a227ee64b140ccd88028ab674d24160c22391c3950032a",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9983403543725625
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "f2657e36b59be8e9c986a6186dc502da0b4bca61a1f753ac92bb069d77330960",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9448322876621836
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "805878cfd4fe15697b5d660195c4cb3f04aefb9df3de8daf79e514974895b8b4",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9779898354966458
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "e1257e1cae85ee56742780583c620d6b6f643076d7df4ab3feb1d7c39ddd661b",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.45910975663580106
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "9dc99ad8bdc9e7e9238cdc6b37a3c4654c1e864753370829fa5cd84b508279c5",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9986709634240947
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a89223fb3079f8c53a1b769f4fe2aa63d698dd1fafe7dbaef5c0a64e2fdd1c19",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9886196573624285
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "2b341232e4848331e306107f97bd8b0d4fecf0e091b4be9eeeb7906a16db7811",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.991960568048214
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "4fa5ef2f249dc9e480ceaaff8c3079d7eb1edce1cc0ae6ab25ec3c74aefe114b",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.9941030039813917
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "edb4e991cbbbea80b89a897e79e19fe2f5b1daf3a2921a708b0e55be7f39ea1d",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.878597514168683
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "b6afa576e771de3844f06f2a54473db933be977faa0027a4711ca8e3b742ff51",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.99930402905128
+        },
+        "usage": {
+          "input_tokens": 501,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 501,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "cfe2d7942c671cf5940a472077382d5a8792a73451a7028a65f1753535e9f72e",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.5488827228651123
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "72b112baa3dc04753df3c000818094078d2c7fd87709a40fdc4818940bb394a7",
+        "category": "audio",
+        "primitive": "noul",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "yes",
+            "no"
+          ],
+          "noul": 0.282428441178389
+        },
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 500,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "af28a115619d19ba0d91a9e9adb2569b8638614285967c46a361fa9e1806920b",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.0041810878413619836
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "f1dbb6363bd740f8cc14af28567a78b866d852049932ffc6a36166b1d41c2585",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.991767724833874
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a4660cb9fb917771059ad8fec745286003d4e46c7cbcbb3273d5f6e7e48e002d",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.015462986139449396
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "1943b7e14062449b40e4975b823fefcd3cfc27d18da45fee4ef606f5879715c0",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.9832066172578826
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "43d18a68ab5a13836146d8c020bf23be39c0ee8212fc4f38182613d88866bbc2",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.9956242230977301
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a99877ab0fd15db5eff73eb113f6e2e29354914892280b514846f6cb0a6a6373",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.011062208831824055
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "381f543f02506211f8c4752bc51a34ae7d5e30e3ff5b71c59362af581c64b8e5",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.10872562043644131
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "f47fc04190ca055ff20b44384b262e9796268a6c44fba8995b54ed9df6ab115a",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.23028998053042377
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "c4ecec63fd8f9bdcabc8bac0beddda10daadcbe1c4a7643092a01f57ec1cf935",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.8947345516156464
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "20b6382920d1e883ae6866cdef0b0dbd737b2bce6da06c33409410d807afb648",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.030246457410665256
+        },
+        "usage": {
+          "input_tokens": 638,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 638,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "2f1f16bea969f0ba64734c2eec4578a25150a60278cc5b9ce9e1bd95af97e2d3",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.013241575561392398
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "295ab67807779697b0692f613fd8ea55f87744234abdcf311187d1a993ab2a2b",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.0855996245600645
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "d07e14396b5a7a5a0120017d81eff69a7382ec54dc94614509792300fec61882",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.018415088801636406
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "f4c767eee13b424f2704f848c22ae1919102a99f0d64ee0adb7f8b6f59f6183f",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.9942185896706837
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "a9337fcfbbbf7197134bb007f5e2ddf9526e3457a2568af6218da57be606ea52",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.5275314310995012
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "aecc3571172ed3c94cf295bceebbd27da29c55bbf27093096b42c6a69efb8e1d",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.005334221747978523
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "6fa5d200fc28d574eea224d3924cf4d4658b727cb4c126d3bf3be48adc52999a",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.9916595102346433
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "c2fa03f5b0b5aeb3bcc9c64c77911fe4b9faa5b46c44677eedf1dcb94de27a22",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 0.013122152340436457
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "0081ff008406de7d88b882739a42a0d33d82405565e7717f31b60ca172f05cf9",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.9954337752846445
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      },
+      {
+        "case_id_sha256": "d1c609e0ce0ce1a4c65f3ccbae9438f154ee0a25aeb2a4eee4cbc4e76e667cf5",
+        "category": "video",
+        "primitive": "score",
+        "conditional_max_delta": 0.0,
+        "p_insufficient_delta": 0.0,
+        "semantic": {
+          "labels": [
+            "0",
+            "1",
+            "2"
+          ],
+          "score": 1.9957673237176778
+        },
+        "usage": {
+          "input_tokens": 1190,
+          "output_tokens": 0
+        },
+        "backend_usage": {
+          "input_tokens": 1190,
+          "output_tokens": 1
+        }
+      }
+    ],
+    "raw_or_k_plus_one_validated_by_gateway": false
+  },
+  "raw_or_k_plus_one_validated_by_gateway": false,
+  "scope": "Gateway parity checks conditional probabilities and p_insufficient only; raw/K+1 remain delegated to the referenced HF/vLLM report."
+}

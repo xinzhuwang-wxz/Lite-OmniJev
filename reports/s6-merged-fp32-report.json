@@ -1,0 +1,14 @@
+{
+  "base_revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+  "adapter_sha256": "767be09b0919235d70877805f58365cbce449611d744bbf70e0d821a19749e9c",
+  "files": {
+    "MERGED_FROM.json": "6952ca59b2b5a2f07a3725dab68cf4cbb774dbe65f99f1ac342c079423e39ab8",
+    "config.json": "7128a915be80af8fc399a96a0e92b455383625f91aecd82aa127b80bd987058f",
+    "generation_config.json": "ab62926273a435bed81af368050f3a0ba5b7298d8b09f0e7615ccc41bc787103",
+    "model.safetensors": "86676e1e82f88fb26a8087231ff78327fc59b354762961c4549ccdec2a7bf7b6"
+  },
+  "output_dir": "/root/autodl-tmp/s1-text-lora-001/artifacts/lite-omnijev-release-002/model/merged-fp32",
+  "dtype": "float32",
+  "torch_version": "2.13.0+cu130",
+  "transformers_version": "5.17.0"
+}

@@ -1,6 +1,6 @@
 # 02 · release-002 产品化:serving 复验 + 网关入包 + 真实浏览器验收(交付链③)
 
-状态:doing · 所有者:主会话 · 2026-10-18
+状态:done · 所有者:主会话 · 2026-10-18 · 终态见文末
 
 ## 闭环定义
 
@@ -64,3 +64,23 @@ release-002 从"权重+证据包"推进到"可服务、可浏览器验收的产�
 - 环境:serve env 硬链接克隆至 s6-release-serving-001/envs/serve + av 15.1.0/soundfile 0.13.1
   (清华镜像;PyPI 直连龟速);vLLM 0.26.0+transformers 5.13.0+torch 2.11.0+cu130 实测导入 OK;
   网关 import 链在该 env 通过(peft 惰性,无需安装)。
+
+## 终态(2026-10-18 凌晨,三项验收全过)
+
+1. **serving parity ✅**:`s6-serving-compare-vllm-mergedfp32-002.json`——vLLM 两遍**精确可重复
+   (Δ=0.0)**;vs HF 参考 raw 5.75e-6 / joint 5.67e-6 / pU 3.6e-10,全部 << 1e-3 门。
+   同时证明:merged-fp32 ≡ base+adapter(评测权威栈)、vLLM serving ≡ HF、平面键物化无损。
+2. **网关 parity ✅**:`s6-serving-gateway-parity-001.json`——100 案例两遍精确一致;vs HF/vLLM
+   报告 conditional Δ=0.0、p_insufficient Δ=0.0(逐位一致);`/health` canonical-chat +
+   inference_configured=true + model_version=767be09b0919235d。
+3. **真实浏览器 ✅**:`passed_live_browser_contract_only`(首次 live 分支实战;Chromium 153 →
+   SSH 隧道 → 真网关 → 真权重)6 案例 200 + 422 隐私负例;时延入 ⑥ `s6-perf-report-002.md`。
+4. **入包 ✅**:release-002/gateway/{launch-vllm.sh,launch-gateway.sh,make_parity_records.py,
+   README.md,receipts/(9 份回执含浏览器报告)};model/merged-fp32-flat/(serving 身份,硬链接);
+   SHA256SUMS 重生成(47 文件)并全量校验。
+5. **serving 形态定版**:merged-fp32-flat(平面键,2130 键,共享层死名以运行时真源值填充)。
+   校准激活仍 pending(Binding 合同要求 native_lora receipt;网关如实返回 calibration: unfitted)。
+
+过程烧坑(全部留 log):盒 console-script shebang 指旧 env(改显式解释器);vLLM 0.26 默认开
+前缀缓存破坏两遍精确性(1.8e-6,禁用后 0.0);compare 报告拒覆盖(harness 正确,路径要轮换);
+`pkill -f` 匹配自身 ssh 命令行两次(教训:远端清理不用宽 pattern)。

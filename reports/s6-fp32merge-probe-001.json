@@ -1,0 +1,38 @@
+{
+  "scope": "merge-rounding magnitude probe; not a gate",
+  "dtype": "float32",
+  "max_abs_logprob_delta": 1.52587890625e-05,
+  "cases": [
+    {
+      "case_id": "public-prepare-text-00",
+      "max_abs_logprob_delta": 5.7220458984375e-06
+    },
+    {
+      "case_id": "public-prepare-text-01",
+      "max_abs_logprob_delta": 5.7220458984375e-06
+    },
+    {
+      "case_id": "public-prepare-text-02",
+      "max_abs_logprob_delta": 9.5367431640625e-06
+    },
+    {
+      "case_id": "public-prepare-text-03",
+      "max_abs_logprob_delta": 1.1444091796875e-05
+    },
+    {
+      "case_id": "public-prepare-text-04",
+      "max_abs_logprob_delta": 1.9073486328125e-06
+    },
+    {
+      "case_id": "public-prepare-text-05",
+      "max_abs_logprob_delta": 1.52587890625e-05
+    }
+  ],
+  "weights": {
+    "base": "/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef6023621cff504d758262d4e04895a5af4a2",
+    "adapter": "/root/autodl-tmp/s1-text-lora-001/artifacts/s6-d3p-student-600-001/run/adapter",
+    "merged": "None"
+  },
+  "gate_threshold_exclusive": 0.001,
+  "verdict": "rounding_below_gate"
+}
