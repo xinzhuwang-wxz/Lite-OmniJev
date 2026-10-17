@@ -1,4 +1,4 @@
-# S5 阶段出口报告(草稿 2026-10-17 06:55,基于真实完成件)
+# S5 阶段出口报告(2026-10-17 14:30 终版,基于真实完成件)
 
 ## 已完成并验收
 1. **真实校准**:fit007(e465)+fit009(D3P-150)各 18000 题独立校准,七组温度全 NLL 改善,UID/边界/磁盘全程留证(fit003-008 失败链保留)
@@ -9,6 +9,13 @@
    - 封存/开发差(同源族):video 2.3pp ≤3 PASS
 4. **服务绑定**:registry manifest(7 fitted/11 unfitted)+runtime_recipe(bf16/transformers/native_lora)+SHA 全链
 5. **跨引擎边界验证**:vLLM 0.31 native 服务激活尝试被 loader 按设计正确拒绝(S5 出口 4 实测通过)
+
+## 候选演进(本轮三次换代,全部封存验证)
+| 候选 | 封存 video | ECE 门 | 备注 |
+|---|---|---|---|
+| e465 | 72.0% | 3/6 | fit007 |
+| D3P-150 | 71.7% | 4/6 | fit009 |
+| **D3P-600(最终)** | **72.6%** | audio/video 近门,crossmodal 披露 | fit011 |
 
 ## 未完成(pending,不虚标)
 - 网关 live bootstrap 最终一步:transformers-native serving 路径未实现(当前唯一服务化路径为 vLLM 代理,其校准需 vLLM 引擎自身校准作业)
