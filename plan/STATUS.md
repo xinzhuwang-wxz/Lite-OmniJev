@@ -19,7 +19,7 @@
 ## 已闭线(勿重跑)
 
 - **RL 形式化器级联:场景 150/150 全覆盖,终判 118/150 < D3P 123,线停**。`s4-ns-cascade-002/final/gate.json` 为准;`rescue/` 三分片 37/37/35 覆盖 rest-109。`/root/autodl-tmp/launch-rest2.sh` 是 18:54 的过时计划(rescue 已完成同工作),**不要再跑**。merged 文件有 1 行重复 id(clevrer-train-03324-5),不影响判定。
-- 已证伪路线清单见 reports/explore/(同骨干集成、COMBO/SAS 混合、自适应取帧、温度转移、纯 gold RL、K3 自一致、v3 并集)。
+- 已证伪路线清单见 reports/explore/(同骨干集成、COMBO/SAS 混合、自适应取帧、温度转移、纯 gold RL、K3 自一致、v3 并集)+ **CCD-for-decisions(2026-10-17,JevBench 判定榜:两门未过且低于基线,oracle 路由上界 80.5%<门,同模型分解带同样盲区;证据 s4-ccd-dec-probe-001,代码已并入 main)**。
 - G1 原子门未过(presence AUC .949<.97);PTR 门未过。
 
 ## MMAU/MVBench 样本管线(本轮修复记录)
@@ -48,7 +48,7 @@
 
 **头号标的 = JevBench 缺口 −9.5**(教师发布 86.15/micro 87.45 vs 我方 D3P-600 76.62)。根因是训练规模:对方全参微调 3 万题(12B)/9.9 万题(OneJev-4B),我方候选 = 600 样本 rank16 LoRA(基座 76.19,LoRA 仅 +0.4)。
 
-1. **先创新后规模化(用户令)**:JevBench 错题解剖(e465 记录)显示差距**集中在 long_policy 52.6%/ambiguous 28.6%/multi_hop/judge_hard,简单族 100% 全对**——与 CLEVRER enter 族同构。首个干预 = **CCD-for-decisions**(宏观规划创新库平移):长输入原子分解 → 逐原子校准判断 → 组合决策(ADR0024 结构化执行解禁,协议内多前向),预期 +4~7 分收掉大半缺口,零训练;预注册门:四弱族合计 ≥80%,全榜 ≥84,不达即弃。之后才轮到规模化蒸馏(D3P 管线 + teacher-soft,600→3 万,teacher-cache 已建;门 JevBench ≥86,约束 MMAU ≥63.10)。
+1. **先创新后规模化(用户令)**:JevBench 错题解剖(e465 记录)显示差距**集中在 long_policy 52.6%/ambiguous 28.6%/multi_hop/judge_hard,简单族 100% 全对**——与 CLEVRER enter 族同构。**CCD-for-decisions 已按门证伪**(弱族 40.2%/全榜 74.03%,双双低于门与直答基线;oracle 路由上界 80.5% 封死修订)→ **主注唯一 = 规模化蒸馏**:D3P 管线 + teacher-soft(600→3 万,1500 的 teacher-cache 已建),门 JevBench ≥86,约束 MMAU ≥63.10,预算 12-30 GPU h 待用户批。
 2. **本期发布照发**:release-002,模型卡报全部实测数 + 对照公开数 + 差距(ADR0025"失败项照实披露")。
 3. **DecisionBench Medium 排除**:两轮检索无公开数据集(Jev-Omni 卡的 80 场景/293 题公开网不存在)= 私有评测,按 ADR0026 排除;引用 87.57 时标"私有评测,不可验证"。
 4. **MVBench 口径差**:教师卡 14 任务/2786 vs 我方 9 任务/1800,引用双列标注;同协议教师 MVBench 数由单遍链补。
