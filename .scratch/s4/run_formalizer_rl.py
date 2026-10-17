@@ -181,7 +181,7 @@ def _gpu_loop(args) -> None:  # pragma: no cover - card required
     base.requires_grad_(False)
     model = get_peft_model(
         base,
-        LoraConfig(r=16, lora_alpha=32, target_modules=["q_proj", "v_proj"], lora_dropout=0.0),
+        LoraConfig(r=16, lora_alpha=32, target_modules=_language_targets(base), lora_dropout=0.0, bias="none"),
     )
     model.print_trainable_parameters()
     model.to("cuda")
@@ -249,36 +249,63 @@ def _gpu_loop(args) -> None:  # pragma: no cover - card required
     model.save_pretrained(args.output_dir / "final")
 
 
-def _token_logprob_chunked(model, inputs, token_ids, *, no_grad: bool = False):
-    """Chunked teacher-forcing logprob; bounds activation memory to 256-token
-    windows instead of one full-sequence forward."""
+def _language_targets(model):
+    """Official language-only LoRA targets (train.trainer.attach_lora parity)."""
+    projections = {"q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"}
+    return [
+        name
+        for name, _ in model.named_modules()
+        if name.startswith("model.language_model.layers.") and name.split(".")[-1] in projections
+    ]
+
+
+def _sequence_logprob(model, inputs, token_ids):
+    """Per-chunk prefix-KV logprob with a bounded live graph.
+
+    For each 256-token chunk: the prefix (video+prompt+scene[:start]) runs
+    under no_grad with use_cache (activations freed, the vision tower is
+    never inside an autograd graph); only the chunk window forwards under
+    grad against that frozen KV. The live graph is one window at a time.
+    """
     import torch
 
-    prefix_len = inputs["input_ids"].shape[1]
+    prefix_ids = inputs["input_ids"]
+    seq = token_ids[0]
     total = torch.zeros((), device="cuda")
-    ctx = torch.no_grad() if no_grad else torch.enable_grad()
-    with ctx:
-        for start in range(0, token_ids.shape[1], LOGPROB_CHUNK):
-            chunk = token_ids[:, start : start + LOGPROB_CHUNK]
-            window_ids = torch.cat(
-                [inputs["input_ids"], token_ids[:, :start], chunk], dim=1
+    for start in range(0, seq.shape[0], LOGPROB_CHUNK):
+        end = min(start + LOGPROB_CHUNK, seq.shape[0])
+        with torch.no_grad():
+            prefix = (
+                prefix_ids
+                if start == 0
+                else torch.cat([prefix_ids, seq[:start].unsqueeze(0)], dim=1)
             )
-            outputs = model(input_ids=window_ids, use_cache=False)
-            # logits predicting the chunk tokens sit at positions
-            # prefix_len+start-1 .. prefix_len+start+len(chunk)-2
-            logits = outputs.logits[0, prefix_len + start - 1 : prefix_len + start + chunk.shape[1] - 1].float()
-            logprobs = torch.log_softmax(logits, dim=-1)
-            total = total + logprobs.gather(1, chunk[0].unsqueeze(1)).sum()
-            del outputs, logits, logprobs
-        if not no_grad:
-            pass
+            prefix_out = model(input_ids=prefix, use_cache=True)
+            past = prefix_out.past_key_values
+            first_logits = prefix_out.logits[0, -1].float()
+        window = seq[start:end].unsqueeze(0)
+        outputs = model(input_ids=window, past_key_values=past, use_cache=False)
+        logits = outputs.logits[0].float()
+        targets = seq[start:end]
+        lp = torch.log_softmax(first_logits, dim=-1)[targets[0]]
+        if end - start > 1:
+            chunk_lp = torch.log_softmax(logits[:-1], dim=-1).gather(
+                1, targets[1:].unsqueeze(1)
+            ).sum()
+            lp = lp + chunk_lp
+        total = total + lp
+        del past, prefix_out, outputs, logits
+        torch.cuda.empty_cache()
     return total
 
 
 def _policy_step(model, optimizer, inputs, generations, outcome, record, processor):  # pragma: no cover
+    """Per-sample immediate backward (gradient accumulation): never holds more
+    than one chunk-window graph at a time."""
     import torch
 
-    losses = []
+    optimizer.zero_grad()
+    total_loss_value = 0.0
     for generation, advantage in zip(generations, outcome["advantages"], strict=True):
         if abs(advantage) < 1e-6:
             continue
@@ -287,19 +314,21 @@ def _policy_step(model, optimizer, inputs, generations, outcome, record, process
         ).input_ids.to("cuda")
         if token_ids.shape[1] == 0:
             continue
-        token_logprob = _token_logprob_chunked(model, inputs, token_ids)
-        losses.append(-advantage * token_logprob / max(1, token_ids.shape[1]))
+        token_logprob = _sequence_logprob(model, inputs, token_ids)
+        loss = -advantage * token_logprob / max(1, token_ids.shape[1])
+        loss.backward()  # immediate: graph freed before the next sample
+        total_loss_value += float(loss.item())
+        del token_logprob, loss
     sft_target = json.dumps(record["truth_scene"], ensure_ascii=False)
     sft_ids = processor.tokenizer(sft_target, add_special_tokens=False, return_tensors="pt").input_ids.to("cuda")
-    sft_logprob = _token_logprob_chunked(model, inputs, sft_ids)
-    loss = torch.stack(losses).sum() if losses else torch.zeros((), device="cuda")
-    loss = loss - LAMBDA_SFT * sft_logprob / max(1, sft_ids.shape[1])
-    optimizer.zero_grad()
-    loss.backward()
+    sft_logprob = _sequence_logprob(model, inputs, sft_ids)
+    sft_loss = -LAMBDA_SFT * sft_logprob / max(1, sft_ids.shape[1])
+    sft_loss.backward()
+    total_loss_value += float(sft_loss.item())
     torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], 1.0)
     optimizer.step()
     torch.cuda.empty_cache()
-    return {"loss": round(float(loss.item()), 4)}
+    return {"loss": round(total_loss_value, 4)}
 
 
 def _greedy_scene(model, processor, media_root, record):  # pragma: no cover
