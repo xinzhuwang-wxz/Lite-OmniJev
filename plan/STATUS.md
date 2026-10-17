@@ -1,70 +1,46 @@
 # STATUS
 
-更新:2026-10-17 20:25。**负责人交接:SOTA冲刺2(额度将尽)→ SOTA冲刺1 接任负责人。交付候选仍为 D3P-600(封存校准完成)。SOTA 口径已锁定 ADR0025;GPU 当前空闲,盒上无运行作业。**
+更新:2026-10-17 21:05。**负责人:SOTA冲刺3(本轮起)。主线:拼最新预发布候选 → ADR0025 榜单实测差距 → 按宏观规划定提升。GPU 空闲可随时发射;盒上 build 样本作业进行中。**
 
-## ⚡ 接续点(新负责人第一动作)
+## ⚡ 接续点(第一动作)
 
-1. **口径**:只按 `docs/adr/0025-sota-benchmark-set.md` 判定 SOTA——Decision Index(含视觉)、JevBench 231、MMAU test-mini 1000、MVBench 九任务 1800(决策子集)、我们公开的多模态决策评测集;准确率+可靠性+成本;须超过 OneJev-4B、Valen-2B、Jev-Omni-12B、OneJev-27B(同协议同题我方实测)。CLEVRER/封存池/dev 切片不得称 SOTA。
-2. **第一优先(GPU)**:在 MMAU test-mini 与 MVBench 九任务上实测 D3P-600 与基座,教师同题已知 62.0% / 54.22%。需要先写"教师同题 → 学生样本"转换器(建议 `scripts/public_bench_samples.py`:复用 `scripts/s0_teacher_eval.py` 的选行逻辑,断言输入 manifest 哈希一致;再用盒上 `s5-calibration-code-fa83acc` 的 `scripts.s1_dev_eval` 打分)。该 fable 任务已在 20:22 停止,无产出。
-3. **第二优先**:Decision Index 27 个已准入子集打分(`scripts/decision_index_offline.py` 只准备输入;打分协议按官方 decision-index 代码),JevBench 对照模型补测。
-4. 出分榜差距表后再定攻坚方向;创新方法库见下。
+1. **等 `pbs-build` screen 跑完 build-all+verify**(log `/root/autodl-tmp/rl-logs/pbs-build.log`,末行须 `VERIFY-OK`):产出 `artifacts/public-bench-samples-001/{mmau-test-mini-samples-v1,mvbench-public-9task-samples-v1}.jsonl` + `media/{mmau,mvbench}/`。
+2. **verify 通过后立即发射 4 个 GPU 评测**(脚本 `/root/autodl-tmp/launch-public-bench-eval-001.sh`,`screen -dmS pbm-d3p … d3p` / `screen -dmS pbm-base … base`;协议 `--passes 1 --video-frames 16`;报告 `reports/s4-public-bench-{mmau,mvbench}-{d3p600,base}-001.json`)。
+3. **release-002 拼装**:`adapter-d3p600`(sha 767be09b)+ `s5-calibration-fit-011.artifacts`(同 sha 绑定)+ `s5-holdout-eval-008.json` 证据;registry-manifest 按 001 schema 镜像重生成,serving-receipt 标注网关复验 pending。
+4. 分数落地后填 ADR0025 附录表(对照 Jev-Omni-12B 62.0 / 54.22,同题同协议),出差距表定提升路线(宏观规划 `reports/explore/s4-sota-macro-plan-001.md`)。
+5. 之后:Decision Index 27 子集打分、JevBench 对照补测。
 
-## 本窗口(SOTA冲刺2)结论,全部留证于 reports/explore/
+## 现役资产(已核验)
 
-- RL 形式化器级联终判 118/150 < D3P 123 → RL 线停;置信度仲裁留出半 +0 → 弃(`s4-sota-takeover-diagnosis-001.md`)。
-- PTR 零训练逐帧列物体 121–124 vs 123,门未过(`s4-ptr-probe-001.md`);G1 原子门 presence AUC .949 < .97(`s4-ccd-oracle-001.md`)。
-- CCD 自写 CLEVRER 执行器+物理(eval/ccd_*.py):真值世界 D100/E100/P97/C97;敏感度:位置误差 σ≤.05 才可用 → 精确几何须确定性 CV;CV 几何模块未完成,WIP 在分支 `worktree-agent-a35be9dbe956d68a1`(941320c,未验证)与盒 `/root/autodl-tmp/ccd-geometry-work`。
-- D3P-600 在 CLEVRER 四类题(dev2 debug40)直答:D 54.3 / E 57.5 / P 58.3 / C 49.0(per-option),说明直答对非 exist 题型接近随机。
-- 创新方法库(可迁移到判定榜):CCD 校准原子组合、贝叶斯决策引擎 BDE、主动感知(`s4-ccd-paradigm-001.md`);决策树 `s4-contingency-tree-001.md`;接手总览 `s4-sota-macro-plan-001.md`(其中 CLEVRER 为主战场的表述已被 ADR0025 取代)。
-- 封存纪律:曾误打印 CLEVRER validation 少量题(已披露并排除 video 10000/10001);validation 只经私有聚合作业读。
+- **基座**:`/root/autodl-tmp/lite-omnijev/artifacts/models/google__gemma-4-E4B-it/ee0ef60…`(112GB 全量在盒)。
+- **产品候选 = D3P-600**:`s6-d3p-student-600-001/run/adapter`,adapter sha `767be09b…`(rank16/α32,600 CLEVRER 样本,80 步,video 模态);S5 封存证据 `reports/s5-holdout-eval-008.json` + 校准 `reports/s5-calibration-fit-011.artifacts`(均绑 767be09b)。
+- `lite-omnijev-release-001` 内是**旧 adapter-d3p150**(82525f39)——已过时,仅作结构模板;`s5-registry-export-001` 同样绑 d3p150,勿直接复用。
+- RL 形式化器是内部管线组件(级联线已闭,见下),**不进发布包**。
 
-## 盒上资产(SSH 别名 seeta,凭据不入仓)
+## 已闭线(勿重跑)
 
-- 四类题评测集 `artifacts/clevrer-fourtype-dev2-001/`;原子集 `artifacts/ccd-atoms-dev-001/`;RL 终判 `artifacts/s4-ns-cascade-002/final/`;PTR `artifacts/s4-ptr-probe-001/`;训练注释 `/root/autodl-tmp/clevrer-train-ann-001`;validation 解压 `/root/autodl-tmp/clevrer-val-001`(仅私有聚合)。
-- 启动脚本禁止 `rm` 输出;长作业用 `screen -dmS`;`timeout` 按实测速率设。
+- **RL 形式化器级联:场景 150/150 全覆盖,终判 118/150 < D3P 123,线停**。`s4-ns-cascade-002/final/gate.json` 为准;`rescue/` 三分片 37/37/35 覆盖 rest-109。`/root/autodl-tmp/launch-rest2.sh` 是 18:54 的过时计划(rescue 已完成同工作),**不要再跑**。merged 文件有 1 行重复 id(clevrer-train-03324-5),不影响判定。
+- 已证伪路线清单见 reports/explore/(同骨干集成、COMBO/SAS 混合、自适应取帧、温度转移、纯 gold RL、K3 自一致、v3 并集)。
+- G1 原子门未过(presence AUC .949<.97);PTR 门未过。
 
-## 高效开发精神(本窗口收敛的实践,传承)
+## MMAU/MVBench 样本管线(本轮修复记录)
 
-1. **多维度监控,不等跑完**:每个训练/生成立即部署多层监控(逐视频奖励/checkpoint F1 gate/中途 video150 评估/OOM/停滞),3 分钟巡检,异常 3 分钟内捕获处置。监控脚本模式见 /root/autodl-tmp/multi-monitor.sh(reward-check.py 辅助)。
-2. **并行分片 + 幂等保护**:独立任务分片并行(3 shard × 37);发射脚本内嵌进程计数守卫(pgrep 检查,重复发射拒绝),防重叠写坏。
-3. **集中资源**:竞争进程全杀再单点发射;5 进程争抢的教训——先 pkill 再 launch,一个脚本原子完成。
-4. **资源纪律**:达不到 SOTA 的训练不花 GPU(用户令);六条路线证伪即停(集成/COMBO混合/SAS全族/自适应取帧/温度转移/纯gold RL),全部留证。
-5. **预注册判定门**:每条路线先定数字门(F1 +0.2/cascade ≥124/oracle ≥94.7%),不到即停,不移动球门。
-6. **ssh 不稳定对策**:长命令必死 → scp 脚本 + 短命令执行;screen -dmS 会话免疫断连;setsid+nohup 子进程在容器 ssh 退出后被清(GPU 挂载前),**长作业必须在 ssh 存活期内完成 GPU 挂载**(GPU-wait 循环)。
-7. **路径教训**:$O 变量多重展开混淆致 3 轮错误目录失败——脚本用显式绝对路径;heredoc 必须引号定界(<<'EOF')防远端展开。
-8. **中途评估器**:训练不停,checkpoint 落盘即自动 video150 评估(midtrain-eval.sh 模式)——训练中的真实性能曲线实时可见。
+- 设计定案脚本:盒 `.scratch/s4/public_bench_samples.py`(632 行,自校验:FFmpeg 无损拼装 16 帧 mp4 + RGB24 回读断言 + 冻结 S5 loader 终检)。MVBench 原始视频不在盒,用教师协议冻结的 canonical 16 帧(`public-video-protocol-freeze-001`)拼装。
+- 本轮补丁:①MMAU 46 行内嵌 MP3 → ffmpeg 解码为 pcm_s16le WAV(Media sha 覆盖转码文件,provenance 留 meta);②>30s 音频样本级裁剪(既有约定)。已过 trim 崩溃原因:旧版 stream-copy 超冲,新版 wave 精确切。
+- 已知协议差(如实记录):`load_media` 会把帧 scale 到 640 内而教师路径未做;MMAU 46 行 mp3→wav 转码;报告见 `build-summary.json` 的 `trimmed_rows_over_30s`/`transcoded_rows_nonriff`。
 
-## 全面解禁(ADR0024 修订二,用户决策)
+## 判定口径(ADR0025,不变)
 
-**内部管线完全自由**:推理时结构化执行、U 作内部信号、多阶段管线、程序执行——全部可用。**唯一硬约束 = 产品输出形态 Jev 式**(Choice/Score/yes-no,无 U 概念)。选型唯一标准 = 最可能超过外部榜单。
+- 五榜:Decision Index(含视觉)/ JevBench 231 / MMAU test-mini 1000 / MVBench 九任务 1800 / 我方公开多模态决策评测集;准确率+可靠性+成本;四对照(OneJev-4B、Valen-2B、Jev-Omni-12B、OneJev-27B)同协议同题全超才称 SOTA。
+- **JevBench 为外部提供**(repo `fstandhartinger/jevbench@7625ecb`,公开 original/easy/hard 231 行,未用于训练)——不自建。CLEVRER 按用户指示保留在评测表(方法试验场),不作为 SOTA 声明口径。
 
-## 三层阶梯(实测锚点)
+## 盒上纪律(传承)
 
-```
-96-99%  符号执行档(程序在推理时答题)
-94.2%   教师线(OneJev-27B 直答)← SOTA 判定线
-90.7%   级联 oracle(执行器 v4 + 完美场景,已证可达)
-~82%    ★ 当前直答(D3P-600,dev 切片 123/150)
-70-77%  纯直答档(已超越)
-```
+- 长作业一律 `screen -dmS` + 显式绝对路径 + 幂等跳过(report 存在即 SKIP)+ 禁止 `rm` 输出;发射脚本先 `pgrep` 防双跑;`timeout` 按实测速率。
+- 多维监控:发射即挂监控(逐阶段 log 关键行/异常/退出码),不等跑完。
+- 私有作业前清 /var/tmp overlay 媒体快照(30G 限制)。
+- SSH 别名 `seeta`;凭据不入仓;Python env `/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python`(pyarrow/PIL/pydantic/torch 全)。
 
-**超榜路径(已验证组件)**:执行器 v4 oracle 94.67%(超教师)+ RL 形式化器(F1 .36→.46 三连涨,60/60 完成,final 已存)+ 场景生成(进行中)→ 级联实测。
+## 待我决策
 
-## 已证伪路线(勿重试,证据在 reports/explore/)
-
-同骨干集成(错误同源)、COMBO/SAS-full 混合(稀释)、自适应取帧(平局)、温度跨候选转移(ECE 变差)、纯 gold RL(≡CE)、K3 自一致(事件缺口非采样噪声)、v3 三信号并集(回归)。
-
-## 下一窗口旗舰队列
-
-① RL 形式化器训练(fable 包全备:GRPO G=4+KL 锚+SFT 混 0.3,硬闸门内嵌,commit a541499)② 级联部署(形式化器见效后)③ COMBO 顺序课程(stage1 SAS→stage2 D3P,接力非混合)④ D3P-1500(切片/runner 已备)⑤ S6 量化/E2B ⑥ Playground
-
-## HF 发布(整体 DEFERRED,等最终模型)
-
-**原生生长,不改编预写件**。硬要求(用户令):传播学融入(精致 Demo/榜单排名凸显/注意力设计)+ 易用性(多格式部署:adapter/merged/GGUF 端侧/Mac 兼容+快速上手)+ HF 重点/GitHub 引流/暂不做网站。许可:CC-BY-NC-SA-4.0 推荐(研究自由+商用需同意,SA 堵下游绕过);基座 Apache-2.0(README 声明,gemma_4_license 链接待网页确认)。hf-repo/ 旧件降级为参考资料(CONVENTIONS/许可清单可复用)。上传需用户 HF token。
-
-## 卡片与接续
-
-- 卡片=关机非销毁(AutoDL 磁盘保留),SSH 地址开卡后恢复:`ssh -p 48926 root@region-42.seetacloud.com`(密钥 ~/.ssh/id_ed25519 已装,~/.ssh/config 有 seeta 别名)
-- 远端关键产物全保留:模型 112GB、数据池、s5-calibration-code-fa83acc 工具链、formalizer 全套、RL-150 训练目录
-- 私有作业前必清 /var/tmp overlay 媒体快照(30G 限制)
-- 最近 handoff:plan/handoff-2026-10-15-s3-complete.md(旧);本 STATUS 即最新接续入口
+- (无新增;租卡/开关卡、HF 上传 token、范围变更照旧须用户。)
