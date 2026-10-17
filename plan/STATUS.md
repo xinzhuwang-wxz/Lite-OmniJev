@@ -6,7 +6,7 @@
 
 1. **等 MVBench 两份报告落地**(~23:15,`reports/s4-public-bench-mvbench-{d3p600,base}-001.json`)。**MMAU 已出(同协议,单遍确定性)**:基座 65.9% > **教师 Jev-Omni-12B 64.6%**(修复加载后同协议实测,report `s4-public-bench-mmau-jevomni12b-001.json`)> D3P-600 60.6%;教师自家旧协议口径 62.0 仅作参考。**单遍制(用户 22:12 决定)**:两次 MMAU 均 repeat_identical=true,第二遍信息量为零;链式已改 `--passes 1`。
 2. **分数齐后填 ADR0025 差距表**,关键议题已浮出:D3P-600(视频 LoRA)在 MMAU 音频上 −5.3 vs 基座,发布形态需考虑按模态路由 adapter(内部管线自由,ADR0024 修订二)或重校准;ECE 未套发布校准,勿直接比较。
-3. 同协议对照矩阵:harness 已实现并**真机冒烟通过**(OneJev-4B MVBench 5/5,commit cc2cb25)。关键事实:**OneJev-4B/27B 是 Qwen3-VL,无音频塔,MMAU 对其结构性不可评**(判定表该格记"不可评");其原生榜=MVBench(视频路径 + boundary_tail 尾部边界 + enable_thinking=False)。全量 OneJev-4B MVBench 跑中(screen `cmp-4b`,单遍)。s1_dev_eval 已打**架构感知选类补丁**(Gemma4Unified checkpoint 否则会静默随机初始化双塔,已写进代码注释)。Valen-2B(1.16GB checkpoint.pt + Qwen3.5-2B 底座)正在流式中转。Jev-Omni 交叉验证:与 comparator 器核对待做(其 MMAU 已由 s1_dev_eval 出数 64.6)。
+3. 同协议对照矩阵:harness 已实现并**真机冒烟通过**(OneJev-4B MVBench 5/5,commit cc2cb25)。关键事实:**OneJev-4B/27B 是 Qwen3-VL,无音频塔,MMAU 对其结构性不可评**(判定表该格记"不可评");其原生榜=MVBench(视频路径 + boundary_tail 尾部边界 + enable_thinking=False)。全量 OneJev-4B MVBench 跑中(screen `cmp-4b`,单遍)。s1_dev_eval 已打**架构感知选类补丁**(Gemma4Unified checkpoint 否则会静默随机初始化双塔,已写进代码注释)。Valen-2B(1.16GB checkpoint.pt + Qwen3.5-2B 底座)正在流式中转。打分数学与 s1_dev_eval 同源(read_probabilities 复用);Jev-Omni 无 comparator 族、无双源交叉,OneJev 系分数一律带 harness 披露;Valen 为 RLCD 自定义 checkpoint,需移植其加载码,矩阵先记 conversion pending。
 4. **探索队列(宏观规划 × 今晚证据的对账结果)**:①23:15 MVBench = 最大分叉(D3P≥基座 → 发布形态=模态路由+攻可靠性;D3P<基座 → 下一个训练目标改为榜单形态通用视频决策数据,不加码 CLEVRER);②Decision Index 27 子集打分(唯一未测榜,输入已 staged);③同协议对照矩阵(harness 就绪,烧卡待用户);④剩余预算进 CLEVRER 线(原子训练 ~3 GPU h 门 AUC≥.97,或 D3P-1500 ~25 GPU h,二选一,预注册门不到即停)。
 
 ## 现役资产(已核验)
