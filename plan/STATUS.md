@@ -58,6 +58,10 @@
 4. **MVBench 口径差**:教师卡 14 任务/2786 vs 我方 9 任务/1800,引用双列标注;同协议教师 MVBench 数由单遍链补。
 5. Valen:权重在盒(Qwen3.5-2B 底座 ✓ + RLCD 自定义 checkpoint),需移植其加载码;对照格记 conversion pending。
 
+## 定版决策规则(用户 18 日凌晨定,无需再确认)
+
+joint-v3 验门(终点自动跑 JevBench)落地即执行:**≥86 → joint-v3 adapter 定版**(注意:fit-011 校准绑 767be09b,换 adapter 需重拟合或如实标 serving 校准 pending)→ 重拼 release;**<86 → D3P-600 定版(现状)**。两条路同样动作:模型卡终审 → merged 权重 → SHA256SUMS → 交付包就绪(交付链 ②③⑥ 推进;⑤HF 须用户 token)。
+
 ## 待我决策
 
 - 下一窗口规模化蒸馏的卡时预算(预估 12-30 GPU h:数据构建 + 训练)。
