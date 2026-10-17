@@ -40,6 +40,10 @@
 - 私有作业前清 /var/tmp overlay 媒体快照(30G 限制)。
 - SSH 别名 `seeta`;凭据不入仓;Python env `/root/autodl-tmp/envs/before-gpu-teacher-job-final-001/bin/python`(pyarrow/PIL/pydantic/torch 全)。
 
+## MMAU 回归机制(已解剖,artifact s4-mmau-regression-001)
+
+−5.3 = 位置先验漂移为主(~2-3pt:榜偏 A,基座吃偏置 .777,候选崩到 .562)+ 真实排序退化(~2-3pt,需训练:答案顺序增广)。零训练修复:音频路由→基座(最优,已采);H-A 字母偏置校准 +3.2(CV)属榜特有先验利用,存疑不采信;**U 通道塌缩(pU→e-6)为产品级发现,发布校准层覆盖封存池,模型卡须披露**。
+
 ## 下一窗口:SOTA 收口计划(负责人已定)
 
 **头号标的 = JevBench 缺口 −9.5**(教师发布 86.15/micro 87.45 vs 我方 D3P-600 76.62)。根因是训练规模:对方全参微调 3 万题(12B)/9.9 万题(OneJev-4B),我方候选 = 600 样本 rank16 LoRA(基座 76.19,LoRA 仅 +0.4)。
