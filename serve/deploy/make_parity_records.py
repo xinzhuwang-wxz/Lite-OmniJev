@@ -87,6 +87,7 @@ def main() -> int:
             "operator_attested": True,
             "raw_logprobs_confirmed": True,
             "logprobs_mode": "raw_logprobs",
+            "dtype": args.dtype,
             "launch_command": args.launch_command,
             "served_model": args.served_model,
             "provenance": build_provenance(
