@@ -4,10 +4,10 @@
 
 ## ⚡ 接续点(第一动作)
 
-1. **读 4 个评测报告**(`reports/s4-public-bench-{mmau,mvbench}-{d3p600,base}-001.json`;screen `pbm-d3p`/`pbm-base`,21:13 发射,MMAU 先出、MVBench 各约 58 min;log `/root/autodl-tmp/rl-logs/public-bench-eval.log`)。协议 `--passes 2 --video-frames 16`,教师判定数 MMAU 620/1000=62.0%、MVBench 976/1800=54.22%(`reports/teacher-benchmark-two-pass-complete-001.json`)。
-2. **分数落地后填 ADR0025 附录表**(四对照:Jev-Omni-12B 已有同题数,OneJev-4B/Valen-2B/OneJev-27B 未同协议实测),出差距表定提升路线(宏观规划 `reports/explore/s4-sota-macro-plan-001.md`);同时补 release-002 的模型卡/release-notes(样品已拼装,见"现役资产")。
-3. 之后:Decision Index 27 子集打分、JevBench 对照补测。
-4. 样本管线已完成并 VERIFY-OK(build-summary.json 有 trimmed/transcoded 披露;过时中间产物在 `public-bench-samples-001/attic-intermediate-2026-10-17/`)。
+1. **等 MVBench 两份报告落地**(~22:25-22:30,`reports/s4-public-bench-mvbench-{d3p600,base}-001.json`;screen `pbm-d3p`/`pbm-base`)。**MMAU 已出**:基座 65.9%、D3P-600 60.6%(均两遍一致,学生协议);教师 Jev-Omni-12B 62.0 为教师协议口径,严格判定须同协议重测。
+2. **分数齐后填 ADR0025 差距表**,关键议题已浮出:D3P-600(视频 LoRA)在 MMAU 音频上 −5.3 vs 基座,发布形态需考虑按模态路由 adapter(内部管线自由,ADR0024 修订二)或重校准;ECE 未套发布校准,勿直接比较。
+3. 同协议对照矩阵:四对照(OneJev-4B、Valen-2B、Jev-Omni-12B、OneJev-27B)需在本学生协议下重跑;盒上缺 Valen-2B 权重(先确认 repo/revision 再下载)。之后:Decision Index 27 子集打分(输入已 staged)、JevBench 对照补测。
+4. 提升路线按差距表+宏观规划定(`reports/explore/s4-sota-macro-plan-001.md`)。
 
 ## 现役资产(已核验)
 
