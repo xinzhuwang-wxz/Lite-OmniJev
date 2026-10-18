@@ -14,7 +14,11 @@
 ```bash
 ssh seeta 'grep REMAP_EXIT /root/autodl-tmp/s6-hf-repo/remap.log'   # 0 = 成功
 ```
-若 EXIT 非 0:日志在 remap.log,把错误原样排查;**大概率无需改脚本**(已在本地验证逻辑)。
+**已知 bug(已定位,一行修复)**:首次运行在收尾 `open_handles[...].close()` 处崩
+(`AttributeError: 'builtins.safe_open' object has no attribute 'close'`)。修法:删除
+`/root/autodl-tmp/s6-hf-repo/flat_remap_safetensors.py` 的 `finally:` 块(9 行,safe_open
+句柄随 GC 自动释放),然后重跑同一 screen 命令。重跑会重写全部分片,无残留问题。
+若 EXIT 仍非 0:日志在 remap.log,原样排查。
 
 ### 2. 重建 serving view 并起栈
 
