@@ -1,1 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="260" viewBox="0 0 760 260" font-family="-apple-system,'PingFang SC',sans-serif"><rect width="760" height="260" fill="#1a1a19"/><text x="28" y="40" font-size="19" font-weight="700" fill="#f0efec">单题决策时延:概率一次读出 vs 自回归生成(文本,8 题)</text><text x="28" y="63" font-size="12.5" fill="#c3c2b7">实测:Lite-OmniJev 网关端到端(fp32 验收配置);通用大模型为公开 API 实测同题多题作答,3 次中位数;2026-10-18。</text><text x="28" y="108" font-size="13.5" fill="#f0efec">Lite-OmniJev · 单次前向 · 8 题概率</text><rect x="28" y="116" width="317" height="22" rx="5" fill="#3987e5" stroke="#3987e5" stroke-width="2.5"/><text x="357" y="132" font-size="14.5" font-weight="700" fill="#f0efec">0.13 s<tspan font-size="11.5" fill="#c3c2b7"></tspan></text><text x="28" y="172" font-size="13.5" fill="#f0efec">通用大模型 · 自回归生成 · 同样 8 题</text><rect x="28" y="180" width="637" height="22" rx="5" fill="#d95926"/><text x="677" y="196" font-size="14.5" font-weight="700" fill="#f0efec">2.53 s<tspan font-size="11.5" fill="#c3c2b7"></tspan></text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="440" viewBox="0 0 880 440" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"><title>文本请求，3 题串行的服务端计时</title>
+<rect x="0" y="0" width="880" height="440" rx="0" fill="#141923"/>
+<text x="32" y="44" fill="#f4f7fc" font-size="24" font-weight="700">文本请求，3 题串行的服务端计时</text>
+<text x="32" y="72" fill="#b1bfd3" font-size="14" font-weight="400">Choice + Score + Noul · vLLM FP32 / eager / 单序列 / 禁前缀缓存</text>
+<text x="32" y="128" fill="#f4f7fc" font-size="15" font-weight="400">网关 total</text>
+<rect x="205" y="111" width="500" height="22" rx="5" fill="#202938"/>
+<rect x="205" y="111" width="486.5425" height="22" rx="5" fill="#79acff"/>
+<text x="728" y="128" fill="#f4f7fc" font-size="15" font-weight="600">973.085 ms</text>
+<text x="32" y="190" fill="#f4f7fc" font-size="15" font-weight="400">上游推理与调度</text>
+<rect x="205" y="173" width="500" height="22" rx="5" fill="#202938"/>
+<rect x="205" y="173" width="196.0945" height="22" rx="5" fill="#64d4b3"/>
+<text x="728" y="190" fill="#f4f7fc" font-size="15" font-weight="600">392.189 ms</text>
+<text x="32" y="252" fill="#f4f7fc" font-size="15" font-weight="400">queue</text>
+<rect x="205" y="235" width="500" height="22" rx="5" fill="#202938"/>
+<rect x="205" y="235" width="283.412" height="22" rx="5" fill="#64d4b3"/>
+<text x="728" y="252" fill="#f4f7fc" font-size="15" font-weight="600">566.824 ms</text>
+<text x="32" y="314" fill="#f4f7fc" font-size="15" font-weight="400">输入预处理</text>
+<rect x="205" y="297" width="500" height="22" rx="5" fill="#202938"/>
+<rect x="205" y="297" width="6.238" height="22" rx="5" fill="#64d4b3"/>
+<text x="728" y="314" fill="#f4f7fc" font-size="15" font-weight="600">12.476 ms</text>
+<text x="32" y="388" fill="#b1bfd3" font-size="14" font-weight="400">来自响应 Server-Timing；不含浏览器 / SSH 隧道往返时间，不是 p50 / p95。</text>
+<text x="32" y="414" fill="#b1bfd3" font-size="13" font-weight="400">来源：browser-s0-live-001/report.json · 单次观测，非生产并发或 SLO 声明。</text>
+</svg>

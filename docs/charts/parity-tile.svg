@@ -1,1 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="150" viewBox="0 0 760 150" font-family="-apple-system,'PingFang SC',sans-serif"><rect width="760" height="150" fill="#fcfcfb"/><rect x="28" y="24" width="166" height="102" rx="12" fill="none" stroke="#e4e3e0"/><text x="44" y="52" font-size="12" fill="#52514e">serving 概率偏差</text><text x="44" y="86" font-size="24" font-weight="800" fill="#2a78d6">5.75e-6</text><text x="44" y="110" font-size="10.5" fill="#52514e">预算 <1e-3 · 100 案例实测</text><rect x="210" y="24" width="166" height="102" rx="12" fill="none" stroke="#e4e3e0"/><text x="226" y="52" font-size="12" fill="#52514e">两遍可重复</text><text x="226" y="86" font-size="24" font-weight="800" fill="#2a78d6">Δ = 0.0</text><text x="226" y="110" font-size="10.5" fill="#52514e">确定性 serving</text><rect x="392" y="24" width="166" height="102" rx="12" fill="none" stroke="#e4e3e0"/><text x="408" y="52" font-size="12" fill="#52514e">网关 vs 报告</text><text x="408" y="86" font-size="24" font-weight="800" fill="#2a78d6">Δ = 0.0</text><text x="408" y="110" font-size="10.5" fill="#52514e">逐位一致</text><rect x="574" y="24" width="166" height="102" rx="12" fill="none" stroke="#e4e3e0"/><text x="590" y="52" font-size="12" fill="#52514e">真实浏览器验收</text><text x="590" y="86" font-size="24" font-weight="800" fill="#0f9d58">通过</text><text x="590" y="110" font-size="10.5" fill="#52514e">Chromium → 网关 → 权重</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="440" viewBox="0 0 880 440" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"><title>同一发布权重，核验两个运行时</title>
+<rect x="0" y="0" width="880" height="440" rx="0" fill="#f7f9fc"/>
+<text x="32" y="44" fill="#18253b" font-size="24" font-weight="700">同一发布权重，核验两个运行时</text>
+<text x="32" y="72" fill="#52647c" font-size="14" font-weight="400">Transformers HF 参考 ↔ vLLM · FP32 融合工件 · 来源哈希绑定</text>
+<rect x="32" y="105" width="816" height="210" rx="8" fill="#ffffff"/>
+<text x="60" y="149" fill="#52647c" font-size="18" font-weight="400">最大原始概率差</text>
+<text x="58" y="228" fill="#2864ca" font-size="58" font-weight="700">5.75 × 10⁻⁶</text>
+<text x="550" y="156" fill="#18253b" font-size="24" font-weight="600">100 个公开案例</text>
+<text x="550" y="202" fill="#18253b" font-size="20" font-weight="400">每个运行时各跑两遍</text>
+<text x="550" y="247" fill="#087d65" font-size="18" font-weight="400">vLLM 重复结果完全一致</text>
+<text x="32" y="356" fill="#52647c" font-size="14" font-weight="400">这是一组固定案例的数值一致性证据；不是 200 道独立题或三个运行时验收。</text>
+<text x="32" y="386" fill="#52647c" font-size="14" font-weight="400">不推断量化格式、校准迁移或生产性能。</text>
+<text x="32" y="414" fill="#52647c" font-size="12" font-weight="400">来源：s6-serving-compare-final-bound-002.json · s6-serving-hf-reference-final-001.json</text>
+</svg>

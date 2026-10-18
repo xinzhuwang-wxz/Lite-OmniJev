@@ -1,141 +1,135 @@
 # Lite-OmniJev
 
-<div align="center">
-  <img src="docs/charts/readout-diagram.svg" width="720">
-</div>
+**多模态输入 → 明确选项 → 概率判断。**
+冻结 Gemma 4 E4B 基座，训练决策 LoRA；每题一次前向直接取得全部选项的概率，
+返回 Choice、Score 或 yes/no 结果，适合日历调度、工单分流、界面识别、声音与视频判断。
+支持文本、图像、截图、音频和视频。
 
-**决策不该逐 token 生成。** Lite-OmniJev 是一个单步多模态决策模型:冻结 Gemma-4 E4B 基座 +
-决策 LoRA,每题一次前向**同时读出**所有选项的概率与置信度。
-API 直接返回原始答案概率、置信度与类型化判断。
-Choice(2–20 项)/ Score(2–10 级)/ yes-no,文本·图像·截图·音频·视频五模态。
-使用官方模板与完整答案 token 读出，返回结构化判断。
+[模型下载与安装](https://huggingface.co/Chinzhu/Lite-OmniJev#快速开始) ·
+[训练故事](https://huggingface.co/Chinzhu/Lite-OmniJev/blob/main/TRAINING.md) ·
+[性能与回执](https://huggingface.co/Chinzhu/Lite-OmniJev/blob/main/PERFORMANCE.md) ·
+[文件大小与格式选择](https://huggingface.co/Chinzhu/Lite-OmniJev/blob/main/FILES.md)
 
-**模型与权重(HF):[Chinzhu/Lite-OmniJev](https://huggingface.co/Chinzhu/Lite-OmniJev)**
-——fp32 合并权重(分片)、LoRA adapter、GGUF F16/Q8_0/Q4_K_M、MLX 4bit、全套 serving 验证回执。
+<img src="docs/charts/readout-diagram.svg" width="760" alt="每题一次前向读出完整答案分布与类型化结果">
 
-## 工作台
+## 看实际输入和输出
 
 ![真实模型工作台](docs/demo/playground.png)
 
-三类判断、受信媒体引用、原始概率、校准状态和可重放 cURL。启动方式见下方部署配方。
+工作台支持三类判断、五种模态、原始概率、校准状态与可重放cURL。
+下面是最终权重的真实CPU实测回放：每场景一题，完整题干和选项一直可见；
+文本/图像包含同输入基座的真实自回归输出。原始耗时保留，长等待已压缩并在画面标注。
+WebM音频段带真实输入音轨；GIF为静音预览。
 
-## 实录:并行概率读出 vs 自回归生成
-
-两侧同时起跑:左 = Lite-OmniJev 每题一次前向读出答案概率;右 = 通用大模型自回归生成
-同样的答案。文本场景8题并行。以下为实况录屏。
-
-| 文本 · 8 题 | 图像 |
+| 文本：日历操作 | 图像：界面判断 |
 |---|---|
-| <img src="docs/demo/demo-text.gif" width="400"> | <img src="docs/demo/demo-image.gif" width="400"> |
-| **音频** | **视频 16 帧** |
-| <img src="docs/demo/demo-audio.gif" width="400"> | <img src="docs/demo/demo-video.gif" width="400"> |
+| <img src="docs/demo/demo-text.gif" width="440" alt="文本问题与真实概率"> | <img src="docs/demo/demo-image.gif" width="440" alt="截图输入与真实概率"> |
+| **音频：环境录音** | **视频：运动判断** |
+| <img src="docs/demo/demo-audio.gif" width="440" alt="真实音频输入与判断"> | <img src="docs/demo/demo-video.gif" width="440" alt="真实视频播放与判断"> |
 
-*GIF 为实况录屏压缩版;完整 webm 见 [docs/demo/](docs/demo/),原始分辨率版本随 HF 仓库分发。*
+完整录屏：[文本](docs/demo/demo-text.webm) · [图像](docs/demo/demo-image.webm) ·
+[音频（有声）](docs/demo/demo-audio.webm) · [视频](docs/demo/demo-video.webm)。
 
-**同题实测(文本 8 题)**:Lite-OmniJev 网关端到端 **0.13 s**,通用大模型自回归 **2.5 s**——
-19 倍差距,而且右侧给一段文字,左侧给每一项的概率。
+## GPU服务实测
 
-<div align="center">
-  <img src="docs/charts/latency-text.svg" width="700">
-</div>
+H20、FP32、vLLM 0.26.0、eager、禁前缀缓存、单活跃序列。
+每个请求含Choice / Score / Noul三题，逐题执行；下表为服务端`Server-Timing`。
 
-演示配方网关实测（Server-Timing）：
+<img src="docs/charts/latency-text.svg" width="760" alt="真实三题请求的服务端耗时">
 
-| 模态 | 前向(upstream) | 网关端到端 |
-|---|---|---|
-| 文本 · 8 题 | 119 ms | **128 ms** |
-| 图像 | 343 ms | 454 ms |
-| 音频 | 576 ms | 885 ms |
-| 视频 16 帧 | 1152 ms | 2216 ms |
+| 输入 | Upstream | 网关总耗时 |
+|---|---:|---:|
+| 文本 | 392 ms | 973 ms |
+| 图像 | 1,111 ms | 1,815 ms |
+| 截图 | 716 ms | 3,606 ms |
+| 音频 | 1,321 ms | 2,417 ms |
+| 视频8帧 | 1,256 ms | 3,294 ms |
+| 视频16帧 | 1,713 ms | 3,543 ms |
 
-## 基准(同题同协议实测;对照引用其公开发布数)
+计时包含服务内预处理、排队与推理；网络往返在此计时之外。
+CPU回放和这张GPU服务表采用不同设备与任务，原始证据见[性能报告](https://huggingface.co/Chinzhu/Lite-OmniJev/blob/main/PERFORMANCE.md)。
 
-| 榜 | 本模型(adapter 全模态挂载) | 基座 | 最强对照公开数 |
-|---|---|---|---|
-| JevBench 231 | **76.62%** | 76.19% | Jev-Omni-12B 86.15 |
-| MMAU test-mini 1000 | 60.6%(挂载)/ **65.9%(音频·文本路由基座)** | 65.9% | Jev-Omni-12B 63.10 |
-| MVBench 九任务 1800(参照) | **48.5%** | 47.2% | 教师 53.09(14 任务/2786,口径不同) |
+## 公开榜单
 
-<div align="center">
-  <img src="docs/charts/mmau-routing.svg" width="700">
-</div>
+| 协议 | 决策adapter | 基座 | 对照公开数 |
+|---|---:|---:|---|
+| JevBench231 | 76.62% | 76.19% | Jev-Omni-12B 86.15% |
+| MMAU test-mini1000 | 60.6% | 65.9% | Jev-Omni-12B 63.10% |
+| MVBench九任务1800 | 48.5% | 47.2% | 教师53.09%（14任务/2786，协议范围不同） |
 
-MMAU 音频路由基座方案为65.9%；默认部署脚本采用全模态adapter。
+<img src="docs/charts/mmau-routing.svg" width="760" alt="MMAU决策adapter、基座及公开对照分别列出">
 
-## 量化与运行时验证
+我方两种形态均为官方协议实测，对照列引用其公开发布数；MVBench对照范围单独标注。
+[评测说明与回执](https://huggingface.co/Chinzhu/Lite-OmniJev/blob/main/EVALUATIONS.md)。
 
-<div align="center">
-  <img src="docs/charts/quant-matrix.svg" width="700">
-</div>
+## 格式选择
 
-llama.cpp 三档在20个公开文本案例上与参考选答一致；截图、音频、视频运行探针全部成功。
+<img src="docs/charts/quant-matrix.svg" width="760" alt="量化文件体积与实际验证矩阵">
 
-| 档位 | 文本(20 案例选答一致) | 截图 | 音频 | 视频 |
-|---|---|---|---|---|
-| F16(15.05 GB) | **20/20** | ✓ | ✓ | ✓ |
-| Q8_0(8.03 GB) | **20/20** | ✓ | ✓ | ✓ |
-| Q4_K_M(**5.34 GB 文件**) | **20/20** | ✓ | ✓ | ✓ |
+| 格式 | 下载体积 | 用途 |
+|---|---:|---|
+| FP32五分片 | 31.98GB | Linux GPU API与Playground |
+| 决策LoRA | 139.60MB | 配合固定基座做PEFT集成 |
+| GGUF F16 / Q8_0 / Q4_K_M | 15.05 / 8.03 / 5.34GB | llama.cpp，另配0.99GB mmproj |
+| MLX 4bit | 6.60GB | Apple Silicon生态转换工件 |
 
-截图输入需按文档化预处理(RGBA→RGB,长边 ≤1344;参数随 `gateway/receipts/` 分发);
-另提供MLX 4bit转换权重（6.60GB）。
-[实测边界与运行参数](docs/gguf-multimodal.md)。
+GB为十进制文件体积，显存与运行内存另计。
+GGUF三档在20个公开文本案例上与参考选答20/20一致；截图、音频、视频生成探针全部成功。
+截图使用RGB、长边≤1344；命令与固定运行时见[GGUF使用说明](docs/gguf-multimodal.md)。
 
-## 接入
+## 开始使用
 
-**三种问题模式**(可任意组合,单次请求最多 32 题):
-
-```jsonc
-// Choice:2–20 个选项,字母由你定义
-"q1": {"type": "choice", "instructions": "该订单今天最可能的状态?",
-       "criteria": {"A": "已签收", "B": "派送中", "C": "滞留在站点"}}
-// Score:2–10 级,每级给描述
-"q2": {"type": "score", "instructions": "工单紧急程度打分",
-       "criteria": ["1 很低", "2 偏低", "3 一般", "4 偏高", "5 很高"]}
-// Noul:是/否判断
-"q3": {"type": "noul", "instructions": "现有信息是否足以判定已签收?"}
-```
-
-**五种模态**(`media` 数组随请求携带,引用受信媒体根内的文件;视频默认抽 16 帧,可指定 8):
-
-```jsonc
-"media": [{"type": "image", "uri": "screenshot.png", "sha256": "<文件的 sha256>"}]   // 图像/截图
-"media": [{"type": "audio", "uri": "meeting.wav",   "sha256": "<sha256>"}]          // 音频(≤30s)
-"media": [{"type": "video", "uri": "clip.mp4",      "sha256": "<sha256>"}], "video_frames": 16  // 视频(≤60s)
-// 不传 media 即纯文本决策
-```
-
-**一次调用**:
+按[HF快速开始](https://huggingface.co/Chinzhu/Lite-OmniJev#快速开始)下载完整包、校验SHA256、
+安装随包runtime和冻结服务依赖，启动模型后端与网关；打开本地工作台`http://127.0.0.1:8000/`。
+HF包含运行必需代码、tokenizer、processor、官方模板和启动脚本。
 
 ```bash
-curl -s http://127.0.0.1:8000/v1/systemone -H 'Content-Type: application/json' -d '{
-  "state": "用户订单在配送第 3 天,物流显示已到末端站点。",
+curl http://127.0.0.1:8000/v1/systemone \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "state": "用户反馈：新版本导出报告时偶尔卡住，但刷新后可以成功。其他功能使用正常。",
   "questions": {
-    "q1": {"type": "choice", "instructions": "该订单今天最可能的状态?",
-           "criteria": {"A": "已签收", "B": "派送中", "C": "滞留"}},
-    "q2": {"type": "noul",   "instructions": "现有信息是否足以判定?"}
+    "decision": {
+      "type": "choice",
+      "instructions": "根据用户反馈，选择最合适的处理优先级。",
+      "criteria": {
+        "high": "立即处理，关键功能完全不可用",
+        "medium": "尽快修复，功能受影响但有替代方式",
+        "low": "排期改进，不影响主要功能"
+      }
+    }
   }
 }'
 ```
 
-返回每题的概率分布、`choice`/`score`/`noul` 判定与置信度。Score 返回从 0 开始的期望等级。**四条部署路径**(详见 HF
-模型卡"快速开始"):transformers + LoRA adapter(小体积)/ vLLM + 分片权重(推荐 serving,
-脚本随包)/ llama.cpp GGUF(Mac/端侧,Q4_K_M 5.34 GB)/ MLX 4bit。网关启动脚本与
-100 案例逐位 parity 回执在 HF 仓库 `gateway/`。
+同题实际返回节选：
 
-## 工程可信度
+```json
+{
+  "model": "767be09b0919235d",
+  "answers": {
+    "decision": {
+      "type": "choice",
+      "choice": "medium",
+      "probabilities": {
+        "high": 0.0005386023780616775,
+        "medium": 0.9980832657757281,
+        "low": 0.001378131846210102
+      },
+      "confidence": 0.9971248986635922,
+      "calibration": "unfitted",
+      "confidence_semantics": "normalized_peak"
+    }
+  }
+}
+```
 
-已测发布配方的数值证据:vLLM 0.26 serving 两遍**精确可重复**,对 float32 HF 参考最大
-偏差 **5.75e-6**(预算 1e-3);网关与该报告**逐位一致**;真实浏览器(Chromium → 网关 →
-实际权重)验证通过。回执随 HF 仓库分发,可独立复核。
+Choice接受2–20个选项；Score接受2–10个有描述的等级，返回从0开始的期望等级；
+Noul返回yes概率。媒体使用服务端受信文件URI和SHA256引用；部署配方使用原始答案概率。
 
-## 下载与接入
-
-GitHub 用于展示 README、演示与图表。模型、量化文件、运行必需代码、依赖锁和部署说明统一在
-[HF 模型仓库](https://huggingface.co/Chinzhu/Lite-OmniJev)。
-按照模型卡“快速开始”安装随包 runtime wheel 并启动网关，然后打开 `http://127.0.0.1:8000/`。
-媒体使用服务器受信路径与 SHA256 引用。当前发布配方为原始概率，参数与部署配方见 HF 模型卡。
+<img src="docs/charts/parity-tile.svg" width="760" alt="来源绑定、数值一致性及真实安装包验证">
 
 ## 许可
 
-项目新增材料与权重以 **CC-BY-NC-SA-4.0** 提供（非商业）；基座和第三方依赖保留各自许可。
-
+新增代码、材料与权重按[CC-BY-NC-SA-4.0](LICENSE)提供；基座及第三方组件保留各自许可，归属与许可文本见[NOTICE.md](NOTICE.md)。
+GitHub承载产品展示，完整模型、部署材料与验证回执统一在[HF模型仓库](https://huggingface.co/Chinzhu/Lite-OmniJev)。

@@ -1,1 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="260" viewBox="0 0 760 260" font-family="-apple-system,'PingFang SC',sans-serif"><rect width="760" height="260" fill="#1a1a19"/><text x="28" y="40" font-size="19" font-weight="700" fill="#f0efec">MMAU test-mini:路由形态超过最强可比对照(官方协议实测 vs 公开发布数)</text><text x="28" y="63" font-size="12.5" fill="#c3c2b7">音频·文本路由基座形态为推荐 serving 形态;OneJev 系无音频通道,该榜结构性不可评,不列假对照。</text><text x="28" y="108" font-size="13.5" fill="#f0efec">Lite-OmniJev 路由形态(基座,E4B)</text><rect x="28" y="116" width="639" height="22" rx="5" fill="#3987e5" stroke="#3987e5" stroke-width="2.5"/><text x="679" y="132" font-size="14.5" font-weight="700" fill="#f0efec">65.9%<tspan font-size="11.5" fill="#c3c2b7"></tspan></text><text x="28" y="172" font-size="13.5" fill="#f0efec">Jev-Omni-12B(教师,公开发布数)</text><rect x="28" y="180" width="625" height="22" rx="5" fill="#d95926"/><text x="665" y="196" font-size="14.5" font-weight="700" fill="#f0efec">63.1%<tspan font-size="11.5" fill="#c3c2b7"></tspan></text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="440" viewBox="0 0 880 440" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Noto Sans CJK SC,sans-serif"><title>MMAU test-mini：最终适配器与基座</title>
+<rect x="0" y="0" width="880" height="440" rx="0" fill="#141923"/>
+<text x="32" y="44" fill="#f4f7fc" font-size="24" font-weight="700">MMAU test-mini：最终适配器与基座</text>
+<text x="32" y="72" fill="#b1bfd3" font-size="14" font-weight="400">1,000 题 · 我方实测与公开发布数分开标注</text>
+<text x="32" y="137" fill="#f4f7fc" font-size="15" font-weight="400">D3P-600 · 我方实测</text>
+<rect x="304" y="119" width="400" height="24" rx="5" fill="#202938"/>
+<rect x="304" y="119" width="242.4" height="24" rx="5" fill="#79acff"/>
+<text x="724" y="137" fill="#f4f7fc" font-size="19" font-weight="700">60.6%</text>
+<text x="32" y="215" fill="#f4f7fc" font-size="15" font-weight="400">Gemma 4 E4B · 基座实测</text>
+<rect x="304" y="197" width="400" height="24" rx="5" fill="#202938"/>
+<rect x="304" y="197" width="263.6" height="24" rx="5" fill="#64d4b3"/>
+<text x="724" y="215" fill="#f4f7fc" font-size="19" font-weight="700">65.9%</text>
+<text x="32" y="293" fill="#f4f7fc" font-size="15" font-weight="400">Jev-Omni-12B · 公开发布数</text>
+<rect x="304" y="275" width="400" height="24" rx="5" fill="#202938"/>
+<rect x="304" y="275" width="252.4" height="24" rx="5" fill="#efb06a"/>
+<text x="724" y="293" fill="#f4f7fc" font-size="19" font-weight="700">63.1%</text>
+<text x="32" y="385" fill="#b1bfd3" font-size="14" font-weight="400">默认服务使用统一多模态适配器；此图不表示采用基座路由。</text>
+<text x="32" y="412" fill="#b1bfd3" font-size="12" font-weight="400">实测：s4-public-bench-mmau-{base,d3p600}-001.json；公开对照：官方已发布数。</text>
+</svg>
