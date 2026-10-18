@@ -19,9 +19,11 @@ Choice(2–20 项)/ Score(2–10 级)/ yes-no,文本·图像·截图·音频·�
 
 | 文本 · 8 题 | 图像 |
 |---|---|
-| <video src="docs/demo/demo-text.webm" width="400" controls muted></video> | <video src="docs/demo/demo-image.webm" width="400" controls muted></video> |
+| <img src="docs/demo/demo-text.gif" width="400"> | <img src="docs/demo/demo-image.gif" width="400"> |
 | **音频** | **视频 16 帧** |
-| <video src="docs/demo/demo-audio.webm" width="400" controls muted></video> | <video src="docs/demo/demo-video.webm" width="400" controls muted></video> |
+| <img src="docs/demo/demo-audio.gif" width="400"> | <img src="docs/demo/demo-video.gif" width="400"> |
+
+*GIF 为实况录屏压缩版;完整 webm 见 [docs/demo/](docs/demo/),原始分辨率版本随 HF 仓库分发。*
 
 **同题实测(文本 8 题)**:Lite-OmniJev 网关端到端 **0.13 s**,通用大模型自回归 **2.5 s**——
 19 倍差距,而且右侧给一段文字,左侧给每一项的概率。
