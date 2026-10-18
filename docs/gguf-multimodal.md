@@ -1,7 +1,11 @@
 # GGUF quick start
 
 Use llama.cpp with Gemma4 multimodal support (`llama-mtmd-cli`), a GGUF model and the bundled mmproj.
-The tested quantization formats areF16/Q8_0/Q4_K_M.
+Tested runtime: llama.cpp `0.7.0-dev`, commit `9d1878a4354e743529fbe09e7350a957f5e39e9a`.
+The tested quantization formats are F16/Q8_0/Q4_K_M.
+[Tested llama.cpp source](https://github.com/ggml-org/llama.cpp/tree/9d1878a4354e743529fbe09e7350a957f5e39e9a).
+
+Run the following commands from the downloaded model directory.
 
 ```bash
 MODEL=gguf/lite-omnijev-e4b-d3p600-q4_k_m.gguf
