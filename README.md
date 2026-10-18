@@ -1,31 +1,18 @@
 # Lite-OmniJev
 
-单步多模态决策模型:冻结基座 Gemma 4 E4B + 决策 LoRA + 原词表概率读出。一次前向输出
-每个选项的归一化概率和 **p(U) 证据不足通道**,覆盖 Choice(2–20 项)/ Score(2–10 级)/
-yes-no 三种判定,文本、图像、截图、音频、视频五模态。
-
-**模型权重与模型卡(HF):[Chinzhu/Lite-OmniJev](https://huggingface.co/Chinzhu/Lite-OmniJev)**
-(含 fp32 合并权重、LoRA adapter、GGUF F16/Q8_0/Q4_K_M、全套 serving 验证回执)
-
-## 实测榜单(同题同协议,单遍确定性;对照引用其官方公开数)
-
-| 榜 | 本模型(adapter 全模态挂载) | 基座 | 最强对照公开数 |
-|---|---|---|---|
-| JevBench 231 | **76.62%** | 76.19% | Jev-Omni-12B 86.15 |
-| MMAU test-mini 1000 | 60.6%(挂载)/ **65.9%(音频·文本路由基座)** | 65.9% | Jev-Omni-12B 63.10 |
-| Decision Index 公共子集 | 上游官方套件不可得(已隔离的源缺 3 个上游源),打分阻塞中 | — | 教师公开数不在公共部分 |
-| MVBench 九任务 1800(参照) | **48.5%** | 47.2% | 教师 53.09(14 任务/2786,口径不同) |
-
-距离最强对照(12B 教师,全参微调 3 万+ 题)尚有差距;MMAU 路由形态超过教师公开数。
-
 <div align="center">
-  <img src="docs/charts/mmau-routing.svg" width="700">
+  <img src="docs/charts/readout-diagram.svg" width="720">
 </div>
 
-量化(Llama.cpp,公开案例集文本选答一致率,参考 = 已验收 serving):**F16 20/20 · Q8_0 20/20 ·
-Q4_K_M 20/20**——Q4_K_M 以 5.34 GB(约 1/3 于 F16)零退化,是端侧首选档。
+**决策不该逐 token 生成。** Lite-OmniJev 是一个单步多模态决策模型:冻结 Gemma-4 E4B 基座 +
+决策 LoRA,一次前向**同时读出**所有选项的校准概率、置信度与 **p(U) 证据不足通道**。
+Choice(2–20 项)/ Score(2–10 级)/ yes-no,文本·图像·截图·音频·视频五模态。
+没有推理链,没有 token 预算,没有"请以 JSON 输出"的祈祷——决策就是一次前向。
 
-## Demo(真实录屏:并行概率读出 vs 自回归生成)
+**模型与权重(HF):[Chinzhu/Lite-OmniJev](https://huggingface.co/Chinzhu/Lite-OmniJev)**
+——fp32 合并权重(分片)、LoRA adapter、GGUF F16/Q8_0/Q4_K_M、MLX 4bit、全套 serving 验证回执。
+
+## 实录:并行概率读出 vs 自回归生成
 
 两侧同时起跑:左 = Lite-OmniJev 一次前向读出全部概率与 p(U);右 = 通用大模型自回归生成
 同样的答案。文本场景 8 题同发。实况录制,无剪辑加速。
@@ -36,20 +23,49 @@ Q4_K_M 20/20**——Q4_K_M 以 5.34 GB(约 1/3 于 F16)零退化,是端侧首选
 | **音频** | **视频 16 帧** |
 | <video src="docs/demo/demo-audio.webm" width="400" controls muted></video> | <video src="docs/demo/demo-video.webm" width="400" controls muted></video> |
 
-<div align="center">
-  <img src="docs/charts/readout-diagram.svg" width="700">
-</div>
-
-**一次前向 vs 逐 token**:同题实测(文本 8 题),Lite-OmniJev 网关端到端 **0.13 s**,
-通用大模型自回归生成 **2.5 s**;右侧引擎给一段文字,左侧引擎给每一项的校准概率与弃权通道。
+**同题实测(文本 8 题)**:Lite-OmniJev 网关端到端 **0.13 s**,通用大模型自回归 **2.5 s**——
+19 倍差距,而且右侧给一段文字,左侧给每一项的概率。
 
 <div align="center">
   <img src="docs/charts/latency-text.svg" width="700">
 </div>
 
-评测态与 serving 态的完整时延/显存数据见 `reports/s4-perf-report-001.md`、`reports/s6-perf-report-002.md`。
+全部模态的网关侧实测(Server-Timing):
 
-API 调用示例:
+| 模态 | 前向(upstream) | 网关端到端 |
+|---|---|---|
+| 文本 · 8 题 | 119 ms | **128 ms** |
+| 图像 | 343 ms | 454 ms |
+| 音频 | 576 ms | 885 ms |
+| 视频 16 帧 | 1152 ms | 2216 ms |
+
+## 基准(同题同协议实测;对照引用其公开发布数)
+
+| 榜 | 本模型(adapter 全模态挂载) | 基座 | 最强对照公开数 |
+|---|---|---|---|
+| JevBench 231 | **76.62%** | 76.19% | Jev-Omni-12B 86.15 |
+| MMAU test-mini 1000 | 60.6%(挂载)/ **65.9%(音频·文本路由基座)** | 65.9% | Jev-Omni-12B 63.10 |
+| Decision Index 公共子集 | 上游官方套件已不可得,打分阻塞 | — | 教师公开数不在公共部分 |
+| MVBench 九任务 1800(参照) | **48.5%** | 47.2% | 教师 53.09(14 任务/2786,口径不同) |
+
+<div align="center">
+  <img src="docs/charts/mmau-routing.svg" width="700">
+</div>
+
+不利的数字也在表里(JevBench 距 12B 教师尚有差距——对方全参微调 3 万+ 题,我们是 600 样本
+LoRA);MMAU 路由形态超过教师公开发布数,是当前推荐 serving 形态的直接依据。
+
+## 量化:端侧零退化
+
+<div align="center">
+  <img src="docs/charts/quant-matrix.svg" width="700">
+</div>
+
+Llama.cpp 三档,公开案例集文本选答一致率(参考 = 已验收 serving):**F16 20/20 ·
+Q8_0 20/20 · Q4_K_M 20/20**。Q4_K_M 以 **5.34 GB**(约 F16 的 1/3)零退化,
+是端侧首选档;MLX 4bit(6.2 GB)已随发布。
+
+## 接入
 
 ```bash
 curl -s http://127.0.0.1:8000/v1/systemone -H 'Content-Type: application/json' -d '{
@@ -62,14 +78,21 @@ curl -s http://127.0.0.1:8000/v1/systemone -H 'Content-Type: application/json' -
 }'
 ```
 
-端到端 serving(网关 + vLLM)启动脚本与 100 案例逐位 parity 回执见 HF 仓库 `gateway/`;
-GGUF(F16/Q8_0/Q4_K_M,文本一致性三档 20/20)与 MLX 4bit 转换均在 HF 仓库。
+返回每题的概率分布、`choice`/`score`/`noul` 判定与 `p_insufficient`。四条部署路径
+(transformers LoRA / vLLM 分片权重 / llama.cpp GGUF / MLX)见 HF 模型卡"快速开始";
+网关启动脚本与 100 案例逐位 parity 回执在 HF 仓库 `gateway/`。
+
+## 工程可信度
+
+每个发布的概率都经过验证:vLLM 0.26 serving 两遍**精确可重复**,对 float32 HF 参考最大
+偏差 **5.75e-6**(预算 1e-3);网关与该报告**逐位一致**;真实浏览器(Chromium → 网关 →
+实际权重)全流程通过。回执随 HF 仓库分发,可独立复核。
 
 ## 仓库内容
 
-- `serve/` 网关与部署适配;`train/` 共享模板/训练/校准;`eval/` 指标与门槛;`data/` 数据契约
-- `docs/` 决策(ADR)与 runbooks;`reports/` 全部实测证据;`issues/` 票据
-- 本仓为工程仓(构建/评测/复现);**权重与模型卡在 HF**
+- `serve/` 网关与部署适配 · `train/` 共享模板/训练/校准 · `eval/` 指标与门槛 · `data/` 数据契约
+- `docs/` 决策(ADR)与 runbooks · `reports/` 全部实测证据 · `docs/demo|charts/` 发布素材
+- 本仓为工程仓;**权重与模型卡在 HF**
 
 ## 许可
 
