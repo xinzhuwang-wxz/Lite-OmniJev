@@ -1,9 +1,0 @@
-{
-  "outcome": "verified",
-  "exit_code": 0,
-  "verified_references": 4000,
-  "full_gold_gate": "not_validated",
-  "manifest_sha256": "4f3318d84df49d556f1f4193f9e4d42b30385720f684d1eb179b410c6b1cea1a",
-  "elapsed_seconds": 2.174,
-  "runner_sha256": "0c64837c31c8d4c6bcf51c401da2be120682cbfa7f3e53099407f9c27e813b94"
-}

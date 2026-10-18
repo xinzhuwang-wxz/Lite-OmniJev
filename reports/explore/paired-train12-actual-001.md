@@ -1,5 +1,0 @@
-# Actual six-pair TRAIN12 before/after
-
-Both actual GPU read-only arms completed exit0, before34.74seconds and after33.79seconds. The source data comprises six fixed exact-text/program opposite-gold pairs, twelve unique TRAIN videos. Before f2db:7/12, CE.710300, gold margin.0625, both-correct2/6, correctly ordered Pyes2/6. After matched-course9dea6c:9/12, CE.591083 (16.78%lower), margin.510417, both-correct3/6, Pyes ordering4/6. Same-prediction pairs remain3/6. After verified all12complete prepared inputs, token mappings, assets and code bindings against before. Saved receipt and records SHA are rechecked by this CPU analysis.
-
-This supports partial visual-pair learnability and incomplete one-pass TRAIN fit. It does not establish convergence or generalization: the actual fixed DEV50 result was32against parent33, with worse Brier/ECE, so9dea6c is not promoted. Identical predictions within a pair do not prove media was ignored. Raw TRAIN rows/logits remain outside Git; only aggregate receipts/hashes are exported. No additional GPU work or training occurred in this analysis. Cost null.

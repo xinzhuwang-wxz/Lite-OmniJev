@@ -1,8 +1,0 @@
-{
-  "teacher_mmau_delta_abs": 0.01100000000000001,
-  "repeat_identical": 1,
-  "hf_vllm_max_probability_delta": 3.229375648383659e-05,
-  "teacher_mvbench_baseline_verified": 1,
-  "baseline_table_complete": 1,
-  "prefix_cache_baseline_verified": 1
-}

@@ -1,7 +1,0 @@
-# 三项固定作品评测准入应用
-
-root复核API-Bank作者发布的evaluation子项目Work范围、MuSR发布方明确数据CC-BY-4.0及Amazon ESCI数据项目Apache-2.0/NOTICE，实际追加catalog3/32/37到独立004。21项准入、23项未闭合，ready=false；仅本地离线evaluation/rebuild、不训练/再分发/外部API执行。API-Bank是明确范围推论而非独立第三方权利保证；MuSR数据卡授权不代表未来CSV与固定JSON字节相同。原003的18项及原002的16项逐项保持。
-
-实际324个固定输入SHA/长度、8份publisher固定metadata bytes/SHA与Pydantic清单通过，exit0。root独立缓存并核对8份metadata，未读benchmark行或执行第三方代码。输出manifest SHA6373c2f0f72f88c129b197c9f2d1cf4e4442274a815e8d3b5732b08ab232f2e8，机器证据reports/decision-index-evaluation-admission-004.json，runner与Git helper SHA9d9d4b81…一致。
-
-此项不代表Decision Index全量rebuild/quality已完成；剩余23项仍明确缺口，未删任务或降低阶段门。CPU准备与polarity GPU短实验同时推进。

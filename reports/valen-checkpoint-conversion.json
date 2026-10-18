@@ -1,6 +1,0 @@
-{
-  "schema_version": 1,
-  "status": "blocked",
-  "exit_code": 1,
-  "blocker": "isolation_unavailable"
-}

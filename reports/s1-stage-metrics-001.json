@@ -1,9 +1,0 @@
-{
-  "smoke_steps": 300.0,
-  "smoke_accuracy": 0.998,
-  "loss_decreasing": 1.0,
-  "text_vs_onejev_delta": 0.030000000000000027,
-  "text_vs_base_delta": 0.05999999999999994,
-  "text_ece": 0.003974735586695787,
-  "30k_vs_10k_delta": 0.0020000000000000018
-}

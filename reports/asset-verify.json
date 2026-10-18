@@ -1,8 +1,0 @@
-{
-  "command": "verify",
-  "status": "metadata_verified",
-  "exit_code": 0,
-  "files_verified": 7,
-  "bytes_verified": 32226275,
-  "weights_ready": false
-}

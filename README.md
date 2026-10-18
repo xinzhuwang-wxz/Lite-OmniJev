@@ -13,6 +13,12 @@ Choice(2–20 项)/ Score(2–10 级)/ yes-no,文本·图像·截图·音频·�
 **模型与权重(HF):[Chinzhu/Lite-OmniJev](https://huggingface.co/Chinzhu/Lite-OmniJev)**
 ——fp32 合并权重(分片)、LoRA adapter、GGUF F16/Q8_0/Q4_K_M、MLX 4bit、全套 serving 验证回执。
 
+## 工作台
+
+![真实模型工作台](docs/demo/playground.png)
+
+三类判断、受信媒体引用、原始概率、校准状态和可重放 cURL。启动方式见下方部署配方。
+
 ## 实录:并行概率读出 vs 自回归生成
 
 两侧同时起跑:左 = Lite-OmniJev 每题一次前向读出答案概率;右 = 通用大模型自回归生成
@@ -73,8 +79,8 @@ llama.cpp 三档在 20 个公开文本案例上与参考选答一致。截图/�
 | Q4_K_M(**5.34 GB 文件**) | **20/20** | ✓ | ✓ | ✓ |
 
 截图输入需按文档化预处理(RGBA→RGB,长边 ≤1344;参数随 `gateway/receipts/` 分发);
-MLX 4bit(6.2 GB)已完成转换,Apple Silicon 运行测试仍待完成。
-[实测边界与运行参数](docs/runbooks/gguf-multimodal.md)。E2B 蒸馏包与真实设备验收尚未完成。
+MLX 4bit(6.60 GB)已完成转换,Apple Silicon 运行测试仍待完成。
+[实测边界与运行参数](docs/gguf-multimodal.md)。E2B 蒸馏包与真实设备验收尚未完成。
 
 ## 接入
 
@@ -124,19 +130,14 @@ curl -s http://127.0.0.1:8000/v1/systemone -H 'Content-Type: application/json' -
 偏差 **5.75e-6**(预算 1e-3);网关与该报告**逐位一致**;真实浏览器(Chromium → 网关 →
 实际权重)契约验证通过;完整产品验收仍按终局票逐项收口。回执随 HF 仓库分发,可独立复核。
 
-## 仓库内容
+## 下载与接入
 
-- `serve/` 网关与部署适配 · `train/` 共享模板/训练/校准 · `eval/` 指标与门槛 · `data/` 数据契约
-- `docs/` 决策(ADR)与 runbooks · `reports/` 全部实测证据 · `docs/demo|charts/` 发布素材
-- 本仓为工程仓;**权重与模型卡在 HF**
+GitHub 用于展示 README、演示与图表。模型、量化文件、运行必需代码、依赖锁和部署说明统一在
+[HF 模型仓库](https://huggingface.co/Chinzhu/Lite-OmniJev)。
+按照模型卡“快速开始”安装随包 runtime wheel 并启动网关，然后打开 `http://127.0.0.1:8000/`。
+媒体使用服务器受信路径与 SHA256 引用。当前发布配方为原始概率，完整端侧/生产验收边界见 HF 模型卡。
 
 ## 许可
 
-代码与模型权重均以 **CC-BY-NC-SA-4.0** 提供(非商业);基座 Gemma 4 适用 Google 原始许可。
-
-## 本地使用与验收边界
-
-按 [部署配方](serve/deploy/README.md)启动后打开 `http://127.0.0.1:8000/` 使用 Playground。
-媒体使用服务端受信路径与 SHA256 引用;当前不提供面向公网的媒体上传或生产鉴权。
-发布状态与尚未验收项见 [终局验收](.scratch/delivery/issues/01-final-acceptance.md)。
-Decision Index 因上游数据不可得尚未完成,本项目不宣称 SOTA。
+项目新增材料与权重以 **CC-BY-NC-SA-4.0** 提供（非商业）；基座和第三方依赖保留各自许可。
+Decision Index 因上游数据不可得尚未完成，本项目不宣称 SOTA。

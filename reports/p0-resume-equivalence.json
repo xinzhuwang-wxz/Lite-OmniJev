@@ -1,8 +1,0 @@
-{
-  "steps": 10,
-  "losses_identical": true,
-  "adapter_sha256_identical": true,
-  "base_sha256": "97db02cd2bb3a4990fb68ceb3c3e863b9a2cb72669406926745a9e4c052b1b42",
-  "resume_sha256": "97db02cd2bb3a4990fb68ceb3c3e863b9a2cb72669406926745a9e4c052b1b42",
-  "status": "passed"
-}

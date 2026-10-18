@@ -1,8 +1,0 @@
-{
-  "scope": "Linux namespace capability probe only",
-  "bubblewrap_available": false,
-  "unshare_available": true,
-  "user_network_namespace_probe_exit_code": 1,
-  "permission_boundary_verified": false,
-  "next": "Determine actual supported process/identity isolation on rented host; do not silently claim namespace security or introduce external account prerequisite."
-}

@@ -1,6 +1,0 @@
-# HF 上传清单(开卡交付后执行)
-1. 权重:adapter_model.safetensors + adapter_config.json(来自最终封存候选)
-2. 本 README.md(数字以最终封存汇总终版核对)
-3. LICENSE(Apache-2.0 继承声明)+ 数据许可逐条(CLEVRER CC-BY 4.0 / GUI-Odyssey 商用 / VQA / Clotho-AQA / LibriSpeech)
-4. 上传需用户 HF token(写入 https://huggingface.co/settings/tokens,不给不上传)
-5. 上传后:HF README 渲染检查 + 试下载加载验证(开卡窗口内做)

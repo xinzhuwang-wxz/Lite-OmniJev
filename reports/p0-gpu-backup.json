@@ -1,7 +1,0 @@
-{
-  "backup_root": "/Users/bamboo/Githubs/Lite-OmniJev/artifacts/training/p0-gpu-backup",
-  "adapter_sha256": "97db02cd2bb3a4990fb68ceb3c3e863b9a2cb72669406926745a9e4c052b1b42",
-  "checkpoint_step": 10,
-  "local_backup_verified": true,
-  "scope": "Final adapter plus completed-step checkpoint and program data; no full base copy"
-}

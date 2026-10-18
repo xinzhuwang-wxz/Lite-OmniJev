@@ -1,9 +1,0 @@
-{
-  "scope": "no-GPU preparation; NOT training",
-  "training_steps": 0,
-  "provider": "swanlab",
-  "project": "Lite-OmniJev",
-  "workspace": "maxen",
-  "status": "passed",
-  "url": "https://swanlab.cn/@maxen/Lite-OmniJev/runs/6hi6om41"
-}

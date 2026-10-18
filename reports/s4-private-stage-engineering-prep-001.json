@@ -1,9 +1,0 @@
-{
-  "scope": "bound local model assets and publicdev engineering spec only",
-  "model_files": 7,
-  "adapter_files": 2,
-  "spec_sha256": "b0cecb6aabf1ba7426467c76c07e0cc368a8da2ee4594d6841cb09d482c2b696",
-  "data_sha256": "1d2d8e151a3bc282099764a5ce7d04e8190fd212684ca010582511c5b25cfde1",
-  "elapsed_seconds": 11.125,
-  "exit_code": 0
-}
