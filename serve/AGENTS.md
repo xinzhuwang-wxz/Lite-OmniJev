@@ -8,3 +8,5 @@
 - Gemma4仅设全局FP32可使音频塔混合dtype → native AutoModel读取子配置仍为BF16 → 精度诊断使用官方hf-config-path副本同步四处dtype，记录diff/hash，保留原checkpoint配置和权重。
 - vLLM0.26原生LoRA shrink只接受FP16/BF16 → FP32参考不能直接挂LoRA → 独立合并部署副本保留基座/adapter哈希与数值对照；HF导出会省共享k_norm别名，按原权重补齐，不能改引擎或换阈值。
 - 服务启动缺ninja但环境已安装 → 仅用绝对vllm入口未设置编译子进程PATH → 显式将服务venv/bin加入PATH，不重复安装依赖。
+- 切换模型后可能复用旧serving-view → 仅看config存在未绑定来源 → 派生view/config记录并核验来源与文件身份，不匹配用新目录；禁止递归清理运维指定目录。
+- 产品U已按ADR0024改为内部量 → 旧数值脚本仍需该字段 → 默认隐藏，隔离诊断显式LITE_INTERNAL_READOUT_DIAGNOSTICS=1；原始读出/归一化不变。

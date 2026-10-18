@@ -54,3 +54,24 @@ upstream 之差主要为调度/协议/串行 3 题。
 
 - bf16 serving 质量/时延(当前 fp32 为唯一 parity 过配方;bf16 已证不过 <1e-3 门)
 - 生产并发/压测、同机无隧道端到端、Production 长度配置
+
+## 2026-10-18 发布收口补充：量化与运行时
+
+| 运行形态 | 工件/文件大小 | 已实测行为 | 仍缺的指标 |
+|---|---|---|---|
+| vLLM FP32 merged-flat，5分片 | 31,984,629,672B tensor payload；最终复验GPU驻留38,275MiB | 修复分片实际加载；Playground三类判断/四类媒体引用/cURL重放/失败恢复 | 生产并发/p95；本轮数字不是SLO |
+| llama.cpp F16 | 15.05GB文件 | 文本20/20与参考选答一致；截图/音视频生成冒烟exit0 | 完整概率/ECE/质量回归、真机内存/时延 |
+| llama.cpp Q8_0 | 8.03GB文件 | 文本20/20；截图/音视频生成冒烟exit0 | 同上 |
+| llama.cpp Q4_K_M | 5.34GB文件 | 文本20/20；截图/音视频生成冒烟exit0 | 同上；文件大小不能写成峰值RAM |
+| MLX 4bit | 约6.2GB文件 | 已完成转换 | Apple Silicon加载/输出/概率/内存/时延未测 |
+| E2B端侧 | 仅早期蒸馏小试 | 现有报告明确stage_gate=false | 发布级模型/量化、各模态门、真实设备 |
+
+矩阵原件：`reports/s6-gguf-modality-matrix-001.jsonl`（带终态文本标志的原始JSONL日志，保留原样）。
+其中输出是生成式分析文本，不能拿exit0称为单token决策协议或全模态概率一致性通过。
+F16音频exit0由日志末尾终态补记；未记录精确CPU冷加载分布，不编造p50/p95。
+截图仍需RGBA→RGB及长边≤1344；该限制已见runbook。
+
+最终浏览器：`reports/playground-final-behavior-001.json`、`reports/playground-final-media-001.json`；
+分片来源/哈希：`reports/s6-flat-remap-recovery-001.json`；停止服务及显存0证明：
+`reports/gpu-release-final-001.json`。最终部署增加目录来源绑定，CPU验证派生配置与本轮GPU
+配置相等（`reports/serving-view-bound-final-001.json`），无需为文件准备逻辑重开GPU。

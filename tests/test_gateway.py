@@ -69,9 +69,15 @@ def response_for(request: httpx.Request, bad: str | None = None) -> httpx.Respon
 
 
 @asynccontextmanager
-async def client_for(bad: str | None = None) -> AsyncIterator[httpx.AsyncClient]:
+async def client_for(
+    bad: str | None = None, *, diagnostics: bool = False
+) -> AsyncIterator[httpx.AsyncClient]:
     application = create_app(
-        Settings(upstream_url="http://fixture", raw_logprobs_confirmed=True),
+        Settings(
+            upstream_url="http://fixture",
+            raw_logprobs_confirmed=True,
+            internal_readout_diagnostics=diagnostics,
+        ),
         tokenizer=FixtureTokenizer(),
         transport=httpx.MockTransport(lambda request: response_for(request, bad)),
     )
@@ -105,7 +111,8 @@ async def test_three_primitives_map_complete_token_probabilities() -> None:
         assert body["answers"]["shipped"]["choice"] == "sent"
         for answer in body["answers"].values():
             assert sum(answer["probabilities"].values()) == pytest.approx(1)
-            assert 0 < answer["p_insufficient"] < 1
+            assert "p_insufficient" not in answer
+            assert answer["confidence_semantics"] == "normalized_peak"
             assert answer["calibration"] == "unfitted"
         assert 0 < body["answers"]["score"]["score"] < 1
         assert body["answers"]["yesno"]["noul"] > 0.5
@@ -156,3 +163,20 @@ async def test_whitespace_equivalent_options_return_422() -> None:
             },
         )
         assert response.status_code == 422
+
+
+async def test_internal_readout_requires_operator_opt_in() -> None:
+    async with client_for(diagnostics=True) as client:
+        body = (await client.post("/v1/systemone", json=REQUEST)).json()
+    for answer in body["answers"].values():
+        assert 0 < answer["p_insufficient"] < 1
+        assert answer["confidence_semantics"] == "normalized_peak_non_U"
+
+
+async def test_playground_is_available_without_a_model() -> None:
+    async with client_for() as client:
+        response = await client.get("/")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    assert "决策工作台" in response.text
+    assert "https://cdn" not in response.text

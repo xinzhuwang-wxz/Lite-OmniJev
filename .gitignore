@@ -18,3 +18,7 @@ models/
 node_modules/
 playwright-report/
 test-results/
+
+# Generated orchestration and browser inspection state
+.omx/
+.playwright-mcp/

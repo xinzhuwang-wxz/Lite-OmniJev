@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "same_normalized_config_as_gpu_test": true,
+  "linked_weight_files": 5,
+  "source_bound": true,
+  "gpu_restarted": false
+}

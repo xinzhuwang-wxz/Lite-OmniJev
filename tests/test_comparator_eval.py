@@ -118,9 +118,7 @@ def test_scored_run_requires_smoke_or_limit(tmp_path: Path) -> None:
         main(cli_args(tmp_path, data, "out", with_limit=False))
 
 
-def test_end_to_end_report_and_records(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_end_to_end_report_and_records(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     data = write_contract(tmp_path)
     install_fake_family(monkeypatch, FakeAdapter())
     report_path = tmp_path / "out-report.json"

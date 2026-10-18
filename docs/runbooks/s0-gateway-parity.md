@@ -47,3 +47,8 @@ PYTHONPATH=/path/to/Lite-OmniJev python -m scripts.s0_gateway_parity synthetic-c
 The synthetic control uses `httpx.MockTransport` and three synthetic text cases to verify health checks, repeatability comparison, strict probability parsing, report shape, source hashes, and no-overwrite behavior. It is not S0 acceptance.
 
 `compare-gateway` only accepts an HTTP loopback origin such as `http://127.0.0.1:8000` or `http://localhost:8000`; do not point it at external hosts.
+
+2026-10-18产品口径更新（ADR0024）：默认产品响应不再含`p_insufficient`。
+本runbook的历史内部数值对照需要在仅绑定127.0.0.1的诊断网关显式设置
+`LITE_INTERNAL_READOUT_DIAGNOSTICS=1`；验证结束恢复默认配置。
+该开关只保留内部数值审计，不将U恢复为产品功能。

@@ -1,14 +1,20 @@
-# Data statement
+# Data statement: release-002
 
-| Source | License | Modality | Use |
-|---|---|---|---|
-| CLEVRER train/validation | CC-BY 4.0 | video (+ program truths) | training facets + QA |
-| VQA v2 | per-original | image | training/eval |
-| Clotho-AQA | per-original | audio | training/eval |
-| LibriSpeech | CC-BY 4.0 | audio | training/eval |
-| GUI-Odyssey | commercial-licensed | screenshot | training/eval |
-| synthetic text pool | self-produced | text | training/eval |
+This release distributes model artifacts and evidence summaries, not the private gold calibration/holdout datasets or their media. The model license does not replace upstream dataset licenses. Source roles below distinguish the final D3P update from earlier training and evaluation.
 
-Isolation: training / dev / calibration / sealed-holdout pools are split by original sample family (variants and counterfactuals never cross pools); per-file SHA-256 provenance for every sample and media asset is published with the release.
+| Source | Recorded rights basis | Role and evidence |
+|---|---|---|
+| CLEVRER | **CC0**, per the official README evidence and accepted [ADR0005](../../adr/0005-permitted-first-release-media.md); not CC-BY-4.0 | TRAIN video QA supplies the S4 course and the final 600-question D3P teacher slice. Separate family allocations supply development/calibration/holdout. See [source audit](../../research/stage3-remaining-media.md), [download receipt](../../../reports/clevrer-source-download-snapshot.json), and [gold provenance](../../../reports/s4-clevrer-gold-provenance-001.json). Synthetic scenes do not represent the full diversity of real-world video. |
+| Programmatic text, screenshots, TTS and multimodal combinations | Project-generated inputs; external components retain their own terms | Earlier training and replay include generated decision tasks. These are not evidence that the original planned training volume was completed. Stage reports record actual exposure. |
+| VQA v2 / selected COCO images | VQA2 QA: CC-BY-4.0; admitted COCO images: CC-BY-2.0, selected by image rights | Additional image gold for development/calibration/holdout; do not infer that all VQA/COCO images are cleared. See [image-gold policy](../../../.scratch/s4/image-gold-policy.md). Earlier A-OKVQA image development remains a separate source, not interchangeable with the added VQA2 pool. |
+| Clotho-AQA | Selected audio carries per-file CC0-1.0 or CC-BY-3.0 rights recorded in the [license plan](../../../reports/clotho-aqa-license-plan.json) | Earlier audio preparation/training and separate audio gold pools. Attribution and original source terms still apply; no blanket license is asserted for every possible clip. See [audio provenance](../../../reports/s4-audio-gold-provenance-001.json). AudioCaps was omitted under [ADR0004](../../adr/0004-defer-audiocaps-for-first-release.md). |
+| LibriSpeech | CC-BY-4.0, OpenSLR 12 | Speech gold uses dev-clean/test-clean source archives, with family allocation independent of TRAIN exposure; see [speech build receipt](../../../reports/s4-speech-gold-build-001.json). This is not a claim that those evaluation recordings trained the final D3P adapter. |
+| GUI-Odyssey | Official pinned dataset card declares CC-BY-4.0, revision `61632d0f3f4d51d7e9561ce4f84347dd06b2019d` | Screenshot-source preparation and separate GUI gold. See [source audit](../../research/gui-odyssey-source-audit.md) and [gold admission](../../../reports/s4-gold-data-admission-001.json). “Commercial-licensed” is not a separate purchased license. |
+| CLINC OOS | CC-BY-3.0, revision `155b9c710419136e17307b80d0a13e68cd46b4ec` | Text gold source replay and independent pool construction; see [source receipt](../../../reports/s4-text-gold-source-replay-001.json). The text evaluation cohort is not entirely synthetic. |
+| JevBench, MMAU, MVBench nine-task subset; Decision Index admitted sources | Separate benchmark/source terms; evaluation admission does not authorize training | External evaluation, not the final D3P training slice. Missing Decision Index execution remains pending, not a fabricated score. [ADR0025](../../adr/0025-sota-benchmark-set.md), [ADR0027](../../adr/0027-published-numbers-first.md) and [ADR0028](../../adr/0028-release-board-caliber.md) define the reporting scope. |
 
-Excluded by policy: JEV-27B weights/outputs (terms-of-service), any eval-set contamination (audited, zero cross-pool overlap).
+The permitted OneJev-27B teacher generated soft option targets on TRAIN inputs; its model identity and revision are in [TRAINING.md](./TRAINING.md). The project excludes Jev API outputs and JEV-27B / JEV-27B-VL weights or labels. DocVQA original images are restricted to isolated research/evaluation under ADR0005; their availability is not permission for commercial training or redistribution.
+
+Pools are allocated by original sample family, including variants, media components and known historical exposure. The [gold admission summary](../../../reports/s4-gold-data-admission-001.json) records verified pool isolation and the six-cohort inventory; it explicitly does not assert independent identically distributed observations or external security attestation. Source dependence and developer exposure to development material remain limitations.
+
+The final published [sealed aggregate](../../../reports/s5-sealed-aggregate-summary-003.json) covers 6,000 holdout questions. Private calibration and holdout contents are read only by the isolated evaluation machinery; agents receive aggregate results. Reports publish selected provenance, artifact hashes and audit summaries. They do **not** constitute publication of every per-sample hash, the complete private inventory, or the raw media. Reusing upstream data requires obtaining it from its source and honoring its individual terms.

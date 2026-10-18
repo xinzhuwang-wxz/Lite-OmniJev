@@ -17,7 +17,7 @@ from typing import Annotated, Any, Literal
 import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 from starlette.responses import Response
 
@@ -92,6 +92,7 @@ class Settings:
     model_version: str = "untrained-e4b-pinned"
     model_dir: Path | None = None
     raw_logprobs_confirmed: bool = False
+    internal_readout_diagnostics: bool = False
     media_root: Path | None = None
     question_concurrency: int = 1
     request_image_reuse: bool = False
@@ -113,6 +114,7 @@ class Settings:
             model_version=os.getenv("LITE_MODEL_VERSION", "untrained-e4b-pinned"),
             model_dir=Path(directory) if directory else None,
             raw_logprobs_confirmed=os.getenv("LITE_RAW_LOGPROBS_CONFIRMED") == "1",
+            internal_readout_diagnostics=os.getenv("LITE_INTERNAL_READOUT_DIAGNOSTICS") == "1",
             media_root=Path(media_root) if media_root else None,
             question_concurrency=int(os.getenv("LITE_QUESTION_CONCURRENCY", "1")),
             request_image_reuse=os.getenv("LITE_REQUEST_IMAGE_REUSE") == "1",
@@ -293,6 +295,11 @@ def create_app(
             },
         )
 
+    @application.get("/", response_class=HTMLResponse, include_in_schema=False)
+    def playground() -> HTMLResponse:
+        page = Path(__file__).resolve().parent.parent / "playground.html"
+        return HTMLResponse(page.read_text(encoding="utf-8"))
+
     @application.get("/health")
     def health() -> dict[str, Any]:
         configured = bool(
@@ -343,10 +350,12 @@ def create_app(
             "type": item.type,
             "probabilities": probabilities,
             "confidence": readout.confidence,
-            "p_insufficient": readout.p_insufficient,
             **calibration_metadata,
-            "confidence_semantics": "normalized_peak_non_U",
+            "confidence_semantics": "normalized_peak",
         }
+        if settings.internal_readout_diagnostics:
+            result["p_insufficient"] = readout.p_insufficient
+            result["confidence_semantics"] = "normalized_peak_non_U"
         if item.type == "choice":
             result["choice"] = labels[values.index(max(values))]
         elif item.type == "noul":

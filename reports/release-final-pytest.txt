@@ -1,0 +1,64 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 16%]
+.............................ssssssssssssssssssssssssssssssss.ssss.s.... [ 20%]
+.s...................................................................... [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+...........................................................s....s....... [ 33%]
+........................................................................ [ 37%]
+........................................s.........................s..... [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+..............ss........................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+....................................................................s... [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+.....................s..s..s............................................ [ 91%]
+........................................................................ [ 94%]
+..............................................sssssssss.......ssssss.... [ 98%]
+..................s..s....ssssss.........                                [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/fastapi/testclient.py:1
+  /Users/bamboo/Githubs/Lite-OmniJev/.venv/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_gui_gold_pools.py:12: GUI full decode requires Pillow
+SKIPPED [6] tests/test_gateway_media.py:254: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [9] tests/test_gateway_media.py:295: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [13] tests/test_gateway_media.py:323: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [4] tests/test_gateway_media.py:396: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [1] tests/test_gateway_media.py:439: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [1] tests/test_gateway_media.py:483: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [1] tests/test_gateway_media.py:518: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [1] tests/test_gateway_media.py:548: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [1] tests/test_gateway_media.py:581: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [1] tests/test_gateway_media.py:804: explicit licensed public media and pinned metadata CPU fixture required
+SKIPPED [1] tests/test_multimodal_prepare.py:264: could not import 'PIL.Image': No module named 'PIL'
+SKIPPED [1] tests/test_multimodal_prepare.py:367: could not import 'PIL.Image': No module named 'PIL'
+SKIPPED [1] tests/test_prefix_cache_gateway.py:193: explicit pinned official processor and public media required
+SKIPPED [1] tests/test_prepare_routerbench.py:379: requires Linux root chroot/seccomp integration
+SKIPPED [1] tests/test_public_eval_media.py:92: explicit dedicated SoundFile runtime required
+SKIPPED [1] tests/test_public_eval_media.py:108: explicit dedicated SoundFile runtime required
+SKIPPED [1] tests/test_teacher_benchmarks.py:159: could not import 'PIL.Image': No module named 'PIL'
+SKIPPED [1] tests/test_validate_gui_media.py:84: could not import 'PIL.Image': No module named 'PIL'
+SKIPPED [1] tests/test_validate_gui_media.py:101: could not import 'PIL.Image': No module named 'PIL'
+SKIPPED [1] tests/test_video_motion_coverage.py:52: could not import 'PIL': No module named 'PIL'
+SKIPPED [9] tests/test_vllm_chat.py:289: explicit pinned metadata/real public CPU media fixture required
+SKIPPED [6] tests/test_vllm_chat.py:448: explicit pinned metadata/real public CPU media fixture required
+SKIPPED [1] tests/test_vqa2_gold_pools.py:126: could not import 'PIL.Image': No module named 'PIL'
+SKIPPED [1] tests/test_vqa2_gold_pools.py:190: could not import 'PIL.Image': No module named 'PIL'
+SKIPPED [6] tests/test_vqa2_new_family.py:88: could not import 'PIL.Image': No module named 'PIL'
+2058 passed, 72 skipped, 1 warning in 35.14s

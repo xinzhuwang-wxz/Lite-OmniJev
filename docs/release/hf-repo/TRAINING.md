@@ -1,27 +1,17 @@
-> ⏳ **DEFERRED**:本文件为占位草稿。范式叙事待最终模型出炉后,从第一性原理回顾实际达成路径再撰写(用户指示)——不预设叙事,按实证收敛的真实轨迹组织。此文件将在终版模型确认后重写。
+# Training record: release-002 / D3P-600
 
-# Training: amortized symbolic execution with teacher-distribution distillation
+The selected adapter is `767be09b0919235d70877805f58365cbce449611d744bbf70e0d821a19749e9c`, trained on the frozen `google/gemma-4-E4B-it` base at revision `ee0ef6023621cff504d758262d4e04895a5af4a2`. It uses decision LoRA and the official chat template with thinking disabled; it does not add a classification head.
 
-Our training recipe compiles two *structured* supervision signals into a direct-answer adapter. Both are unusual for LoRA releases; both are measured (see [EVALUATIONS](./EVALUATIONS.md)).
+The selected path continued the earlier multimodal adapter through the S4 program-stratified course, then teacher-distribution distillation (D3P). The S4 course completed 100 steps / 1,200 draws: 600 original TRAIN videos and 600 replay draws. That is the completed course, not a claim to have trained on every available video. Its selected parent was `e4655014…`; the original teacher-relative quality targets remained unmet, as recorded in [ADR0023](../../adr/0023-measured-quality-stage-progression.md).
 
-## Signal 1 — Teacher-distribution distillation (D3P)
+D3P used the permitted `OmniJev/OneJev-27B` teacher at revision `aec969d68e7e8e8b0df051e065c04304c0cd7163` (Apache-2.0). This is distinct from the prohibited JEV-27B / JEV-27B-VL weights and Jev API outputs. Teacher inference ran on a selected CLEVRER TRAIN slice, first at 150 questions and then at 600 questions. The final selected candidate is D3P-600. This is a local teacher-model distillation path, not a Jev API dataset.
 
-A 27B decision teacher answers the same questions under the same protocol. Instead of distilling its argmax, we distill its **full option distribution** (legal answer set + internal sufficiency mass) into the student's single-token readout. The student learns *how confident to be*, not only *what to answer*.
+The student-row converter consumes the teacher's normalized legal yes/no probabilities as soft targets. Teacher U mass is diagnostic evidence; the converter does not train a fabricated U target. See [the converter](../../../.scratch/s4/build_d3p_student_rows.py) and [teacher-cache preparation](../../../reports/explore/s6-teacher-cache-prep-001.md). The preparation document describes the initial pilot; it is not itself proof of the later GPU run.
 
-- Slice scaling measured: 150 → 600 teacher questions improved sealed video accuracy monotonically; the recipe, slices, and hashes are pinned.
+The completed D3P-600 development evaluation is [s6-d3p600-video150-report.json](../../../reports/s6-d3p600-video150-report.json): 123/150 correct, two identical passes, 16 video frames, real H20 execution. This is development evidence, not a sealed quality gate. Final sealed results are reported separately in [s5-sealed-aggregate-summary-003.json](../../../reports/s5-sealed-aggregate-summary-003.json): 6,000 questions across six cohorts, video accuracy 72.6%, and unchanged argmax accuracy after temperature scaling. Calibration misses remain disclosed; this is not a claim that every original quality target passed.
 
-## Signal 2 — Program-facet structural supervision (SAS/WSFT)
+SAS/WSFT program-facet experiments, COMBO candidates, scene formalizers and neural-symbolic execution were explored separately. They are not the selected release-002 adapter or its serving pipeline. Their results must not be presented as training components or gains of D3P-600.
 
-Where questions derive from programs (CLEVRER train ships ground-truth programs), we compile each program **offline** into per-predicate facet targets — count, color, motion-direction, begin/end/enter/exit, collision — and train on the facets *jointly with* the main questions. Symbol execution happens at training time; the adapter amortizes the executor.
+Calibration is a separate fitting step, not additional model training. The published aggregate binds its temperatures to `transformers / bfloat16 / native_lora`. The verified `vLLM / float32 / merged` service returns raw, unfitted probabilities unless calibration is validated and bound for that actual runtime. The final flat-key merged serving artifact passed the [100-case HF/vLLM numerical comparison](../../../reports/s6-serving-compare-vllm-mergedfp32-002.json); this does not establish cross-engine calibration.
 
-- Ablated: facet supervision with a single-family focus beat both the no-facet control and the all-families-at-once variant (depth beats breadth at fixed step budget — measured, twice).
-
-## What we deliberately do not do
-
-- No RLHF / preference tuning (an RL form is prototyped for the scene-formalizer layer — reward passes through a discrete executor, which is not gradient-decomposable — and is gated by pre-registered F1 targets).
-- No distillation of teacher *weights* or APIs; distributions only, on our own training pools.
-- No benchmark training: evaluation families are pool-isolated by sample family with provenance hashes.
-
-## Reproducibility
-
-Fixed seeds; per-run bindings for code, data, model, adapter (SHA-256); two-pass exact-match verification on dev benchmarks; sealed holdout drawn pool-isolated and evaluated once. Full chain in the repository `docs/runbooks/` and ADR records.
+Run reports retain model, code, data and configuration hashes where available, seeds, environment and exit status. Private calibration and holdout rows are not distributed. Multiple candidates were evaluated by the isolated gate; the holdout was not a single evaluation of only one candidate. See [DATA_CARD.md](./DATA_CARD.md) for source roles and isolation limits.

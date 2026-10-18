@@ -42,20 +42,20 @@ def question_rows(question: dict[str, Any]) -> list[tuple[str, dict[str, Any], s
     if kind == "descriptive":
         subtype = question["question_subtype"]
         answer = str(question["answer"])
+        options: list[str] | None
         if subtype == "exist":
-            spec = {"type": "noul", "options": None, "value": answer}
+            primitive, options = "noul", None
         elif subtype == "count":
-            spec = {"type": "choice", "options": COUNT_OPTIONS, "value": answer}
+            primitive, options = "choice", COUNT_OPTIONS
         else:
-            spec = {"type": "choice", "options": QUERY_OPTIONS[subtype], "value": answer}
-        if spec["type"] == "choice":
-            options = spec["options"]
+            primitive, options = "choice", QUERY_OPTIONS[subtype]
+        if options is not None:
             lettered = "\n".join(f"{chr(65 + i)}. {o}" for i, o in enumerate(options))
             instruction = f"{text}\nOptions:\n{lettered}"
-            value = chr(65 + options.index(spec["value"]))
+            value = chr(65 + options.index(answer))
         else:
-            instruction, value = text, spec["value"]
-        return [("", _question(spec["type"], instruction, spec["options"], value), subtype)]
+            instruction, value = text, answer
+        return [("", _question(primitive, instruction, options, value), subtype)]
     rows = []
     for choice in question["choices"]:
         instruction = (

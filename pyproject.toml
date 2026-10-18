@@ -7,7 +7,7 @@ name = "lite-omnijev"
 version = "0.1.0"
 description = "Reproducible lightweight multimodal decision model engineering"
 requires-python = ">=3.11,<3.12"
-license = "Apache-2.0"
+license = "CC-BY-NC-SA-4.0"
 dependencies = [
   "pydantic>=2.11,<3",
   "fastapi>=0.115,<1",

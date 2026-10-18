@@ -284,7 +284,7 @@ async def test_real_five_categories_and_multiquestion_canonical_chat(
     assert all(part in parts for parts in upstream.part_types)
     for answer in body["answers"].values():
         assert sum(answer["probabilities"].values()) == pytest.approx(1)
-        assert "U" not in answer["probabilities"] and 0 < answer["p_insufficient"] < 1
+        assert "U" not in answer["probabilities"] and "p_insufficient" not in answer
         assert answer["calibration"] == "unfitted"
     assert body["answers"]["choice"]["choice"] == "first"
     assert body["answers"]["score"]["legend"] == {"0": "Low", "1": "Middle", "2": "High"}

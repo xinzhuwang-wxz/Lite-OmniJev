@@ -1,32 +1,31 @@
 # STATUS
 
-更新:2026-10-18 09:0x(CST)。**负责人:交付链冲刺(主会话)。GPU 侧全部完成、已通知关卡;HF 推送后台跑;剩 ⑥文档终稿 + ⑦终局验收 + 与"打磨"(codex)协作。**
+更新：2026-10-18 10:48 CST。负责人：当前主会话（用户明确旧session停用，全部由本会话接管）。
+原生goal active：用户最新优先范围=尽快完成HF/GitHub产品化分发；原完整FINAL缺口保留，不扩新训练。
 
-## ⚡ 接续点(第一动作)
+## 当前接续点
 
-1. **HF 推送(push5)监控**:盒 s6-hpush,log `/root/autodl-tmp/s6-hf-repo/push5.log`,完成=远端 main 到 bc2ca94(分片权重+MLX 4bit+GGUF 三档+adapter+回执,~61G)。multipart 大文件通道依赖用户 token(env 注入,未入仓)。
-2. **打磨协作**:数据全齐后把 demo/图表/README 交"打磨"(codex session)做视觉与叙事终审;素材清单见下"现役资产"。
-3. **⑥ 收尾**:README(GitHub ae520f1)已含赛跑 demo+图表+量化矩阵;s4-perf-report-002 待补 MLX/量化运行时行;⑦终局验收票待写。
+- 当前票：`s6-release-serving:01`，claimed/main-session；主树 `/Users/bamboo/Githubs/Lite-OmniJev`。
+- 已恢复HF发布用平面分片：5片/2130张量，逐字节等于compact来源，SHA齐；`reports/s6-flat-remap-recovery-001.json`。
+- GPU初次验证已全过并停至0MiB；用户确认卡仍开，已启动来源绑定最终脚本复验：vLLM pid记录在盒 `s6-release-serving-001/final-vllm.pid`，网关同目录`final-gateway.pid`；不要跑旧rv/fullreset/pushD等广域kill脚本。
+- HF历史main仅模型卡c4432b9，旧push5未成功且已不运行。新allowlist上传作业PID545874，日志 `s6-release-serving-001/logs/publish-final-003.log`。不得打印token。
+- 基础Playground、默认产品U隐藏、校准未激活边界与部署材料已修；真实浏览器验收已通过。SSH隧道本地18000→盒8000。
+- 独立worktree：`../Lite-OmniJev-release-audit`（文档/typing）、`../Lite-OmniJev-playground`（仅HTML）；产物已整合，无旧session依赖。
 
-## 数据终态(全实测,报告在盒 s6-release-serving-001/artifacts + 仓 reports/)
+## 已确认边界
 
-- ③ serving:parity 精确可重复 + 5.75e-6<1e-3;网关逐位一致;浏览器 live 过;SHA256SUMS 全验。
-- ④ 量化:**文本一致性 f16/q8/q4 全 20/20 零退化**;Q4_K_M 5.34G(≈f16 的 1/3);RAM 实测 15/7.9/7.1G;视觉 image 队列三档 16-18/20(噪声级,screenshot 空输出=llama.cpp 运行时问题含 f16);llama.cpp 音视频验证 pending(--jinja 模板修复已验证,CPU 争抢超时);MLX 4bit **卡上转换完成** 6.2G(6.667bpw,运行测试 Mac 侧按用户决定暂缓)。
-- ⑤ HF/GitHub:GitHub main=ae520f1(README+LICENSE CC-BY-NC-SA-4.0+demo+图表)已推;HF 推送进行中。
-- ⑥ perf:评测态+serving 态+网关计时齐;量化运行时行待补。
-- **Decision Index:外部阻塞**——官方发布套件仓不可得(401/404,带 token 同),rebuild 缺 3 个上游源(hellaswag 404 等);照实标 pending,不阻塞发布。
+- 数值：HF/vLLM100案例两遍，max5.752e-6；网关条件分布一致。不是200独立题/三运行时验收。
+- GGUF文本20/20×3；截图/音频/视频生成式冒烟exit0，非量化概率/ECE验收；原始矩阵已取回reports。
+- serving是FP32/merged、unfitted；最终私有温度属于BF16/Transformers/native-LoRA，不跨recipe激活。
+- 最终D3P600封存ECE为3/6，不沿用旧候选4/6；质量局限按ADR0023保留。
+- MLX仅转换完成；E2B、真实设备、完整稳健性/运行时/产品操作链尚缺证据，FINAL保持blocked。
 
-## 已闭(勿重跑)
+## 下一步
 
-③ 全链(票 issues/02 终态);serving 形态=merged-fp32(分片);GGUF 转换+一致性;MLX 转换;bf16 merged/compact 键/fp32+LoRA 形态证伪;vLLM 0.26 前缀缓存默认开;套件 rebuild 路线(源缺失,证据 dlsuite/rebuild 日志)。
-
-## 现役资产
-
-- 盒:s6-release-serving-001(repo+envs/serve+artifacts 全回执)、s6-quant(llama.cpp+GGUF×3+mmproj+MLX 4bit)、s6-index-work(env+workroot+日志)、s6-hf-repo(推送中);vLLM/网关/llama-server 已全部停止。
-- 本地:main=ae520f1;docs/demo 四段录屏;docs/charts 8 张 SVG(light/dark);reports 全回执。
-- 密钥:HF 盒上 SSH key + 用户 write token(仅 env 注入,未入仓)。
+完成新启动配方100案例双遍最终数值复验→停止本会话推理服务并核对GPU→再次通知用户关卡；上传/文档继续。
+HF完成后取revision与文件清单核验；收口本票并更新FINAL准确缺口，不能虚标全部产品化完成。
 
 ## 待我决策
 
-- Decision Index:是否接受"上游不可得,保持 pending"进发布物;若你侧有该 gated 套件的访问授权,给我可用数据源即可补测。
-- ⑦ 终局验收票在 ⑤ 推送落地后开。
+暂不索取新账号或资源。Decision Index上游不可得维持pending并透明披露；生产/P4未授权不启动。
+需要重新训练、真实设备或新增付费预算时先以具体证据列明阻塞，不擅自扩量。

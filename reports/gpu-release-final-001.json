@@ -1,0 +1,14 @@
+{
+  "status": "safe_to_disable_gpu",
+  "stopped_validation_pids": [
+    542962,
+    544403
+  ],
+  "gpu_compute_processes": "",
+  "gpu_state": "NVIDIA H20, 0 MiB, 0 %",
+  "uploader_stopped": false,
+  "weights_deleted": false,
+  "time_utc": "2026-10-18T02:42:39Z",
+  "cost": null,
+  "cost_note": "billing rate unavailable; no additional rental or purchase authorized"
+}

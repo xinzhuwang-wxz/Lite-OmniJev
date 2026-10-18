@@ -27,39 +27,13 @@ MODEL_LEN="${MODEL_LEN:-8192}"
 SERVED_NAME="${SERVED_NAME:-lite-omnijev-e4b-d3p600}"
 KV_BYTES="${KV_BYTES:-4294967296}"
 
-# Serving view: hardlink the weights (same inodes -> same identity, no extra
-# disk), keep the merged config, and copy the official metadata from the base
-# snapshot (the merged dir carries weights only).
+# Bind both derived directories to this exact source. Reuse of an unbound or
+# different release is rejected; the helper never deletes operator directories.
 VIEW="${VIEW:-$PWD/serving-view}"
-if [ ! -f "$VIEW/config.json" ]; then
-  rm -rf "$VIEW"
-  mkdir -p "$VIEW"
-  cp "$MODEL_DIR"/config.json "$MODEL_DIR"/generation_config.json "$VIEW/" 2>/dev/null || true
-  ln "$MODEL_DIR"/model*.safetensors* "$VIEW/" 2>/dev/null || true
-  find "$BASE_DIR" -maxdepth 1 -type f ! -name "*.safetensors*" ! -name "config.json" \
-    -exec cp {} "$VIEW/" \;
-fi
-
-# The dtype copy is a derived serving artifact; keep it OUT of the asset dirs.
-# vLLM --hf-config-path expects a DIRECTORY containing config.json.
 CONFIG_DIR="${CONFIG_DIR:-$PWD/config-fp32-dir}"
-CONFIG_COPY="$CONFIG_DIR/config.json"
-if [ ! -f "$CONFIG_COPY" ]; then
-  mkdir -p "$CONFIG_DIR"
-  "$SERVE_ENV/bin/python" - "$BASE_DIR/config.json" "$CONFIG_COPY" <<'PY'
-import json, sys
-source, target = sys.argv[1], sys.argv[2]
-config = json.load(open(source))
-changed = 0
-for section in ("", "audio_config", "text_config", "vision_config"):
-    node = config if section == "" else config.get(section)
-    if isinstance(node, dict) and node.get("dtype") == "bfloat16":
-        node["dtype"] = "float32"
-        changed += 1
-assert changed == 4, f"expected exactly 4 dtype fields, changed {changed}"
-json.dump(config, open(target, "w"), indent=2)
-PY
-fi
+"$SERVE_ENV/bin/python" "$(dirname "$0")/prepare_view.py" \
+  --model-dir "$MODEL_DIR" --base-dir "$BASE_DIR" \
+  --view "$VIEW" --config-dir "$CONFIG_DIR"
 
 export NVIDIA_TF32_OVERRIDE=0 TRITON_F32_DEFAULT=ieee
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1

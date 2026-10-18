@@ -197,7 +197,8 @@ def main() -> int:
                             values = list(answer["probabilities"].values())
                             assert all(type(v) in (int, float) and math.isfinite(v) for v in values)
                             assert abs(sum(values) - 1) < 1e-6 and answer["type"] == name
-                            assert 0 <= answer["p_insufficient"] <= 1
+                            if "p_insufficient" in answer:
+                                assert 0 <= answer["p_insufficient"] <= 1
                         report["cases"].append(
                             {
                                 "category": case.category,

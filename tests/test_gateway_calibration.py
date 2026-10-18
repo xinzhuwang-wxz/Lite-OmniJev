@@ -355,7 +355,7 @@ async def test_http_default_and_explicit_registry_temperature(bundle, configured
     expected = read_probabilities(
         {"A": -1.0, "B": -2.0, "U": -3.0}, ["A", "B"], temperature=2 if calibrated else 1
     )
-    assert answer["p_insufficient"] == pytest.approx(expected.p_insufficient)
+    assert "p_insufficient" not in answer
     assert answer["probabilities"]["first"] == pytest.approx(expected.probabilities["A"])
     assert answer["calibration"] == ("scalar_temperature" if calibrated else "unfitted")
     assert ("calibration_artifact_sha256" in answer) == calibrated
